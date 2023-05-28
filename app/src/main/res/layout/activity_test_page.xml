@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".TestPageActivity"
+    android:orientation="vertical"
     android:padding="20dp">
 
     <Button
@@ -12,5 +13,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Open Groups Details Page"/>
+    <Button
+        android:id="@+id/btn_customer_homepage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open Customer Home Page"/>
+    <Button
+        android:id="@+id/btn_customer_product_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open Customer Product Detail"/>
 
 </LinearLayout>
