@@ -42,9 +42,11 @@ dependencies {
 
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:32.0.0')
-
     implementation 'com.google.firebase:firebase-auth:21.0.3'
     implementation 'com.google.firebase:firebase-database:20.0.4'
+
+    // Use Facebook Login SDK
+    implementation 'com.facebook.android:facebook-login:latest.release'
 
 
 }
