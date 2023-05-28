@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "704984609440",
+    "project_id": "webuy-d40fc",
+    "storage_bucket": "webuy-d40fc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:704984609440:android:3b52c576aaa62c868ecfc5",
+        "android_client_info": {
+          "package_name": "com.csis4495_cmk.webuy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHcpn7hl89v2xSYMcESP_W_SzFI2Y6DHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
