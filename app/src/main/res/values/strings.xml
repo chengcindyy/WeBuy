@@ -15,6 +15,18 @@
         <item>In stock</item>
         <item>Pre-order</item>
     </string-array>
+    <string-array name="locations_array">
+        <item>Vancouver</item>
+        <item>Burnaby</item>
+        <item>West Vancouver</item>
+        <item>East Vancouver</item>
+        <item>New Westminster</item>
+        <item>North Vancouver</item>
+        <item>Surrey</item>
+        <item>Coquitlum</item>
+        <item>White Rock</item>
+        <item>Delta</item>
+    </string-array>
 
     <string name="app_name">WeBuy</string>
     <string name="login">Login</string>
@@ -25,4 +37,7 @@
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="product_name">Product name</string>
+    <string name="location">Location</string>
+    <string name="sort">sort</string>
+    <string name="tags">tags</string>
 </resources>
