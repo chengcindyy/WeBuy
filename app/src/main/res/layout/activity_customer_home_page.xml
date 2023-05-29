@@ -63,7 +63,6 @@
         app:backgroundTint="@android:color/transparent"
         app:elevation="0dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
         app:itemIconTint="@color/cute_orange"
         app:itemTextColor="@color/cute_orange"/>
 

@@ -8,10 +8,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class TestPageActivity extends AppCompatActivity {
 
     //TODO: Step 1: Declare Button
     private Button btn_groups_detail, btn_customer_homepage, btn_customer_product_detail;
+
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +29,7 @@ public class TestPageActivity extends AppCompatActivity {
         GoToTestActivity(btn_customer_homepage, "btn_customer_homepage", CustomerHomePageActivity.class);
         GoToTestActivity(btn_customer_product_detail, "btn_customer_product_detail", CustomerProductDetailActivity.class);
 
+        fakeData("Group", "GroupName");
     }
 
     public void GoToTestActivity(Button btnClicked, String strBtnId, Class<?> testActivity) {
@@ -32,6 +39,10 @@ public class TestPageActivity extends AppCompatActivity {
         btnClicked.setOnClickListener(v -> {
             startActivity(new Intent(TestPageActivity.this, testActivity));
         });
+    }
+    public void fakeData(String dbRef, String item) {
+        databaseReference = firebaseDatabase.getReference(dbRef);
+
     }
 
 
