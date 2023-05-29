@@ -4,7 +4,7 @@ public class CartItem {
     private String groupId;
     private String productId;
     private String subPId;
-    private String amount;
+    private int amount;
 
     public CartItem() {
     }
@@ -21,7 +21,7 @@ public class CartItem {
         return subPId;
     }
 
-    public String getAmount() {
+    public int getAmount() {
         return amount;
     }
 }
