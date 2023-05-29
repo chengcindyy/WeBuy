@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.csis4495_cmk.webuy.adapters.HomeViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 public class CustomerHomePageActivity extends AppCompatActivity {

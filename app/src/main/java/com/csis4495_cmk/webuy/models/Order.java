@@ -3,9 +3,9 @@ package com.csis4495_cmk.webuy.models;
 public class Order {
     private String customerId;
     private String orderList[];
-    private String totalPrice;
+    private double totalPrice;
     private String orderedDate;
-    private String deliveryFee;
+    private double deliveryFee;
     private String address;
     private String country;
     private String province;
@@ -25,7 +25,7 @@ public class Order {
         return orderList;
     }
 
-    public String getTotalPrice() {
+    public double getTotalPrice() {
         return totalPrice;
     }
 
@@ -33,7 +33,7 @@ public class Order {
         return orderedDate;
     }
 
-    public String getDeliveryFee() {
+    public double getDeliveryFee() {
         return deliveryFee;
     }
 
