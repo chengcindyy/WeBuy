@@ -18,6 +18,10 @@ public class Customer {
         
     }
 
+    public Customer(String uid) {
+        this.uid = uid;
+    }
+
     public String getUid() {
         return uid;
     }
@@ -65,4 +69,5 @@ public class Customer {
     public String getBirth() {
         return birth;
     }
+
 }

@@ -27,7 +27,6 @@ public class RoleSelectionActivity extends AppCompatActivity {
         select_customer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Toast.makeText(RegisterActivity.this, "Customer Selected", Toast.LENGTH_SHORT).show();
                 selected_role = CUSTOMER;
             }
         });
@@ -36,7 +35,6 @@ public class RoleSelectionActivity extends AppCompatActivity {
         select_seller.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Toast.makeText(RegisterActivity.this, "Seller Selected", Toast.LENGTH_SHORT).show();
                 selected_role = SELLER;
             }
         });

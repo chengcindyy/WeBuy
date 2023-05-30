@@ -10,9 +10,14 @@ public class Seller {
     private String city;
     private String postalCode;
     private String profilePic;
+    private String email;
 
     public Seller() {
 
+    }
+
+    public Seller(String uid) {
+        this.uid = uid;
     }
 
     public String getUid() {
@@ -50,4 +55,9 @@ public class Seller {
     public String getProfilePic() {
         return profilePic;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
 }
