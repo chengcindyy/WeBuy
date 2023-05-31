@@ -16,6 +16,8 @@ public class TestPageActivity extends AppCompatActivity {
     //TODO: Step 1: Declare Button
     private Button btn_groups_detail, btn_customer_homepage, btn_customer_product_detail;
 
+    private Button btn_goSellerHome;
+
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference;
 
@@ -28,6 +30,8 @@ public class TestPageActivity extends AppCompatActivity {
         GoToTestActivity(btn_groups_detail, "btn_groups_detail", GroupsDetailActivity.class);
         GoToTestActivity(btn_customer_homepage, "btn_customer_homepage", CustomerHomePageActivity.class);
         GoToTestActivity(btn_customer_product_detail, "btn_customer_product_detail", CustomerProductDetailActivity.class);
+
+        btn_goSellerHome = findViewById(R.id.btn_go_seller_home);
 
         fakeData("Group", "GroupName");
     }
@@ -45,5 +49,8 @@ public class TestPageActivity extends AppCompatActivity {
 
     }
 
+    public void goSellerHome(View view) {
+        startActivity(new Intent(TestPageActivity.this, SellerHomePageActivity.class));
 
+    }
 }

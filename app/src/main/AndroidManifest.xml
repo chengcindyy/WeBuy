@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <application
         android:allowBackup="true"
@@ -10,7 +10,29 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.WeBuy"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+        <activity
+            android:name=".SellerEditProductActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SellerUploadProfile"
+            android:exported="false" />
+        <activity
+            android:name=".SellerPublishProductActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SellerAddStyleActivity"
+            android:exported="true" >
+        </activity>
+        <activity
+            android:name=".SellerAddProductActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SellerProductListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SellerHomePageActivity"
+            android:exported="false" />
         <activity
             android:name=".CustomerProductDetailActivity"
             android:exported="false" />
@@ -33,7 +55,7 @@
             android:label="@string/app_name" />
         <activity
             android:name="com.facebook.CustomTabActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -57,7 +79,7 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

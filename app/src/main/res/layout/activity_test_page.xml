@@ -24,4 +24,11 @@
         android:layout_height="wrap_content"
         android:text="Open Customer Product Detail"/>
 
+    <Button
+        android:id="@+id/btn_go_seller_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open Seller Home"
+        android:onClick="goSellerHome"/>
+
 </LinearLayout>
