@@ -81,34 +81,7 @@
 
                 </LinearLayout>
 
-                <!--        Edit tax rate    -->
-                <RadioGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:orientation="horizontal">
 
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="No Tax"
-                        android:textSize="20sp" />
-
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="GST"
-                        android:textSize="20sp" />
-
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="GST &amp; PST"
-                        android:textSize="20sp" />
-                </RadioGroup>
 
             </LinearLayout>
 
