@@ -40,4 +40,14 @@
     <string name="location">Location</string>
     <string name="sort">sort</string>
     <string name="tags">tags</string>
+    <string name="search_hint">Search Here</string>
+    <string name="product_des">Product Description</string>
+    <string name="img_default">Default Image</string>
+    <string name="img_style">Style Image</string>
+    <string name="img_more">More Images</string>
+    <string name="style">Style</string>
+    <string name="price">Price</string>
+    <string name="qty">Qty</string>
+
+
 </resources>
