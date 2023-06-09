@@ -1,11 +1,15 @@
 package com.csis4495_cmk.webuy;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.csis4495_cmk.webuy.adapters.HomeViewPagerAdapter;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 public class CustomerHomePageActivity extends AppCompatActivity {
@@ -13,6 +17,7 @@ public class CustomerHomePageActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager2 viewPager2;
     HomeViewPagerAdapter viewPagerAdapter;
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,5 +53,31 @@ public class CustomerHomePageActivity extends AppCompatActivity {
                 tabLayout.getTabAt(position).select();
             }
         });
+
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        buttonNavViewFunction(bottomNavigationView);
+    }
+
+    private void buttonNavViewFunction(BottomNavigationView bottomNavigationView) {
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.customer_home:
+
+                        return true;
+                    case R.id.customer_profile:
+                        startActivity(new Intent(CustomerHomePageActivity.this, CustomerProfileActivity.class));
+                        return true;
+                    case R.id.customer_cart:
+
+                        return true;
+                    case R.id.customer_settings:
+                        return true;
+                }
+                return false;
+            }
+        });
+
     }
 }

@@ -19,7 +19,7 @@
 <!--        app:queryHint="@string/search_hint" />-->
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/seller_prodcut_list_appBarLayout"
+        android:id="@+id/seller_product_list_appBarLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +46,7 @@
         android:text="Add a New Product"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seller_prodcut_list_appBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/seller_product_list_appBarLayout" />
 
 
     <androidx.recyclerview.widget.RecyclerView

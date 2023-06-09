@@ -46,7 +46,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText edit_email, edit_password, edit_confirm_password;
     private Button btn_create, btn_cancel;
     private ProgressBar loadingPB;
-    boolean isProgressVisible = false;//
+    boolean isProgressVisible = false;
     private String user_role = "";
     private final String CUSTOMER = "customer";
     private final String SELLER = "seller";
@@ -293,14 +293,19 @@ public class RegistrationActivity extends AppCompatActivity {
     private void ExtractingUserReference(FirebaseUser firebaseUser, User newUser) {
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseDatabase = mFirebaseInstance.getReference("User");
-        mFirebaseDatabase.child(firebaseUser.getUid()).setValue(newUser);
-        if (user_role == CUSTOMER) {
-            Customer newCustomer = new Customer(firebaseUser.getUid());
-            ExtractingCustomerReference(firebaseUser, newCustomer);
-        } else if (user_role == SELLER) {
-            Seller newSeller = new Seller(firebaseUser.getUid());
-            ExtractingSellerReference(firebaseUser, newSeller);
-        }
+        mFirebaseDatabase.child(firebaseUser.getUid()).setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d(TAG, "extractingUserReference:success");
+                if (user_role == CUSTOMER) {
+                    Customer newCustomer = new Customer(firebaseUser.getUid());
+                    ExtractingCustomerReference(firebaseUser, newCustomer);
+                } else if (user_role == SELLER) {
+                    Seller newSeller = new Seller(firebaseUser.getUid());
+                    ExtractingSellerReference(firebaseUser, newSeller);
+                }
+            }
+        });
     }
 
     private void ExtractingSellerReference(FirebaseUser firebaseUser, Seller newSeller) {
@@ -314,8 +319,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     // Send Verification Email
                     firebaseUser.sendEmailVerification();
                     Toast.makeText(RegistrationActivity.this, "Seller registered successfully!", Toast.LENGTH_SHORT).show();
-                    // TODO: Open User homepage once successfully register -> Change to SellerHomePageActivity
-                    Intent intent = new Intent(RegistrationActivity.this, GroupsDetailActivity.class);
+                    Intent intent = new Intent(RegistrationActivity.this, SellerHomePageActivity.class);
                     // Prevent user back to Registration activity
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);

@@ -48,6 +48,8 @@
     <string name="style">Style</string>
     <string name="price">Price</string>
     <string name="qty">Qty</string>
+    <string name="send_reset_email">Send Reset Email</string>
+    <string name="Cancel">Cancel</string>
 
 
 </resources>
