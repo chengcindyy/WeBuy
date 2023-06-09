@@ -53,6 +53,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:background="@color/white"
                     android:padding="16dp">
 
                     <ImageView
@@ -65,8 +66,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Customer"
-                        android:gravity="center"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+                        android:gravity="center" />
 
                 </LinearLayout>
 
@@ -87,6 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:background="@color/white"
                     android:padding="16dp">
 
                     <ImageView
@@ -99,8 +100,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Seller"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+                        android:text="Seller" />
 
                 </LinearLayout>
 
@@ -114,7 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
             android:text="@string/next"
-            android:layout_gravity="end"/>
+            android:layout_gravity="end" />
 
 
     </LinearLayout>

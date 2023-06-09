@@ -19,15 +19,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Product Detail"/>
+
         <!--Product Name-->
-        <EditText
+        <com.google.android.material.textfield.TextInputLayout
+            style="?attr/textInputFilledStyle"
             android:id="@+id/edit_product_name"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="@string/product_name"
-            android:background="#CCC7C7"
-            android:paddingStart="10dp" />
+            android:layout_height="30dp"
+            android:hint="Product name">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
         <!--Time frame-->
         <!--Status-->
         <!--Function-->

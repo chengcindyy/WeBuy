@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private final String TAG = LoginActivity.class.getSimpleName();
     private EditText edit_email, edit_password;
-    private Button btn_login, btn_register, btn_forgotPassword, btn_test;
+    private Button btn_login, btn_register, btn_forgotPassword;
     private FirebaseAuth auth;
     private LoginButton fbLoginButton;
     private CallbackManager callbackManager;
@@ -52,10 +52,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        // For Testing
-        btn_test = findViewById(R.id.btn_test_page);
-        btn_test.setOnClickListener(view -> startActivity(new Intent(LoginActivity.this, TestPageActivity.class))); // End Testing
 
         // Edit text
         edit_email = findViewById(R.id.edit_loginEmail);
@@ -103,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
         fbLoginButton = findViewById(R.id.btn_login_facebook);
         callbackManager = CallbackManager.Factory.create();
 
-        fbLoginButton.setReadPermissions("email", "public_profile");
+        fbLoginButton.setReadPermissions("email");
         fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -172,8 +168,9 @@ public class LoginActivity extends AppCompatActivity {
                     // Check if the user is verified before user can access their profile
                     if (firebaseUser.isEmailVerified()) {
                         // Query user role from database
+                        String uid = firebaseUser.getUid();
                         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                        databaseReference.child("user").child(firebaseUser.getEmail()).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                        databaseReference.child("User").child(uid).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DataSnapshot> task) {
                                 if (task.isSuccessful() && task.getResult() != null) {
@@ -197,9 +194,8 @@ public class LoginActivity extends AppCompatActivity {
                                     } else {
                                         // Handle case where user object is null
                                     }
-
                                 } else {
-
+                                    // Handle error
                                 }
                             }
                         });
@@ -214,6 +210,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
     // [END FIREBASE LOGIN]
 
     // [START EMAIL VERIFY]
