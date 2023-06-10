@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.models.User;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -88,6 +91,36 @@ public class CustomerProfileActivity extends AppCompatActivity {
             Toast.makeText(CustomerProfileActivity.this,"Logged Out", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(CustomerProfileActivity.this, LoginActivity.class));
             finish();
+        });
+
+        //Navbar
+        // Initialize navigation
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        // Home is selected
+        bottomNavigationView.setSelectedItemId(R.id.customer_profile);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.customer_home:
+                        startActivity(new Intent(CustomerProfileActivity.this, CustomerHomePageActivity.class));
+                        overridePendingTransition(0,0);
+                        return true;
+                    case R.id.customer_profile:
+                        startActivity(new Intent(CustomerProfileActivity.this, TestPageActivity.class));
+                        overridePendingTransition(0,0);
+                        return true;
+                    case R.id.customer_cart:
+                        startActivity(new Intent(CustomerProfileActivity.this, TestPageActivity.class));
+                        overridePendingTransition(0,0);
+                        return true;
+                    case R.id.customer_settings:
+                        startActivity(new Intent(CustomerProfileActivity.this, TestPageActivity.class));
+                        overridePendingTransition(0,0);
+                        return true;
+                }
+                return false;
+            }
         });
     }
 

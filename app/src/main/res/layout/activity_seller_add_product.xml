@@ -34,17 +34,12 @@
                 android:textStyle="bold" />
 
             <!--Add product default image-->
-            <Button
-                android:id="@+id/btn_default_img_add_product"
-                android:layout_width="160dp"
-                android:layout_height="160dp"
-                android:layout_gravity="center"
-                android:background="@drawable/baseline_add_photo_alternate_24"
-                android:text="@string/img_default"
-                android:textColor="@color/black"
-                android:textSize="26sp" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rv_add_product_img" />
 
-            <!-- Add prodcut name -->
+            <!-- Add product name -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/editLayout_name_add_prodcut"
                 android:layout_width="match_parent"
@@ -104,7 +99,7 @@
 
             <!--   Add product style -->
             <Button
-                android:id="@+id/btn_add_style_new_product"
+                android:id="@+id/btn_add_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -132,7 +127,7 @@
                 android:layout_width="160dp"
                 android:layout_height="160dp"
                 android:layout_gravity="center"
-                android:background="@drawable/baseline_add_photo_alternate_24"
+                android:background="@drawable/baseline_add_photo_alternate_50"
                 android:text="@string/img_more"
                 android:textColor="@color/black"
                 android:textSize="26sp" />
