@@ -25,7 +25,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
-            android:background="@drawable/baseline_add_photo_alternate_24"
+            android:background="@drawable/baseline_add_photo_alternate_50"
             android:text="@string/img_style"
             android:textColor="@color/black"
             android:textSize="26sp" />

@@ -27,6 +27,7 @@ public class RoleSelectionActivity extends AppCompatActivity {
         select_customer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                select_customer.setBackgroundColor(getColor(R.color.cute_orange));
                 selected_role = CUSTOMER;
             }
         });

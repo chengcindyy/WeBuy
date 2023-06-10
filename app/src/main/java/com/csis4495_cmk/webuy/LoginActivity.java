@@ -184,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 finish();
                                                 break;
                                             case "seller":
-                                                startActivity(new Intent(LoginActivity.this, GroupsDetailActivity.class));
+                                                startActivity(new Intent(LoginActivity.this, TestPageActivity.class));
                                                 finish();
                                                 break;
                                             default:
@@ -256,7 +256,7 @@ public class LoginActivity extends AppCompatActivity {
                                 finish();
                             } else {
                                 // TODO: Change to SellerHomePageActivity
-                                startActivity(new Intent(LoginActivity.this, GroupsDetailActivity.class));
+                                startActivity(new Intent(LoginActivity.this, TestPageActivity.class));
                                 finish();
                             }
                         }

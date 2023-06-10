@@ -154,6 +154,7 @@ public class RegistrationActivity extends AppCompatActivity {
         // [START FACEBOOK REGISTRATION]
         btn_register_facebook = findViewById(R.id.btn_register_facebook);
         callbackManager = CallbackManager.Factory.create();
+
         btn_register_facebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -237,10 +238,10 @@ public class RegistrationActivity extends AppCompatActivity {
 //        }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         // Pass the activity result back to the Facebook SDK
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }

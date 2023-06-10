@@ -14,10 +14,10 @@
         android:layout_height="wrap_content"
         android:text="Open Groups Details Page"/>
     <Button
-        android:id="@+id/btn_customer_homepage"
+        android:id="@+id/btn_seller_homepage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Open Customer Home Page"/>
+        android:text="Open Seller Home Page"/>
     <Button
         android:id="@+id/btn_customer_product_detail"
         android:layout_width="match_parent"
@@ -25,16 +25,9 @@
         android:text="Open Customer Product Detail"/>
 
     <Button
-        android:id="@+id/btn_go_seller_home"
+        android:id="@+id/btn_add_product"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Open Seller Home"
-        android:onClick="goSellerHome"/>
-
-    <Button
-        android:id="@+id/btn_go_product_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Open product detail" />
+        android:text="Go to SellerAddProduct" />
 
 </LinearLayout>

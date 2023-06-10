@@ -29,7 +29,6 @@
             android:src="@drawable/app_logo"/>
 
         <ToggleButton
-            style="?attr/materialIconButtonFilledStyle"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:id="@+id/saveToWatchlistButton"
@@ -40,6 +39,18 @@
             android:checked="false"
             android:alpha="0.2"
             android:background="@drawable/baseline_unsave_border_24" />
+<!--        <ToggleButton-->
+<!--            style="?attr/materialIconButtonFilledStyle"-->
+<!--            android:layout_width="30dp"-->
+<!--            android:layout_height="30dp"-->
+<!--            android:id="@+id/saveToWatchlistButton"-->
+<!--            android:layout_gravity="top|end"-->
+<!--            android:layout_marginTop="-230dp"-->
+<!--            android:layout_marginBottom="200dp"-->
+<!--            android:layout_marginHorizontal="15dp"-->
+<!--            android:checked="false"-->
+<!--            android:alpha="0.2"-->
+<!--            android:background="@drawable/baseline_unsave_border_24" />-->
 
         <TextView
             android:id="@+id/groupName"

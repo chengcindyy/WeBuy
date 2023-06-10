@@ -14,7 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class TestPageActivity extends AppCompatActivity {
 
     //TODO: Step 1: Declare Button
-    private Button btn_groups_detail, btn_customer_homepage, btn_customer_product_detail, btn_go_product_detail;
+    private Button btn_groups_detail, btn_seller_homepage, btn_customer_product_detail, btn_add_product;
 
     private Button btn_goSellerHome;
 
@@ -26,17 +26,15 @@ public class TestPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_page);
 
-        btn_go_product_detail = findViewById(R.id.btn_go_product_detail);
+        //TODO: No need to findviewbyid()
 
         //TODO: Step 2: GoToTestActivity(btnName, "btnID", testActvity.class)
         GoToTestActivity(btn_groups_detail, "btn_groups_detail", GroupsDetailActivity.class);
-        GoToTestActivity(btn_customer_homepage, "btn_customer_homepage", CustomerHomePageActivity.class);
+        GoToTestActivity(btn_seller_homepage, "btn_seller_homepage", SellerHomePageActivity.class);
         GoToTestActivity(btn_customer_product_detail, "btn_customer_product_detail", CustomerProductDetailActivity.class);
-        GoToTestActivity(btn_go_product_detail, "btn_go_product_detail", GroupsDetailActivity.class);
+        GoToTestActivity(btn_add_product, "btn_add_product", SellerAddProductActivity.class);
 
-        btn_goSellerHome = findViewById(R.id.btn_go_seller_home);
 
-        fakeData("Group", "GroupName");
     }
 
     public void GoToTestActivity(Button btnClicked, String strBtnId, Class<?> testActivity) {
@@ -47,13 +45,5 @@ public class TestPageActivity extends AppCompatActivity {
             startActivity(new Intent(TestPageActivity.this, testActivity));
         });
     }
-    public void fakeData(String dbRef, String item) {
-        databaseReference = firebaseDatabase.getReference(dbRef);
 
-    }
-
-    public void goSellerHome(View view) {
-        startActivity(new Intent(TestPageActivity.this, SellerHomePageActivity.class));
-
-    }
 }
