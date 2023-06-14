@@ -55,7 +55,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseInstance;
     private FirebaseAuth auth;
     private LoginButton btn_register_facebook;
-    private CallbackManager callbackManager = CallbackManager.Factory.create();;
+    private CallbackManager callbackManager = CallbackManager.Factory.create();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 break;
             default:
                 user_role = "";
-                Toast.makeText(RegistrationActivity.this, "User role have not selected", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegistrationActivity.this, "User role haven't selected, please select one of these role", Toast.LENGTH_SHORT).show();
                 break;
         }
         Toast.makeText(RegistrationActivity.this, user_role, Toast.LENGTH_SHORT).show();
@@ -153,7 +153,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         // [START FACEBOOK REGISTRATION]
         btn_register_facebook = findViewById(R.id.btn_register_facebook);
-        btn_register_facebook.setPermissions("email", "public_profile");
+        btn_register_facebook.setPermissions("email");
         btn_register_facebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -192,27 +192,16 @@ public class RegistrationActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = auth.getCurrentUser();
-                            String email = user.getEmail();
+                            FirebaseUser firebaseUser = auth.getCurrentUser();
+                            String email = firebaseUser.getEmail();
                             // user data into the firebase realtime db
                             User newUser = new User(email, user_role);
-                            ExtractingUserReference(user, newUser);
-                            // customer & seller data into the firebase realtime db
-                            if (user != null) {
-                                String uid = user.getUid();
-                                if (user_role.equals(CUSTOMER)) {
-                                    Customer newCustomer = new Customer(uid);
-                                    ExtractingCustomerReference(user, newCustomer);
-                                } else if (user_role.equals(SELLER)) {
-                                    Seller newSeller = new Seller(uid);
-                                    ExtractingSellerReference(user, newSeller);
-                                }
-                            }
-                            updateUI(user);
+                            CreateUserProfile(firebaseUser, newUser);
+//                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure" + task.getException(), task.getException());
-                            Toast.makeText(RegistrationActivity.this, "Authentication failed.",
+                            Toast.makeText(RegistrationActivity.this, "Authentication failed. Your email has been registered, please login your account",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
@@ -266,7 +255,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
                                 // user data into the firebase realtime db
                                 User newUser = new User(email, user_role);
-                                ExtractingUserReference(firebaseUser, newUser);
+                                CreateUserProfile(firebaseUser, newUser);
 
                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                 if (user != null) {
@@ -292,7 +281,7 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
-    private void ExtractingUserReference(FirebaseUser firebaseUser, User newUser) {
+    private void CreateUserProfile(FirebaseUser firebaseUser, User newUser) {
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseDatabase = mFirebaseInstance.getReference("User");
         mFirebaseDatabase.child(firebaseUser.getUid()).setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {

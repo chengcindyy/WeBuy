@@ -12,9 +12,9 @@ import android.widget.Toast;
 public class RoleSelectionActivity extends AppCompatActivity {
 
     private static final String TAG = RoleSelectionActivity.class.getSimpleName();
-    private Button btn_next;
-    private CardView select_customer, select_seller;
-    private int selected_role = 0;
+    private Button btnNext;
+    private CardView selectCustomer, select_seller;
+    private int selectedRole = 0;
     private final int CUSTOMER = 1;
     private final int SELLER = 2;
 
@@ -23,12 +23,12 @@ public class RoleSelectionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_role_selection);
 
-        select_customer = findViewById(R.id.card_customer);
-        select_customer.setOnClickListener(new View.OnClickListener() {
+        selectCustomer = findViewById(R.id.card_customer);
+        selectCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                select_customer.setBackgroundColor(getColor(R.color.cute_orange));
-                selected_role = CUSTOMER;
+                selectCustomer.setBackgroundColor(getColor(R.color.cute_orange));
+                selectedRole = CUSTOMER;
             }
         });
 
@@ -36,29 +36,29 @@ public class RoleSelectionActivity extends AppCompatActivity {
         select_seller.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selected_role = SELLER;
+                selectedRole = SELLER;
             }
         });
 
-        btn_next = findViewById(R.id.btn_register_to_next);
-        btn_next.setOnClickListener(new View.OnClickListener() {
+        btnNext = findViewById(R.id.btn_register_to_next);
+        btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (selected_role){
+                switch (selectedRole){
                     case 1:
-                        selected_role = CUSTOMER;
+                        selectedRole = CUSTOMER;
                         break;
                     case 2:
-                        selected_role = SELLER;
+                        selectedRole = SELLER;
                         break;
                     default:
                         Toast.makeText(RoleSelectionActivity.this, "Please select one of the option", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 // TODO: Send data
-                if(selected_role != 0){
+                if(selectedRole != 0){
                     Intent intent = new Intent(RoleSelectionActivity.this, RegistrationActivity.class);
-                    intent.putExtra("role",selected_role);
+                    intent.putExtra("role",selectedRole);
                     startActivity(intent);
                 }
             }
