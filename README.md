@@ -1,5 +1,5 @@
 # Project Info:
-* `GroupBuy` is an android group project for the Douglas College's CSIS 4495 Applied Research Project Course.
+* `WeBuy` is an android group project for the Douglas College's CSIS 4495 Applied Research Project Course.
 * The app is a specialized group-buying platform designed to help local businesses and neighborhoods tackle rising living costs through collective purchasing. By simplifying the process of ordering and managing stock, the app allows customers to purchase in-stock items or participate in group orders, streamlining supply management and fostering economic efficiency.
 
 # Team:
