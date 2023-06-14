@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.models.User;
+import com.facebook.login.LoginManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -176,6 +177,7 @@ public class CustomerProfileActivity extends AppCompatActivity {
             finish();
         }).setNeutralButton("Log out", (dialog, which) -> {
             auth.signOut();
+            LoginManager.getInstance().logOut();
             Toast.makeText(CustomerProfileActivity.this,"Logged out successfully, please login again", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(CustomerProfileActivity.this, LoginActivity.class));
             finish();

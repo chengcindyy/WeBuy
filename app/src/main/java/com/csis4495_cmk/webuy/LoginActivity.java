@@ -3,7 +3,6 @@ package com.csis4495_cmk.webuy;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.PagerAdapter;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,17 +10,19 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.window.SplashScreen;
 
+import com.csis4495_cmk.webuy.models.Customer;
+import com.csis4495_cmk.webuy.models.Seller;
 import com.csis4495_cmk.webuy.models.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,8 +31,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,9 +43,14 @@ public class LoginActivity extends AppCompatActivity {
     private final String TAG = LoginActivity.class.getSimpleName();
     private EditText edit_email, edit_password;
     private Button btn_login, btn_register, btn_forgotPassword;
-    private FirebaseAuth auth;
+    private String user_role = "";
+    private final String CUSTOMER = "customer";
+    private final String SELLER = "seller";
+        private FirebaseAuth auth;
     private LoginButton fbLoginButton;
-    private CallbackManager callbackManager;
+    private CallbackManager callbackManager = CallbackManager.Factory.create();
+    private FirebaseDatabase mFirebaseInstance = FirebaseDatabase.getInstance();
+    private DatabaseReference mFirebaseDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,20 +95,20 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // Firebase Authentication
-        auth = FirebaseAuth.getInstance();
-
         // [START FACEBOOK LOGIN]
-        // Initialize Facebook Login button
+        auth = FirebaseAuth.getInstance();
         fbLoginButton = findViewById(R.id.btn_login_facebook);
-        callbackManager = CallbackManager.Factory.create();
-
-        fbLoginButton.setReadPermissions("email");
+        fbLoginButton.setPermissions("email");
         fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                handleFacebookAccessToken(loginResult.getAccessToken());
+                FirebaseUser firebaseUser = auth.getCurrentUser();
+                if(firebaseUser == null){
+                    showRoleSelectionAlertDialog(loginResult);
+                }else{
+                    handleFacebookAccessToken(loginResult.getAccessToken());
+                }
             }
 
             @Override
@@ -120,7 +124,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
-
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
@@ -131,22 +134,97 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = auth.getCurrentUser();
-
                             FirebaseUser firebaseUser = auth.getCurrentUser();
-
-
-                            updateUI(user);
+                            String email = firebaseUser.getEmail();
+                            // user data into the firebase realtime db
+                            User newUser = new User(email, user_role);
+                            CreateUserProfile(firebaseUser, newUser);
+//                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                            Log.w(TAG, "signInWithCredential:failure" + task.getException(), task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed. Your email has been registered, please login your account",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
                     }
                 });
     }
+
+    private void CreateUserProfile(FirebaseUser firebaseUser, User newUser) {
+        mFirebaseInstance = FirebaseDatabase.getInstance();
+        mFirebaseDatabase = mFirebaseInstance.getReference("User");
+        mFirebaseDatabase.child(firebaseUser.getUid()).setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d(TAG, "extractingUserReference:success");
+                if (user_role == CUSTOMER) {
+                    Customer newCustomer = new Customer(firebaseUser.getUid());
+                    ExtractingCustomerReference(firebaseUser, newCustomer);
+                } else if (user_role == SELLER) {
+                    Seller newSeller = new Seller(firebaseUser.getUid());
+                    ExtractingSellerReference(firebaseUser, newSeller);
+                }
+            }
+        });
+    }
+
+    private void ExtractingSellerReference(FirebaseUser firebaseUser, Seller newSeller) {
+        mFirebaseInstance = FirebaseDatabase.getInstance();
+        mFirebaseDatabase = mFirebaseInstance.getReference("Seller");
+        mFirebaseDatabase.child(firebaseUser.getUid()).setValue(newSeller).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if (task.isSuccessful()) {
+                    // Send Verification Email
+                    firebaseUser.sendEmailVerification();
+                    Toast.makeText(LoginActivity.this, "Seller registered successfully!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, SellerHomePageActivity.class);
+                    // Prevent user back to Registration activity
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    if (task.getException() != null) {
+                        Toast.makeText(LoginActivity.this, "Failed to write Seller data! because " + task.getException(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Failed to write Seller data - unknown error", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
+
+    private void ExtractingCustomerReference(FirebaseUser firebaseUser, Customer newCustomer) {
+        mFirebaseInstance = FirebaseDatabase.getInstance();
+        mFirebaseDatabase = mFirebaseInstance.getReference("Customer");
+        Toast.makeText(LoginActivity.this, firebaseUser.getUid(), Toast.LENGTH_SHORT).show();
+        mFirebaseDatabase.child(firebaseUser.getUid()).setValue(newCustomer).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if (task.isSuccessful()) {
+                    // Send Verification Email
+                    firebaseUser.sendEmailVerification();
+                    Toast.makeText(LoginActivity.this, "Customer registered successfully!", Toast.LENGTH_SHORT).show();
+                    // Open User homepage once successfully register
+                    Intent intent = new Intent(LoginActivity.this, CustomerHomePageActivity.class);
+                    // Prevent user back to Registration activity
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    if (task.getException() != null) {
+                        Toast.makeText(LoginActivity.this, "Failed to write Customer data! because " + task.getException(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Failed to write Customer data - unknown error", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
+    // [END FIREBASE REGISTRATION]
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -210,10 +288,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
     // [END FIREBASE LOGIN]
 
-    // [START EMAIL VERIFY]
+    // [START EMAIL VERIFY DIALOG]
     private void showAlertDialog() {
         //Set up alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
@@ -234,7 +311,70 @@ public class LoginActivity extends AppCompatActivity {
         //Show AlertDialog
         alertDialog.show();
     }
-    // [END EMAIL VERIFY]
+    // [END EMAIL VERIFY DIALOG]
+
+    // [START SHOW ROLE SELECTION DIALOG]
+    private void showRoleSelectionAlertDialog(LoginResult loginResult) {
+        final String[] dialog_list = {"Customer", "Seller"};
+        final int[] roleIndex = {-1};
+
+        //Set up alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setTitle("Please choose a role for registration.");
+        builder.setSingleChoiceItems(dialog_list, roleIndex[0], new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                roleIndex[0] = which;
+                switch (roleIndex[0]) {
+                    case 0:
+                        user_role = CUSTOMER;
+                        break;
+                    case 1:
+                        user_role = SELLER;
+                        break;
+                    default:
+                        Toast.makeText(LoginActivity.this, "Please select one of the options", Toast.LENGTH_SHORT).show();
+                        user_role = ""; // reset user_role if no valid selection
+                        return; // If no valid selection, don't dismiss the dialog or proceed
+                }
+            }
+        });
+
+
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                LoginManager.getInstance().logOut();
+                dialogInterface.dismiss();
+            }
+        });
+
+        //Create AlertDialog
+        AlertDialog alertDialog = builder.create();
+
+        // Show the AlertDialog
+        alertDialog.show();
+
+        // Create layout parameters for the AlertDialog
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
+
+        // Set the width and height for the AlertDialog
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT; // This will make the AlertDialog take up the full width of the screen
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT; // This will make the height of the AlertDialog wrap to its content
+
+        // Apply the layout parameters to the AlertDialog
+        alertDialog.getWindow().setAttributes(layoutParams);
+    }
+
+    // [CLOSE SHOW ROLE SELECTION DIALOG]
 
     @Override
     protected void onStart() {
@@ -255,8 +395,7 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(new Intent(LoginActivity.this, CustomerHomePageActivity.class));
                                 finish();
                             } else {
-                                // TODO: Change to SellerHomePageActivity
-                                startActivity(new Intent(LoginActivity.this, TestPageActivity.class));
+                                startActivity(new Intent(LoginActivity.this, SellerHomePageActivity.class));
                                 finish();
                             }
                         }
