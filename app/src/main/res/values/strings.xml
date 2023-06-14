@@ -1,8 +1,10 @@
 <resources>
     <!-- Use for Facebook login SDK -->
-    <string name="facebook_app_id">126058520485105</string>
-    <string name="facebook_login_protocol_scheme">fb126058520485105</string>
-    <string name="facebook_client_token">4e4d4a176d84c1687f8f50b597d223fe</string>
+    <string name="facebook_app_id">579684034312882</string>
+    <string name="fb_login_protocol_scheme">fb579684034312882</string>
+    <string name="facebook_client_token">6785c26b9ac8a1779acacc40f4d59740</string>
+
+
 
     <!--Use for spinner (filter)-->
     <string-array name="arr_filter_one">
