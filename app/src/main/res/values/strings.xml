@@ -5,7 +5,6 @@
     <string name="facebook_client_token">6785c26b9ac8a1779acacc40f4d59740</string>
 
 
-
     <!--Use for spinner (filter)-->
     <string-array name="arr_filter_one">
         <item>Date</item>
@@ -52,6 +51,8 @@
     <string name="qty">Qty</string>
     <string name="send_reset_email">Send Reset Email</string>
     <string name="Cancel">Cancel</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

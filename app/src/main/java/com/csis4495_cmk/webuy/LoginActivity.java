@@ -286,7 +286,7 @@ public class LoginActivity extends AppCompatActivity {
                                     finish();
                                     break;
                                 case "seller":
-                                    startActivity(new Intent(LoginActivity.this, TestPageActivity.class));
+                                    startActivity(new Intent(LoginActivity.this, SellerHomePageActivity.class));
                                     finish();
                                     break;
                                 default:

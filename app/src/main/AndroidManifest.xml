@@ -25,9 +25,6 @@
         <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
 
         <activity
-            android:name=".CustomerProfileActivity"
-            android:exported="false" />
-        <activity
             android:name=".SellerAddStyleActivity"
             android:exported="false" />
         <activity
@@ -47,9 +44,6 @@
             android:exported="false" />
         <activity
             android:name=".RegistrationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".TestPageActivity"
             android:exported="false" />
         <activity
             android:name=".RoleSelectionActivity"
