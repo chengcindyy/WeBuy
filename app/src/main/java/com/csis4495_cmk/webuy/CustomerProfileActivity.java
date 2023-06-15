@@ -89,6 +89,7 @@ public class CustomerProfileActivity extends AppCompatActivity {
         logoutButton = findViewById(R.id.btn_logout);
         logoutButton.setOnClickListener(view -> {
             auth.signOut();
+            LoginManager.getInstance().logOut();
             Toast.makeText(CustomerProfileActivity.this,"Logged Out", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(CustomerProfileActivity.this, LoginActivity.class));
             finish();

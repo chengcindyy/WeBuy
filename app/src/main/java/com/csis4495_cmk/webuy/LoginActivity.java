@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -51,6 +50,9 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager = CallbackManager.Factory.create();
     private FirebaseDatabase mFirebaseInstance = FirebaseDatabase.getInstance();
     private DatabaseReference mFirebaseDatabase;
+    private LoginResult mLoginResult;
+
+    private FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,27 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         // When user clicked login Button, varify email and login
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(v -> {
-            String loginEmail = edit_email.getText().toString();
-            String loginPassword = edit_password.getText().toString();
-
-            if (TextUtils.isEmpty(loginEmail)) {
-                Toast.makeText(LoginActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
-                edit_email.setError("Email is required.");
-                edit_email.requestFocus();
-            } else if (!Patterns.EMAIL_ADDRESS.matcher(loginEmail).matches()) {
-                Toast.makeText(LoginActivity.this,
-                        "Please enter your email.", Toast.LENGTH_SHORT).show();
-                edit_email.setError("Valid email is required.");
-                edit_email.requestFocus();
-            } else if (TextUtils.isEmpty(loginPassword)) {
-                Toast.makeText(LoginActivity.this,
-                        "Please enter your password.", Toast.LENGTH_SHORT).show();
-                edit_password.setError("Password is required.");
-                edit_password.requestFocus();
-            } else {
-                // If everything is find, do login
-                loginUser(loginEmail, loginPassword);
-            }
+            userEnteredDataVerification();
         });
 
         // [START FACEBOOK LOGIN]
@@ -102,13 +84,15 @@ public class LoginActivity extends AppCompatActivity {
         fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                mLoginResult = loginResult;
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                FirebaseUser firebaseUser = auth.getCurrentUser();
-                if(firebaseUser == null){
-                    showRoleSelectionAlertDialog(loginResult);
-                }else{
-                    handleFacebookAccessToken(loginResult.getAccessToken());
-                }
+                handleFacebookAccessToken(loginResult.getAccessToken());
+//                FirebaseUser firebaseUser = auth.getCurrentUser();
+//                if(firebaseUser == null){
+//                    showRoleSelectionAlertDialog(loginResult);
+//                }else{
+//                    handleFacebookAccessToken(loginResult.getAccessToken());
+//                }
             }
 
             @Override
@@ -134,21 +118,52 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser firebaseUser = auth.getCurrentUser();
-                            String email = firebaseUser.getEmail();
-                            // user data into the firebase realtime db
-                            User newUser = new User(email, user_role);
-                            CreateUserProfile(firebaseUser, newUser);
+                            firebaseUser = auth.getCurrentUser();
+                            if (task.getResult().getAdditionalUserInfo().isNewUser()) {
+                                Toast.makeText(LoginActivity.this, "New user", Toast.LENGTH_SHORT).show();
+                                showRoleSelectionAlertDialog();
+                            } else {
+                                // Returning user, go to home page
+                                Toast.makeText(LoginActivity.this, "Old user", Toast.LENGTH_SHORT).show();
+                                if (firebaseUser != null) {
+                                    loginUser(firebaseUser);
+                                } else {
+                                    // Handle case where user object is null
+                                }
+                            }
 //                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure" + task.getException(), task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed. Your email has been registered, please login your account",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+//                            updateUI(null);
                         }
                     }
                 });
+    }
+    private void userEnteredDataVerification() {
+        String loginEmail = edit_email.getText().toString();
+        String loginPassword = edit_password.getText().toString();
+
+        if (TextUtils.isEmpty(loginEmail)) {
+            Toast.makeText(LoginActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+            edit_email.setError("Email is required.");
+            edit_email.requestFocus();
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(loginEmail).matches()) {
+            Toast.makeText(LoginActivity.this,
+                    "Please enter your email.", Toast.LENGTH_SHORT).show();
+            edit_email.setError("Valid email is required.");
+            edit_email.requestFocus();
+        } else if (TextUtils.isEmpty(loginPassword)) {
+            Toast.makeText(LoginActivity.this,
+                    "Please enter your password.", Toast.LENGTH_SHORT).show();
+            edit_password.setError("Password is required.");
+            edit_password.requestFocus();
+        } else {
+            // If everything is find, do login
+            loginUserWithFirebase(loginEmail, loginPassword);
+        }
     }
 
     private void CreateUserProfile(FirebaseUser firebaseUser, User newUser) {
@@ -236,57 +251,61 @@ public class LoginActivity extends AppCompatActivity {
     // [END FACEBOOK LOGIN]
 
     // [START FIREBASE LOGIN]
-    private void loginUser(String loginEmail, String loginPassword) {
+    private void loginUserWithFirebase(String loginEmail, String loginPassword) {
         auth.signInWithEmailAndPassword(loginEmail, loginPassword).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     // Get instance of current user
                     FirebaseUser firebaseUser = auth.getCurrentUser();
-                    // Check if the user is verified before user can access their profile
-                    if (firebaseUser.isEmailVerified()) {
-                        // Query user role from database
-                        String uid = firebaseUser.getUid();
-                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                        databaseReference.child("User").child(uid).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                                if (task.isSuccessful() && task.getResult() != null) {
-                                    DataSnapshot dataSnapshot = task.getResult();
-                                    User user = dataSnapshot.getValue(User.class);
-                                    if (user != null) {
-                                        String user_role = user.getRole();
-                                        switch (user_role) {
-                                            case "customer":
-                                                startActivity(new Intent(LoginActivity.this, CustomerHomePageActivity.class));
-                                                finish();
-                                                break;
-                                            case "seller":
-                                                startActivity(new Intent(LoginActivity.this, TestPageActivity.class));
-                                                finish();
-                                                break;
-                                            default:
-                                                // Handle case where user role is unknown
-                                                break;
-                                        }
-                                    } else {
-                                        // Handle case where user object is null
-                                    }
-                                } else {
-                                    // Handle error
-                                }
-                            }
-                        });
-                    } else {
-                        firebaseUser.sendEmailVerification();
-                        auth.signOut();
-                        showAlertDialog();
-                    }
+                    loginUser(firebaseUser);
                 } else {
                     // Handle authentication failure
                 }
             }
         });
+    }
+
+    private void loginUser(FirebaseUser firebaseUser) {
+        // Check if the user is verified before user can access their profile
+        if (firebaseUser.isEmailVerified()) {
+            // Query user role from database
+            String uid = firebaseUser.getUid();
+            mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+            mFirebaseDatabase.child("User").child(uid).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DataSnapshot dataSnapshot = task.getResult();
+                        User user = dataSnapshot.getValue(User.class);
+                        if (user != null) {
+                            String user_role = user.getRole();
+                            switch (user_role) {
+                                case "customer":
+                                    startActivity(new Intent(LoginActivity.this, CustomerHomePageActivity.class));
+                                    finish();
+                                    break;
+                                case "seller":
+                                    startActivity(new Intent(LoginActivity.this, TestPageActivity.class));
+                                    finish();
+                                    break;
+                                default:
+                                    // Handle case where user role is unknown
+                                    break;
+                            }
+                        } else {
+                            // Handle case where user object is null
+                        }
+                    } else {
+                        // Handle error
+                    }
+                }
+            });
+        } else {
+            firebaseUser.sendEmailVerification();
+            auth.signOut();
+            showAlertDialog();
+        }
     }
     // [END FIREBASE LOGIN]
 
@@ -314,7 +333,7 @@ public class LoginActivity extends AppCompatActivity {
     // [END EMAIL VERIFY DIALOG]
 
     // [START SHOW ROLE SELECTION DIALOG]
-    private void showRoleSelectionAlertDialog(LoginResult loginResult) {
+    private void showRoleSelectionAlertDialog() {
         final String[] dialog_list = {"Customer", "Seller"};
         final int[] roleIndex = {-1};
 
@@ -344,7 +363,9 @@ public class LoginActivity extends AppCompatActivity {
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                handleFacebookAccessToken(loginResult.getAccessToken());
+                firebaseUser = auth.getCurrentUser();
+                User newUser = new User(firebaseUser.getEmail(), user_role);
+                CreateUserProfile(firebaseUser, newUser);
             }
         });
 
@@ -358,28 +379,29 @@ public class LoginActivity extends AppCompatActivity {
 
         //Create AlertDialog
         AlertDialog alertDialog = builder.create();
-
-        // Show the AlertDialog
+        //Show AlertDialog
         alertDialog.show();
-
-        // Create layout parameters for the AlertDialog
-        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-        layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
-
-        // Set the width and height for the AlertDialog
-        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT; // This will make the AlertDialog take up the full width of the screen
-        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT; // This will make the height of the AlertDialog wrap to its content
-
-        // Apply the layout parameters to the AlertDialog
-        alertDialog.getWindow().setAttributes(layoutParams);
     }
-
     // [CLOSE SHOW ROLE SELECTION DIALOG]
 
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart:success");
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        checkIfUserLoggedIn(currentUser);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume:success");
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        checkIfUserLoggedIn(currentUser);
+    }
+
+    private void checkIfUserLoggedIn(FirebaseUser currentUser) {
+        Log.d(TAG, "checkIfUserLoggedIn: Current user:" + currentUser);
         if (currentUser != null) {
             String uid = currentUser.getUid();
             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("User").child(uid);
@@ -408,10 +430,10 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
             // Check if user is signed in (non-null) and update UI accordingly.
-            updateUI(currentUser);
+//            updateUI(currentUser);
         }
     }
 
-    private void updateUI(FirebaseUser currentUser) {
-    }
+    //    private void updateUI(FirebaseUser currentUser) {
+//    }
 }

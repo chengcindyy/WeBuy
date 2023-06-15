@@ -13,11 +13,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
 
-    private EditText editEmail;
+    TextInputLayout editEmail;
     private Button btnReset, btnCancel;
     private FirebaseAuth authProfile;
 
@@ -31,7 +32,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         btnReset = findViewById(R.id.btn_send);
         btnReset.setOnClickListener(view -> {
 
-            String email = editEmail.getText().toString();
+            String email = editEmail.getEditText().toString();
 
             if (TextUtils.isEmpty(email)){
                 Toast.makeText(ForgotPasswordActivity.this,
