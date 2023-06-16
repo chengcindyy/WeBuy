@@ -18,78 +18,44 @@
             android:layout_height="150dp"
             android:src="@drawable/app_logo" />
 
-
-        <!--Forgot password-->
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/FrameLayout1"
+            android:layout_marginTop="60dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/btn_login_facebook"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <Button
-                android:id="@+id/btn_forgotPassword"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                style="@style/Button.SameDesign"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:text="Forgot password?"
+                android:drawableLeft="@drawable/ic_facebook"
+                android:id="@+id/fb"
+                android:onClick="onClickFacebookButton"
                 android:textAllCaps="false"
-                android:gravity="bottom"
-                android:textColor="@color/black"
-                android:textSize="11sp" />
+                android:gravity="left|center_vertical"
+                android:paddingLeft="70dp"
+                android:text="Continue with Facebook" />
 
-        </LinearLayout>
-
-        <!--Email-->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-
-            android:hint="email">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_loginEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="50dp"
-                tools:ignore="TouchTargetSizeCheck" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!--Password-->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:hint="password"
-            app:passwordToggleEnabled="true">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_loginPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:inputType="textPassword"
-                tools:ignore="TouchTargetSizeCheck" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+        </FrameLayout>
 
         <!--Register-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:orientation="horizontal"
-            android:layout_marginVertical="5dp"
+            android:layout_marginTop="5dp"
             android:gravity="center_horizontal">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:text="Don't have an account? "
+                android:text="First time here? Please "
                 android:gravity="end|center"
                 android:textSize="13sp"/>
 
@@ -99,7 +65,6 @@
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="30dp"
-                android:layout_marginBottom="15dp"
                 android:layout_weight="1"
                 android:gravity="start"
                 android:text="Sign up"
@@ -108,17 +73,6 @@
                 tools:ignore="TouchTargetSizeCheck" />
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/login"
-            android:textAllCaps="false" />
-
-
-
-
 
         <!--Divider-->
         <LinearLayout
@@ -152,14 +106,14 @@
 
         </LinearLayout>
 
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/btn_login_facebook"
+        <Button
+            style="@style/Button.SameDesign"
+            android:id="@+id/btn_loginWithId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginBottom="10dp"
-            android:minHeight="48dp" />
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:text="Login with ID"/>
 
 
     </LinearLayout>

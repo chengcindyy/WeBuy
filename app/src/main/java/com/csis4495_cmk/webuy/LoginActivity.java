@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -41,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private final String TAG = LoginActivity.class.getSimpleName();
     private EditText edit_email, edit_password;
-    private Button btn_login, btn_register, btn_forgotPassword;
+    private Button btnLogin, btn_register, btn_forgotPassword, fb;
     private String user_role = "";
     private final String CUSTOMER = "customer";
     private final String SELLER = "seller";
@@ -59,27 +61,24 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Edit text
-        edit_email = findViewById(R.id.edit_loginEmail);
-        edit_password = findViewById(R.id.edit_loginPassword);
-
         // When user clicked register button : open registration page
         btn_register = findViewById(R.id.btn_register);
         btn_register.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RoleSelectionActivity.class)));
 
-        // When user clicked forget password button : open forget password page
-        btn_forgotPassword = findViewById(R.id.btn_forgotPassword);
-        btn_forgotPassword.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class)));
+//        // When user clicked forget password button : open forget password page
+//        btn_forgotPassword = findViewById(R.id.btn_forgotPassword);
+//        btn_forgotPassword.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class)));
 
         // When user clicked login Button, varify email and login
-        btn_login = findViewById(R.id.btn_login);
-        btn_login.setOnClickListener(v -> {
-            userEnteredDataVerification();
+        btnLogin = findViewById(R.id.btn_loginWithId);
+        btnLogin.setOnClickListener(v -> {
+            showLoginDialog();
         });
 
         // [START FACEBOOK LOGIN]
         auth = FirebaseAuth.getInstance();
         fbLoginButton = findViewById(R.id.btn_login_facebook);
+        fb = findViewById(R.id.fb);
         fbLoginButton.setPermissions("email");
         fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -87,12 +86,6 @@ public class LoginActivity extends AppCompatActivity {
                 mLoginResult = loginResult;
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
                 handleFacebookAccessToken(loginResult.getAccessToken());
-//                FirebaseUser firebaseUser = auth.getCurrentUser();
-//                if(firebaseUser == null){
-//                    showRoleSelectionAlertDialog(loginResult);
-//                }else{
-//                    handleFacebookAccessToken(loginResult.getAccessToken());
-//                }
             }
 
             @Override
@@ -142,30 +135,16 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-    private void userEnteredDataVerification() {
-        String loginEmail = edit_email.getText().toString();
-        String loginPassword = edit_password.getText().toString();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if (TextUtils.isEmpty(loginEmail)) {
-            Toast.makeText(LoginActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
-            edit_email.setError("Email is required.");
-            edit_email.requestFocus();
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(loginEmail).matches()) {
-            Toast.makeText(LoginActivity.this,
-                    "Please enter your email.", Toast.LENGTH_SHORT).show();
-            edit_email.setError("Valid email is required.");
-            edit_email.requestFocus();
-        } else if (TextUtils.isEmpty(loginPassword)) {
-            Toast.makeText(LoginActivity.this,
-                    "Please enter your password.", Toast.LENGTH_SHORT).show();
-            edit_password.setError("Password is required.");
-            edit_password.requestFocus();
-        } else {
-            // If everything is find, do login
-            loginUserWithFirebase(loginEmail, loginPassword);
-        }
+        // Pass the activity result back to the Facebook SDK
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
+    // [END FACEBOOK LOGIN]
 
+    // [START FIREBASE REGISTRATION]
     private void CreateUserProfile(FirebaseUser firebaseUser, User newUser) {
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseDatabase = mFirebaseInstance.getReference("User");
@@ -183,7 +162,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
     private void ExtractingSellerReference(FirebaseUser firebaseUser, Seller newSeller) {
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseDatabase = mFirebaseInstance.getReference("Seller");
@@ -210,7 +188,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
     private void ExtractingCustomerReference(FirebaseUser firebaseUser, Customer newCustomer) {
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseDatabase = mFirebaseInstance.getReference("Customer");
@@ -241,15 +218,6 @@ public class LoginActivity extends AppCompatActivity {
     }
     // [END FIREBASE REGISTRATION]
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Pass the activity result back to the Facebook SDK
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-    // [END FACEBOOK LOGIN]
-
     // [START FIREBASE LOGIN]
     private void loginUserWithFirebase(String loginEmail, String loginPassword) {
         auth.signInWithEmailAndPassword(loginEmail, loginPassword).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
@@ -265,7 +233,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
     private void loginUser(FirebaseUser firebaseUser) {
         // Check if the user is verified before user can access their profile
         if (firebaseUser.isEmailVerified()) {
@@ -305,6 +272,26 @@ public class LoginActivity extends AppCompatActivity {
             firebaseUser.sendEmailVerification();
             auth.signOut();
             showAlertDialog();
+        }
+    }
+    private boolean userEnteredDataVerification(String loginEmail, String loginPassword) {
+        if (TextUtils.isEmpty(loginEmail)) {
+            Toast.makeText(LoginActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+            edit_email.setError("Email is required.");
+            edit_email.requestFocus();
+            return false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(loginEmail).matches()) {
+            Toast.makeText(LoginActivity.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
+            edit_email.setError("Valid email is required.");
+            edit_email.requestFocus();
+            return false;
+        } else if (TextUtils.isEmpty(loginPassword)) {
+            Toast.makeText(LoginActivity.this, "Please enter your password", Toast.LENGTH_SHORT).show();
+            edit_password.setError("Password is required.");
+            edit_password.requestFocus();
+            return false;
+        } else {
+            return true;
         }
     }
     // [END FIREBASE LOGIN]
@@ -384,6 +371,58 @@ public class LoginActivity extends AppCompatActivity {
     }
     // [CLOSE SHOW ROLE SELECTION DIALOG]
 
+    // [START SHOW LOGIN DIALOG]
+    private void showLoginDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setTitle("Login");
+
+        // Inflate the layout for the dialog
+        View dialogView = LayoutInflater.from(LoginActivity.this).inflate(R.layout.login_dialog, null);
+        builder.setView(dialogView);
+
+        // Get references to dialog views
+        edit_email = dialogView.findViewById(R.id.edit_loginEmail);
+        edit_password = dialogView.findViewById(R.id.edit_loginPassword);
+
+        // Set up login button click listener
+        builder.setPositiveButton("Login", null);
+
+        // Set up cancel button click listener
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Cancel button clicked, do nothing
+            }
+        });
+
+        // Create and show the dialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String loginEmail = edit_email.getText().toString();
+                String loginPassword = edit_password.getText().toString();
+
+                if (userEnteredDataVerification(loginEmail, loginPassword)) {
+                    alertDialog.dismiss();
+                    loginUserWithFirebase(loginEmail, loginPassword);
+                }
+            }
+        });
+    }
+    // [END SHOW LOGIN DIALOG]
+
+    // [START FAKE FACEBOOK LOGIN]
+    public void onClickFacebookButton(View view) {
+        if (view == fb) {
+            fbLoginButton.performClick();
+        }
+    }
+    // [END FAKE FACEBOOK LOGIN]
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -391,7 +430,6 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         checkIfUserLoggedIn(currentUser);
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -399,7 +437,6 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         checkIfUserLoggedIn(currentUser);
     }
-
     private void checkIfUserLoggedIn(FirebaseUser currentUser) {
         Log.d(TAG, "checkIfUserLoggedIn: Current user:" + currentUser);
         if (currentUser != null) {
@@ -429,11 +466,6 @@ public class LoginActivity extends AppCompatActivity {
                     // Do nothing
                 }
             });
-            // Check if user is signed in (non-null) and update UI accordingly.
-//            updateUI(currentUser);
         }
     }
-
-    //    private void updateUI(FirebaseUser currentUser) {
-//    }
 }
