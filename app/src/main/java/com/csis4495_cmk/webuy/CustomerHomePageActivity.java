@@ -31,10 +31,12 @@ public class CustomerHomePageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_customer_home_page);
 
         BottomNavigationView navView = findViewById(R.id.bottomNavigationView);
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_customer);
         NavController navController = navHostFragment.getNavController();
 
         NavigationUI.setupWithNavController(navView, navController);
+
+        navController.navigate(R.id.customerHomeFragment);
 
     }
 }

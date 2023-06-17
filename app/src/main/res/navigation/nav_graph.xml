@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/customerHomeFragment">
+    app:startDestination="@id/userLoginFragment">
 
     <fragment
         android:id="@+id/customerHomeFragment"
@@ -34,4 +34,38 @@
         android:name="com.csis4495_cmk.webuy.TestFragment"
         android:label="fragment_test"
         tools:layout="@layout/fragment_test" />
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.csis4495_cmk.webuy.UserForgotPasswordFragment"
+        android:label="fragment_forgot_password"
+        tools:layout="@layout/fragment_user_forgot_password" />
+    <fragment
+        android:id="@+id/roleSelectionFragment"
+        android:name="com.csis4495_cmk.webuy.UserRoleSelectionFragment"
+        android:label="fragment_role_selection"
+        tools:layout="@layout/fragment_user_role_selection" >
+        <action
+            android:id="@+id/action_roleSelectionFragment_to_userRegistrationFragment"
+            app:destination="@id/userRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userLoginFragment"
+        android:name="com.csis4495_cmk.webuy.UserLoginFragment"
+        android:label="fragment_user_login"
+        tools:layout="@layout/fragment_user_login" >
+        <action
+            android:id="@+id/action_userLoginFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment" />
+        <action
+            android:id="@+id/action_userLoginFragment_to_roleSelectionFragment"
+            app:destination="@id/roleSelectionFragment" />
+        <action
+            android:id="@+id/action_userLoginFragment_to_customerHomeFragment"
+            app:destination="@id/customerHomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userRegistrationFragment"
+        android:name="com.csis4495_cmk.webuy.UserRegistrationFragment"
+        android:label="fragment_user_registration"
+        tools:layout="@layout/fragment_user_registration" />
 </navigation>

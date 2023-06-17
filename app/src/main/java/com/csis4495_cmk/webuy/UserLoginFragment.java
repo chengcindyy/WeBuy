@@ -1,17 +1,22 @@
 package com.csis4495_cmk.webuy;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -39,15 +44,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class LoginActivity extends AppCompatActivity {
+public class UserLoginFragment extends Fragment {
 
-    private final String TAG = LoginActivity.class.getSimpleName();
+    private final String TAG = MainActivity.class.getSimpleName();
     private EditText edit_email, edit_password;
     private Button btnLogin, btn_register, btn_forgotPassword, fb;
     private String user_role = "";
     private final String CUSTOMER = "customer";
     private final String SELLER = "seller";
-        private FirebaseAuth auth;
+    private FirebaseAuth auth;
     private LoginButton fbLoginButton;
     private CallbackManager callbackManager = CallbackManager.Factory.create();
     private FirebaseDatabase mFirebaseInstance = FirebaseDatabase.getInstance();
@@ -55,30 +60,51 @@ public class LoginActivity extends AppCompatActivity {
     private LoginResult mLoginResult;
 
     private FirebaseUser firebaseUser;
+    private NavController navController;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_user_login, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Set navigation controller, and if you want to navigate to other fragment can call this to navigate
+        navController = NavHostFragment.findNavController(UserLoginFragment.this);
 
         // When user clicked register button : open registration page
-        btn_register = findViewById(R.id.btn_register);
-        btn_register.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RoleSelectionActivity.class)));
-
-//        // When user clicked forget password button : open forget password page
-//        btn_forgotPassword = findViewById(R.id.btn_forgotPassword);
-//        btn_forgotPassword.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class)));
+        btn_register = view.findViewById(R.id.btn_register);
+        btn_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: Navigate to role selection page
+                navController.navigate(R.id.action_userLoginFragment_to_roleSelectionFragment);
+            }
+        });
 
         // When user clicked login Button, varify email and login
-        btnLogin = findViewById(R.id.btn_loginWithId);
+        btnLogin = view.findViewById(R.id.btn_loginWithId);
         btnLogin.setOnClickListener(v -> {
             showLoginDialog();
         });
 
         // [START FACEBOOK LOGIN]
         auth = FirebaseAuth.getInstance();
-        fbLoginButton = findViewById(R.id.btn_login_facebook);
-        fb = findViewById(R.id.fb);
+        fbLoginButton = view.findViewById(R.id.btn_login_facebook);
+        fb = view.findViewById(R.id.fb);
+        fb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (view == fb) {
+                    fbLoginButton.performClick();
+                }
+            }
+        });
         fbLoginButton.setPermissions("email");
         fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -105,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         auth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -113,30 +139,28 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             firebaseUser = auth.getCurrentUser();
                             if (task.getResult().getAdditionalUserInfo().isNewUser()) {
-                                Toast.makeText(LoginActivity.this, "New user", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "New user", Toast.LENGTH_SHORT).show();
                                 showRoleSelectionAlertDialog();
                             } else {
                                 // Returning user, go to home page
-                                Toast.makeText(LoginActivity.this, "Old user", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Old user", Toast.LENGTH_SHORT).show();
                                 if (firebaseUser != null) {
                                     loginUser(firebaseUser);
                                 } else {
                                     // Handle case where user object is null
                                 }
                             }
-//                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure" + task.getException(), task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed. Your email has been registered, please login your account",
+                            Toast.makeText(getContext(), "Authentication failed. Your email has been registered, please login your account",
                                     Toast.LENGTH_SHORT).show();
-//                            updateUI(null);
                         }
                     }
                 });
     }
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Pass the activity result back to the Facebook SDK
@@ -172,17 +196,15 @@ public class LoginActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     // Send Verification Email
                     firebaseUser.sendEmailVerification();
-                    Toast.makeText(LoginActivity.this, "Seller registered successfully!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, SellerHomePageActivity.class);
-                    // Prevent user back to Registration activity
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
+                    Toast.makeText(getContext(), "Seller registered successfully!", Toast.LENGTH_SHORT).show();
+                    if(getActivity() != null) {
+                        getActivity().finish();
+                    }
                 } else {
                     if (task.getException() != null) {
-                        Toast.makeText(LoginActivity.this, "Failed to write Seller data! because " + task.getException(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Failed to write Seller data! because " + task.getException(), Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Failed to write Seller data - unknown error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Failed to write Seller data - unknown error", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -191,7 +213,7 @@ public class LoginActivity extends AppCompatActivity {
     private void ExtractingCustomerReference(FirebaseUser firebaseUser, Customer newCustomer) {
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseDatabase = mFirebaseInstance.getReference("Customer");
-        Toast.makeText(LoginActivity.this, firebaseUser.getUid(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), firebaseUser.getUid(), Toast.LENGTH_SHORT).show();
         mFirebaseDatabase.child(firebaseUser.getUid()).setValue(newCustomer).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -199,18 +221,16 @@ public class LoginActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     // Send Verification Email
                     firebaseUser.sendEmailVerification();
-                    Toast.makeText(LoginActivity.this, "Customer registered successfully!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Customer registered successfully!", Toast.LENGTH_SHORT).show();
                     // Open User homepage once successfully register
-                    Intent intent = new Intent(LoginActivity.this, CustomerHomePageActivity.class);
-                    // Prevent user back to Registration activity
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
+                    if(getActivity() != null) {
+                        getActivity().finish();
+                    }
                 } else {
                     if (task.getException() != null) {
-                        Toast.makeText(LoginActivity.this, "Failed to write Customer data! because " + task.getException(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Failed to write Customer data! because " + task.getException(), Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Failed to write Customer data - unknown error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Failed to write Customer data - unknown error", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -220,7 +240,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // [START FIREBASE LOGIN]
     private void loginUserWithFirebase(String loginEmail, String loginPassword) {
-        auth.signInWithEmailAndPassword(loginEmail, loginPassword).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+        auth.signInWithEmailAndPassword(loginEmail, loginPassword).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
@@ -249,12 +269,15 @@ public class LoginActivity extends AppCompatActivity {
                             String user_role = user.getRole();
                             switch (user_role) {
                                 case "customer":
-                                    startActivity(new Intent(LoginActivity.this, CustomerHomePageActivity.class));
-                                    finish();
+                                    startActivity(new Intent(getActivity(), CustomerHomePageActivity.class));
+                                    navController.navigate(R.id.action_userLoginFragment_to_customerHomeFragment);
+                                    if(getActivity() != null) { getActivity().finish(); }
                                     break;
                                 case "seller":
-                                    startActivity(new Intent(LoginActivity.this, SellerHomePageActivity.class));
-                                    finish();
+                                    // TODO: navigate to seller home page
+                                    startActivity(new Intent(getActivity(), SellerHomePageActivity.class));
+
+                                    if(getActivity() != null) { getActivity().finish(); }
                                     break;
                                 default:
                                     // Handle case where user role is unknown
@@ -276,17 +299,17 @@ public class LoginActivity extends AppCompatActivity {
     }
     private boolean userEnteredDataVerification(String loginEmail, String loginPassword) {
         if (TextUtils.isEmpty(loginEmail)) {
-            Toast.makeText(LoginActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please enter your email", Toast.LENGTH_SHORT).show();
             edit_email.setError("Email is required.");
             edit_email.requestFocus();
             return false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(loginEmail).matches()) {
-            Toast.makeText(LoginActivity.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
             edit_email.setError("Valid email is required.");
             edit_email.requestFocus();
             return false;
         } else if (TextUtils.isEmpty(loginPassword)) {
-            Toast.makeText(LoginActivity.this, "Please enter your password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please enter your password", Toast.LENGTH_SHORT).show();
             edit_password.setError("Password is required.");
             edit_password.requestFocus();
             return false;
@@ -299,7 +322,7 @@ public class LoginActivity extends AppCompatActivity {
     // [START EMAIL VERIFY DIALOG]
     private void showAlertDialog() {
         //Set up alert builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("You account is not verified!");
         builder.setMessage("Please verify your email now. You cannot login without email verification.");
         //Open email app if "continue" clicked
@@ -325,7 +348,7 @@ public class LoginActivity extends AppCompatActivity {
         final int[] roleIndex = {-1};
 
         //Set up alert builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Please choose a role for registration.");
         builder.setSingleChoiceItems(dialog_list, roleIndex[0], new DialogInterface.OnClickListener() {
             @Override
@@ -339,13 +362,12 @@ public class LoginActivity extends AppCompatActivity {
                         user_role = SELLER;
                         break;
                     default:
-                        Toast.makeText(LoginActivity.this, "Please select one of the options", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Please select one of the options", Toast.LENGTH_SHORT).show();
                         user_role = ""; // reset user_role if no valid selection
                         return; // If no valid selection, don't dismiss the dialog or proceed
                 }
             }
         });
-
 
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             @Override
@@ -373,11 +395,11 @@ public class LoginActivity extends AppCompatActivity {
 
     // [START SHOW LOGIN DIALOG]
     private void showLoginDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Login");
 
         // Inflate the layout for the dialog
-        View dialogView = LayoutInflater.from(LoginActivity.this).inflate(R.layout.login_dialog, null);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.login_dialog, null);
         builder.setView(dialogView);
 
         // Get references to dialog views
@@ -412,32 +434,35 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // When user clicked forget password button : open forget password fragment
+        btn_forgotPassword = dialogView.findViewById(R.id.btn_forgotPassword);
+        btn_forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+                navController.navigate(R.id.action_userLoginFragment_to_forgotPasswordFragment);
+
+            }
+        });
     }
     // [END SHOW LOGIN DIALOG]
 
-    // [START FAKE FACEBOOK LOGIN]
-    public void onClickFacebookButton(View view) {
-        if (view == fb) {
-            fbLoginButton.performClick();
-        }
-    }
-    // [END FAKE FACEBOOK LOGIN]
-
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart:success");
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        checkIfUserLoggedIn(currentUser);
+        checkIfUserLoggedIn(currentUser, navController);
     }
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume:success");
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        checkIfUserLoggedIn(currentUser);
+        checkIfUserLoggedIn(currentUser, navController);
     }
-    private void checkIfUserLoggedIn(FirebaseUser currentUser) {
+    private void checkIfUserLoggedIn(FirebaseUser currentUser, NavController navController) {
         Log.d(TAG, "checkIfUserLoggedIn: Current user:" + currentUser);
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -448,14 +473,24 @@ public class LoginActivity extends AppCompatActivity {
                     if (dataSnapshot.exists()) {
                         User user = dataSnapshot.getValue(User.class);
 
+
                         if (user != null) {
                             String role = user.getRole();
                             if (role.equals("customer")) {
-                                startActivity(new Intent(LoginActivity.this, CustomerHomePageActivity.class));
-                                finish();
+                                if (!(getActivity() instanceof CustomerHomePageActivity)) {
+                                    startActivity(new Intent(getActivity(), CustomerHomePageActivity.class));
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                    }
+                                }
+
                             } else {
-                                startActivity(new Intent(LoginActivity.this, SellerHomePageActivity.class));
-                                finish();
+                                if (!(getActivity() instanceof CustomerHomePageActivity)) {
+                                    startActivity(new Intent(getActivity(), SellerHomePageActivity.class));
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                    }
+                                }
                             }
                         }
                     }
@@ -468,4 +503,5 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
     }
+
 }

@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.models.User;
 import com.facebook.login.LoginManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -183,7 +182,7 @@ public class CustomerProfileFragment extends Fragment {
                 auth.signOut();
                 LoginManager.getInstance().logOut();
                 Toast.makeText(requireActivity(),"Logged Out", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                Intent intent = new Intent(requireActivity(), MainActivity.class);
                 startActivity(intent);
                 requireActivity().finish();
             }
@@ -244,7 +243,7 @@ public class CustomerProfileFragment extends Fragment {
             auth.signOut();
             LoginManager.getInstance().logOut();
             Toast.makeText(requireActivity(),"Logged out successfully, please login again", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(requireActivity(), LoginActivity.class);
+            Intent intent = new Intent(requireActivity(), MainActivity.class);
             startActivity(intent);
             requireActivity().finish(); // if you want to finish the current activity
         });
