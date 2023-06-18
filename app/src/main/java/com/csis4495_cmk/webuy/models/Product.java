@@ -1,46 +1,63 @@
 package com.csis4495_cmk.webuy.models;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Product {
 
     private String productName;
-    private String[] categories;
+    private String category;
     private String description;
-    private ArrayList<String> productPics;
-    private double price; // might be a range
     private double tax;
 
-    public Product(String productName, String[] categories, String description, ArrayList<String> productPics, double price, double tax) {
+    private List<String> productImages;
+    private String sellerId;
+
+    private List<ProductStyle> productStyles;
+
+    //private double price; // might be a range
+
+
+    public Product() {
+    }
+
+    public Product(String productName, String category, String description,
+                   double tax, List<String> productImages, String sellerId,
+                    List<ProductStyle> productStyles) {
         this.productName = productName;
-        this.categories = categories;
+        this.category = category;
         this.description = description;
-        this.productPics = productPics;
-        this.price = price;
         this.tax = tax;
+        this.productImages = productImages;
+        this.sellerId = sellerId;
+        this.productStyles = productStyles;
     }
 
     public String getProductName() {
         return productName;
     }
 
-    public String[] getCategories() {
-        return categories;
+    public String getCategory() {
+        return category;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public ArrayList<String> getProductPics() {
-        return productPics;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
     public double getTax() {
         return tax;
+    }
+
+    public List<String> getProductImages() {
+        return productImages;
+    }
+
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public List<ProductStyle> getProductStyles() {
+        return productStyles;
     }
 }

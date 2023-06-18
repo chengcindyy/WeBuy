@@ -6,83 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".SellerHomePageActivity">
 
-    <ScrollView
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_seller"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/seller_home_imageView"
-                android:layout_width="410dp"
-                android:layout_height="123dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/app_logo" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:layout_editor_absoluteX="1dp"
-                android:layout_weight="1">
-
-                <Button
-                    android:id="@+id/btn_sellerProducts"
-                    style="@style/Widget.Material3.Button.ElevatedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="75dp"
-                    android:text="Products"
-                    android:textSize="20sp" />
-
-                <Button
-                    android:id="@+id/btn_sellerPostings"
-                    style="@style/Widget.Material3.Button.ElevatedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="74dp"
-                    android:text="Postings"
-                    android:textSize="20sp" />
-
-                <Button
-                    android:id="@+id/btn_sellerInventory"
-                    style="@style/Widget.Material3.Button.ElevatedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="74dp"
-                    android:text="Inventory"
-                    android:textSize="20sp" />
-
-                <Button
-                    android:id="@+id/btn_sellerStoreMgmt"
-                    style="@style/Widget.Material3.Button.ElevatedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="74dp"
-                    android:text="Store Management"
-                    android:textSize="20sp" />
-
-                <Button
-                    android:id="@+id/btn_sellerProfile"
-                    style="@style/Widget.Material3.Button.ElevatedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="74dp"
-                    android:text="Profile"
-                    android:textSize="20sp" />
-
-                <Button
-                    android:id="@+id/btn_sellerSupport"
-                    style="@style/Widget.Material3.Button.ElevatedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="74dp"
-                    android:text="Support"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

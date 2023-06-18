@@ -1,10 +1,15 @@
 package com.csis4495_cmk.webuy;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class SellerHomePageActivity extends AppCompatActivity {
 
@@ -15,18 +20,10 @@ public class SellerHomePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_home_page);
 
-        goTestSeller(btn_sellerProducts, "btn_sellerProducts", SellerProductListActivity.class);
-        goTestSeller(btn_sellerProfile, "btn_sellerProfile", SellerUploadProfile.class);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_seller);
+        NavController navController = navHostFragment.getNavController();
+        navController.navigate(R.id.sellerHomeFragment);
 
-    }
-
-    public void goTestSeller(Button btnClicked, String strBtnId, Class<?> testActivity) {
-        int resourceId = this.getResources().
-                getIdentifier(strBtnId, "id", this.getPackageName());
-        btnClicked = findViewById(resourceId);
-        btnClicked.setOnClickListener(v -> {
-            startActivity(new Intent(SellerHomePageActivity.this, testActivity));
-        });
     }
 
 }

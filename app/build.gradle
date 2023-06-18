@@ -63,5 +63,10 @@ dependencies {
     implementation 'com.facebook.android:facebook-login:latest.release'
     implementation 'com.facebook.android:facebook-android-sdk:13.0.0'
 
+    // Picasso
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    // CurrencyEditText
+    implementation 'com.cottacush:CurrencyEditText:0.0.10'
+
 
 }

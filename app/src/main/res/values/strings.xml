@@ -29,6 +29,15 @@
         <item>Delta</item>
     </string-array>
 
+    <string-array name="arr_product_category">
+        <item>Food</item>
+        <item>Home Appliance</item>
+        <item>Activity</item>
+        <item>Service</item>
+        <item>Other</item>
+    </string-array>
+
+
     <string name="app_name">WeBuy</string>
     <string name="login">Login</string>
     <string name="register">Register</string>

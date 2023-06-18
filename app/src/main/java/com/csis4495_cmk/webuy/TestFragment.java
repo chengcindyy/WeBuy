@@ -66,16 +66,5 @@ public class TestFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        GoToTestActivity(view, R.id.btn_groups_detail, GroupsDetailActivity.class);
-        GoToTestActivity(view, R.id.btn_seller_homepage, SellerHomePageActivity.class);
-        GoToTestActivity(view, R.id.btn_customer_product_detail, CustomerProductDetailActivity.class);
-        GoToTestActivity(view, R.id.btn_add_product, SellerAddProductActivity.class);
-    }
-
-    private void GoToTestActivity(View view, int buttonId, Class<? extends Activity> targetActivity) {
-        Button button = view.findViewById(buttonId);
-        if(button != null) {
-            button.setOnClickListener(v -> startActivity(new Intent(requireActivity(), targetActivity)));
-        }
     }
 }

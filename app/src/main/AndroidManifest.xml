@@ -27,9 +27,9 @@
         <activity
             android:name=".SellerAddStyleActivity"
             android:exported="false" />
-        <activity
-            android:name=".SellerAddProductActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".SellerAddProductActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".SellerHomePageActivity"
             android:exported="false" />
