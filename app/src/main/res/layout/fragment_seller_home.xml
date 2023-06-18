@@ -34,7 +34,7 @@
                 android:layout_weight="1">
 
                 <Button
-                    android:id="@+id/btn_sellerProducts"
+                    android:id="@+id/btn_seller_products"
                     style="@style/Widget.Material3.Button.ElevatedButton"
                     android:layout_width="match_parent"
                     android:layout_height="75dp"
@@ -42,7 +42,7 @@
                     android:textSize="20sp" />
 
                 <Button
-                    android:id="@+id/btn_sellerPostings"
+                    android:id="@+id/btn_seller_postings"
                     style="@style/Widget.Material3.Button.ElevatedButton"
                     android:layout_width="match_parent"
                     android:layout_height="74dp"
@@ -50,7 +50,7 @@
                     android:textSize="20sp" />
 
                 <Button
-                    android:id="@+id/btn_sellerInventory"
+                    android:id="@+id/btn_seller_inventory"
                     style="@style/Widget.Material3.Button.ElevatedButton"
                     android:layout_width="match_parent"
                     android:layout_height="74dp"
@@ -58,7 +58,7 @@
                     android:textSize="20sp" />
 
                 <Button
-                    android:id="@+id/btn_sellerStoreMgmt"
+                    android:id="@+id/btn_seller_store_mgmt"
                     style="@style/Widget.Material3.Button.ElevatedButton"
                     android:layout_width="match_parent"
                     android:layout_height="74dp"
@@ -66,7 +66,7 @@
                     android:textSize="20sp" />
 
                 <Button
-                    android:id="@+id/btn_sellerProfile"
+                    android:id="@+id/btn_seller_profile"
                     style="@style/Widget.Material3.Button.ElevatedButton"
                     android:layout_width="match_parent"
                     android:layout_height="74dp"
@@ -74,11 +74,27 @@
                     android:textSize="20sp" />
 
                 <Button
-                    android:id="@+id/btn_sellerSupport"
+                    android:id="@+id/btn_seller_support"
                     style="@style/Widget.Material3.Button.ElevatedButton"
                     android:layout_width="match_parent"
                     android:layout_height="74dp"
                     android:text="Support"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/btn_seller_logout"
+                    style="@style/Widget.Material3.Button.ElevatedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="Logout"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/btn_open_test_page"
+                    style="@style/Widget.Material3.Button.ElevatedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="Test page"
                     android:textSize="20sp" />
             </LinearLayout>
 

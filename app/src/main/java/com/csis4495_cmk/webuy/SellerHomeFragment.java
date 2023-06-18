@@ -20,7 +20,7 @@ import android.widget.Button;
 
 public class SellerHomeFragment extends Fragment {
 
-    private Button btn_sellerProducts, btn_sellerProfile;
+    private Button btnProducts, btnPostings, btnInventory, btnStoreMgmt, btnSupport, btnProfile, btnLogout, btnTestPage;
     private NavController navController;
 
     @Override
@@ -38,13 +38,22 @@ public class SellerHomeFragment extends Fragment {
         // Set navigation controller, and if you want to navigate to other fragment can call this to navigate
         navController = NavHostFragment.findNavController(SellerHomeFragment.this);
 
-        btn_sellerProducts = view.findViewById(R.id.btn_sellerProducts);
-        btn_sellerProducts.setOnClickListener(new View.OnClickListener() {
+        btnProducts = view.findViewById(R.id.btn_seller_products);
+        btnProducts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 navController.navigate(R.id.action_sellerHomeFragment_to_sellerAddProductFragment);
             }
         });
+
+        btnPostings = view.findViewById(R.id.btn_seller_postings);
+        btnInventory = view.findViewById(R.id.btn_seller_inventory);
+        btnStoreMgmt = view.findViewById(R.id.btn_seller_store_mgmt);
+        btnSupport = view.findViewById(R.id.btn_seller_support);
+        btnProfile = view.findViewById(R.id.btn_seller_profile);
+        btnLogout = view.findViewById(R.id.btn_seller_logout);
+        btnTestPage = view.findViewById(R.id.btn_open_test_page);
+
 
     }
 

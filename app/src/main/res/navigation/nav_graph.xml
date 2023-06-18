@@ -85,4 +85,9 @@
         android:name="com.csis4495_cmk.webuy.SellerAddProductFragment"
         android:label="fragment_seller_add_product"
         tools:layout="@layout/fragment_seller_add_product" />
+    <fragment
+        android:id="@+id/sellerProductListFragment"
+        android:name="com.csis4495_cmk.webuy.SellerProductListFragment"
+        android:label="fragment_seller_product_list"
+        tools:layout="@layout/fragment_seller_product_list" />
 </navigation>

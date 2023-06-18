@@ -13,8 +13,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class SellerHomePageActivity extends AppCompatActivity {
 
-    private Button btn_sellerProducts, btn_sellerProfile;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +21,6 @@ public class SellerHomePageActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_seller);
         NavController navController = navHostFragment.getNavController();
         navController.navigate(R.id.sellerHomeFragment);
-
     }
 
 }
