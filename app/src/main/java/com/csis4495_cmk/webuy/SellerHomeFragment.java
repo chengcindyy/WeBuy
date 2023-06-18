@@ -1,6 +1,7 @@
 package com.csis4495_cmk.webuy;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,11 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class SellerHomeFragment extends Fragment {
 
     private Button btnProducts, btnPostings, btnInventory, btnStoreMgmt, btnSupport, btnProfile, btnLogout, btnTestPage;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
     private NavController navController;
 
     @Override
@@ -46,13 +52,34 @@ public class SellerHomeFragment extends Fragment {
             }
         });
 
+        // TODO: Add Posting page
         btnPostings = view.findViewById(R.id.btn_seller_postings);
+        // TODO: Add Inventory page
         btnInventory = view.findViewById(R.id.btn_seller_inventory);
+        // TODO: Add Store management page
         btnStoreMgmt = view.findViewById(R.id.btn_seller_store_mgmt);
+        // TODO: Add Support page
         btnSupport = view.findViewById(R.id.btn_seller_support);
+        // TODO: Add Profile page
         btnProfile = view.findViewById(R.id.btn_seller_profile);
+
         btnLogout = view.findViewById(R.id.btn_seller_logout);
+        btnLogout.setOnClickListener(view1 -> {
+            auth.signOut();
+            LoginManager.getInstance().logOut();
+            Toast.makeText(requireActivity(),"Logged Out", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(requireActivity(), MainActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+        });
+
         btnTestPage = view.findViewById(R.id.btn_open_test_page);
+        btnTestPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate(R.id.action_sellerHomeFragment_to_testFragment);
+            }
+        });
 
 
     }

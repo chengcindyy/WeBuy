@@ -12,15 +12,17 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/btn_product_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open Product list Page"/>
+
+        <Button
             android:id="@+id/btn_groups_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Open Groups Details Page"/>
-        <Button
-            android:id="@+id/btn_seller_homepage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Open Seller Home Page"/>
+
         <Button
             android:id="@+id/btn_customer_product_detail"
             android:layout_width="match_parent"
