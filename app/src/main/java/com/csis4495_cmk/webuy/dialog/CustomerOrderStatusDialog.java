@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+
+import com.csis4495_cmk.webuy.R;
 
 public class CustomerOrderStatusDialog extends DialogFragment {
 

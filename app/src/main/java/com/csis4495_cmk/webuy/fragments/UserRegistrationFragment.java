@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +20,10 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.csis4495_cmk.webuy.activities.CustomerHomePageActivity;
+import com.csis4495_cmk.webuy.activities.MainActivity;
+import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.activities.SellerHomePageActivity;
 import com.csis4495_cmk.webuy.models.Customer;
 import com.csis4495_cmk.webuy.models.Seller;
 import com.csis4495_cmk.webuy.models.User;

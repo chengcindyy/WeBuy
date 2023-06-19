@@ -16,7 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
-import com.csis4495_cmk.webuy.adapters.HomeViewPagerAdapter;
+import com.csis4495_cmk.webuy.adapters.CustomerHomeViewPagerAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
@@ -29,7 +29,7 @@ public class CustomerHomeFragment extends Fragment {
 
     TabLayout tabLayout;
     ViewPager2 viewPager2;
-    HomeViewPagerAdapter viewPagerAdapter;
+    CustomerHomeViewPagerAdapter viewPagerAdapter;
     BottomNavigationView bottomNavigationView;
     AutoCompleteTextView input_location;
     TextInputLayout layout_location;
@@ -52,7 +52,7 @@ public class CustomerHomeFragment extends Fragment {
 
         tabLayout = view.findViewById(R.id.home_tab_layout);
         viewPager2 = view.findViewById(R.id.home_view_pager);
-        viewPagerAdapter = new HomeViewPagerAdapter(getActivity());
+        viewPagerAdapter = new CustomerHomeViewPagerAdapter(getActivity());
         viewPager2.setAdapter(viewPagerAdapter);
         input_location = view.findViewById(R.id.input_location);
         layout_location = view.findViewById(R.id.text_input_layout_location);

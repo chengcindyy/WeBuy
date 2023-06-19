@@ -1,11 +1,11 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.tools;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.adapters.SellerAddProductImagesAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerStyleListAdapter;
+import com.csis4495_cmk.webuy.adapters.SellerStyleListRecyclerAdapter;
 
 public class ItemMoveCallback extends ItemTouchHelper.Callback{
     private final ItemTouchHelperContract mAdapter;
@@ -55,9 +55,9 @@ public class ItemMoveCallback extends ItemTouchHelper.Callback{
                 SellerAddProductImagesAdapter.AddImagesViewHolder myViewHolder =
                         (SellerAddProductImagesAdapter.AddImagesViewHolder) viewHolder;
                 mAdapter.onRowSelected(myViewHolder);
-            } else if (viewHolder instanceof SellerStyleListAdapter.StyleListViewHolder) {
-                SellerStyleListAdapter.StyleListViewHolder myViewHolder =
-                        (SellerStyleListAdapter.StyleListViewHolder)  viewHolder;
+            } else if (viewHolder instanceof SellerStyleListRecyclerAdapter.StyleListViewHolder) {
+                SellerStyleListRecyclerAdapter.StyleListViewHolder myViewHolder =
+                        (SellerStyleListRecyclerAdapter.StyleListViewHolder)  viewHolder;
                 mAdapter.onRowSelected(myViewHolder);
             }
 

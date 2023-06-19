@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.fragments;
 
 import android.os.Bundle;
 
@@ -16,8 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Product;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 
 public class SellerViewProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener {
     private NavController navController;
-    private Button btnAddProduct;
+    private FloatingActionButton btnAddProduct;
     RecyclerView mRecyclerView;
     ArrayList<Product> productsArrayList;
     SellerProductListRecyclerAdapter adapter;
@@ -66,15 +68,8 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
 
 
         // Open add product page
-        btnAddProduct = view.findViewById(R.id.btn_new_product);
-        btnAddProduct.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: Navigate to add product
-                Navigation.findNavController(view).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment);
-
-            }
-        });
+        btnAddProduct = view.findViewById(R.id.fab_add_new_product);
+        btnAddProduct.setOnClickListener(view1 -> Navigation.findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
     }
 
     private void showAllProductDetails() {
@@ -82,17 +77,18 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                productsArrayList.clear();
                 for (DataSnapshot productSnapshot: dataSnapshot.getChildren()) {
                     Product product = productSnapshot.getValue(Product.class);
                     productsArrayList.add(product);
-                    adapter.setProducts(productsArrayList);
-                    adapter.notifyDataSetChanged();
                 }
+                adapter.setProducts(productsArrayList);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // do nothing
             }
         });
     }
@@ -102,4 +98,6 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         AddProductBtnClicked = true;
         navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment);
     }
+
+
 }

@@ -8,8 +8,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.csis4495_cmk.webuy.fragments.CustomerHomePageFoodFragment;
 import com.csis4495_cmk.webuy.fragments.CustomerHomePageNewFragment;
 
-public class HomeViewPagerAdapter extends FragmentStateAdapter {
-    public HomeViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+public class CustomerHomeViewPagerAdapter extends FragmentStateAdapter {
+    public CustomerHomeViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 

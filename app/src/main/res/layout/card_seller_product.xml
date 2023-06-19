@@ -17,16 +17,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="10dp">
 
         <!-- Imageview for product default image-->
         <ImageView
             android:id="@+id/imv_product_img"
-            android:layout_width="110dp"
-            android:layout_height="119dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_width="100dp"
+            android:layout_height="80dp"
             android:background="@color/cancel_grey"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -34,36 +31,48 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Textview for Product title-->
-
-        <!-- Image button for posting product-->
         <TextView
             android:id="@+id/tv_product_name"
-            android:layout_width="235dp"
-            android:layout_height="38dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="6dp"
-            android:textSize="24sp"
+            android:layout_marginTop="3dp"
+            android:singleLine="true"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imv_product_img"
-            app:layout_constraintTop_toTopOf="@+id/imv_product_img" />
+            app:layout_constraintTop_toTopOf="@+id/imv_product_img"
+            android:ellipsize="end"/>
 
 
         <TextView
             android:id="@+id/tv_product_price"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginBottom="6dp"
-            android:text="CA$ 0.00"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imv_product_img"
-            app:layout_constraintStart_toEndOf="@+id/imv_product_img" />
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/btn_product_post"
+            app:layout_constraintStart_toEndOf="@+id/imv_product_img"
+            app:layout_constraintTop_toBottomOf="@+id/tv_product_category" />
 
+        <TextView
+            android:id="@+id/tv_product_category"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/btn_product_post"
+            app:layout_constraintStart_toEndOf="@+id/imv_product_img"
+            app:layout_constraintTop_toBottomOf="@+id/tv_product_name" />
+
+        <!-- Image button for posting product-->
         <ImageButton
             android:id="@+id/btn_product_post"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:background="@null"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:contentDescription="To post the product"
+            android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="@+id/imv_product_img"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/baseline_add_business_24"

@@ -1,5 +1,6 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.fragments;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -33,9 +34,10 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.cottacush.android.currencyedittext.CurrencyEditText;
+import com.csis4495_cmk.webuy.tools.ItemMoveCallback;
+import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerAddProductImagesAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerStyleListAdapter;
-import com.csis4495_cmk.webuy.fragments.SellerAddStyleFragment;
+import com.csis4495_cmk.webuy.adapters.SellerStyleListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,7 +63,7 @@ public class SellerAddProductFragment extends Fragment
         implements
         SellerAddStyleFragment.onSellerAddStyleFragmentListener,
         SellerAddProductImagesAdapter.onProductImagesListener,
-        SellerStyleListAdapter.onStyleListItemChanged {
+        SellerStyleListRecyclerAdapter.onStyleListItemChanged {
 
     private final int REQUEST_PERMISSION_CODE = 10;
     private FirebaseAuth auth;
@@ -185,9 +187,9 @@ public class SellerAddProductFragment extends Fragment
     }
 
     private void checkUserPermission() {
-        if (ContextCompat.checkSelfPermission(requireActivity(), android.Manifest.permission.READ_MEDIA_IMAGES)
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{android.Manifest.permission.READ_MEDIA_IMAGES},
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     REQUEST_PERMISSION_CODE);
             Toast.makeText(requireContext(), "Permission asked", Toast.LENGTH_SHORT).show();
 
@@ -229,15 +231,15 @@ public class SellerAddProductFragment extends Fragment
     }
 
     private void setStylesAdapter() {
-        SellerStyleListAdapter sellerStyleListAdapter = new SellerStyleListAdapter(getContext(), styleList);
+        SellerStyleListRecyclerAdapter sellerStyleListRecyclerAdapter = new SellerStyleListRecyclerAdapter(getContext(), styleList);
         //ItemTouchClass
         ItemTouchHelper.Callback callback =
-                new ItemMoveCallback(sellerStyleListAdapter);
+                new ItemMoveCallback(sellerStyleListRecyclerAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerViewStyles);
 
-        recyclerViewStyles.setAdapter(sellerStyleListAdapter);
-        sellerStyleListAdapter.setmStyleListChangedListener(this);
+        recyclerViewStyles.setAdapter(sellerStyleListRecyclerAdapter);
+        sellerStyleListRecyclerAdapter.setmStyleListChangedListener(this);
     }
 
     private void submitAddProduct() {

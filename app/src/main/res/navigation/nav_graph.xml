@@ -33,19 +33,15 @@
         android:id="@+id/testFragment"
         android:name="com.csis4495_cmk.webuy.TestFragment"
         android:label="fragment_test"
-        tools:layout="@layout/fragment_test" >
-        <action
-            android:id="@+id/action_testFragment_to_sellerProductListFragment"
-            app:destination="@id/sellerProductListFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_test" />
     <fragment
         android:id="@+id/forgotPasswordFragment"
-        android:name="com.csis4495_cmk.webuy.UserForgotPasswordFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.UserForgotPasswordFragment"
         android:label="fragment_forgot_password"
         tools:layout="@layout/fragment_user_forgot_password" />
     <fragment
         android:id="@+id/roleSelectionFragment"
-        android:name="com.csis4495_cmk.webuy.UserRoleSelectionFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.UserRoleSelectionFragment"
         android:label="fragment_role_selection"
         tools:layout="@layout/fragment_user_role_selection" >
         <action
@@ -54,7 +50,7 @@
     </fragment>
     <fragment
         android:id="@+id/userLoginFragment"
-        android:name="com.csis4495_cmk.webuy.UserLoginFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.UserLoginFragment"
         android:label="fragment_user_login"
         tools:layout="@layout/fragment_user_login" >
         <action
@@ -72,12 +68,12 @@
     </fragment>
     <fragment
         android:id="@+id/userRegistrationFragment"
-        android:name="com.csis4495_cmk.webuy.UserRegistrationFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.UserRegistrationFragment"
         android:label="fragment_user_registration"
         tools:layout="@layout/fragment_user_registration" />
     <fragment
         android:id="@+id/sellerHomeFragment"
-        android:name="com.csis4495_cmk.webuy.SellerHomeFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerHomeFragment"
         android:label="fragment_seller_home"
         tools:layout="@layout/fragment_seller_home" >
         <action
@@ -86,15 +82,21 @@
         <action
             android:id="@+id/action_sellerHomeFragment_to_sellerProductListFragment"
             app:destination="@id/sellerProductListFragment" />
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_sellerProfileFragment"
+            app:destination="@id/sellerProfileFragment" />
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_sellerInventoryFragment"
+            app:destination="@id/sellerInventoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/sellerAddProductFragment"
-        android:name="com.csis4495_cmk.webuy.SellerAddProductFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerAddProductFragment"
         android:label="fragment_seller_add_product"
         tools:layout="@layout/fragment_seller_add_product" />
     <fragment
         android:id="@+id/sellerProductListFragment"
-        android:name="com.csis4495_cmk.webuy.SellerViewProductListFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerViewProductListFragment"
         android:label="fragment_seller_product_list"
         tools:layout="@layout/fragment_seller_all_product_list" >
         <action
@@ -109,4 +111,23 @@
         android:name="com.csis4495_cmk.webuy.SellerAddGroupFragment"
         android:label="fragment_seller_add_group"
         tools:layout="@layout/fragment_seller_add_group" />
+    <fragment
+        android:id="@+id/sellerProfileFragment"
+        android:name="com.csis4495_cmk.webuy.SellerProfileFragment"
+        android:label="fragment_seller_profile"
+        tools:layout="@layout/fragment_seller_profile" >
+        <action
+            android:id="@+id/action_sellerProfileFragment_to_sellerStoreManagementFragment"
+            app:destination="@id/sellerStoreManagementFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sellerStoreManagementFragment"
+        android:name="com.csis4495_cmk.webuy.SellerStoreManagementFragment"
+        android:label="fragment_seller_store_management"
+        tools:layout="@layout/fragment_seller_store_management" />
+    <fragment
+        android:id="@+id/sellerInventoryFragment"
+        android:name="com.csis4495_cmk.webuy.SellerInventoryFragment"
+        android:label="fragment_seller_inventory"
+        tools:layout="@layout/fragment_seller_inventory" />
 </navigation>

@@ -60,20 +60,16 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
+                // Handle errors, if image doesn't exist, show a default image
+                holder.productImage.setImageResource(R.drawable.default_image);
             }
         });
-
         // DISPLAY PRODUCT NAME AND PRICE
         holder.productTitle.setText(products.get(position).getProductName());
+        holder.productCategory.setText(products.get(position).getCategory());
         holder.productPrice.setText(products.get(position).getProductPrice());
 
-        holder.btn_post.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onButtonClick(true);
-            }
-        });
+        holder.btn_post.setOnClickListener(v -> listener.onButtonClick(true));
     }
 
     @Override
@@ -84,6 +80,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productTitle;
+        TextView productCategory;
         TextView productPrice;
         ImageButton btn_post;
 
@@ -91,6 +88,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
             super(itemView);
             productImage = itemView.findViewById(R.id.imv_product_img);
             productTitle = itemView.findViewById(R.id.tv_product_name);
+            productCategory = itemView.findViewById(R.id.tv_product_category);
             productPrice = itemView.findViewById(R.id.tv_product_price);
             btn_post = itemView.findViewById(R.id.btn_product_post);
         }
