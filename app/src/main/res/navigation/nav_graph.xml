@@ -105,6 +105,9 @@
         <action
             android:id="@+id/action_sellerProductListFragment_to_sellerAddProductFragment"
             app:destination="@id/sellerAddProductFragment" />
+        <action
+            android:id="@+id/action_sellerProductListFragment_to_sellerEditProductDialog"
+            app:destination="@id/sellerEditProductDialog" />
     </fragment>
     <fragment
         android:id="@+id/sellerAddGroupFragment"
@@ -130,4 +133,8 @@
         android:name="com.csis4495_cmk.webuy.SellerInventoryFragment"
         android:label="fragment_seller_inventory"
         tools:layout="@layout/fragment_seller_inventory" />
+    <fragment
+        android:id="@+id/sellerEditProductDialog"
+        android:name="com.csis4495_cmk.webuy.dialog.SellerEditProductDialog"
+        android:label="SellerEditProductDialog" />
 </navigation>

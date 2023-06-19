@@ -70,6 +70,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         holder.productPrice.setText(products.get(position).getProductPrice());
 
         holder.btn_post.setOnClickListener(v -> listener.onButtonClick(true));
+
     }
 
     @Override
@@ -92,6 +93,13 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
             productPrice = itemView.findViewById(R.id.tv_product_price);
             btn_post = itemView.findViewById(R.id.btn_product_post);
         }
+    }
+
+    public void removeItem(int position) {
+        // Remove item
+        products.remove(position);
+        // Notify the adapter that an item has been removed
+        notifyItemRemoved(position);
     }
 
     public interface OnAddProductButtonClickedListener{
