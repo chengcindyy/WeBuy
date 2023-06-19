@@ -1,10 +1,7 @@
 package com.csis4495_cmk.webuy;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -17,8 +14,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,13 +26,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.cottacush.android.currencyedittext.CurrencyEditText;
 import com.csis4495_cmk.webuy.adapters.SellerAddProductImagesAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerStyleListAdapter;
 import com.csis4495_cmk.webuy.fragments.SellerAddStyleFragment;
@@ -47,6 +43,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -60,9 +57,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SellerAddProductFragment extends Fragment implements SellerAddProductImagesAdapter.onImgClick,
-        SellerAddStyleFragment.onFragmentStyleListener,
-        SellerStyleListAdapter.onItemClick {
+public class SellerAddProductFragment extends Fragment
+        implements
+        SellerAddStyleFragment.onSellerAddStyleFragmentListener,
+        SellerAddProductImagesAdapter.onProductImagesListener,
+        SellerStyleListAdapter.onStyleListItemChanged {
 
     private final int REQUEST_PERMISSION_CODE = 10;
     private FirebaseAuth auth;
@@ -76,15 +75,18 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
     private RecyclerView recyclerViewStyles;
     private List<ProductStyle> styleList;
     private Button btnAddStyle, btnSubmitAddProduct, btnCancelAddProduct;
-    private TextInputEditText textInputProductName, textInputProductDescription;
+    private TextInputLayout textLayoutProductPrice, textLayoutStylePriceRange;
+    private TextInputEditText textInputProductName, textInputProductDescription, textInputStylePriceRange;
+    private CurrencyEditText textInputProductPrice;
     private AutoCompleteTextView textInputProductCategory;
     private RadioGroup radioGroupTax;
-    //
+    private int taxId;
     private String productId;
     private List<String> strProductImgNames;
     private byte[] imageBytes;
     private String productImgName;
     private int uploadImgCount = 0;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -97,12 +99,18 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d("Test", "AddProductFrag view created");
+
         btnAddStyle = view.findViewById(R.id.btn_add_style);
         btnSubmitAddProduct = view.findViewById(R.id.btn_submit_add_product);
         btnCancelAddProduct = view.findViewById(R.id.btn_cancel_add_product);
         textInputProductName = view.findViewById(R.id.text_input_product_name);
         textInputProductDescription = view.findViewById(R.id.text_input_product_description);
         textInputProductCategory = view.findViewById(R.id.text_input_product_category);
+        textInputProductPrice = view.findViewById(R.id.text_input_product_price);
+        textInputStylePriceRange = view.findViewById(R.id.text_input_style_price_range);
+        textLayoutProductPrice = view.findViewById(R.id.text_layout_product_price);
+        textLayoutStylePriceRange = view.findViewById(R.id.text_layout_style_price_range);
         radioGroupTax = view.findViewById(R.id.radio_group_tax);
 
         //0. set product category
@@ -121,8 +129,8 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
         productImgFilePicker = registerForActivityResult(new ActivityResultContracts.GetMultipleContents(), new ActivityResultCallback<List<Uri>>() {
             @Override
             public void onActivityResult(List<Uri> result) {
-                uriUploadProductImgs = result;
-                setProductImagesAdapter();
+                    uriUploadProductImgs = result;
+                    setProductImagesAdapter();
             }
         });
 
@@ -139,54 +147,71 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
 
                 // Show the addStyleFragment
                 addStyleFragment.show(fragmentManager, "Add Style Frag show");
-
                 // set interface listener
-//                addStyleFragment.setmListenr(getContext());
-//
-//                // Customize the appearance of the dialog if needed
-//                addStyleFragment.getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//                addStyleFragment.getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                addStyleFragment.setOnSellerAddStyleFragmentListener(SellerAddProductFragment.this);
+
             }
         });
 
-        //3. submit added product
+        //3. tax radio group
+        radioGroupTax.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.radio_btn_no_tax:
+                    taxId = 0;
+                    break;
+                case R.id.radio_btn_gst:
+                    taxId = 1;
+                    break;
+                case R.id.radio_btn_gst_pst:
+                    taxId = 2;
+                    break;
+                default:
+                    taxId = -1;
+                    break;
+            }
+
+            Log.d("Test", taxId+"!");
+        });
+
+        //4. submit added product
         submitAddProduct();
 
-        //4. cancel
+        //5. cancel
         btnCancelAddProduct.setOnClickListener(v->{
-            if(getActivity() != null) {
-                getActivity().finish();
-            }
+            //go back to the frag you came from
+            Navigation.findNavController(v).popBackStack();
         });
 
     }
 
-//    private void checkUserPermission() {
-//        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_MEDIA_IMAGES)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(getContext(), new String[]{Manifest.permission.READ_MEDIA_IMAGES},
-//                    REQUEST_PERMISSION_CODE);
-//            Toast.makeText(getContext(),"permission asked",Toast.LENGTH_SHORT).show();
-//        } else {
-//            pickProductImages();
-//        }
-//    }
+    private void checkUserPermission() {
+        if (ContextCompat.checkSelfPermission(requireActivity(), android.Manifest.permission.READ_MEDIA_IMAGES)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{android.Manifest.permission.READ_MEDIA_IMAGES},
+                    REQUEST_PERMISSION_CODE);
+            Toast.makeText(requireContext(), "Permission asked", Toast.LENGTH_SHORT).show();
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                pickProductImages();
-            } else {
-                Toast.makeText(getContext(),"permission denied",Toast.LENGTH_SHORT).show();
-            }
+        } else {
+            pickProductImages();
         }
     }
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == REQUEST_PERMISSION_CODE) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                pickProductImages();
+//            } else {
+//                Toast.makeText(getContext(),"permission denied",Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
     private void pickProductImages() {
         productImgFilePicker.launch("image/*");
         if (uriUploadProductImgs != null) {
+            uriUploadProductImgs = new ArrayList<>(uriUploadProductImgs);
             uriUploadProductImgs.clear();
         }
     }
@@ -200,7 +225,7 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
         touchHelper.attachToRecyclerView(recyclerViewProductImgs);
 
         recyclerViewProductImgs.setAdapter(sellerAddProductImagesAdapter);
-        sellerAddProductImagesAdapter.setmListener(this);
+        sellerAddProductImagesAdapter.setOnProductImagesListener(this);
     }
 
     private void setStylesAdapter() {
@@ -212,7 +237,7 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
         touchHelper.attachToRecyclerView(recyclerViewStyles);
 
         recyclerViewStyles.setAdapter(sellerStyleListAdapter);
-        sellerStyleListAdapter.setmListener(this);
+        sellerStyleListAdapter.setmStyleListChangedListener(this);
     }
 
     private void submitAddProduct() {
@@ -221,7 +246,9 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
             String productName = textInputProductName.getText().toString();
             String productDescription = textInputProductDescription.getText().toString();
             String productCategory = textInputProductCategory.getText().toString();
-            int taxId = radioGroupTax.getCheckedRadioButtonId();
+            Double productPrice = textInputProductPrice.getNumericValue();
+            String stylePriceRange = textInputStylePriceRange.getText().toString();
+
 
             //check required input
             if (TextUtils.isEmpty(productName)) {
@@ -245,6 +272,13 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
             } else if (uriUploadProductImgs.size() == 0) {
                 Toast.makeText(getContext(),
                         "Please add at least one product image.", Toast.LENGTH_SHORT).show();
+            } else if (styleList.size() == 0 && productPrice == 0) {
+                Toast.makeText(getContext(),
+                        "Please enter the product price.", Toast.LENGTH_SHORT).show();
+                textInputProductPrice.setError("Product price is required.");
+                textInputProductPrice.requestFocus();
+            } else if (styleList.size() != 0 && stylePriceRange == null) {
+                Toast.makeText(getContext(),"Style price went wrong",Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getContext(),
                         "Request send.", Toast.LENGTH_SHORT).show();
@@ -259,35 +293,43 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
                 //compress style image and upload to FireStorage (uri to string)
                 compressStyleImage(styleList);
 
+                //decide which price string to save
+                String strPrice = styleList.size() == 0 ? textInputProductPrice.getText().toString() : stylePriceRange;
+
                 //upload product and styles to Realtime DB
                 uploadProduct(productName, productCategory,productDescription,
-                        taxId, strProductImgNames, styleList);;
+                        taxId, strProductImgNames, styleList, strPrice);
+
+                //go back to the frag you came from
+                Navigation.findNavController(v).popBackStack();
             }
 
         });
     }
 
     private void uploadProduct(String productName, String category, String productDescription,
-                               double tax, List<String> strProductImgNames, List<ProductStyle> productStyles) {
+                               double tax, List<String> strProductImgNames,
+                               List<ProductStyle> productStyles, String strPrice) {
 
         auth = FirebaseAuth.getInstance();
         firebaseUser = auth.getCurrentUser();
 
         Product newProduct = new Product(productName,category,productDescription,
-                tax, strProductImgNames, firebaseUser.getUid(), productStyles);
+                tax, strProductImgNames, firebaseUser.getUid(), productStyles, strPrice);
 
         firebaseDatabase.child(productId).setValue(newProduct).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(getContext(), "Product Upload Successfully", Toast.LENGTH_SHORT).show();
-                    // Prevent sell go back
-                    if(getActivity() != null) {
-                        getActivity().finish();
-                    }
+                    Log.d("Test Upload", "Product Upload Successfully");
                 } else {
-                    Toast.makeText(getContext(), "Product Upload Failed", Toast.LENGTH_SHORT).show();
+                    Log.d("Test Upload", "Product Upload Failed");
                 }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT);
             }
         });
 
@@ -341,7 +383,7 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
                 styleImgName = productId + "_" + styleList.get(i).getStyleName() + ".jpg";
                 styleList.get(i).setStylePic(styleImgName);
                 //to FireStorage
-                uploadImagwsToFireStorage(styleImgName, imageBytes, styleList);
+                uploadImagesToFireStorage(styleImgName, imageBytes, styleList);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -360,14 +402,14 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
                 productImgName = productId + "_" + i + ".jpg";
                 strProductImgNames.add(productImgName);
                 //to FireStorage
-                uploadImagwsToFireStorage(productImgName, imageBytes, uriUploadProductImgs);
+                uploadImagesToFireStorage(productImgName, imageBytes, uriUploadProductImgs);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void uploadImagwsToFireStorage(String imageName, byte[] imageBytes, List<?> imageList) {
+    private void uploadImagesToFireStorage(String imageName, byte[] imageBytes, List<?> imageList) {
         productImgsReference = FirebaseStorage.getInstance().getReference().child("ProductImages");
         StorageReference imgReference = productImgsReference.child(imageName);
         // I am saving all the product images from different sellers at the same place now
@@ -388,31 +430,32 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
     }
 
     @Override
-    public void addNewProductImg() {
-//        checkUserPermission();
+    public void onAddNewProductImg() {
+        checkUserPermission();
     }
 
-    @Override
-    public void addStyleInputToList(String styleName, Double price, String imgUri, int idx) {
-        Log.d("TestStyle", styleName+ " " + price + " " + imgUri + " " + idx);
-        ProductStyle newStyle = new ProductStyle(styleName, price, imgUri);
+//    public void setStyleToList(String styleName, Double price, String imgUri, int idx) {
+//        Log.d("Test", styleName+ " " + price + " " + imgUri + " " + idx);
+//        ProductStyle newStyle = new ProductStyle(styleName, price, imgUri);
+//
+//        if (idx == -1) { //Add a new style
+//            styleList.add(newStyle);
+//        } else { //update the style
+//            styleList.get(idx).setStyleName(styleName);
+//            styleList.get(idx).setStylePrice(price);
+//            styleList.get(idx).setStylePic(imgUri);
+//        }
+//
+//        //set the recyclerview
+//        if (styleList != null) {
+//            //recyclerViewStyles.setVisibility(View.VISIBLE);
+//            LinearLayoutManager lm = new LinearLayoutManager(getContext());
+//            recyclerViewStyles.setLayoutManager(lm);
+//            setStylesAdapter();
+//        }
+//    }
 
-        if (idx == -1) { //Add a new style
-            styleList.add(newStyle);
-        } else { //update the style
-            styleList.get(idx).setStyleName(styleName);
-            styleList.get(idx).setStylePrice(price);
-            styleList.get(idx).setStylePic(imgUri);
-        }
 
-        //set the recyclerview
-        if (styleList != null) {
-            //recyclerViewStyles.setVisibility(View.VISIBLE);
-            LinearLayoutManager lm = new LinearLayoutManager(getContext());
-            recyclerViewStyles.setLayoutManager(lm);
-            setStylesAdapter();
-        }
-    }
 
     @Override
     public void onStyleEdit(int position) {
@@ -430,6 +473,95 @@ public class SellerAddProductFragment extends Fragment implements SellerAddProdu
         //Add the addStyleFragment and commit the transaction
         editStyleFragment.show(fragmentManager, "Edit Style Frag show");
         //set interface listener
-        editStyleFragment.setmListenr(this);
+        editStyleFragment.setOnSellerAddStyleFragmentListener(SellerAddProductFragment.this);
+    }
+
+    @Override
+    public void onStyleListChanged(List<ProductStyle> newStyles) {
+        styleList = newStyles;
+        if (styleList.size() != 0) { //with at least one style
+
+            //set product price invisible
+            textLayoutProductPrice.setVisibility(View.GONE);
+            textInputProductPrice.setText(null);
+
+            //set style price range visible
+            textLayoutStylePriceRange.setVisibility(View.VISIBLE);
+
+            double minStylePrice = Double.MAX_VALUE;
+            double maxStylePrice = Double.MIN_VALUE;
+
+            for (ProductStyle style: styleList) {
+                double stylePrice = style.getStylePrice();
+                if (stylePrice < minStylePrice) {
+                    minStylePrice = stylePrice;
+                }
+                if (stylePrice > maxStylePrice) {
+                    maxStylePrice = stylePrice;
+                }
+            }
+
+            if (minStylePrice == maxStylePrice) {
+                textInputStylePriceRange.setText("CA$ " + minStylePrice);
+            } else {
+                textInputStylePriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
+            }
+
+        } else { //no style
+            //set product price visible
+            textLayoutProductPrice.setVisibility(View.VISIBLE);
+
+            //set style price range visible
+            textLayoutStylePriceRange.setVisibility(View.GONE);
+            textInputStylePriceRange.setText(null);
+        }
+    }
+
+    @Override
+    public void onAddStyleToList(String styleName, Double price, String imgUri, int idx) {
+        Log.d("Test", styleName+ " " + price + " " + imgUri + " " + idx);
+        ProductStyle newStyle = new ProductStyle(styleName, price, imgUri);
+
+        if (idx == -1) { //Add a new style
+            styleList.add(newStyle);
+        } else { //update the style
+            styleList.get(idx).setStyleName(styleName);
+            styleList.get(idx).setStylePrice(price);
+            styleList.get(idx).setStylePic(imgUri);
+        }
+
+        if (styleList != null) { //with styles
+            //set the recyclerview
+            LinearLayoutManager lm = new LinearLayoutManager(getContext());
+            recyclerViewStyles.setLayoutManager(lm);
+            setStylesAdapter();
+
+            //set product price invisible
+            textLayoutProductPrice.setVisibility(View.GONE);
+            textInputProductPrice.setText(null);
+
+            //set style price range visible
+            textLayoutStylePriceRange.setVisibility(View.VISIBLE);
+
+            double minStylePrice = Double.MAX_VALUE;
+            double maxStylePrice = Double.MIN_VALUE;
+
+            for (ProductStyle style: styleList) {
+                double stylePrice = style.getStylePrice();
+                if (stylePrice < minStylePrice) {
+                    minStylePrice = stylePrice;
+                }
+                if (stylePrice > maxStylePrice) {
+                    maxStylePrice = stylePrice;
+                }
+            }
+
+            if (minStylePrice == maxStylePrice) {
+                textInputStylePriceRange.setText("CA$ " + minStylePrice);
+            } else {
+                textInputStylePriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
+            }
+
+        }
     }
 }

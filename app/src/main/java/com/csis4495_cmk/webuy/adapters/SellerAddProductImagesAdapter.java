@@ -23,12 +23,12 @@ import java.util.List;
 
 public class SellerAddProductImagesAdapter extends RecyclerView.Adapter<SellerAddProductImagesAdapter.AddImagesViewHolder> implements ItemMoveCallback.ItemTouchHelperContract<SellerAddProductImagesAdapter.AddImagesViewHolder>{
 
-    onImgClick mListener;
+    onProductImagesListener mProductImagesListener;
     Context context;
     List<Uri> uriUploadImgs;
 
-    public void setmListener(onImgClick mListener) {
-        this.mListener = mListener;
+    public void setOnProductImagesListener(onProductImagesListener mListener) {
+        this.mProductImagesListener = mListener;
     }
 
     public SellerAddProductImagesAdapter(Context context, List<Uri> uriUploadImgs) {
@@ -52,7 +52,7 @@ public class SellerAddProductImagesAdapter extends RecyclerView.Adapter<SellerAd
             holder.imgViewSingleImg.setImageResource(R.drawable.baseline_add_photo_alternate_50);
         } else {
             holder.btnDelete.setVisibility(View.VISIBLE);
-            if(position == 0) {
+            if(holder.getAdapterPosition() == 0) {
                 holder.tvCoverImg.setVisibility(View.VISIBLE);
             }
             holder.imgViewSingleImg.setImageURI(uriUploadImgs.get(position));
@@ -62,17 +62,18 @@ public class SellerAddProductImagesAdapter extends RecyclerView.Adapter<SellerAd
         holder.imgViewSingleImg.setOnClickListener(v -> {
             if (holder.getAdapterPosition() == getItemCount()-1) {
                 //add new img
-                mListener.addNewProductImg();
+                mProductImagesListener.onAddNewProductImg();
                 Toast.makeText(context, holder.getAdapterPosition()+"position", Toast.LENGTH_SHORT).show();
             } else {
                 //edit img
             }
         });
+
         // delete - need to update the new list
         holder.btnDelete.setOnClickListener(v -> {
             uriUploadImgs.remove(holder.getAdapterPosition());
-            notifyItemRemoved(holder.getAdapterPosition());
-            //notifyDataSetChanged();
+            //notifyItemRemoved(holder.getAdapterPosition()); //it won't make the first one cover img
+            notifyDataSetChanged();
         });
 
         // long click - change position
@@ -84,7 +85,7 @@ public class SellerAddProductImagesAdapter extends RecyclerView.Adapter<SellerAd
         return uriUploadImgs.size() + 1;
     }
 
-    // implements ItemMoveCallback.ItemTouchHelperContract
+    // ItemMoveCallback.ItemTouchHelperContract
     @Override
     public void onRowMoved(int fromPosition, int toPosition) {
         if (fromPosition != uriUploadImgs.size() && toPosition != uriUploadImgs.size() &&
@@ -130,7 +131,7 @@ public class SellerAddProductImagesAdapter extends RecyclerView.Adapter<SellerAd
         }
     }
 
-    public interface onImgClick {
-        void addNewProductImg();
+    public interface onProductImagesListener {
+        void onAddNewProductImg();
     }
 }
