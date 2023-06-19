@@ -36,7 +36,7 @@ public class TestFragment extends Fragment {
         // Set navigation controller, and if you want to navigate to other fragment can call this to navigate
         navController = NavHostFragment.findNavController(TestFragment.this);
 
-        btnProductList = view.findViewById(R.id.btn_product_list);
+        btnProductList = view.findViewById(R.id.btn_product_list_test);
         btnProductList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

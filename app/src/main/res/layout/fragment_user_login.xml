@@ -40,7 +40,7 @@
                     android:drawableLeft="@drawable/ic_facebook"
                     android:id="@+id/fb"
                     android:textAllCaps="false"
-                    android:background="@drawable/btn_solid"
+                    android:background="@drawable/button_solid"
                     android:gravity="left|center_vertical"
                     android:paddingLeft="70dp"
                     android:text="Continue with Facebook" />
@@ -111,7 +111,7 @@
             </LinearLayout>
 
             <Button
-                android:background="@drawable/btn_solid"
+                android:background="@drawable/button_solid"
                 android:id="@+id/btn_loginWithId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

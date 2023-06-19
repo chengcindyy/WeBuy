@@ -1,115 +1,102 @@
 package com.csis4495_cmk.webuy.adapters;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.content.Context;
-import android.content.Intent;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.squareup.picasso.Picasso;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.SellerEditProductActivity;
-import com.csis4495_cmk.webuy.SellerPublishProductActivity;
-import com.google.android.material.snackbar.Snackbar;
+import com.csis4495_cmk.webuy.models.Product;
+import com.google.android.gms.tasks.OnFailureListener;
+import java.util.ArrayList;
+
 
 public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<SellerProductListRecyclerAdapter.ViewHolder> {
 
-    private String[] testTitles = {"Popcorn", "Chips", "Coke"};
+    Context context;
+    ArrayList<Product> products;
+    private OnAddProductButtonClickedListener listener;
 
-    private int[] testImages =  {R.drawable.splash_logo_icon,R.drawable.app_logo,R.drawable.ic_backgrund_square};
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public void setProducts(ArrayList<Product> products) {
+        this.products = products;
+    }
+
+    public SellerProductListRecyclerAdapter(Context context, ArrayList<Product> products,OnAddProductButtonClickedListener listener) {
+        this.context = context;
+        this.products = products;
+        this.listener = listener;
+    }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.seller_product_card_layout, viewGroup, false);
-        ViewHolder viewHolder = new ViewHolder(v);
-        return viewHolder;
+        View v = LayoutInflater.from(context).inflate(R.layout.card_seller_product, viewGroup, false);
+        return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.productImage.setImageResource(testImages[i]);
-        viewHolder.productTitle.setText(testTitles[i]);
-        viewHolder.imgBtn_post.setOnClickListener(new View.OnClickListener() {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        // DISPLAY PRODUCT IMAGE
+        // Before read firebase storage image, set rules: allow read, write: if request.auth != null;
+        // getReference should pass Storage image folder name
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
+        StorageReference imageReference = storageReference.child(products.get(position).getProductImages().get(0));
+        imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+            // Got the download URL and pass it to Picasso to download, show in ImageView and caching
+            Picasso.with(context).load(uri.toString()).into(holder.productImage);
+        }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onClick(View v) {
-               Context context = v.getContext();
-                context.startActivity(new Intent(context, SellerPublishProductActivity.class));
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
             }
         });
 
-        viewHolder.imgBtn_edit.setOnClickListener(new View.OnClickListener() {
+        // DISPLAY PRODUCT NAME AND PRICE
+        holder.productTitle.setText(products.get(position).getProductName());
+        holder.productPrice.setText(products.get(position).getProductPrice());
+
+        holder.btn_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Context context = v.getContext();
-                context.startActivity(new Intent(context, SellerEditProductActivity.class));
+                listener.onButtonClick(true);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return testTitles.length;
+        return products.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productTitle;
-        ImageButton imgBtn_post;
-        ImageButton imgBtn_edit;
-        ImageButton imgBtn_delete;
+        TextView productPrice;
+        ImageButton btn_post;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            productImage = itemView.findViewById(R.id.iv_seller_product_card_img);
-            productTitle = itemView.findViewById(R.id.seller_product_card_title);
-            imgBtn_post = itemView.findViewById(R.id.imgBtn_product_card_post);
-            imgBtn_edit = itemView.findViewById(R.id.imgBtn_product_card_edit);
-            imgBtn_delete = itemView.findViewById(R.id.imgBtn_product_card_delete);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    Snackbar.make(v, "Click detected on" + productTitle.getText().toString() + "on position " + position,
-                            Snackbar.LENGTH_SHORT).show();
-                }
-            });
-
-            imgBtn_post.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    Snackbar.make(v, "Clicked post on item" + position,
-                            Snackbar.LENGTH_SHORT).show();
-                }
-            });
-
-            imgBtn_edit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    Snackbar.make(v, "Clicked edit on item" + position,
-                            Snackbar.LENGTH_SHORT).show();
-                }
-            });
-
-            imgBtn_delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    Snackbar.make(v, "Clicked delete on item" + position,
-                            Snackbar.LENGTH_SHORT).show();
-                }
-            });
-
+            productImage = itemView.findViewById(R.id.imv_product_img);
+            productTitle = itemView.findViewById(R.id.tv_product_name);
+            productPrice = itemView.findViewById(R.id.tv_product_price);
+            btn_post = itemView.findViewById(R.id.btn_product_post);
         }
+    }
+
+    public interface OnAddProductButtonClickedListener{
+        void onButtonClick(Boolean btnClicked);
     }
 }

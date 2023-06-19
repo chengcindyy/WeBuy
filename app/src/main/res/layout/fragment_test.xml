@@ -9,28 +9,49 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginHorizontal="10dp"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_marginVertical="10dp"
+            android:textSize="20dp"
+            android:text="Customer"/>
+
         <Button
-            android:id="@+id/btn_product_list"
+            android:id="@+id/btn_customer_product_detail_test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open Customer Product Detail"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_marginVertical="10dp"
+            android:textSize="20dp"
+            android:text="Seller"/>
+
+        <Button
+            android:id="@+id/btn_product_list_test"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Open Product list Page"/>
 
         <Button
-            android:id="@+id/btn_groups_detail"
+            android:id="@+id/btn_groups_detail_test"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Open Groups Details Page"/>
 
-        <Button
-            android:id="@+id/btn_customer_product_detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Open Customer Product Detail"/>
+
 
         <Button
-            android:id="@+id/btn_add_product"
+            android:id="@+id/btn_add_product_test"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Go to SellerAddProduct" />

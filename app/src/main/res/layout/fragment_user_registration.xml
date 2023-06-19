@@ -92,7 +92,7 @@
                 android:id="@+id/btn_create_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/btn_solid"
+                android:background="@drawable/button_solid"
                 android:layout_marginTop="30dp"
                 android:text="Create an Account"/>
 
@@ -187,7 +187,7 @@
                     android:drawableLeft="@drawable/ic_facebook"
                     android:id="@+id/fb"
                     android:textAllCaps="false"
-                    android:background="@drawable/btn_solid"
+                    android:background="@drawable/button_solid"
                     android:gravity="left|center_vertical"
                     android:paddingLeft="70dp"
                     android:text="Continue with Facebook" />

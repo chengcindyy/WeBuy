@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/seller_product_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:clickable="true"
+    android:foreground="?selectableItemBackground"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp"
+    app:contentPadding="4dp">
+
+    <!-- create the container  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <!-- Imageview for product default image-->
+        <ImageView
+            android:id="@+id/imv_product_img"
+            android:layout_width="110dp"
+            android:layout_height="119dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:background="@color/cancel_grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Textview for Product title-->
+
+        <!-- Image button for posting product-->
+        <TextView
+            android:id="@+id/tv_product_name"
+            android:layout_width="235dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="6dp"
+            android:textSize="24sp"
+            app:layout_constraintStart_toEndOf="@+id/imv_product_img"
+            app:layout_constraintTop_toTopOf="@+id/imv_product_img" />
+
+
+        <TextView
+            android:id="@+id/tv_product_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="6dp"
+            android:text="CA$ 0.00"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@+id/imv_product_img"
+            app:layout_constraintStart_toEndOf="@+id/imv_product_img" />
+
+        <ImageButton
+            android:id="@+id/btn_product_post"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@null"
+            android:contentDescription="To post the product"
+            app:layout_constraintBottom_toBottomOf="@+id/imv_product_img"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/baseline_add_business_24"
+            app:tint="@color/add_business_orange" />
+
+
+
+        <!-- Image button for editing prodcut-->
+
+        <!-- Image button for deleting prodcut-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>

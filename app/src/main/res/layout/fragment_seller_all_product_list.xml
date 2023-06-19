@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".SellerProductListFragment">
+    tools:context=".SellerViewProductListFragment">
 
         <!-- TODO: Update blank fragment layout -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,14 +32,14 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.search.SearchBar
-                        android:id="@+id/search_bar"
+                        android:id="@+id/search_bar_material"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/search_hint" />
                 </com.google.android.material.appbar.AppBarLayout>
 
             <Button
-                android:id="@+id/btn_add_seller_product_list"
+                android:id="@+id/btn_new_product"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -66,7 +66,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_add_seller_product_list"
+                app:layout_constraintTop_toBottomOf="@+id/btn_new_product"
                 app:layout_constraintVertical_bias="0.0" />
 
 
