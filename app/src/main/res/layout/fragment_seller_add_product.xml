@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Add Product description  -->
+            <!-- Product description  -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -87,6 +87,46 @@
                     android:inputType="none"/>
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!--     Product Price     -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_layout_product_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="Product Price"
+                android:visibility="visible">
+
+                <com.cottacush.android.currencyedittext.CurrencyEditText
+                    android:id="@+id/text_input_product_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    app:currencySymbol="CA$"
+                    app:localeTag="en-CA"
+                    app:maxNumberOfDecimalDigits="2"
+                    app:useCurrencySymbolAsHint="false" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--     Style Price Range      -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_layout_style_price_range"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="Product Price"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/text_input_style_price_range"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="CA$"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <!--        Edit tax rate    -->
             <RadioGroup
                 android:id="@+id/radio_group_tax"
@@ -98,18 +138,21 @@
                 android:layout_marginTop="20dp">
 
                 <RadioButton
+                    android:id="@+id/radio_btn_no_tax"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="No Tax" />
 
                 <RadioButton
+                    android:id="@+id/radio_btn_gst"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="GST" />
 
                 <RadioButton
+                    android:id="@+id/radio_btn_gst_pst"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

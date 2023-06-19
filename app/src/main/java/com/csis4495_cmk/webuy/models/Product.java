@@ -15,15 +15,14 @@ public class Product {
 
     private List<ProductStyle> productStyles;
 
-    //private double price; // might be a range
-
+    private String productPrice; // product price or might be (minStylePrice, maxStylePrice)
 
     public Product() {
     }
 
     public Product(String productName, String category, String description,
                    double tax, List<String> productImages, String sellerId,
-                    List<ProductStyle> productStyles) {
+                    List<ProductStyle> productStyles,String productPrice) {
         this.productName = productName;
         this.category = category;
         this.description = description;
@@ -31,6 +30,7 @@ public class Product {
         this.productImages = productImages;
         this.sellerId = sellerId;
         this.productStyles = productStyles;
+        this.productPrice = productPrice;
     }
 
     public String getProductName() {
@@ -59,5 +59,13 @@ public class Product {
 
     public List<ProductStyle> getProductStyles() {
         return productStyles;
+    }
+
+    public String getProductPrice() {
+        return productPrice;
+    }
+
+    public void setProductPrice(String productPrice) {
+        this.productPrice = productPrice;
     }
 }

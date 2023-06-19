@@ -1,7 +1,6 @@
 package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,7 +25,7 @@ public class SellerStyleListAdapter extends RecyclerView.Adapter<SellerStyleList
 
     private List<ProductStyle> styles;
 
-    onItemClick mListener;
+    onStyleListItemChanged mStyleListItemChangedListener;
 
     Context context;
 
@@ -35,8 +34,8 @@ public class SellerStyleListAdapter extends RecyclerView.Adapter<SellerStyleList
         this.context = context;
     }
 
-    public void setmListener(onItemClick mListener) {
-        this.mListener = mListener;
+    public void setmStyleListChangedListener(onStyleListItemChanged mListener) {
+        this.mStyleListItemChangedListener = mListener;
     }
 
     @NonNull
@@ -52,18 +51,19 @@ public class SellerStyleListAdapter extends RecyclerView.Adapter<SellerStyleList
         holder.imvStyleImg.setImageURI(Uri.parse(styles.get(position).getStylePic()));
         holder.tvStyleName.setText(styles.get(position).getStyleName());
         holder.tvStylePrice.setText("CA$ " + styles.get(position).getStylePrice());
+
         // item click -> enable editing (position to fragment, fragment to activity to adapter)
         holder.view.setOnClickListener(v -> {
-            mListener.onStyleEdit(position);
+            mStyleListItemChangedListener.onStyleEdit(position);
         });
+
         // delete btn click -> remove from list
         holder.imgBtnDeleteStyle.setOnClickListener(v -> {
             styles.remove(holder.getAdapterPosition());
             notifyItemRemoved(holder.getAdapterPosition());
+            // pass back the updated stylist
+            mStyleListItemChangedListener.onStyleListChanged(styles);
         });
-        // add data to firebase
-        // edit version
-        // add in group
     }
 
     @Override
@@ -117,8 +117,9 @@ public class SellerStyleListAdapter extends RecyclerView.Adapter<SellerStyleList
         }
     }
 
-    public interface onItemClick {
+    public interface onStyleListItemChanged {
         void onStyleEdit(int position);
+        void onStyleListChanged(List<ProductStyle> newStyles);
     }
 
 }

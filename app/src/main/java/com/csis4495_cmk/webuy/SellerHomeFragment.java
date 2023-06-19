@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,9 +54,32 @@ public class SellerHomeFragment extends Fragment {
         btnProfile = view.findViewById(R.id.btn_seller_profile);
         btnLogout = view.findViewById(R.id.btn_seller_logout);
         btnTestPage = view.findViewById(R.id.btn_open_test_page);
-
-
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("Test", "onHPaused");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("Test", "onHResumed");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("Test", "onHDestroyed");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("Test", "onHDetached");
+    }
+
 
 
 }

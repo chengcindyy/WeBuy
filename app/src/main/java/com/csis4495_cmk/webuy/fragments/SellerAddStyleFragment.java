@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,7 @@ public class SellerAddStyleFragment extends BottomSheetDialogFragment {
     private static final String ARG_STYLE_PRICE = "stylePrice";
     private static final String ARG_STYLE_IMG = "styleImg";
     private static final String ARG_STYLE_INDEX = "styleIdx";
-    onFragmentStyleListener mListener;
+    onSellerAddStyleFragmentListener mSellerAddStyleFragmentListener;
 
     private TextInputEditText textInputStyleName;
     private CurrencyEditText textInputStylePrice;
@@ -61,8 +62,8 @@ public class SellerAddStyleFragment extends BottomSheetDialogFragment {
         return fragment;
     }
 
-    public void setmListenr(onFragmentStyleListener mListener) {
-        this.mListener = mListener;
+    public void setOnSellerAddStyleFragmentListener(onSellerAddStyleFragmentListener mListener) {
+        this.mSellerAddStyleFragmentListener = mListener;
     }
 
     @Override
@@ -96,18 +97,6 @@ public class SellerAddStyleFragment extends BottomSheetDialogFragment {
                         if (data != null && data.getData() != null) {
                             styleImg = data.getData();
                             imgBtnAddImg.setImageURI(styleImg);
-//                            Bitmap selectedImageBitmap;
-//                            try {
-//                                selectedImageBitmap
-//                                        = MediaStore.Images.Media.getBitmap(
-//                                        this.getContentResolver(),
-//                                        selectedImageUri);
-//                            }
-//                            catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                            imageView.setImageBitmap(
-//                                    selectedImageBitmap);
                         }
                     }
                 });
@@ -168,13 +157,19 @@ public class SellerAddStyleFragment extends BottomSheetDialogFragment {
                 Toast.makeText(getActivity(),
                         "Please select a style image.", Toast.LENGTH_SHORT).show();
             } else {
-                mListener.addStyleInputToList(styleName, stylePrice, styleImg.toString(), styleIdx);
-                onDismiss(getDialog());
+                if (mSellerAddStyleFragmentListener != null) {
+                    mSellerAddStyleFragmentListener.onAddStyleToList(styleName, stylePrice, styleImg.toString(), styleIdx);
+                } else {
+                    Log.d("Test","isnull");
+                }
+                    onDismiss(getDialog());
             }
+
         });
     }
-    public interface onFragmentStyleListener{
-        void addStyleInputToList(String styleName, Double price, String imgUri, int idx);
+
+    public interface onSellerAddStyleFragmentListener{
+        void onAddStyleToList(String styleName, Double price, String imgUri, int idx);
 
     }
 }
