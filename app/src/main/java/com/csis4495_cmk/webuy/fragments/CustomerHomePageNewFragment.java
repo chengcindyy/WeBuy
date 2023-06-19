@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.csis4495_cmk.webuy.CustomerHomePageActivity;
 import com.csis4495_cmk.webuy.R;
 
 public class CustomerHomePageNewFragment extends Fragment {

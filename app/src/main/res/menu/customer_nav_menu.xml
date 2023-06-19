@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/customer_home"
+        android:id="@+id/customerHomeFragment"
         android:title="Home"
         android:icon="@drawable/baseline_home_24" />
     <item
-        android:id="@+id/customer_profile"
+        android:id="@+id/customerProfileFragment"
         android:title="Profile"
         android:icon="@drawable/baseline_person_24"
         />
     <item
-        android:id="@+id/customer_cart"
+        android:id="@+id/customerCartFragment"
         android:title="Cart"
         android:icon="@drawable/baseline_menu_cart_24"/>
     <item
-        android:id="@+id/customer_settings"
+        android:id="@+id/customerSettingFragment"
         android:title="Settings"
         android:icon="@drawable/baseline_settings_24"/>
 </menu>

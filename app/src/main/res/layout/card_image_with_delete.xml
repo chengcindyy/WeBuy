@@ -7,7 +7,7 @@
 
 
     <ImageView
-        android:id="@+id/imv_single_img"
+        android:id="@+id/imv_single_product_img"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="10dp"

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.SellerAddProductFragment">
+
+   <androidx.constraintlayout.widget.ConstraintLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+
+       <ScrollView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintHorizontal_bias="0.0"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           app:layout_constraintVertical_bias="0.0"
+           tools:context=".SellerAddNewProductActivity">
+
+           <LinearLayout
+               android:id="@+id/linearLayout_main_add_product"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:layout_gravity="top|center"
+               android:orientation="vertical"
+               android:paddingHorizontal="25dp"
+               android:paddingVertical="35dp">
+
+               <!-- Page title-->
+               <TextView
+                   android:id="@+id/tv_add_product"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginStart="8dp"
+                   android:layout_marginTop="8dp"
+                   android:layout_marginEnd="8dp"
+                   android:layout_marginBottom="16dp"
+                   android:text="Add a New Product"
+                   android:textColor="@color/black"
+                   android:textSize="28sp"
+                   android:textStyle="bold" />
+
+               <!--Add product default image-->
+               <androidx.recyclerview.widget.RecyclerView
+                   android:id="@+id/rv_add_product_img"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content" />
+
+               <!-- Add product name -->
+               <com.google.android.material.textfield.TextInputLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="20dp"
+                   android:hint="@string/product_name">
+
+                   <com.google.android.material.textfield.TextInputEditText
+                       android:id="@+id/text_input_product_name"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content" />
+               </com.google.android.material.textfield.TextInputLayout>
+
+               <!-- Product description  -->
+               <com.google.android.material.textfield.TextInputLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="20dp"
+                   android:hint="@string/product_des">
+
+                   <com.google.android.material.textfield.TextInputEditText
+                       android:id="@+id/text_input_product_description"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:maxLines="6"
+                       android:minLines="3"
+                       android:scrollbars="vertical" />
+               </com.google.android.material.textfield.TextInputLayout>
+
+               <!--     Category       -->
+               <com.google.android.material.textfield.TextInputLayout
+                   style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="20dp"
+                   android:hint="Product Category"
+                   app:boxBackgroundColor="@null">
+
+                   <AutoCompleteTextView
+                       android:id="@+id/text_input_product_category"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:cursorVisible="false"
+                       android:inputType="none" />
+
+               </com.google.android.material.textfield.TextInputLayout>
+
+               <!--     Product Price     -->
+               <com.google.android.material.textfield.TextInputLayout
+                   android:id="@+id/text_layout_product_price"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="20dp"
+                   android:hint="Product Price"
+                   android:visibility="visible">
+
+                   <com.cottacush.android.currencyedittext.CurrencyEditText
+                       android:id="@+id/text_input_product_price"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:ems="10"
+                       app:currencySymbol="CA$"
+                       app:localeTag="en-CA"
+                       app:maxNumberOfDecimalDigits="2"
+                       app:useCurrencySymbolAsHint="false" />
+
+               </com.google.android.material.textfield.TextInputLayout>
+
+               <!--     Style Price Range      -->
+               <com.google.android.material.textfield.TextInputLayout
+                   android:id="@+id/text_layout_style_price_range"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="20dp"
+                   android:hint="Product Price"
+                   android:visibility="gone">
+
+                   <com.google.android.material.textfield.TextInputEditText
+                       android:id="@+id/text_input_style_price_range"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:enabled="false"
+                       android:text="CA$" />
+
+               </com.google.android.material.textfield.TextInputLayout>
+
+               <!--        Edit tax rate    -->
+               <RadioGroup
+                   android:id="@+id/radio_group_tax"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="20dp"
+                   android:gravity="center"
+                   android:orientation="horizontal"
+                   android:textSize="15sp">
+
+                   <RadioButton
+                       android:id="@+id/radio_btn_no_tax"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:text="No Tax" />
+
+                   <RadioButton
+                       android:id="@+id/radio_btn_gst"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:text="GST" />
+
+                   <RadioButton
+                       android:id="@+id/radio_btn_gst_pst"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:text="GST &amp; PST" />
+               </RadioGroup>
+
+               <!--  RecycleView to display added styles-->
+               <androidx.recyclerview.widget.RecyclerView
+                   android:id="@+id/rv_added_style"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="20dp" />
+
+               <!--   Add product style -->
+               <Button
+                   android:id="@+id/btn_add_style"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_gravity="center"
+                   android:layout_marginTop="20dp"
+                   android:layout_marginBottom="20dp"
+                   android:drawableLeft="@drawable/baseline_add_24"
+                   android:drawableTint="#ffffff"
+                   android:text="Add Style" />
+
+
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   android:gravity="center"
+                   android:orientation="horizontal">
+
+                   <!--    Cancel    -->
+                   <androidx.appcompat.widget.AppCompatButton
+                       android:id="@+id/btn_cancel_add_product"
+                       android:layout_width="wrap_content"
+                       android:layout_height="match_parent"
+                       android:layout_gravity="center"
+                       android:layout_margin="10dp"
+                       android:background="@color/cancel_grey"
+                       android:text="Cancel"
+                       android:textColor="@color/black" />
+
+                   <!--    Confirm    -->
+                   <androidx.appcompat.widget.AppCompatButton
+                       android:id="@+id/btn_submit_add_product"
+                       android:layout_width="wrap_content"
+                       android:layout_height="match_parent"
+                       android:layout_gravity="center"
+                       android:layout_margin="10dp"
+                       android:background="@color/purple_500"
+                       android:text="Confirm"
+                       android:textColor="@color/white" />
+
+               </LinearLayout>
+
+
+           </LinearLayout>
+
+       </ScrollView>
+   </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+</FrameLayout>

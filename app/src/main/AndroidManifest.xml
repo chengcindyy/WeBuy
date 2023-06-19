@@ -6,6 +6,9 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+
     <uses-permission
         android:name="com.google.android.gms.permission.AD_ID"
         tools:node="remove" />
@@ -24,41 +27,17 @@
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
 
+        <!--        <activity-->
+<!--            android:name=".SellerAddProductActivity"-->
+<!--            android:exported="false" />-->
         <activity
-            android:name=".CustomerProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SellerAddStyleActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SellerAddProductActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SellerHomePageActivity"
+            android:name=".activities.SellerHomePageActivity"
             android:exported="false" />
         <activity
             android:name=".CustomerProductDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".GroupDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GroupsDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RegistrationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".TestPageActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RoleSelectionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ForgotPasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -84,7 +63,7 @@
 
 
         <activity
-            android:name=".CustomerHomePageActivity"
+            android:name=".activities.CustomerHomePageActivity"
             android:exported="false" />
         <provider
             android:name="com.facebook.FacebookContentProvider"

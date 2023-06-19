@@ -1,61 +1,40 @@
 package com.csis4495_cmk.webuy.models;
 
 public class ProductStyle {
-    String stylePic;
-    String style;
+
+    String styleName;
     double stylePrice;
-    int styleQty;
-    String styleTax;
+    String stylePic;
 
-    public ProductStyle(){
+    public ProductStyle() {}
 
-    }
-
-    public ProductStyle(String stylePic, String style, double stylePrice, int styleQty, String styleTax) {
-        this.stylePic = stylePic;
-        this.style = style;
+    public ProductStyle(String styleName, double stylePrice, String stylePic) {
+        this.styleName = styleName;
         this.stylePrice = stylePrice;
-        this.styleQty = styleQty;
-        this.styleTax = styleTax;
-    }
-
-    public String getStylePic() {
-        return stylePic;
-    }
-
-    public void setStylePic(String stylePic) {
         this.stylePic = stylePic;
     }
 
-    public String getStyle() {
-        return style;
-    }
-
-    public void setStyle(String style) {
-        this.style = style;
+    public String getStyleName() {
+        return styleName;
     }
 
     public double getStylePrice() {
         return stylePrice;
     }
 
+    public String getStylePic() {
+        return stylePic;
+    }
+
+    public void setStyleName(String styleName) {
+        this.styleName = styleName;
+    }
+
     public void setStylePrice(double stylePrice) {
         this.stylePrice = stylePrice;
     }
 
-    public int getStyleQty() {
-        return styleQty;
-    }
-
-    public void setStyleQty(int styleQty) {
-        this.styleQty = styleQty;
-    }
-
-    public String getStyleTax() {
-        return styleTax;
-    }
-
-    public void setStyleTax(String styleTax) {
-        this.styleTax = styleTax;
+    public void setStylePic(String stylePic) {
+        this.stylePic = stylePic;
     }
 }

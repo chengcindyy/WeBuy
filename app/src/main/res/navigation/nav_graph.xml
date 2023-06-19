@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/userLoginFragment">
+
+    <fragment
+        android:id="@+id/customerHomeFragment"
+        android:name="com.csis4495_cmk.webuy.CustomerHomeFragment"
+        android:label="fragment_customer_home"
+        tools:layout="@layout/fragment_customer_home" />
+    <fragment
+        android:id="@+id/customerProfileFragment"
+        android:name="com.csis4495_cmk.webuy.CustomerProfileFragment"
+        android:label="fragment_customer_profile"
+        tools:layout="@layout/fragment_customer_profile" >
+        <action
+            android:id="@+id/action_to_testPageFragment"
+            app:destination="@id/testFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerSettingFragment"
+        android:name="com.csis4495_cmk.webuy.CustomerSettingFragment"
+        android:label="fragment_customer_setting"
+        tools:layout="@layout/fragment_customer_setting" />
+    <fragment
+        android:id="@+id/customerCartFragment"
+        android:name="com.csis4495_cmk.webuy.CustomerCartFragment"
+        android:label="fragment_customer_cart"
+        tools:layout="@layout/fragment_customer_cart" />
+    <fragment
+        android:id="@+id/testFragment"
+        android:name="com.csis4495_cmk.webuy.TestFragment"
+        android:label="fragment_test"
+        tools:layout="@layout/fragment_test" />
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.UserForgotPasswordFragment"
+        android:label="fragment_forgot_password"
+        tools:layout="@layout/fragment_user_forgot_password" />
+    <fragment
+        android:id="@+id/roleSelectionFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.UserRoleSelectionFragment"
+        android:label="fragment_role_selection"
+        tools:layout="@layout/fragment_user_role_selection" >
+        <action
+            android:id="@+id/action_roleSelectionFragment_to_userRegistrationFragment"
+            app:destination="@id/userRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userLoginFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.UserLoginFragment"
+        android:label="fragment_user_login"
+        tools:layout="@layout/fragment_user_login" >
+        <action
+            android:id="@+id/action_userLoginFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment" />
+        <action
+            android:id="@+id/action_userLoginFragment_to_roleSelectionFragment"
+            app:destination="@id/roleSelectionFragment" />
+        <action
+            android:id="@+id/action_userLoginFragment_to_customerHomeFragment"
+            app:destination="@id/customerHomeFragment" />
+        <action
+            android:id="@+id/action_userLoginFragment_to_sellerHomeFragment"
+            app:destination="@id/sellerHomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userRegistrationFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.UserRegistrationFragment"
+        android:label="fragment_user_registration"
+        tools:layout="@layout/fragment_user_registration" />
+    <fragment
+        android:id="@+id/sellerHomeFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerHomeFragment"
+        android:label="fragment_seller_home"
+        tools:layout="@layout/fragment_seller_home" >
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_testFragment"
+            app:destination="@id/testFragment" />
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_sellerProductListFragment"
+            app:destination="@id/sellerProductListFragment" />
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_sellerProfileFragment"
+            app:destination="@id/sellerProfileFragment" />
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_sellerInventoryFragment"
+            app:destination="@id/sellerInventoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sellerAddProductFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerAddProductFragment"
+        android:label="fragment_seller_add_product"
+        tools:layout="@layout/fragment_seller_add_product" />
+    <fragment
+        android:id="@+id/sellerProductListFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerViewProductListFragment"
+        android:label="fragment_seller_product_list"
+        tools:layout="@layout/fragment_seller_all_product_list" >
+        <action
+            android:id="@+id/action_sellerProductListFragment_to_sellerAddGroupFragment"
+            app:destination="@id/sellerAddGroupFragment" />
+        <action
+            android:id="@+id/action_sellerProductListFragment_to_sellerAddProductFragment"
+            app:destination="@id/sellerAddProductFragment" />
+        <action
+            android:id="@+id/action_sellerProductListFragment_to_sellerEditProductDialog"
+            app:destination="@id/sellerEditProductDialog" />
+    </fragment>
+    <fragment
+        android:id="@+id/sellerAddGroupFragment"
+        android:name="com.csis4495_cmk.webuy.SellerAddGroupFragment"
+        android:label="fragment_seller_add_group"
+        tools:layout="@layout/fragment_seller_add_group" />
+    <fragment
+        android:id="@+id/sellerProfileFragment"
+        android:name="com.csis4495_cmk.webuy.SellerProfileFragment"
+        android:label="fragment_seller_profile"
+        tools:layout="@layout/fragment_seller_profile" >
+        <action
+            android:id="@+id/action_sellerProfileFragment_to_sellerStoreManagementFragment"
+            app:destination="@id/sellerStoreManagementFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sellerStoreManagementFragment"
+        android:name="com.csis4495_cmk.webuy.SellerStoreManagementFragment"
+        android:label="fragment_seller_store_management"
+        tools:layout="@layout/fragment_seller_store_management" />
+    <fragment
+        android:id="@+id/sellerInventoryFragment"
+        android:name="com.csis4495_cmk.webuy.SellerInventoryFragment"
+        android:label="fragment_seller_inventory"
+        tools:layout="@layout/fragment_seller_inventory" />
+    <fragment
+        android:id="@+id/sellerEditProductDialog"
+        android:name="com.csis4495_cmk.webuy.dialog.SellerEditProductDialog"
+        android:label="SellerEditProductDialog" />
+</navigation>
