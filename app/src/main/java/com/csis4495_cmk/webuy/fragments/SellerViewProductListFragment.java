@@ -1,10 +1,12 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -17,11 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
-import com.csis4495_cmk.webuy.dialog.CustomerOrderStatusDialog;
 import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
@@ -38,16 +38,15 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 public class SellerViewProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener {
     private NavController navController;
     private FloatingActionButton btnAddProduct;
-    RecyclerView mRecyclerView;
-    ArrayList<Product> productsArrayList;
-    ArrayList<String> productIds;
-    SellerProductListRecyclerAdapter adapter;
-    FirebaseStorage storage;
-    boolean addProductBtnClicked = false;
-
+    private RecyclerView mRecyclerView;
+    private ArrayList<Product> productsArrayList;
+    private ArrayList<String> productIds;
+    private SellerProductListRecyclerAdapter adapter;
+    private FirebaseStorage storage;
+    private boolean addProductBtnClicked = false;
+    private int position;
 
     DatabaseReference reference;
-    FirebaseDatabase db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,7 +71,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         storage = FirebaseStorage.getInstance();
         productsArrayList = new ArrayList<>();
         productIds = new ArrayList<>();
-        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList,this);
+        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList, this);
 
         mRecyclerView.setAdapter(adapter);
         showAllProductDetails();
@@ -80,7 +79,8 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
 
         // Open add product page
         btnAddProduct = view.findViewById(R.id.fab_add_new_product);
-        btnAddProduct.setOnClickListener(view1 -> Navigation.findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
+        btnAddProduct.setOnClickListener(view1 ->
+                Navigation.findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
 
         // Call swipe helper
         OnRecyclerItemSwipeActionHelper();
@@ -93,7 +93,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 productsArrayList.clear();
                 productIds.clear();
-                for (DataSnapshot productSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
                     Product product = productSnapshot.getValue(Product.class);
                     String productId = productSnapshot.getKey();
                     productIds.add(productId);
@@ -119,22 +119,22 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getLayoutPosition();
+                String productId = "";
+                position = viewHolder.getLayoutPosition();
 
                 // Swiped item left: remove item from database
-                if(direction == ItemTouchHelper.LEFT){
-                    String productId = productIds.get(position);
-                    reference.child(productId).removeValue();
-                    adapter.removeItem(position);
-                    productIds.remove(position);
-                    adapter.notifyItemRemoved(position);
+                if (direction == ItemTouchHelper.LEFT) {
+                    productId = productIds.get(position);
+                    showConfirmToRemoveDialog(productId, position);
 
-                // Swiped item right: open edit page
-                }else if (direction == ItemTouchHelper.RIGHT){
+                    // Swiped item right: open edit page
+                } else if (direction == ItemTouchHelper.RIGHT) {
+                    productId = productIds.get(position);
                     Bundle bundle = new Bundle();
-                    bundle.putInt("position", position);
-                    Navigation.findNavController(viewHolder.itemView).navigate(R.id.action_sellerProductListFragment_to_sellerEditProductDialog, bundle);
-
+                    bundle.putString("productId", productId);
+                    SellerAddProductFragment sellerAddProductFragment = new SellerAddProductFragment();
+                    sellerAddProductFragment.setArguments(bundle);
+                    Navigation.findNavController(viewHolder.itemView).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment, bundle);
                 }
             }
 
@@ -157,6 +157,34 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
+    private void showConfirmToRemoveDialog(String productId, int position) {
+        //Set up alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Remove this product");
+        builder.setMessage("Are you sure you want to remove this product?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                reference.child(productId).removeValue();
+                adapter.removeItem(position);
+                productIds.remove(position);
+                adapter.notifyItemRemoved(position);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                adapter.notifyItemChanged(position);
+            }
+        });
+        //Create AlertDialog
+        AlertDialog alertDialog = builder.create();
+        //Show AlertDialog
+        alertDialog.show();
+    }
+
 
     @Override
     public void onButtonClick(Boolean btnClicked) {
@@ -164,7 +192,9 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment);
     }
 
-
-
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyItemChanged(position);
+    }
 }

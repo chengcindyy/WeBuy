@@ -17,12 +17,14 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.gms.tasks.OnFailureListener;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<SellerProductListRecyclerAdapter.ViewHolder> {
 
     Context context;
-    ArrayList<Product> products;
+    private ArrayList<Product> products;
+    private List<String> productImages;
     private OnAddProductButtonClickedListener listener;
 
     public void setContext(Context context) {
@@ -49,21 +51,28 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        productImages = products.get(position).getProductImages();
+
         // DISPLAY PRODUCT IMAGE
-        // Before read firebase storage image, set rules: allow read, write: if request.auth != null;
+        // Before read firebase storage image, set rules: allow read, write: if request.auth != null; (For testing)
         // getReference should pass Storage image folder name
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
-        StorageReference imageReference = storageReference.child(products.get(position).getProductImages().get(0));
-        imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-            // Got the download URL and pass it to Picasso to download, show in ImageView and caching
-            Picasso.with(context).load(uri.toString()).into(holder.productImage);
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle errors, if image doesn't exist, show a default image
-                holder.productImage.setImageResource(R.drawable.default_image);
-            }
-        });
+        if(productImages != null && !productImages.isEmpty()){
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
+            StorageReference imageReference = storageReference.child(productImages.get(0));
+            imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                // Got the download URL and pass it to Picasso to download, show in ImageView and caching
+                Picasso.with(context).load(uri.toString()).into(holder.productImage);
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle errors, if image doesn't exist, show a default image
+                    holder.productImage.setImageResource(R.drawable.default_image);
+                }
+            });
+        }else {
+            holder.productImage.setImageResource(R.drawable.default_image);
+        }
+
         // DISPLAY PRODUCT NAME AND PRICE
         holder.productTitle.setText(products.get(position).getProductName());
         holder.productCategory.setText(products.get(position).getCategory());
