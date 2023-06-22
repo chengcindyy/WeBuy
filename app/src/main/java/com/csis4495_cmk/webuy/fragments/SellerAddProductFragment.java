@@ -63,6 +63,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SellerAddProductFragment extends Fragment
         implements
@@ -97,7 +98,6 @@ public class SellerAddProductFragment extends Fragment
     private String editProductId;
     private ArrayAdapter<CharSequence> productCatAdapter;
     private RadioButton taxTadioButton_1, taxTadioButton_2, taxTadioButton_0;
-
     private TextView textLayoutTitle;
 
     @Override

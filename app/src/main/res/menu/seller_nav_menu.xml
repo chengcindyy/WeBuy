@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
     <item
-        android:id="@+id/seller_home"
-        android:title="Home"
-        android:icon="@drawable/baseline_lock_open_24"/>
+        android:id="@+id/ic_user_profile"
+        android:icon="@drawable/ic_user_profile"
+        android:title="@string/user_profile"
+        app:showAsAction="always" />
+
     <item
-        android:id="@+id/customer_profile"
-        android:title="Products"
-        android:icon="@drawable/baseline_lock_open_24"
-        />
-    <item
-        android:id="@+id/customer_cart"
-        android:title="Groups"
-        android:icon="@drawable/baseline_lock_open_24"/>
-    <item
-        android:id="@+id/customer_settings"
-        android:title="Store"
-        android:icon="@drawable/baseline_lock_open_24"/>
+        android:id="@+id/logout"
+        android:title="@string/logout"
+        app:showAsAction="never" />
 </menu>

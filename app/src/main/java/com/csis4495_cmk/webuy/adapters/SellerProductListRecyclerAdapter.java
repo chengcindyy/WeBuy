@@ -2,30 +2,45 @@ package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.squareup.picasso.Picasso;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.gms.tasks.OnFailureListener;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<SellerProductListRecyclerAdapter.ViewHolder> {
 
     Context context;
-    private ArrayList<Product> products;
-    private List<String> productImages;
     private OnAddProductButtonClickedListener listener;
+    private List<String> productImages;
+    private ArrayList<Product> products;
+    private Map<String, Product> productMap;
+
+    public SellerProductListRecyclerAdapter(Context context, ArrayList<Product> products, Map<String, Product> mProductMap, OnAddProductButtonClickedListener listener) {
+        this.context = context;
+        this.products = products;
+        this.productMap = mProductMap;
+        this.listener = listener;
+    }
 
     public void setContext(Context context) {
         this.context = context;
@@ -33,12 +48,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
 
     public void setProducts(ArrayList<Product> products) {
         this.products = products;
-    }
-
-    public SellerProductListRecyclerAdapter(Context context, ArrayList<Product> products,OnAddProductButtonClickedListener listener) {
-        this.context = context;
-        this.products = products;
-        this.listener = listener;
+        this.notifyDataSetChanged();
     }
 
     @NonNull
@@ -50,13 +60,12 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
         productImages = products.get(position).getProductImages();
 
         // DISPLAY PRODUCT IMAGE
         // Before read firebase storage image, set rules: allow read, write: if request.auth != null; (For testing)
         // getReference should pass Storage image folder name
-        if(productImages != null && !productImages.isEmpty()){
+        if (productImages != null && !productImages.isEmpty()) {
             StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
             StorageReference imageReference = storageReference.child(productImages.get(0));
             imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -69,7 +78,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
                     holder.productImage.setImageResource(R.drawable.default_image);
                 }
             });
-        }else {
+        } else {
             holder.productImage.setImageResource(R.drawable.default_image);
         }
 
@@ -79,6 +88,8 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         holder.productPrice.setText(products.get(position).getProductPrice());
 
         holder.btn_post.setOnClickListener(v -> listener.onButtonClick(true));
+
+        Log.d("Test Map: ", productMap+"!");
 
     }
 
@@ -111,7 +122,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         notifyItemRemoved(position);
     }
 
-    public interface OnAddProductButtonClickedListener{
+    public interface OnAddProductButtonClickedListener {
         void onButtonClick(Boolean btnClicked);
     }
 }

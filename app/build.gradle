@@ -75,5 +75,4 @@ dependencies {
     // CurrencyEditText
     implementation 'com.cottacush:CurrencyEditText:0.0.10'
 
-
 }

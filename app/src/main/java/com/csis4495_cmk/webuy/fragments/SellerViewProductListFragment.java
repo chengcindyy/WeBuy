@@ -16,13 +16,19 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Product;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,6 +38,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
@@ -45,8 +54,10 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
     private FirebaseStorage storage;
     private boolean addProductBtnClicked = false;
     private int position;
-
     DatabaseReference reference;
+    private androidx.appcompat.widget.SearchView searchView;
+    Map<String, Product> productMap;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,13 +80,13 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         storage = FirebaseStorage.getInstance();
+        productMap = new HashMap<>();
         productsArrayList = new ArrayList<>();
         productIds = new ArrayList<>();
-        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList, this);
+        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList, productMap, this);
 
         mRecyclerView.setAdapter(adapter);
         showAllProductDetails();
-
 
         // Open add product page
         btnAddProduct = view.findViewById(R.id.fab_add_new_product);
@@ -84,6 +95,40 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
 
         // Call swipe helper
         OnRecyclerItemSwipeActionHelper();
+
+        // Search
+        searchView = view.findViewById(R.id.sv_seller_product_list);
+        if (searchView != null) {
+            searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    search(s);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    search(s);
+                    return false;
+                }
+            });
+        }
+
+    }
+
+    private void search(String str) {
+        Map<String, Product> mProductMap = productMap.entrySet()
+                .stream()
+                .filter(map -> map.getValue().getProductName().toLowerCase().contains(str.toLowerCase()) ||
+                        map.getValue().getCategory().toLowerCase().contains(str.toLowerCase())
+                ).collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
+        SellerProductListRecyclerAdapter productListAdapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList, mProductMap, this);
+        mRecyclerView.setAdapter(productListAdapter);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void showAllProductDetails() {
@@ -98,9 +143,11 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
                     String productId = productSnapshot.getKey();
                     productIds.add(productId);
                     productsArrayList.add(product);
+                    productMap.put(productId,product);
+                    Log.d("Test Map: ", productMap+"!");
                 }
                 adapter.setProducts(productsArrayList);
-                adapter.notifyDataSetChanged();
+
             }
 
             @Override
@@ -185,12 +232,13 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         alertDialog.show();
     }
 
-
     @Override
     public void onButtonClick(Boolean btnClicked) {
         addProductBtnClicked = true;
         navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment);
     }
+
+
 
     @Override
     public void onResume() {
