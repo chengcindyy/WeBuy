@@ -40,6 +40,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         this.products = products;
         this.productMap = mProductMap;
         this.listener = listener;
+        notifyDataSetChanged();
     }
 
     public void setContext(Context context) {
