@@ -37,7 +37,7 @@ import java.util.ArrayList;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class SellerViewProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener, SellerProductListRecyclerAdapter.OnProductClickListener {
+public class SellerViewProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener{
     private NavController navController;
     private FloatingActionButton btnAddProduct;
     RecyclerView mRecyclerView;
@@ -74,7 +74,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         storage = FirebaseStorage.getInstance();
         productsArrayList = new ArrayList<>();
         productIds = new ArrayList<>();
-        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList,this, this);
+        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList,this);
 
         mRecyclerView.setAdapter(adapter);
         showAllProductDetails();
@@ -159,20 +159,13 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
-
     @Override
-    public void onButtonClick(Boolean btnClicked) {
+    public void onButtonClick(Boolean btnClicked, int position) {
         addProductBtnClicked = true;
-
-        navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment);
-    }
-
-    @Override
-    public void onProductClick(int position) {
         String productId = productIds.get(position);
         Toast.makeText(getContext(),productId,Toast.LENGTH_SHORT).show();
         Bundle bundle  = new Bundle();
         bundle.putString("new_group_productId", productId);
-        navController.navigate(R.id.sellerAddGroupFragment, bundle);
+        navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment);
     }
 }

@@ -21,14 +21,12 @@ import java.util.ArrayList;
 
 public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<SellerProductListRecyclerAdapter.ViewHolder> {
 
-    public interface OnProductClickListener {
-        void onProductClick(int position);
-    }
+
     Context context;
     ArrayList<Product> products;
     private OnAddProductButtonClickedListener listener;
 
-    private  OnProductClickListener productClickListener;
+//    private  OnProductClickListener productClickListener;
 
     public void setContext(Context context) {
         this.context = context;
@@ -44,12 +42,12 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         this.listener = listener;
     }
 
-    public SellerProductListRecyclerAdapter(Context context, ArrayList<Product> products, OnAddProductButtonClickedListener listener, OnProductClickListener productClickListener) {
-        this.context = context;
-        this.products = products;
-        this.listener = listener;
-        this.productClickListener = productClickListener;
-    }
+//    public SellerProductListRecyclerAdapter(Context context, ArrayList<Product> products, OnAddProductButtonClickedListener listener, OnProductClickListener productClickListener) {
+//        this.context = context;
+//        this.products = products;
+//        this.listener = listener;
+//        this.productClickListener = productClickListener;
+//    }
 
     @NonNull
     @Override
@@ -81,10 +79,10 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         holder.productCategory.setText(products.get(position).getCategory());
         holder.productPrice.setText(products.get(position).getProductPrice());
 
-        holder.btn_post.setOnClickListener(v -> listener.onButtonClick(true));
+        holder.btn_post.setOnClickListener(v -> listener.onButtonClick(true, position));
 
         // Set click listener
-        holder.itemView.setOnClickListener(v -> productClickListener.onProductClick(position));
+//        holder.itemView.setOnClickListener(v -> productClickListener.onProductClick(position));
 
     }
 
@@ -118,6 +116,10 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     }
 
     public interface OnAddProductButtonClickedListener{
-        void onButtonClick(Boolean btnClicked);
+        void onButtonClick(Boolean btnClicked, int position);
     }
+
+//    public interface OnProductClickListener {
+//        void onProductClick(int position);
+//    }
 }
