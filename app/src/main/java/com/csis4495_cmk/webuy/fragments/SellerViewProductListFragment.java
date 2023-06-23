@@ -18,12 +18,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
 import com.csis4495_cmk.webuy.dialog.CustomerOrderStatusDialog;
 import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,7 +37,7 @@ import java.util.ArrayList;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class SellerViewProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener {
+public class SellerViewProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener, SellerProductListRecyclerAdapter.OnProductClickListener {
     private NavController navController;
     private FloatingActionButton btnAddProduct;
     RecyclerView mRecyclerView;
@@ -72,7 +74,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         storage = FirebaseStorage.getInstance();
         productsArrayList = new ArrayList<>();
         productIds = new ArrayList<>();
-        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList,this);
+        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList,this, this);
 
         mRecyclerView.setAdapter(adapter);
         showAllProductDetails();
@@ -161,10 +163,16 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
     @Override
     public void onButtonClick(Boolean btnClicked) {
         addProductBtnClicked = true;
+
         navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment);
     }
 
-
-
-
+    @Override
+    public void onProductClick(int position) {
+        String productId = productIds.get(position);
+        Toast.makeText(getContext(),productId,Toast.LENGTH_SHORT).show();
+        Bundle bundle  = new Bundle();
+        bundle.putString("new_group_productId", productId);
+        navController.navigate(R.id.sellerAddGroupFragment, bundle);
+    }
 }
