@@ -49,11 +49,12 @@ public class SellerHomePageActivity extends AppCompatActivity {
                 MenuInflater inflater = popupMenu.getMenuInflater();
                 inflater.inflate(R.menu.seller_profile_menu, popupMenu.getMenu());
 
-                // 添加对 PopupMenu 的 item 点击的处理
                 popupMenu.setOnMenuItemClickListener(menuItem -> {
-                    if (menuItem.getItemId() == R.id.logout) {
-                        // 处理点击 logout 的逻辑
-                        return true;
+                    switch (menuItem.getItemId()){
+                        case R.id.profile:
+                            return true;
+                        case R.id.logout:
+                            return true;
                     }
                     return false;
                 });
