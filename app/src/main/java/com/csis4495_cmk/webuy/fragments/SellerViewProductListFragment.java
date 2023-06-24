@@ -25,10 +25,12 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 
@@ -44,6 +46,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
     private FloatingActionButton btnAddProduct;
     private RecyclerView mRecyclerView;
     private SellerProductListRecyclerAdapter adapter;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
     DatabaseReference reference;
     private androidx.appcompat.widget.SearchView searchView;
     private boolean addProductBtnClicked = false;
@@ -75,7 +78,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         mRecyclerView = view.findViewById(R.id.recyclerView_seller_product_list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new SellerProductListRecyclerAdapter(getContext(),this);
+        adapter = new SellerProductListRecyclerAdapter(getContext(), this);
 
         // Update recycler view contend
         SetAllProductDetails();
@@ -105,8 +108,10 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         btnAddProduct = view.findViewById(R.id.fab_add_new_product);
         btnAddProduct.setOnClickListener(view1 ->
                 Navigation.findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
-
     }
+
+
+
 
     private void SetAllProductDetails() {
         reference = FirebaseDatabase.getInstance().getReference("Product");
@@ -114,18 +119,47 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 allProductsList.clear();
+                for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
+                    Product product = productSnapshot.getValue(Product.class);
+                    String sellerId = product.getSellerId();
+                    String currentUser = auth.getCurrentUser().getUid();
+                    Log.d("Seller filter: ", sellerId);
+                    Log.d("Seller filter: ", currentUser);
+                    if(sellerId.equals(currentUser)){
+                        SetSellerProductDetails(sellerId);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // TODO: handle if canceled
+            }
+        });
+    }
+
+    private void SetSellerProductDetails(String sellerId) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Product");
+        Query query = reference.orderByChild("sellerId").equalTo(sellerId);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                allProductsList.clear();
                 allProductIds.clear();
                 for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
                     Product product = productSnapshot.getValue(Product.class);
                     String productId = productSnapshot.getKey();
+
                     allProductsList.add(product);
                     allProductIds.add(productId);
                     idsToProductsMap.put(productId, product);
                     adapter.setProductId(productId);
                     adapter.setProducts(allProductsList);
-                    Log.d("Current product is: ", allProductsList+"!");
-                    Log.d("Current product id is: ", allProductIds+"!");
-                    Log.d("Now map content are: ", idsToProductsMap+"!");
+
+                    Log.d("Current product is: ", allProductsList + "!");
+                    Log.d("Current product id is: ", allProductIds + "!");
+                    Log.d("Now map content are: ", idsToProductsMap + "!");
                 }
                 UpdateRecyclerView(allProductsList);
             }
@@ -137,8 +171,24 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         });
     }
 
+
+
+//    def find_products_by_seller(seller_id, products):
+//    result = []
+//            for product in products:
+//            if product['sellerId'] == seller_id:
+//            result.append(product)
+//            return result
+//
+//            seller_id = 'FqqB928uYiXZI5rds7o4k98SXc43'
+//    same_seller_products = find_products_by_seller(seller_id, products)
+//
+//for product in same_seller_products:
+//    print(f"Product Name: {product['productName']}, Seller Id: {product['sellerId']}")
+
+
     private void UpdateRecyclerView(ArrayList<Product> pList) {
-        Log.d("Do update, current product is: ", pList+"!");
+        Log.d("Do update, current product is: ", pList + "!");
         adapter.setProducts(pList);
         adapter.notifyDataSetChanged();
         mRecyclerView.setAdapter(adapter);

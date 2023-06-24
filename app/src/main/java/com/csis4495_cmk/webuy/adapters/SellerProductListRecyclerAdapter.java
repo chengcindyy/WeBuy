@@ -30,6 +30,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     Context context;
     private OnAddProductButtonClickedListener listener;
     private String productId;
+    private String sellerId;
     private List<String> productImages;
     private ArrayList<Product> products;
     private Map<String, Product> productMap;
@@ -65,6 +66,10 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
 
     public void setProductMap(Map<String, Product> productMap) {
         this.productMap = productMap;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
     }
 
     @NonNull
