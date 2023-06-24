@@ -163,9 +163,12 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
     public void onButtonClick(Boolean btnClicked, int position) {
         addProductBtnClicked = true;
         String productId = productIds.get(position);
-        Toast.makeText(getContext(),productId,Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(),productId,Toast.LENGTH_SHORT).show();
+
+        //use bundel to save selected productId
         Bundle bundle  = new Bundle();
         bundle.putString("new_group_productId", productId);
-        navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment);
+        //pass bundle to fragment
+        navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment, bundle);
     }
 }

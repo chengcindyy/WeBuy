@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:clickable="true"
+    android:foreground="?selectableItemBackground"
+    app:cardBackgroundColor="#b8cad4"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp"
+    app:contentPadding="4dp">
+
+    <!-- create the container  -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!--        Add style image-->
+       <ImageView
+           android:id="@+id/img_group_style"
+           android:layout_width="100dp"
+           android:layout_height="match_parent"
+           android:src="@mipmap/ic_launcher"
+           android:layout_weight="1"
+           android:layout_gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="3"
+            android:layout_gravity="center"  >
+
+            <!--        Edit style    -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editLayout_group_style_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/style">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_group_style_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--        Edit price    -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editLayout_pgroup_style_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/price">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_group_style_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--        Edit quantity    -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editLayout_group_style_qty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/qty">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_group_style_qty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <!--        Clear this style-->
+        <ImageButton
+            android:layout_marginLeft="5dp"
+            android:id="@+id/imgBtn_delete_group_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="delete the style"
+            android:src="@drawable/baseline_do_not_disturb_on_24"
+            android:layout_weight="1"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
