@@ -171,22 +171,6 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         });
     }
 
-
-
-//    def find_products_by_seller(seller_id, products):
-//    result = []
-//            for product in products:
-//            if product['sellerId'] == seller_id:
-//            result.append(product)
-//            return result
-//
-//            seller_id = 'FqqB928uYiXZI5rds7o4k98SXc43'
-//    same_seller_products = find_products_by_seller(seller_id, products)
-//
-//for product in same_seller_products:
-//    print(f"Product Name: {product['productName']}, Seller Id: {product['sellerId']}")
-
-
     private void UpdateRecyclerView(ArrayList<Product> pList) {
         Log.d("Do update, current product is: ", pList + "!");
         adapter.setProducts(pList);
