@@ -66,6 +66,7 @@
     <string name="user_profile">User Profile</string>
     <string name="logout">Logout</string>
     <string name="search">Search</string>
+    <string name="profile">Profile</string>
 
 
 </resources>

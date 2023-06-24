@@ -13,8 +13,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.SearchView;
 
 import com.csis4495_cmk.webuy.R;
@@ -43,7 +45,20 @@ public class SellerHomePageActivity extends AppCompatActivity {
         topToolbar.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             if (id == R.id.ic_user_profile) {
-                // TODO: Navigate to user profile
+                PopupMenu popupMenu = new PopupMenu(this, findViewById(R.id.ic_user_profile));
+                MenuInflater inflater = popupMenu.getMenuInflater();
+                inflater.inflate(R.menu.seller_profile_menu, popupMenu.getMenu());
+
+                // 添加对 PopupMenu 的 item 点击的处理
+                popupMenu.setOnMenuItemClickListener(menuItem -> {
+                    if (menuItem.getItemId() == R.id.logout) {
+                        // 处理点击 logout 的逻辑
+                        return true;
+                    }
+                    return false;
+                });
+
+                popupMenu.show();
                 return true;
             }
             return false;
