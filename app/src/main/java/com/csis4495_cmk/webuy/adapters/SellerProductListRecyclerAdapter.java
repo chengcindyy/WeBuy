@@ -2,7 +2,6 @@ package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,21 +23,30 @@ import com.google.android.gms.tasks.OnFailureListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<SellerProductListRecyclerAdapter.ViewHolder> {
 
     Context context;
     private OnAddProductButtonClickedListener listener;
+    private String productId;
     private List<String> productImages;
     private ArrayList<Product> products;
     private Map<String, Product> productMap;
 
-    public SellerProductListRecyclerAdapter(Context context, ArrayList<Product> products, Map<String, Product> mProductMap, OnAddProductButtonClickedListener listener) {
+    public SellerProductListRecyclerAdapter(){
+        // default constructor
+    }
+
+    public SellerProductListRecyclerAdapter(Context context, OnAddProductButtonClickedListener listener) {
+        this.context = context;
+        this.listener = listener;
+    }
+
+    public SellerProductListRecyclerAdapter(Context context, ArrayList<Product> products, OnAddProductButtonClickedListener listener) {
         this.context = context;
         this.products = products;
-        this.productMap = mProductMap;
+//        this.productMap = mProductMap;
         this.listener = listener;
         notifyDataSetChanged();
     }
@@ -47,9 +55,16 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         this.context = context;
     }
 
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
     public void setProducts(ArrayList<Product> products) {
         this.products = products;
-        this.notifyDataSetChanged();
+    }
+
+    public void setProductMap(Map<String, Product> productMap) {
+        this.productMap = productMap;
     }
 
     @NonNull
@@ -89,9 +104,6 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         holder.productPrice.setText(products.get(position).getProductPrice());
 
         holder.btn_post.setOnClickListener(v -> listener.onButtonClick(true));
-
-        Log.d("Test Map: ", productMap+"!");
-
     }
 
     @Override
@@ -119,8 +131,11 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     public void removeItem(int position) {
         // Remove item
         products.remove(position);
-        // Notify the adapter that an item has been removed
+        productMap.remove(productId);
+        // Notify the adapter when an item has been removed
         notifyItemRemoved(position);
+//        notifyItemRangeChanged(position, getItemCount());
+//        notifyDataSetChanged();
     }
 
     public interface OnAddProductButtonClickedListener {

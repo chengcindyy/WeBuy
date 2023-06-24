@@ -27,8 +27,7 @@
                android:layout_height="match_parent"
                android:layout_gravity="top|center"
                android:orientation="vertical"
-               android:paddingHorizontal="25dp"
-               android:paddingVertical="35dp">
+               android:paddingHorizontal="25dp">
 
                <!-- Page title-->
                <TextView

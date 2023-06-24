@@ -268,25 +268,20 @@ public class SellerAddProductFragment extends Fragment
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
-        List<Uri> uriList = new ArrayList<>();
+        uriUploadProductImgs = new ArrayList<>();
         for (String filename : images) {
             StorageReference imageRef = storageRef.child("ProductImages" + "/" + filename);
             imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                uriList.add(uri);
-                if (uriList.size() == images.size()) {
-                    uriUploadProductImgs = uriList;
+                uriUploadProductImgs.add(uri);
+                if (uriUploadProductImgs.size() == images.size()) {
                     setProductImagesAdapter();
-
                 }
             }).addOnFailureListener(exception -> {
-                imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    Log.d("Test", "Download URL: " + uri.toString());
-                    Log.e("Test", "Download failed", exception);
-                });
+                Log.e("Test", "Download failed", exception);
             });
         }
-
     }
+
 
     private void checkUserPermission() {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_MEDIA_IMAGES)
@@ -413,6 +408,9 @@ public class SellerAddProductFragment extends Fragment
 
                 uploadProduct(productName, productCategory,productDescription,
                         taxId, strProductImgNames, styleList, strPrice);
+                Log.d("Edit product", "name: "+productName+" Category: "+productCategory+" Desc: "+
+                        productDescription+" tax id: "+taxId+" Image: "+strProductImgNames+ " style list: "+styleList + " price: "+strPrice);
+
 
                 //go back to the frag you came from
                 Navigation.findNavController(v).popBackStack();
@@ -486,6 +484,7 @@ public class SellerAddProductFragment extends Fragment
     }
 
     private void compressStyleImage(List<ProductStyle> styleList) {
+        Log.d("Edit product", "compressStyleImage() run");
         String styleImgName;
         uploadImgCount = 0;
         for (int i = 0; i< styleList.size(); i++) {
@@ -505,6 +504,7 @@ public class SellerAddProductFragment extends Fragment
 
     }
     private void compressProductImages() {
+        Log.d("Edit product", "compressStyleImage() run");
         strProductImgNames = new ArrayList<>();
         uploadImgCount = 0;
         for (int i = 0; i < uriUploadProductImgs.size(); i++) {
@@ -517,10 +517,12 @@ public class SellerAddProductFragment extends Fragment
                 strProductImgNames.add(productImgName);
                 //to FireStorage
                 uploadImagesToFireStorage(productImgName, imageBytes, uriUploadProductImgs);
+                Log.d("Edit product", "img count"+uploadImgCount);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
     }
 
     private void uploadImagesToFireStorage(String imageName, byte[] imageBytes, List<?> imageList) {

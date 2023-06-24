@@ -18,9 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -46,14 +43,14 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
     private NavController navController;
     private FloatingActionButton btnAddProduct;
     private RecyclerView mRecyclerView;
-    private ArrayList<Product> productsArrayList;
-    private ArrayList<String> productIds;
     private SellerProductListRecyclerAdapter adapter;
-    private boolean addProductBtnClicked = false;
-    private int position;
     DatabaseReference reference;
     private androidx.appcompat.widget.SearchView searchView;
-    Map<String, Product> productMap;
+    private boolean addProductBtnClicked = false;
+    private int position;
+    private ArrayList<Product> allProductsList;
+    private ArrayList<String> allProductIds;
+    private Map<String, Product> idsToProductsMap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,18 +67,18 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         // Set navigation controller, how to navigate simply call -> controller.navigate(destination id)
         navController = NavHostFragment.findNavController(SellerViewProductListFragment.this);
 
+        allProductsList = new ArrayList<>();
+        allProductIds = new ArrayList<>();
+        idsToProductsMap = new HashMap<>();
+
+        // Set recycler view
         mRecyclerView = view.findViewById(R.id.recyclerView_seller_product_list);
         mRecyclerView.setHasFixedSize(true);
-        productMap = new HashMap<>();
-        productsArrayList = new ArrayList<>();
-        productIds = new ArrayList<>();
-        UpdateRecyclerView(productMap);
-        showAllProductDetails();
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new SellerProductListRecyclerAdapter(getContext(),this);
 
-        // Open add product page
-        btnAddProduct = view.findViewById(R.id.fab_add_new_product);
-        btnAddProduct.setOnClickListener(view1 ->
-                Navigation.findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
+        // Update recycler view contend
+        SetAllProductDetails();
 
         // Call swipe helper
         OnRecyclerItemSwipeActionHelper();
@@ -103,48 +100,58 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
                 }
             });
         }
+
+        // Open add product page
+        btnAddProduct = view.findViewById(R.id.fab_add_new_product);
+        btnAddProduct.setOnClickListener(view1 ->
+                Navigation.findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
+
     }
 
-    private void UpdateRecyclerView(Map<String, Product> productMap) {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        productsArrayList = new ArrayList<>(productMap.values());
-        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList, productMap, this);
-        adapter.setProducts(productsArrayList);
-        mRecyclerView.setAdapter(adapter);
-    }
-
-    private void showAllProductDetails() {
+    private void SetAllProductDetails() {
         reference = FirebaseDatabase.getInstance().getReference("Product");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                productsArrayList.clear();
-                productIds.clear();
+                allProductsList.clear();
+                allProductIds.clear();
                 for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
                     Product product = productSnapshot.getValue(Product.class);
                     String productId = productSnapshot.getKey();
-                    productIds.add(productId);
-                    productsArrayList.add(product);
-                    productMap.put(productId,product);
-                    Log.d("Test Map: ", productMap+"!");
+                    allProductsList.add(product);
+                    allProductIds.add(productId);
+                    idsToProductsMap.put(productId, product);
+                    adapter.setProductId(productId);
+                    adapter.setProducts(allProductsList);
+                    Log.d("Current product is: ", allProductsList+"!");
+                    Log.d("Current product id is: ", allProductIds+"!");
+                    Log.d("Now map content are: ", idsToProductsMap+"!");
                 }
-                UpdateRecyclerView(productMap);
+                UpdateRecyclerView(allProductsList);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // do nothing
+                // TODO: handle if canceled
             }
         });
     }
 
+    private void UpdateRecyclerView(ArrayList<Product> pList) {
+        Log.d("Do update, current product is: ", pList+"!");
+        adapter.setProducts(pList);
+        adapter.notifyDataSetChanged();
+        mRecyclerView.setAdapter(adapter);
+    }
+
     private void search(String str) {
-        Map<String, Product> mProductMap = productMap.entrySet()
+        Map<String, Product> mProductMap = idsToProductsMap.entrySet()
                 .stream()
                 .filter(map -> map.getValue().getProductName().toLowerCase().contains(str.toLowerCase()) ||
                         map.getValue().getCategory().toLowerCase().contains(str.toLowerCase())
                 ).collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
-        UpdateRecyclerView(mProductMap);
+        allProductsList = new ArrayList<>(mProductMap.values());
+        UpdateRecyclerView(allProductsList);
     }
 
     private void OnRecyclerItemSwipeActionHelper() {
@@ -161,12 +168,12 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
 
                 // Swiped item left: remove item from database
                 if (direction == ItemTouchHelper.LEFT) {
-                    productId = productIds.get(position);
+                    productId = allProductIds.get(position);
                     showConfirmToRemoveDialog(productId, position);
 
                     // Swiped item right: open edit page
                 } else if (direction == ItemTouchHelper.RIGHT) {
-                    productId = productIds.get(position);
+                    productId = allProductIds.get(position);
                     Bundle bundle = new Bundle();
                     bundle.putString("productId", productId);
                     SellerAddProductFragment sellerAddProductFragment = new SellerAddProductFragment();
@@ -204,7 +211,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
             public void onClick(DialogInterface dialog, int which) {
                 reference.child(productId).removeValue();
                 adapter.removeItem(position);
-                productIds.remove(position);
+                allProductIds.remove(position);
                 adapter.notifyItemRemoved(position);
             }
         });
