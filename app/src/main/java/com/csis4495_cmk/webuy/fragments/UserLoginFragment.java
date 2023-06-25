@@ -410,8 +410,16 @@ public class UserLoginFragment extends Fragment {
         edit_email = dialogView.findViewById(R.id.edit_loginEmail);
         edit_password = dialogView.findViewById(R.id.edit_loginPassword);
 
+        String _email = edit_email.getText().toString();
+        String _password = edit_email.getText().toString();
+
         // Set up login button click listener
-        builder.setPositiveButton("Login", null);
+        builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                loginUserWithFirebase(_email,_password);
+            }
+        });
 
         // Set up cancel button click listener
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
