@@ -1,5 +1,6 @@
 package com.csis4495_cmk.webuy;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,8 +13,10 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +36,7 @@ public class CustomerProfileFragment extends Fragment {
 
     private TextView labelUsername, labelRole;
     private Button logoutButton, btnTest;
+    private ImageView imgUserProfile;
     private ImageButton btnSetting, btnViewAll, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = auth.getCurrentUser();
@@ -72,6 +76,14 @@ public class CustomerProfileFragment extends Fragment {
 
         // Firebase instance
         auth = FirebaseAuth.getInstance();
+
+        imgUserProfile = view.findViewById(R.id.img_user_profile);
+        imgUserProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showUploadPicSelectionDialog();
+            }
+        });
 
         // Display order status
         btnViewAll = view.findViewById(R.id.btn_view_all_order);
@@ -211,5 +223,58 @@ public class CustomerProfileFragment extends Fragment {
         alertDialog.show();
     }
 
+    private void showUploadPicSelectionDialog() {
+        //Set up alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
+        // Inflate the layout for the dialog
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_select_image, null);
+        builder.setView(dialogView);
+
+        // Get references to dialog views
+        ImageButton UploadFromDrive = dialogView.findViewById(R.id.btn_drive_upload);
+        ImageButton UploadFromCloud = dialogView.findViewById(R.id.btn_cloud_upload);
+        ImageButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+
+        UploadFromDrive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        UploadFromCloud.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        //Create AlertDialog
+        AlertDialog alertDialog = builder.create();
+        //Show AlertDialog
+        alertDialog.show();
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        if (alertDialog.getWindow() != null) {
+            layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
+        }
+
+        int heightDp = 250;
+        float density = getResources().getDisplayMetrics().density;
+        int heightPixel = (int) (heightDp * density);
+
+        layoutParams.height = heightPixel;
+
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setAttributes(layoutParams);
+        }
+    }
 }

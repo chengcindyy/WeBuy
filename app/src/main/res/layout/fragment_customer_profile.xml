@@ -23,11 +23,12 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/img_profile"
+                android:id="@+id/img_user_profile"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="10dp"
-                android:src="@drawable/app_default_profile_img_2"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/circle_image"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -38,24 +39,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="30dp"
-                android:layout_toEndOf="@+id/img_profile"
+                android:layout_toEndOf="@+id/img_user_profile"
                 android:fontFamily="sans-serif-condensed-light"
                 android:text="Username"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/img_profile"
+                app:layout_constraintStart_toEndOf="@+id/img_user_profile"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/txv_member_role"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="15dp"
                 android:fontFamily="sans-serif-condensed-light"
                 android:text="Member type: "
                 android:textSize="15sp"
-                app:layout_constraintStart_toEndOf="@+id/img_profile"
+
+                app:layout_constraintStart_toStartOf="@+id/txv_username"
                 app:layout_constraintTop_toBottomOf="@+id/txv_username" />
 
             <ImageButton
@@ -157,6 +158,8 @@
                     android:layout_height="20dp"
                     android:layout_marginStart="5dp"
                     android:layout_weight="1"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:textStyle="bold"
                     android:text="My order" />
 
                 <ImageButton
@@ -345,6 +348,8 @@
                     android:layout_height="20dp"
                     android:layout_marginStart="5dp"
                     android:layout_weight="1"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:textStyle="bold"
                     android:text="More functions" />
 
             </LinearLayout>

@@ -402,7 +402,7 @@ public class UserLoginFragment extends Fragment {
         builder.setTitle("Login");
 
         // Inflate the layout for the dialog
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.login_dialog, null);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_user_login, null);
         builder.setView(dialogView);
 
         // Get references to dialog views
@@ -424,7 +424,7 @@ public class UserLoginFragment extends Fragment {
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Cancel button clicked, do nothing
+                dialog.dismiss();
             }
         });
 
