@@ -18,18 +18,22 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.fragments.SellerAddStyleFragment;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.facebook.login.LoginManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Objects;
 
 public class SellerHomePageActivity extends AppCompatActivity {
 
     private MaterialToolbar topToolbar;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,7 @@ public class SellerHomePageActivity extends AppCompatActivity {
                         case R.id.profile:
                             return true;
                         case R.id.logout:
+                            logoutAccount();
                             return true;
                     }
                     return false;
@@ -64,5 +69,14 @@ public class SellerHomePageActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    private void logoutAccount() {
+        auth.signOut();
+        LoginManager.getInstance().logOut();
+        Toast.makeText(SellerHomePageActivity.this,"Logged Out", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(SellerHomePageActivity.this, MainActivity.class);
+        startActivity(intent);
+        SellerHomePageActivity.this.finish();
     }
 }
