@@ -241,7 +241,8 @@ public class SellerAddProductFragment extends Fragment
 
                     if(product.getProductStyles() != null){
                         editStyleList = product.getProductStyles();
-                        Log.d("Test", editStyleList+"!");
+                        Log.d("Test display style", "style amount: "+editStyleList.stream().count()+"!");
+                        Log.d("Test display style", editStyleList+"!");
                         setStylesAdapter(editStyleList);
                     }
                 }
@@ -329,13 +330,15 @@ public class SellerAddProductFragment extends Fragment
 
     // TODO: add List<ProductStyle> styles as 1st parameter, still needs to work
     private void setStylesAdapter(List<ProductStyle> styles) {
+        Log.d("Test display style", "setStylesAdapter() run");
+        Log.d("Test display style", "passed styles: "+styles);
         SellerStyleListRecyclerAdapter sellerStyleListRecyclerAdapter = new SellerStyleListRecyclerAdapter(getContext(), styles);
         //ItemTouchClass
         ItemTouchHelper.Callback callback =
                 new ItemMoveCallback(sellerStyleListRecyclerAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerViewStyles);
-
+        Log.d("Test display style", "recyclerview styles: "+recyclerViewStyles);
         recyclerViewStyles.setAdapter(sellerStyleListRecyclerAdapter);
         sellerStyleListRecyclerAdapter.setmStyleListChangedListener(this);
         sellerStyleListRecyclerAdapter.notifyDataSetChanged();
@@ -648,6 +651,7 @@ public class SellerAddProductFragment extends Fragment
             //set the recyclerview
             LinearLayoutManager lm = new LinearLayoutManager(getContext());
             recyclerViewStyles.setLayoutManager(lm);
+            Log.d("Test display style", styleList+"!");
             setStylesAdapter(styleList);
 
             //set product price invisible
