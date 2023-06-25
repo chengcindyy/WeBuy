@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.fragments;
 
 import static android.content.ContentValues.TAG;
 
@@ -15,10 +15,11 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,14 +27,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.csis4495_cmk.webuy.activities.MainActivity;
+import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupImagesAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
+import com.csis4495_cmk.webuy.adapters.SellerAddProductImagesAdapter;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.tools.ItemMoveCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -51,6 +54,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import io.grpc.Context;
 
 
 public class SellerAddGroupFragment extends Fragment {
@@ -76,11 +81,12 @@ public class SellerAddGroupFragment extends Fragment {
     private RecyclerView rv_img, rv_style;
 
     private SellerAddGroupStylesAdapter stylesAdapter;
+
     private SellerAddGroupImagesAdapter imagesAdapter;
 
     List<ProductStyle> groupStyles;
-    List<Uri> styleImageUris;
     List<Uri> productImageUris;
+    List<String> imgPaths;
     private Button btnStart, btnEnd ;
     private Date startTime, endTime;
 
@@ -100,10 +106,32 @@ public class SellerAddGroupFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_seller_add_group, container, false);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
-        //get passed bundle
+        //Get passed bundle
         if (getArguments() != null) {
             productId = getArguments().getString("new_group_productId");
         }
+
+        rv_img = view.findViewById(R.id.rv_groupImg_publish);
+        rv_style = view.findViewById(R.id.rv_groupStyle_publish);
+
+        //Load product images and product styles data from database to fragment
+        LinearLayoutManager styleLayoutManager = new LinearLayoutManager(getContext());
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 4);
+        rv_style.setLayoutManager(styleLayoutManager);
+        rv_img.setLayoutManager(gridLayoutManager);
+//      rv_style.setHasFixedSize(true);
+        stylesAdapter = new SellerAddGroupStylesAdapter();
+        rv_style.setAdapter(stylesAdapter);
+        imagesAdapter = new SellerAddGroupImagesAdapter();
+        rv_img.setAdapter(imagesAdapter);
+
+        productImageUris = new ArrayList<>();
+        groupStyles = new ArrayList<>();
+        imgPaths = new ArrayList<>();
+
+        getProdcutData();
+
+        getProductStyle();
 
         return view;
     }
@@ -112,7 +140,8 @@ public class SellerAddGroupFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Set navigation controller, how to navigate simply call -> controller.navigate(destination id)
+
+        //Set navigation controller, how to navigate simply call -> controller.navigate(destination id)
         navController = NavHostFragment.findNavController(SellerAddGroupFragment.this);
 
         tgBtnGp_publish = view.findViewById(R.id.tgBtnGp_publish);
@@ -126,22 +155,19 @@ public class SellerAddGroupFragment extends Fragment {
         btnStart = view.findViewById(R.id.btn_start_group_publish);
         btnEnd = view.findViewById(R.id.btn_end_group_publish);
 
-        //Recycler view of product images and styles
-        rv_img = view.findViewById(R.id.rv_groupImg_publish);
-        rv_style = view.findViewById(R.id.rv_groupStyle_publish);
 
-        //Group category
+        //Get group category options
         groupCategory = view.findViewById(R.id.edit_group_category_publish);
         ArrayAdapter<CharSequence> productCatAdapter = ArrayAdapter.createFromResource(getContext(), R.array.arr_product_category, android.R.layout.simple_list_item_1);
         groupCategory.setAdapter(productCatAdapter);
         groupCategory.setOnItemClickListener((parent, view2, position, id) -> {});
 
-        //set default group type
+        //Set default group type
         tgBtnGp_publish.check(tgBtn_in_stock_publish.getId());
         groupType = 0;
         btnStart.setEnabled(false);
         btnEnd.setEnabled(false);
-        //set group type
+        //To change group type
         tgBtnGp_publish.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             switch (checkedId){
                 case R.id.tgBtn_in_stock_publish:
@@ -170,7 +196,7 @@ public class SellerAddGroupFragment extends Fragment {
             }
         });
 
-        //set group start and end time
+        //Set group startTime and endTime
         startTime = new Date();
         endTime = new Date();
         btnStart.setOnClickListener(v -> {
@@ -194,16 +220,7 @@ public class SellerAddGroupFragment extends Fragment {
             }
         });
 
-
-        //Load data from database to fragment
-        RecyclerView.LayoutManager stylelayoutManager = new LinearLayoutManager(getContext());
-        rv_style.setLayoutManager(stylelayoutManager);
-//        rv_style.setHasFixedSize(true);
-        stylesAdapter = new SellerAddGroupStylesAdapter();
-        rv_style.setAdapter(stylesAdapter);
-        getProdcutData();
-        getProductStyle();
-        //set delete style image button
+        //Set delete style image button listener
         stylesAdapter.setOnImgBtnDeleteStyleListener(new SellerAddGroupStylesAdapter.onImgBtnDeleteStyleListener() {
             @Override
             public void onDeleteClick(int position) {
@@ -214,6 +231,7 @@ public class SellerAddGroupFragment extends Fragment {
 
     }
 
+    //Date picker
     private void openDateDialog(Date date, OnDateTimeSetListener listener) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
@@ -239,6 +257,7 @@ public class SellerAddGroupFragment extends Fragment {
         datePickerDialog.show();
     }
 
+    //Validate endTime later than startTime
     public void validateEndTime(){
         if (startTime.compareTo(endTime) >= 0 ){
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -262,7 +281,10 @@ public class SellerAddGroupFragment extends Fragment {
         void onDateTimeSet(Date dateTime);
     }
 
+    //Get Product data
     private void getProdcutData(){
+        List<String> imgPaths = new ArrayList<>();
+        productImageUris.clear();
         DatabaseReference productReference = databaseReference.child("Product").child(productId);
         productReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
@@ -275,7 +297,6 @@ public class SellerAddGroupFragment extends Fragment {
                         String prodcutCategoryText = dataSnapshot.child("category").getValue(String.class);
                         String productPriceText = dataSnapshot.child("productPrice").getValue(String.class);
                         tax = dataSnapshot.child("tax").getValue(Integer.class);
-                        // Set the retrieved values in your EditText fields if the views are available
                         if (prodcutNameText != null) {
                             groupName.setText(prodcutNameText);
                         }
@@ -288,18 +309,32 @@ public class SellerAddGroupFragment extends Fragment {
                         if(productPriceText !=null){
                             groupPriceRange.setText(productPriceText);
                         }
-                        Toast.makeText(getContext(), "Tax "+Integer.toString(tax),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Tax: "+Integer.toString(tax),Toast.LENGTH_SHORT).show();
+                        DataSnapshot productImgSnapshot = dataSnapshot.child("productImages");
+                        for (DataSnapshot img : productImgSnapshot.getChildren()) {
+                            String imgPath = img.getValue(String.class);
+                            imgPaths.add(imgPath);
+                        }
+                        imagesAdapter.updateGroupImgPaths(imgPaths);
+                        imagesAdapter.setOnGroupDeleteImgListener(new SellerAddGroupImagesAdapter.onGroupDeleteImgListener() {
+                            @Override
+                            public void onDeleteClick(int position) {
+                                Toast.makeText(getContext(), "size = " + imgPaths.size(), Toast.LENGTH_SHORT).show();
+                                imgPaths.remove(position);
+                                imagesAdapter.updateGroupImgPaths(imgPaths);
+                            }
+                        });
                     }
                 } else {
                     Log.d(TAG, "Cannot retrieve data from database");
-                    Toast.makeText(getContext(), "Cannot retrieve data from database", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Cannot retrieve data from database", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
+    //Get Product style(s) data
     private void getProductStyle(){
-        groupStyles = new ArrayList<>();
         databaseReference.child("Product").child(productId).child("productStyles").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -319,5 +354,6 @@ public class SellerAddGroupFragment extends Fragment {
             }
         });
     }
+
 
 }

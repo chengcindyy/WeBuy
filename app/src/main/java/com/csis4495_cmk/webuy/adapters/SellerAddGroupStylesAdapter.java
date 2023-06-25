@@ -59,7 +59,9 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
         //load style image
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
-        StorageReference imageReference = storageReference.child(styles.get(position).getStylePic());
+//        StorageReference imageReference = storageReference.child(styles.get(position).getStylePic());
+        StorageReference imageReference = storageReference.child(style.getStylePic());
+
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching
             Picasso.with(context).load(uri.toString()).into(holder.styleImg);
@@ -111,9 +113,6 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             styleQty.setText("");
         }
 
-        public void bindImages(Uri u){
-            Glide.with(context).load(u).into(styleImg);
-        }
     }
 
     public interface onImgBtnDeleteStyleListener{
