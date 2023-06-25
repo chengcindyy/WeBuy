@@ -86,7 +86,6 @@ public class UserLoginFragment extends Fragment {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Navigate to role selection page
                 navController.navigate(R.id.action_userLoginFragment_to_roleSelectionFragment);
             }
         });
