@@ -131,7 +131,6 @@
 
             <!-- Creating a progress bar-->
             <ProgressBar
-                android:id="@+id/progress_circular_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -146,7 +145,6 @@
                 android:layout_marginVertical="15dp">
 
                 <View
-                    android:id="@+id/divider"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="2"
@@ -161,7 +159,6 @@
                     android:text="or"/>
 
                 <View
-                    android:id="@+id/divider2"
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="2"
@@ -171,7 +168,6 @@
             </LinearLayout>
 
             <FrameLayout
-                android:id="@+id/FrameLayout1"
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

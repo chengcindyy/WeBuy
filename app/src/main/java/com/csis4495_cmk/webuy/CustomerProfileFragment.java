@@ -1,15 +1,18 @@
 package com.csis4495_cmk.webuy;
 
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,26 +23,41 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.csis4495_cmk.webuy.activities.MainActivity;
 import com.csis4495_cmk.webuy.dialog.CustomerOrderStatusDialog;
+import com.csis4495_cmk.webuy.models.Customer;
+import com.csis4495_cmk.webuy.models.Seller;
 import com.csis4495_cmk.webuy.models.User;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.skydoves.expandablelayout.ExpandableAnimation;
+import com.skydoves.expandablelayout.ExpandableLayout;
 
 public class CustomerProfileFragment extends Fragment {
 
-    private TextView labelUsername, labelRole;
+    private TextView labelUsername;
     private Button logoutButton, btnTest;
     private ImageView imgUserProfile;
     private ImageButton btnSetting, btnViewAll, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
+    private ExpandableLayout expProfile, expOrderStatus, expWishList, expMoreFunctions;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = auth.getCurrentUser();
+    DatabaseReference reference;
+    StorageReference storage = FirebaseStorage.getInstance().getReference();
+    StorageReference imageRef;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,7 +82,6 @@ public class CustomerProfileFragment extends Fragment {
 
         // show profile info
         labelUsername = view.findViewById(R.id.txv_username);
-        labelRole = view.findViewById(R.id.txv_member_role);
 
         if (firebaseUser != null){
             // Notify user if they have not verified email
@@ -85,14 +102,16 @@ public class CustomerProfileFragment extends Fragment {
             }
         });
 
-        // Display order status
-        btnViewAll = view.findViewById(R.id.btn_view_all_order);
-        btnViewAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openOrderStatusDialog("viewAll");
-            }
-        });
+        // Expendable layout
+        expOrderStatus = view.findViewById(R.id.expandableLayout_order);
+        expProfile = view.findViewById(R.id.expandableLayout_profile);
+        expWishList = view.findViewById(R.id.expandableLayout_saves);
+        expMoreFunctions = view.findViewById(R.id.expandableLayout_more_function);
+
+        setupExpandableLayoutClickListener(expOrderStatus);
+        setupExpandableLayoutClickListener(expProfile);
+        setupExpandableLayoutClickListener(expWishList);
+        setupExpandableLayoutClickListener(expMoreFunctions);
 
         btnViewPending = view.findViewById(R.id.btn_view_pending);
         btnViewPending.setOnClickListener(new View.OnClickListener() {
@@ -159,6 +178,20 @@ public class CustomerProfileFragment extends Fragment {
 
     }
 
+
+    private void setupExpandableLayoutClickListener(final ExpandableLayout expandableLayout) {
+        expandableLayout.parentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (expandableLayout.isExpanded()) {
+                    expandableLayout.collapse();
+                } else {
+                    expandableLayout.expand();
+                }
+            }
+        });
+    }
+
     private void openOrderStatusDialog(String tab) {
         CustomerOrderStatusDialog dialog = new CustomerOrderStatusDialog();
         dialog.show(getParentFragmentManager(), tab);
@@ -175,8 +208,8 @@ public class CustomerProfileFragment extends Fragment {
                     String _USERNAME = firebaseUser.getDisplayName();
                     String _ROLE = user.getRole();
 
+
                     labelUsername.setText(_USERNAME);
-                    labelRole.setText(_ROLE);
                 }else{
                     Toast.makeText(requireActivity(), "something went wrong! " +
                             "Show profile was canceled", Toast.LENGTH_LONG).show();
@@ -232,14 +265,14 @@ public class CustomerProfileFragment extends Fragment {
         builder.setView(dialogView);
 
         // Get references to dialog views
-        ImageButton UploadFromDrive = dialogView.findViewById(R.id.btn_drive_upload);
-        ImageButton UploadFromCloud = dialogView.findViewById(R.id.btn_cloud_upload);
+        ImageButton UploadFromDrive = dialogView.findViewById(R.id.btn_upload_image);
+        ImageButton UploadFromCloud = dialogView.findViewById(R.id.btn_select_default_image);
         ImageButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
 
         UploadFromDrive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                mGetContent.launch("image/*");
             }
         });
 
@@ -277,4 +310,101 @@ public class CustomerProfileFragment extends Fragment {
             alertDialog.getWindow().setAttributes(layoutParams);
         }
     }
-}
+
+    private void CreatePathBaseOnUserRole(Uri uri) {
+        String uid = firebaseUser.getUid();
+        reference = FirebaseDatabase.getInstance().getReference("User").child(uid);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                String userRole = user.getRole();
+                StorageReference storageRef = storage.child("ProfileImages");
+
+                if(userRole.equals("Customer")){
+                    imageRef = storageRef.child("customerImages");
+                }else{
+                    imageRef = storageRef.child("sellerImages");
+                }
+
+                // Start the upload here
+                uploadImage(uri);
+                PassDataToFirebase(userRole);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "checkingCurrentUserRole(): canceled", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void uploadImage(Uri uri) {
+        // Check that the imageRef is not null
+        if (imageRef != null) {
+            String uid = firebaseUser.getUid();
+            StorageReference fileRef = imageRef.child(uid + ".jpg");
+
+            UploadTask uploadTask = fileRef.putFile(uri);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.d("Test Upload Profile Img: ", "ActivityResultLauncher: onFailure()");
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d("Test Upload Profile Img: ", "ActivityResultLauncher: onSuccess()");
+                    fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Log.d("Test Upload Profile Img: ", "Uri: "+uri.toString());
+                            Glide.with(getContext())
+                                    .load(uri.toString())
+                                    .circleCrop() // or .transform(new CircleCrop())
+                                    .into(imgUserProfile);
+
+                        }
+                    });
+                }
+            });
+
+        } else {
+            Toast.makeText(getContext(), "Image uploaded failed.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void PassDataToFirebase(String userRole) {
+        String uid = firebaseUser.getUid();
+        reference = FirebaseDatabase.getInstance().getReference(userRole).child(uid);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Customer customer = snapshot.getValue(Customer.class);
+                Seller seller = snapshot.getValue(Seller.class);
+                if(customer != null){
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+    }
+
+    private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    CreatePathBaseOnUserRole(uri);
+                }
+            });
+
+
+    }

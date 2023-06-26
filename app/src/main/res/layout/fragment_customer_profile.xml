@@ -6,39 +6,65 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".CustomerProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:backgroundTint="#F6F6F6"
-        android:background="@color/white">
+        android:clipChildren="false"
+        android:background="@color/cancel_grey">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
+        <!-- Setting button-->
+        <ImageButton
+            android:id="@+id/btn_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@android:color/transparent"
+            android:minWidth="32dp"
+            android:minHeight="32dp"
+            android:src="@drawable/baseline_settings_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="96dp"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/button_circle_image_white"
+            android:elevation="10dp"
+            android:padding="3dp"
+            android:src="@drawable/baseline_add_photo_alternate_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="50dp"
+            android:background="@color/white"
+            android:backgroundTint="#F6F6F6"
+            android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/img_user_profile"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_margin="10dp"
                 android:layout_marginStart="16dp"
-                android:src="@drawable/circle_image"
+                android:layout_marginTop="-33dp"
+                android:src="@drawable/button_circle_image_grey"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
                 android:id="@+id/txv_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="20dp"
                 android:layout_toEndOf="@+id/img_user_profile"
                 android:fontFamily="sans-serif-condensed-light"
                 android:text="Username"
@@ -47,348 +73,86 @@
                 app:layout_constraintStart_toEndOf="@+id/img_user_profile"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/txv_member_role"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:fontFamily="sans-serif-condensed-light"
-                android:text="Member type: "
-                android:textSize="15sp"
+        </LinearLayout>
 
-                app:layout_constraintStart_toStartOf="@+id/txv_username"
-                app:layout_constraintTop_toBottomOf="@+id/txv_username" />
-
-            <ImageButton
-                android:id="@+id/btn_setting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@android:color/transparent"
-                android:minWidth="32dp"
-                android:minHeight="32dp"
-                android:src="@drawable/baseline_settings_24"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout2"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-            tools:layout_editor_absoluteX="20dp">
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/white"
+            android:backgroundTint="#F6F6F6"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_weight="1"
-                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="15dp"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/txv_favorite"
-                    android:layout_width="wrap_content"
+                <com.skydoves.expandablelayout.ExpandableLayout
+                    android:id="@+id/expandableLayout_order"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="0" />
+                    android:layout_marginVertical="5dp"
+                    app:expandable_duration="300"
+                    app:expandable_animation="bounce"
+                    app:expandable_isExpanded="true"
+                    app:expandable_parentLayout="@layout/layout_parent_order_status_title"
+                    app:expandable_secondLayout="@layout/layout_second_order_status"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                </com.skydoves.expandablelayout.ExpandableLayout>
+
+                <com.skydoves.expandablelayout.ExpandableLayout
+                    android:id="@+id/expandableLayout_profile"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Favorite Store" />
+                    android:layout_marginVertical="5dp"
+                    app:expandable_duration="300"
+                    app:expandable_animation="bounce"
+                    app:expandable_isExpanded="false"
+                    app:expandable_parentLayout="@layout/layout_parent_edit_profile_title"
+                    app:expandable_secondLayout="@layout/layout_second_edit_profile_content"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+                </com.skydoves.expandablelayout.ExpandableLayout>
+
+                <com.skydoves.expandablelayout.ExpandableLayout
+                    android:id="@+id/expandableLayout_saves"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="5dp"
+                    app:expandable_duration="300"
+                    app:expandable_animation="bounce"
+                    app:expandable_isExpanded="false"
+                    app:expandable_parentLayout="@layout/layout_parent_saves_title"
+                    app:expandable_secondLayout="@layout/layout_second_wish_list"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+                </com.skydoves.expandablelayout.ExpandableLayout>
+
+                <com.skydoves.expandablelayout.ExpandableLayout
+                    android:id="@+id/expandableLayout_more_function"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="5dp"
+                    app:expandable_duration="300"
+                    app:expandable_animation="bounce"
+                    app:expandable_isExpanded="true"
+                    app:expandable_parentLayout="@layout/layout_parent_more_function"
+                    app:expandable_secondLayout="@layout/layout_second_more_function"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+                </com.skydoves.expandablelayout.ExpandableLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+        </ScrollView>
 
-                <TextView
-                    android:id="@+id/txv_wishlist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Wish List" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginHorizontal="10dp"
-            android:background="@drawable/rounded_edittext"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-            tools:layout_editor_absoluteX="10dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="4dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/baseline_list_24" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_weight="1"
-                    android:fontFamily="sans-serif-condensed-light"
-                    android:textStyle="bold"
-                    android:text="My order" />
-
-                <ImageButton
-                    android:id="@+id/btn_view_all_order"
-                    android:layout_width="0dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="0.1"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/view_all"
-                    android:gravity="end"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/baseline_search_24"
-                    tools:ignore="TouchTargetSizeCheck" />
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/divider4"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="?android:attr/listDivider" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btn_view_pending"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="@color/white"
-                        android:contentDescription="@string/pending"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/baseline_loading" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed-light"
-                        android:text="Pending" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btn_view_confirmed"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="@color/white"
-                        android:scaleType="fitCenter"
-                        android:contentDescription="@string/confirmed"
-                        android:src="@drawable/baseline_payment"
-                        tools:ignore="SpeakableTextPresentCheck" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed-light"
-                        android:text="Confirmed" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btn_view_processed"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="@color/white"
-                        android:contentDescription="@string/processed"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/baseline_package" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed-light"
-                        android:text="Processed" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btn_view_shipped"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="@color/white"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/baseline_track"
-                        android:contentDescription="@string/shipped"
-                        tools:ignore="SpeakableTextPresentCheck" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed-light"
-                        android:text="Shipped" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:id="@+id/btn_view_canceled"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="@color/white"
-                        android:scaleType="fitCenter"
-                        android:contentDescription="@string/cancel"
-                        android:src="@drawable/baseline_cancel" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed-light"
-                        android:text="Canceled" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/rounded_edittext"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="10dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/baseline_more_horiz_24" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_weight="1"
-                    android:fontFamily="sans-serif-condensed-light"
-                    android:textStyle="bold"
-                    android:text="More functions" />
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/divider3"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="?android:attr/listDivider" />
-
-            <Button
-                android:id="@+id/btn_test_page"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="4dp"
-                android:background="@android:color/transparent"
-                android:drawableLeft="@drawable/baseline_admin_panel_settings_24"
-                android:gravity="start|center_vertical"
-                android:paddingStart="19dp"
-                android:text="Go to test page"
-                android:textAllCaps="false"
-                android:textColor="@color/black" />
-
-            <Button
-                android:id="@+id/btn_logout"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@android:color/transparent"
-                android:contentDescription="@string/logout"
-                android:contextClickable="@string/test"
-                android:drawableLeft="@drawable/baseline_logout_24"
-                android:gravity="start|center_vertical"
-                android:paddingStart="19dp"
-                android:text="Logout"
-                android:textColor="@color/black" />
-
-        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </FrameLayout>

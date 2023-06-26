@@ -6,28 +6,6 @@
 
 
     <!--Use for spinner (filter)-->
-    <string-array name="arr_filter_one">
-        <item>Date</item>
-        <item>Expired Data</item>
-        <item>New Order</item>
-    </string-array>
-    <string-array name="arr_filter_two">
-        <item>All</item>
-        <item>In stock</item>
-        <item>Pre-order</item>
-    </string-array>
-    <string-array name="locations_array">
-        <item>Vancouver</item>
-        <item>Burnaby</item>
-        <item>West Vancouver</item>
-        <item>East Vancouver</item>
-        <item>New Westminster</item>
-        <item>North Vancouver</item>
-        <item>Surrey</item>
-        <item>Coquitlum</item>
-        <item>White Rock</item>
-        <item>Delta</item>
-    </string-array>
 
     <string-array name="arr_product_category">
         <item>Food</item>
@@ -39,25 +17,15 @@
 
 
     <string name="app_name">WeBuy</string>
-    <string name="login">Login</string>
-    <string name="register">Register</string>
     <string name="next">Next</string>
-    <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="product_name">Product name</string>
-    <string name="location">Location</string>
-    <string name="sort">sort</string>
-    <string name="tags">tags</string>
     <string name="search_hint">Keyword or Category...</string>
     <string name="product_des">Product Description</string>
-    <string name="img_default">Default Image</string>
-    <string name="img_style">Style Image</string>
-    <string name="img_more">More Images</string>
     <string name="style">Style</string>
     <string name="price">Price</string>
-    <string name="qty">Qty</string>
     <string name="send_reset_email">Send Reset Email</string>
     <string name="cancel">Cancel</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -65,7 +33,6 @@
     <string name="fab_description">Add new product</string>
     <string name="user_profile">User Profile</string>
     <string name="logout">Logout</string>
-    <string name="search">Search</string>
     <string name="profile">Profile</string>
     <string name="confirmed">Confirmed</string>
     <string name="pending">Pending</string>
@@ -73,6 +40,8 @@
     <string name="shipped">Shipped</string>
     <string name="view_all">View all</string>
     <string name="test">Test</string>
+    <string name="birthday">Birthday</string>
+    <string name="update">Update</string>
 
 
 </resources>

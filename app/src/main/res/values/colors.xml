@@ -12,6 +12,8 @@
     <color name="android_green">#3DDC84</color>
     <color name="delete_red">#EE5E68</color>
     <color name="cancel_grey">#D3D3D3</color>
+    <color name="light_grey">#808080</color>
+    <color name="deep_blue">#425980</color>
 
 
 </resources>

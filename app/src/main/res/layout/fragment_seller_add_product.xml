@@ -22,7 +22,6 @@
            tools:context=".SellerAddNewProductActivity">
 
            <LinearLayout
-               android:id="@+id/linearLayout_main_add_product"
                android:layout_width="match_parent"
                android:layout_height="match_parent"
                android:layout_gravity="top|center"
