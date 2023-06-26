@@ -78,7 +78,6 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:background="@color/white"
             android:backgroundTint="#F6F6F6"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
@@ -100,7 +99,7 @@
                     app:expandable_isExpanded="true"
                     app:expandable_parentLayout="@layout/layout_parent_order_status_title"
                     app:expandable_secondLayout="@layout/layout_second_order_status"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+                    app:layout_constraintTop_toBottomOf="parent">
 
                 </com.skydoves.expandablelayout.ExpandableLayout>
 
@@ -113,8 +112,7 @@
                     app:expandable_animation="bounce"
                     app:expandable_isExpanded="false"
                     app:expandable_parentLayout="@layout/layout_parent_edit_profile_title"
-                    app:expandable_secondLayout="@layout/layout_second_edit_profile_content"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+                    app:expandable_secondLayout="@layout/layout_second_edit_profile_content">
 
                 </com.skydoves.expandablelayout.ExpandableLayout>
 
@@ -127,8 +125,7 @@
                     app:expandable_animation="bounce"
                     app:expandable_isExpanded="false"
                     app:expandable_parentLayout="@layout/layout_parent_saves_title"
-                    app:expandable_secondLayout="@layout/layout_second_wish_list"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+                    app:expandable_secondLayout="@layout/layout_second_wish_list">
 
                 </com.skydoves.expandablelayout.ExpandableLayout>
 
@@ -141,8 +138,7 @@
                     app:expandable_animation="bounce"
                     app:expandable_isExpanded="false"
                     app:expandable_parentLayout="@layout/layout_parent_more_function"
-                    app:expandable_secondLayout="@layout/layout_second_more_function"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+                    app:expandable_secondLayout="@layout/layout_second_more_function">
 
                 </com.skydoves.expandablelayout.ExpandableLayout>
 

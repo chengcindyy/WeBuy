@@ -198,7 +198,7 @@ public class SellerAddProductFragment extends Fragment
         });
 
         // 6. Edit product
-        editStyleList = new ArrayList<>();
+//        editStyleList = new ArrayList<>();
         Bundle editBundle = getArguments();
         if(editBundle != null){
             editProductId = editBundle.getString("productId");
@@ -240,10 +240,46 @@ public class SellerAddProductFragment extends Fragment
                     }
 
                     if(product.getProductStyles() != null){
-                        editStyleList = product.getProductStyles();
-                        Log.d("Test display style", "style amount: "+editStyleList.stream().count()+"!");
-                        Log.d("Test display style", editStyleList+"!");
-                        setStylesAdapter(editStyleList);
+                        styleList = product.getProductStyles();
+//                        styleList = editStyleList;
+                        Log.d("Test display style", "style amount: "+styleList.stream().count()+"!");
+                        Log.d("Test display style", styleList+"!");
+                        if (styleList != null) {
+                            //with styles
+                            //set the recyclerview
+                            LinearLayoutManager lm = new LinearLayoutManager(getContext());
+                            recyclerViewStyles.setLayoutManager(lm);
+                            Log.d("Test display style", styleList+"!");
+                            setStylesAdapter(styleList);
+
+                            //set product price invisible
+                            textLayoutProductPrice.setVisibility(View.GONE);
+                            textInputProductPrice.setText(null);
+
+                            //set style price range visible
+                            textLayoutStylePriceRange.setVisibility(View.VISIBLE);
+
+                            double minStylePrice = Double.MAX_VALUE;
+                            double maxStylePrice = Double.MIN_VALUE;
+
+                            for (ProductStyle style: styleList) {
+                                double stylePrice = style.getStylePrice();
+                                if (stylePrice < minStylePrice) {
+                                    minStylePrice = stylePrice;
+                                }
+                                if (stylePrice > maxStylePrice) {
+                                    maxStylePrice = stylePrice;
+                                }
+                            }
+
+                            if (minStylePrice == maxStylePrice) {
+                                textInputStylePriceRange.setText("CA$ " + minStylePrice);
+                            } else {
+                                textInputStylePriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
+                            }
+
+                        }
+
                     }
                 }
             }
@@ -331,7 +367,7 @@ public class SellerAddProductFragment extends Fragment
     // TODO: add List<ProductStyle> styles as 1st parameter, still needs to work
     private void setStylesAdapter(List<ProductStyle> styles) {
         Log.d("Test display style", "setStylesAdapter() run");
-        Log.d("Test display style", "passed styles: "+styles);
+        Log.d("Test display style", "passed styles: "+styles.get(0).getStyleName());
         SellerStyleListRecyclerAdapter sellerStyleListRecyclerAdapter = new SellerStyleListRecyclerAdapter(getContext(), styles);
         //ItemTouchClass
         ItemTouchHelper.Callback callback =
