@@ -1,5 +1,6 @@
 package com.csis4495_cmk.webuy;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,7 +18,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,11 +36,14 @@ import com.csis4495_cmk.webuy.models.Customer;
 import com.csis4495_cmk.webuy.models.Seller;
 import com.csis4495_cmk.webuy.models.User;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,16 +52,26 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.skydoves.expandablelayout.ExpandableAnimation;
 import com.skydoves.expandablelayout.ExpandableLayout;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 public class CustomerProfileFragment extends Fragment {
 
     private TextView labelUsername;
-    private Button logoutButton, btnTest;
+    private Button logoutButton, btnTest, btnUpdate;
     private ImageView imgUserProfile;
-    private ImageButton btnSetting, btnViewAll, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
+    private ImageButton btnSetting, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
     private ExpandableLayout expProfile, expOrderStatus, expWishList, expMoreFunctions;
+    private DatePickerDialog picker;
+    private TextInputLayout editName, editEmail, editPhone, editAddress, editCity, editPostalCode;
+    private EditText editBirthday;
+    private ArrayList<String> _FAVORITE;
+    private AutoCompleteTextView editProvince;
+
+    String _USERNAME, _NAME, _EMAIL, _PHONE, _ADDRESS, _CITY, _PROVINCE, _POSTCODE, _PIC, _DOB;
+
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = auth.getCurrentUser();
     DatabaseReference reference;
@@ -71,36 +90,30 @@ public class CustomerProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // For Testing
-        btnTest = view.findViewById(R.id.btn_test_page);
-        btnTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Navigation.findNavController(view).navigate(R.id.action_to_testPageFragment);
-            }
-        });// End Testing
-
-        // show profile info
+        // References
+        editName = view.findViewById(R.id.edit_name);
+        editEmail = view.findViewById(R.id.edit_email);
+        editPhone = view.findViewById(R.id.edit_phone);
+        editAddress = view.findViewById(R.id.edit_address);
+        editCity = view.findViewById(R.id.edit_city);
+        editPostalCode = view.findViewById(R.id.edit_postal_code);
+        imgUserProfile = view.findViewById(R.id.img_user_profile);
+        editBirthday = view.findViewById(R.id.edit_birthday);
+        SetBirthdayOnClickListener(editBirthday);
+        editProvince = view.findViewById(R.id.autoComplete_province);
+        setProvinceAutoCompleteAdapter(editProvince);
         labelUsername = view.findViewById(R.id.txv_username);
+        imgUserProfile.setOnClickListener(view1 -> showUploadPicSelectionDialog());
 
         if (firebaseUser != null){
             // Notify user if they have not verified email
             checkIfEmailVerified(firebaseUser);
-            showUserProfile(firebaseUser);
+            showCustomerProfileTitle(firebaseUser);
+            showCustomerProfileMoreInfo(firebaseUser);
+
         } else {
-            Toast.makeText(requireActivity(), "displayUserProfileInfo:failure", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Loading user problem!", Toast.LENGTH_LONG).show();
         }
-
-        // Firebase instance
-        auth = FirebaseAuth.getInstance();
-
-        imgUserProfile = view.findViewById(R.id.img_user_profile);
-        imgUserProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showUploadPicSelectionDialog();
-            }
-        });
 
         // Expendable layout
         expOrderStatus = view.findViewById(R.id.expandableLayout_order);
@@ -113,57 +126,78 @@ public class CustomerProfileFragment extends Fragment {
         setupExpandableLayoutClickListener(expWishList);
         setupExpandableLayoutClickListener(expMoreFunctions);
 
+        // Set order status
         btnViewPending = view.findViewById(R.id.btn_view_pending);
-        btnViewPending.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openOrderStatusDialog("viewPending");
-            }
-        });
-
         btnViewPayment = view.findViewById(R.id.btn_view_confirmed);
-        btnViewPayment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openOrderStatusDialog("viewConfirmed");
-            }
-        });
-
         btnViewPackaging = view.findViewById(R.id.btn_view_processed);
-        btnViewPackaging.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openOrderStatusDialog("viewProcessed");
-            }
-        });
-
         btnViewShipped = view.findViewById(R.id.btn_view_shipped);
-        btnViewShipped.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openOrderStatusDialog("viewShipped");
-            }
-        });
-
         btnViewDelivered = view.findViewById(R.id.btn_view_canceled);
-        btnViewDelivered.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openOrderStatusDialog("viewCanceled");
-            }
-        });
+        SetOrderStatusOnClickListener(btnViewPending);
+        SetOrderStatusOnClickListener(btnViewPayment);
+        SetOrderStatusOnClickListener(btnViewPackaging);
+        SetOrderStatusOnClickListener(btnViewShipped);
+        SetOrderStatusOnClickListener(btnViewDelivered);
 
         // Setting
         btnSetting = view.findViewById(R.id.btn_setting);
-        btnSetting.setOnClickListener(new View.OnClickListener() {
+
+        // Update profile
+        btnUpdate = view.findViewById(R.id.btn_update);
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                updateCustomerProfile(firebaseUser);
             }
         });
 
+        // For Testing
+        btnTest = view.findViewById(R.id.btn_test_page);
+        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));// End Testing
+
         // Logout
         logoutButton = view.findViewById(R.id.btn_logout);
+        SetLogoutOnClickListener(logoutButton);
+    }
+
+    private void updateCustomerProfile(FirebaseUser firebaseUser) {
+        // Obtain the entered data
+        _NAME = editName.getEditText().getText().toString();
+        _PHONE = editPhone.getEditText().getText().toString();
+        _ADDRESS = editAddress.getEditText().getText().toString();
+        _CITY = editCity.getEditText().getText().toString();
+        _PROVINCE = editProvince.getText().toString();
+        _POSTCODE = editPostalCode.getEditText().getText().toString();
+        // TODO: Picture needs to work
+        _PIC = String.valueOf(firebaseUser.getPhotoUrl());
+        // TODO: get watchlist recycler view
+//        _FAVORITE = customer.getWatchList();
+        _DOB = editBirthday.getText().toString();
+
+        Customer customer = new Customer(_NAME,_PHONE,_ADDRESS,_CITY,_PROVINCE,_POSTCODE,_FAVORITE,_PIC,_DOB);
+
+        String userId = firebaseUser.getUid();
+        reference = FirebaseDatabase.getInstance().getReference("Customer");
+        reference.child(userId).setValue(customer).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    // Setting new fields
+                    UserProfileChangeRequest updatableProfileField = new UserProfileChangeRequest.Builder().setDisplayName(_USERNAME).build();
+                    firebaseUser.updateProfile(updatableProfileField);
+                    Toast.makeText(getContext(), "Data update successfully", Toast.LENGTH_SHORT).show();
+//
+                } else {
+                    try {
+                        throw task.getException();
+                    } catch (Exception e){
+                        Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
+    }
+
+    private void SetLogoutOnClickListener(Button logoutButton) {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -175,9 +209,54 @@ public class CustomerProfileFragment extends Fragment {
                 requireActivity().finish();
             }
         });
-
     }
 
+    private void SetOrderStatusOnClickListener(final ImageButton imageButton) {
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openOrderStatusDialog("viewConfirmed");
+            }
+        });
+    }
+
+    private void setProvinceAutoCompleteAdapter(AutoCompleteTextView editProvince) {
+        // States (Canada)
+        String[] states = new String[]{"Alberta", "British Columbia", "Manitoba", "New Brunswick",
+                "Newfoundland and Labrador", "Northwest Territories", "Nova Scotia", "Nunavut",
+                "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon"};
+        ArrayAdapter<String> stateAdapter = new ArrayAdapter<>(
+                requireContext(), android.R.layout.simple_spinner_dropdown_item, states);
+        editProvince.setAdapter(stateAdapter);
+        editProvince.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getContext(), parent.getItemAtPosition(position).toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void SetBirthdayOnClickListener(EditText edit_birthday) {
+        edit_birthday.setOnClickListener(v -> {
+            if (_DOB == null || _DOB.isEmpty()) {
+                Toast.makeText(requireContext(), "Date of birth is not set", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // Extracting to dd,mm,yyyy by /
+            String textSADoB[] = _DOB.split("/");
+            int day = Integer.parseInt(textSADoB[0]);
+            int month = Integer.parseInt(textSADoB[1]) - 1;
+            int year = Integer.parseInt(textSADoB[2]);
+            //Date Picker Dialog
+            picker = new DatePickerDialog(requireContext(), R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                    edit_birthday.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+                }
+            }, year, month, day);
+            picker.show();
+        });
+    }
 
     private void setupExpandableLayoutClickListener(final ExpandableLayout expandableLayout) {
         expandableLayout.parentLayout.setOnClickListener(new View.OnClickListener() {
@@ -197,19 +276,60 @@ public class CustomerProfileFragment extends Fragment {
         dialog.show(getParentFragmentManager(), tab);
     }
 
-    private void showUserProfile(FirebaseUser firebaseUser) {
+    private void showCustomerProfileTitle(FirebaseUser firebaseUser) {
         String uid = firebaseUser.getUid();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("User");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Customer");
         reference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 if(user != null) {
-                    String _USERNAME = firebaseUser.getDisplayName();
-                    String _ROLE = user.getRole();
-
-
+                    _USERNAME = firebaseUser.getDisplayName();
                     labelUsername.setText(_USERNAME);
+                }else{
+                    Toast.makeText(requireActivity(), "something went wrong! " +
+                            "Show profile was canceled", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(requireActivity(), "something went wrong! " +
+                        "Show profile was canceled", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void showCustomerProfileMoreInfo(FirebaseUser firebaseUser) {
+        String uid = firebaseUser.getUid();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Customer");
+        reference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Customer customer = snapshot.getValue(Customer.class);
+                if(customer != null) {
+
+                    _NAME = customer.getName();
+                    _PHONE = customer.getPhone();
+                    _ADDRESS = customer.getAddress();
+                    _CITY = customer.getCity();
+                    _PROVINCE = customer.getProvince();
+                    _POSTCODE = customer.getPostalCode();
+                    _PIC = customer.getProfilePic();
+                    // TODO: set watchlist recycler view
+                    _FAVORITE = customer.getWatchList();
+                    _DOB = customer.getBirth();
+                    _EMAIL = firebaseUser.getDisplayName();
+
+                    editName.getEditText().setText(_NAME);
+                    editPhone.getEditText().setText(_PHONE);
+                    editEmail.getEditText().setText(_EMAIL);
+                    editAddress.getEditText().setText(_ADDRESS);
+                    editCity.getEditText().setText(_CITY);
+                    editProvince.setText(_PROVINCE);
+                    editPostalCode.getEditText().setText(_POSTCODE);
+                    editBirthday.setText(_DOB);
+
                 }else{
                     Toast.makeText(requireActivity(), "something went wrong! " +
                             "Show profile was canceled", Toast.LENGTH_LONG).show();
@@ -374,6 +494,17 @@ public class CustomerProfileFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Set User profile picture (After uploaded)
+        Uri uri = firebaseUser.getPhotoUrl();
+        if (uri != null){
+            Picasso.with(getContext()).load(uri).into(imgUserProfile);
+        }
+
+    }
+
     private void PassDataToFirebase(String userRole) {
         String uid = firebaseUser.getUid();
         reference = FirebaseDatabase.getInstance().getReference(userRole).child(uid);
@@ -405,6 +536,5 @@ public class CustomerProfileFragment extends Fragment {
                     CreatePathBaseOnUserRole(uri);
                 }
             });
-
-
     }
+

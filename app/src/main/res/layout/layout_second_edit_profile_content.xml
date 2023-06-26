@@ -12,36 +12,30 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- FIRST NAME & LAST NAME-->
-        <LinearLayout
+        <!-- NAME -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="Name"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/input_lastName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <!-- FIRST NAME -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="1"
-                android:hint="Name"
-                android:textColorHint="@color/light_grey"
-                app:boxBackgroundColor="@null"
-                app:hintTextColor="@color/deep_blue"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/input_lastName"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:text="" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </LinearLayout>
         <!-- EMAIL -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -57,6 +51,7 @@
                 android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
         <!-- BIRTHDAY -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -68,6 +63,7 @@
             app:hintTextColor="@color/deep_blue">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_birthday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:allowClickWhenDisabled="true"
@@ -80,6 +76,7 @@
         </com.google.android.material.textfield.TextInputLayout>
         <!-- PHONE -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -95,45 +92,10 @@
                 android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
-        <!-- PASSWORD -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:hint="Password"
-            android:textColorHint="@color/light_grey"
-            app:passwordToggleEnabled="true"
-            app:boxBackgroundColor="@null"
-            app:hintTextColor="@color/deep_blue">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:text="" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-        <!-- CONFIRM_PASSWORD -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:hint="Confirm Password"
-            android:textColorHint="@color/light_grey"
-            app:boxBackgroundColor="@null"
-            app:hintTextColor="@color/deep_blue"
-            android:visibility="gone">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:text="" />
-
-        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- ADDRESS -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -149,13 +111,15 @@
                 android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
-        <!-- CITY & ZIP-->
+
+        <!-- CITY & POSTAL CODE-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <!-- CITY -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_city"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -177,6 +141,7 @@
             </com.google.android.material.textfield.TextInputLayout>
             <!-- POSTAL CODE -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_postal_code"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -197,59 +162,31 @@
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
-        <!-- COUNTRY & STATE-->
-        <LinearLayout
+
+        <!-- PROVINCE -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="Province"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <!-- COUNTRY -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
-                android:layout_width="0dp"
+            <AutoCompleteTextView
+                android:id="@+id/autoComplete_province"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="1"
-                android:hint="Country"
-                android:textColorHint="@color/light_grey"
-                app:boxBackgroundColor="@null"
-                app:hintTextColor="@color/deep_blue"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:textSize="14sp" />
 
-                <AutoCompleteTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
-            <!-- STATE -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_weight="1"
-                android:hint="State"
-                android:textColorHint="@color/light_grey"
-                app:boxBackgroundColor="@null"
-                app:hintTextColor="@color/deep_blue"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <AutoCompleteTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </LinearLayout>
-        <!-- UPDATE BUTTON-->
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_update"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_gravity="center"
@@ -257,16 +194,6 @@
             android:background="@drawable/button_solid"
             android:text="@string/update"
             android:textColor="@color/white" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_logout"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/button_outline"
-            android:text="logout"
-            android:textColor="@color/deep_blue" />
 
     </LinearLayout>
 

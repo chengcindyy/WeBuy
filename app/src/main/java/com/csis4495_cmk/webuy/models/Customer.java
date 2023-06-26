@@ -1,5 +1,7 @@
 package com.csis4495_cmk.webuy.models;
 
+import java.util.ArrayList;
+
 public class Customer {
     private String uid;
     private String name;
@@ -11,7 +13,7 @@ public class Customer {
     private String postalCode;
     private String profilePic;
     private String cartId;
-    private String watchList[];
+    private ArrayList<String> watchList;
     private String birth;
 
     public Customer() {
@@ -20,6 +22,18 @@ public class Customer {
 
     public Customer(String uid) {
         this.uid = uid;
+    }
+
+    public Customer(String name, String phone, String address, String city, String province,
+                    String postcode, ArrayList<String> favorite, String pic, String dob) {
+        this.name = name;
+        this.phone = phone;
+        this.address = address;
+        this.city = city;
+        this.province = province;
+        this.postalCode = postcode;
+        this.profilePic = pic;
+        this.birth = dob;
     }
 
     public String getUid() {
@@ -62,8 +76,12 @@ public class Customer {
         return cartId;
     }
 
-    public String[] getWatchList() {
+    public ArrayList<String> getWatchList() {
         return watchList;
+    }
+
+    public void setWatchList(ArrayList<String> watchList) {
+        this.watchList = watchList;
     }
 
     public String getBirth() {
