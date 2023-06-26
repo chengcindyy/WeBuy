@@ -19,7 +19,6 @@
 
             <!-- FIRST NAME -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_firstName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
@@ -43,7 +42,6 @@
         </LinearLayout>
         <!-- EMAIL -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -70,7 +68,6 @@
             app:hintTextColor="@color/deep_blue">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_birthday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:allowClickWhenDisabled="true"
@@ -83,7 +80,6 @@
         </com.google.android.material.textfield.TextInputLayout>
         <!-- PHONE -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -101,7 +97,6 @@
         </com.google.android.material.textfield.TextInputLayout>
         <!-- PASSWORD -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -120,7 +115,6 @@
         </com.google.android.material.textfield.TextInputLayout>
         <!-- CONFIRM_PASSWORD -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_confirm_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -140,7 +134,6 @@
 
         <!-- ADDRESS -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -163,7 +156,6 @@
 
             <!-- CITY -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_city"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -185,7 +177,6 @@
             </com.google.android.material.textfield.TextInputLayout>
             <!-- POSTAL CODE -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_zip"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -228,7 +219,6 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <AutoCompleteTextView
-                    android:id="@+id/input_country"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp" />
@@ -251,7 +241,6 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <AutoCompleteTextView
-                    android:id="@+id/input_state"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp" />
@@ -261,7 +250,6 @@
         </LinearLayout>
         <!-- UPDATE BUTTON-->
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_update"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_gravity="center"
