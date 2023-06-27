@@ -71,6 +71,7 @@ public class CustomerProfileFragment extends Fragment {
     private TextInputLayout editName, editEmail, editPhone, editAddress, editCity, editPostalCode;
     private EditText editBirthday;
     private AutoCompleteTextView editProvince;
+    private AlertDialog alertDialog;
     ArrayList<String> _FAVORITE;
     String _USERNAME, _NAME, _EMAIL, _PHONE, _ADDRESS, _CITY, _PROVINCE, _POSTCODE, _PIC, _DOB;
 
@@ -271,7 +272,6 @@ public class CustomerProfileFragment extends Fragment {
         });
     }
 
-
     private void setupExpandableLayoutClickListener(final ExpandableLayout expandableLayout) {
         expandableLayout.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -405,7 +405,7 @@ public class CustomerProfileFragment extends Fragment {
         UploadImage.setOnClickListener(view -> mGetContent.launch("image/*"));
 
         //Create AlertDialog
-        AlertDialog alertDialog = builder.create();
+        alertDialog = builder.create();
         //Show AlertDialog
         alertDialog.show();
 
@@ -427,35 +427,13 @@ public class CustomerProfileFragment extends Fragment {
         }
     }
 
-    private void CreatePathBaseOnUserRole(Uri uri) {
-        String uid = firebaseUser.getUid();
-        reference = FirebaseDatabase.getInstance().getReference("User").child(uid);
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-                String userRole = user.getRole();
-                StorageReference storageRef = storage.child("ProfileImages");
-
-                if(userRole.equals("Customer")){
-                    imageRef = storageRef.child("customerImages");
-                }else{
-                    imageRef = storageRef.child("sellerImages");
-                }
-
-                // Start the upload here
-                uploadImage(uri);
-                PassDataToFirebase(userRole);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getContext(), "checkingCurrentUserRole(): canceled", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void createFireStoragePath(Uri uri) {
+        StorageReference storageRef = storage.child("ProfileImages");
+        imageRef = storageRef.child("customerImages");
+        uploadImageToFireStorage(uri);
     }
 
-    private void uploadImage(Uri uri) {
+    private void uploadImageToFireStorage(Uri uri) {
         // Check that the imageRef is not null
         if (imageRef != null) {
             String uid = firebaseUser.getUid();
@@ -474,13 +452,25 @@ public class CustomerProfileFragment extends Fragment {
                     fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
+                            reference = FirebaseDatabase.getInstance().getReference();
                             Log.d("Test Upload Profile Img: ", "Uri: "+uri.toString());
                             Glide.with(getContext())
                                     .load(uri.toString())
                                     .circleCrop() // or .transform(new CircleCrop())
                                     .into(imgUserProfile);
+
+                            UserProfileChangeRequest request = new UserProfileChangeRequest.
+                                    Builder().setPhotoUri(uri).build();
+                            firebaseUser.updateProfile(request);
+
+                            // Write the download URL to Firebase Database
+                            reference.child("Customer").child(uid).child("profilePic").setValue(uri.toString());
+                            if (alertDialog != null && alertDialog.isShowing()) {
+                                alertDialog.dismiss();
+                            }
                         }
                     });
+                    Toast.makeText(getContext(), "Image upload successfully", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -495,40 +485,18 @@ public class CustomerProfileFragment extends Fragment {
         // Set User profile picture (After uploaded)
         Uri uri = firebaseUser.getPhotoUrl();
         if (uri != null){
-            Picasso.with(getContext()).load(uri).into(imgUserProfile);
+            Glide.with(getContext())
+                    .load(uri.toString())
+                    .circleCrop() // or .transform(new CircleCrop())
+                    .into(imgUserProfile);
         }
-
-    }
-
-    private void PassDataToFirebase(String userRole) {
-        String uid = firebaseUser.getUid();
-        reference = FirebaseDatabase.getInstance().getReference(userRole).child(uid);
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Customer customer = snapshot.getValue(Customer.class);
-                Seller seller = snapshot.getValue(Seller.class);
-                if(customer != null){
-
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
     }
 
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
-                    CreatePathBaseOnUserRole(uri);
+                    createFireStoragePath(uri);
                 }
             });
     }
