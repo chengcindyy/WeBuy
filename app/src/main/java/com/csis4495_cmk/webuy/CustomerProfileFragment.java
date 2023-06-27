@@ -1,6 +1,7 @@
 package com.csis4495_cmk.webuy;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -56,20 +58,20 @@ import com.skydoves.expandablelayout.ExpandableLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class CustomerProfileFragment extends Fragment {
 
     private TextView labelUsername;
     private Button logoutButton, btnTest, btnUpdate;
     private ImageView imgUserProfile;
-    private ImageButton btnSetting, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
+    private ImageButton btnChat, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
     private ExpandableLayout expProfile, expOrderStatus, expWishList, expMoreFunctions;
     private DatePickerDialog picker;
     private TextInputLayout editName, editEmail, editPhone, editAddress, editCity, editPostalCode;
     private EditText editBirthday;
-    private ArrayList<String> _FAVORITE;
     private AutoCompleteTextView editProvince;
-
+    ArrayList<String> _FAVORITE;
     String _USERNAME, _NAME, _EMAIL, _PHONE, _ADDRESS, _CITY, _PROVINCE, _POSTCODE, _PIC, _DOB;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -139,7 +141,7 @@ public class CustomerProfileFragment extends Fragment {
         SetOrderStatusOnClickListener(btnViewDelivered);
 
         // Setting
-        btnSetting = view.findViewById(R.id.btn_setting);
+        btnChat = view.findViewById(R.id.btn_setting);
 
         // Update profile
         btnUpdate = view.findViewById(R.id.btn_update);
@@ -167,13 +169,11 @@ public class CustomerProfileFragment extends Fragment {
         _CITY = editCity.getEditText().getText().toString();
         _PROVINCE = editProvince.getText().toString();
         _POSTCODE = editPostalCode.getEditText().getText().toString();
-        // TODO: Picture needs to work
-        _PIC = String.valueOf(firebaseUser.getPhotoUrl());
         // TODO: get watchlist recycler view
 //        _FAVORITE = customer.getWatchList();
         _DOB = editBirthday.getText().toString();
 
-        Customer customer = new Customer(_NAME,_PHONE,_ADDRESS,_CITY,_PROVINCE,_POSTCODE,_FAVORITE,_PIC,_DOB);
+        Customer customer = new Customer(_NAME,_PHONE,_ADDRESS,_CITY,_PROVINCE,_POSTCODE,_FAVORITE,_DOB);
 
         String userId = firebaseUser.getUid();
         reference = FirebaseDatabase.getInstance().getReference("Customer");
@@ -237,26 +237,40 @@ public class CustomerProfileFragment extends Fragment {
     }
 
     private void SetBirthdayOnClickListener(EditText edit_birthday) {
-        edit_birthday.setOnClickListener(v -> {
-            if (_DOB == null || _DOB.isEmpty()) {
-                Toast.makeText(requireContext(), "Date of birth is not set", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            // Extracting to dd,mm,yyyy by /
-            String textSADoB[] = _DOB.split("/");
-            int day = Integer.parseInt(textSADoB[0]);
-            int month = Integer.parseInt(textSADoB[1]) - 1;
-            int year = Integer.parseInt(textSADoB[2]);
-            //Date Picker Dialog
-            picker = new DatePickerDialog(requireContext(), R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    edit_birthday.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+        edit_birthday.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                int day, month, year;
+                if (_DOB == null || _DOB.isEmpty()) {
+                    // Get current date if _DOB is null or empty
+                    Calendar c = Calendar.getInstance();
+                    year = c.get(Calendar.YEAR);
+                    month = c.get(Calendar.MONTH);
+                    day = c.get(Calendar.DAY_OF_MONTH);
+                } else {
+                    // Extracting to dd,mm,yyyy by /
+                    String textSADoB[] = _DOB.split("/");
+                    day = Integer.parseInt(textSADoB[0]);
+                    month = Integer.parseInt(textSADoB[1]) - 1;
+                    year = Integer.parseInt(textSADoB[2]);
                 }
-            }, year, month, day);
-            picker.show();
+                //Date Picker Dialog
+                picker = new DatePickerDialog(requireContext(), R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        _DOB = dayOfMonth + "/" + (month + 1) + "/" + year;
+                        edit_birthday.setText(_DOB);
+                    }
+                }, year, month, day);
+                picker.show();
+                // To prevent the keyboard from appearing when you click the EditText
+                InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
         });
     }
+
 
     private void setupExpandableLayoutClickListener(final ExpandableLayout expandableLayout) {
         expandableLayout.parentLayout.setOnClickListener(new View.OnClickListener() {
@@ -385,35 +399,17 @@ public class CustomerProfileFragment extends Fragment {
         builder.setView(dialogView);
 
         // Get references to dialog views
-        ImageButton UploadFromDrive = dialogView.findViewById(R.id.btn_upload_image);
-        ImageButton UploadFromCloud = dialogView.findViewById(R.id.btn_select_default_image);
+        ImageButton UploadImage = dialogView.findViewById(R.id.btn_upload_image);
         ImageButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
 
-        UploadFromDrive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mGetContent.launch("image/*");
-            }
-        });
-
-        UploadFromCloud.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+        UploadImage.setOnClickListener(view -> mGetContent.launch("image/*"));
 
         //Create AlertDialog
         AlertDialog alertDialog = builder.create();
         //Show AlertDialog
         alertDialog.show();
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-            }
-        });
+        btnCancel.setOnClickListener(v -> alertDialog.dismiss());
 
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         if (alertDialog.getWindow() != null) {
@@ -483,7 +479,6 @@ public class CustomerProfileFragment extends Fragment {
                                     .load(uri.toString())
                                     .circleCrop() // or .transform(new CircleCrop())
                                     .into(imgUserProfile);
-
                         }
                     });
                 }

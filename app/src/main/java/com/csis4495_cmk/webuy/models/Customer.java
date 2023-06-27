@@ -25,14 +25,14 @@ public class Customer {
     }
 
     public Customer(String name, String phone, String address, String city, String province,
-                    String postcode, ArrayList<String> favorite, String pic, String dob) {
+                    String postcode, ArrayList<String> favorite, String dob) {
         this.name = name;
         this.phone = phone;
         this.address = address;
         this.city = city;
         this.province = province;
         this.postalCode = postcode;
-        this.profilePic = pic;
+
         this.birth = dob;
     }
 

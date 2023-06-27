@@ -29,6 +29,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
                 android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -47,6 +48,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
                 android:enabled="false"
                 android:text="" />
 
@@ -66,9 +68,7 @@
                 android:id="@+id/edit_birthday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:allowClickWhenDisabled="true"
-                android:focusable="false"
-                android:clickable="false"
+                android:textAppearance="@style/HintAppearance"
                 android:inputType="date"
                 android:text=""
                 android:textColor="@color/black" />
@@ -88,6 +88,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
                 android:inputType="number"
                 android:text="" />
 
@@ -107,6 +108,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
                 android:inputType="text"
                 android:text="" />
 
@@ -136,6 +138,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAppearance="@style/HintAppearance"
                     android:text="" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -157,6 +160,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAppearance="@style/HintAppearance"
                     android:text="" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -181,6 +185,7 @@
                 android:id="@+id/autoComplete_province"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
                 android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -192,6 +197,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:background="@drawable/button_solid"
+            android:textAppearance="@style/HintAppearance"
             android:text="@string/update"
             android:textColor="@color/white" />
 
