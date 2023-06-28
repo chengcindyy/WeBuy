@@ -12,12 +12,12 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- NAME -->
+        <!-- STORE ID -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edit_name"
+            android:id="@+id/edit_store_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Name"
+            android:hint="Store id"
             android:textColorHint="@color/light_grey"
             app:boxBackgroundColor="@null"
             app:hintTextColor="@color/deep_blue"
@@ -25,6 +25,26 @@
             app:layout_constraintEnd_toStartOf="@+id/input_lastName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:textAppearance="@style/HintAppearance"
+                android:text="" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- STORE NAME -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_store_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="Store name"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -49,38 +69,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/HintAppearance"
-                android:enabled="false"
+                android:inputType="textEmailAddress"
                 android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- BIRTHDAY -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:hint="@string/birthday"
-            android:textColorHint="@color/light_grey"
-            app:boxBackgroundColor="@null"
-            app:hintTextColor="@color/deep_blue">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_birthday"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/HintAppearance"
-                android:inputType="date"
-                android:text=""
-                android:textColor="@color/black" />
-
-        </com.google.android.material.textfield.TextInputLayout>
         <!-- PHONE -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edit_phone"
+            android:id="@+id/edit_Business_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:hint="Phone"
+            android:hint="Business number"
             android:textColorHint="@color/light_grey"
             app:boxBackgroundColor="@null"
             app:hintTextColor="@color/deep_blue">

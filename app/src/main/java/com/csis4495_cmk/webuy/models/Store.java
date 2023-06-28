@@ -8,6 +8,7 @@ public class Store {
     private ArrayList<String> employeeList; // sellerIds
     private String storeName;
     //private String facebookGroup;
+    private String email;
     // Full Address
     private String address;
     private String country;
@@ -21,24 +22,11 @@ public class Store {
     private ArrayList<DeliveryFee> deliveryFeeList;
     private String[] categories;
 
-    public Store(String owner, ArrayList<String> employeeList, String storeName, String address,
-                 String country, String province, String city, String postalCode, String phone,
-                 String intro, String storePic, String[] acceptedPaymentType,
-                 ArrayList<DeliveryFee> deliveryFeeList, String[] categories) {
-        this.owner = owner;
-        this.employeeList = employeeList;
+    public Store() {
+    }
+
+    public Store(String storeName) {
         this.storeName = storeName;
-        this.address = address;
-        this.country = country;
-        this.province = province;
-        this.city = city;
-        this.postalCode = postalCode;
-        this.phone = phone;
-        this.intro = intro;
-        this.storePic = storePic;
-        this.acceptedPaymentType = acceptedPaymentType;
-        this.deliveryFeeList = deliveryFeeList;
-        this.categories = categories;
     }
 
     public String getOwner() {

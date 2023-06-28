@@ -10,6 +10,7 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,6 +21,7 @@ import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.fragments.SellerAddStyleFragment;
 import com.csis4495_cmk.webuy.models.ProductStyle;
@@ -27,13 +29,16 @@ import com.facebook.login.LoginManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
 public class SellerHomePageActivity extends AppCompatActivity {
 
     private MaterialToolbar topToolbar;
+    private NavController navController;
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseUser firebaseUser = auth.getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +46,7 @@ public class SellerHomePageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_seller_home_page);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_seller);
-        NavController navController = navHostFragment.getNavController();
+        navController = navHostFragment.getNavController();
         navController.navigate(R.id.sellerHomeFragment);
 
         // Top toolbar
@@ -56,6 +61,7 @@ public class SellerHomePageActivity extends AppCompatActivity {
                 popupMenu.setOnMenuItemClickListener(menuItem -> {
                     switch (menuItem.getItemId()){
                         case R.id.profile:
+                            navController.navigate(R.id.sellerProfileFragment);
                             return true;
                         case R.id.logout:
                             logoutAccount();
@@ -79,4 +85,17 @@ public class SellerHomePageActivity extends AppCompatActivity {
         startActivity(intent);
         SellerHomePageActivity.this.finish();
     }
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        // Set User profile picture (After uploaded)
+//        Uri uri = firebaseUser.getPhotoUrl();
+//        if (uri != null){
+//            Glide.with(SellerHomePageActivity.this)
+//                    .load(uri.toString())
+//                    .circleCrop() // or .transform(new CircleCrop())
+//                    .into(imgUserProfile);
+//        }
+//    }
 }

@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.activities.MainActivity;
 import com.csis4495_cmk.webuy.dialog.CustomerOrderStatusDialog;
 import com.csis4495_cmk.webuy.models.Customer;
@@ -59,6 +61,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class CustomerProfileFragment extends Fragment {
 
@@ -124,10 +127,26 @@ public class CustomerProfileFragment extends Fragment {
         expWishList = view.findViewById(R.id.expandableLayout_saves);
         expMoreFunctions = view.findViewById(R.id.expandableLayout_more_function);
 
-        setupExpandableLayoutClickListener(expOrderStatus);
-        setupExpandableLayoutClickListener(expProfile);
-        setupExpandableLayoutClickListener(expWishList);
-        setupExpandableLayoutClickListener(expMoreFunctions);
+        // Set parent layout title and icon
+        List<Pair<ExpandableLayout, Pair<Integer, String>>> list = new ArrayList<>();
+        list.add(new Pair<>(expOrderStatus, new Pair<>(R.drawable.baseline_list_24, "View Order")));
+        list.add(new Pair<>(expProfile, new Pair<>(R.drawable.baseline_edit_note_24, "Edit Profile")));
+        list.add(new Pair<>(expWishList, new Pair<>(R.drawable.baseline_favorite_border_24, "Your Wish List")));
+        list.add(new Pair<>(expMoreFunctions, new Pair<>(R.drawable.baseline_more_horiz_24, "More Functions")));
+
+        for (Pair<ExpandableLayout, Pair<Integer, String>> pair : list) {
+            ExpandableLayout expandableLayout = pair.first;
+            View parentLayout = expandableLayout.getParentLayout();
+            ImageView expandableIcon = parentLayout.findViewById(R.id.txv_expandable_layout_icon);
+            TextView expandableTxv = parentLayout.findViewById(R.id.txv_expandable_layout_title);
+
+            // Set icon & title
+            expandableIcon.setImageResource(pair.second.first);
+            expandableTxv.setText(pair.second.second);
+
+            // Set onClick listener
+            setupExpandableLayoutClickListener(expandableLayout);
+        }
 
         // Set order status
         btnViewPending = view.findViewById(R.id.btn_view_pending);

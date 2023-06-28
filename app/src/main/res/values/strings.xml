@@ -41,6 +41,7 @@
     <string name="test">Test</string>
     <string name="birthday">Birthday</string>
     <string name="update">Update</string>
+    <string name="store_name">Store name</string>
 
 
 </resources>

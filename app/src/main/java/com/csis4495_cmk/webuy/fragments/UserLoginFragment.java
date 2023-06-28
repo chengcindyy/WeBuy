@@ -142,8 +142,8 @@ public class UserLoginFragment extends Fragment {
                             Log.d(TAG, "signInWithCredential:success");
                             firebaseUser = auth.getCurrentUser();
                             if (task.getResult().getAdditionalUserInfo().isNewUser()) {
-                                Toast.makeText(getContext(), "New user", Toast.LENGTH_SHORT).show();
-                                showRoleSelectionAlertDialog();
+                                Toast.makeText(getContext(), "Seems you are first time here, please register an new account before login", Toast.LENGTH_LONG).show();
+//                                showRoleSelectionAlertDialog();
                             } else {
                                 // Returning user, go to home page
                                 Toast.makeText(getContext(), "Old user", Toast.LENGTH_SHORT).show();

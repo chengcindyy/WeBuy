@@ -26,6 +26,7 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.activities.SellerHomePageActivity;
 import com.csis4495_cmk.webuy.models.Customer;
 import com.csis4495_cmk.webuy.models.Seller;
+import com.csis4495_cmk.webuy.models.Store;
 import com.csis4495_cmk.webuy.models.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -35,6 +36,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
@@ -47,20 +49,23 @@ import com.google.firebase.database.FirebaseDatabase;
 public class UserRegistrationFragment extends Fragment {
 
     private static final String TAG = "UserRegistrationFragment";
-    private EditText edit_email, edit_password, edit_confirm_password;
-    private Button btn_create, btn_cancel, fb;
+    private EditText editEmail, editPassword, editConfirmPassword, editStoreName;
+    private Button btnCreate, btnCancel, fb;
+    private TextInputLayout storeNameLayout;
     private ProgressBar loadingPB;
     boolean isProgressVisible = false;
+    private String storeName = "";
     private String user_role = "";
     private final String CUSTOMER = "customer";
     private final String SELLER = "seller";
-
+    private String _STORE_NAME;
     private DatabaseReference mFirebaseDatabase;
     private FirebaseDatabase mFirebaseInstance;
     private FirebaseAuth auth;
     private LoginButton btn_register_facebook;
     private CallbackManager callbackManager = CallbackManager.Factory.create();
     private NavController navController;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,61 +100,74 @@ public class UserRegistrationFragment extends Fragment {
 
         Toast.makeText(getContext(), user_role, Toast.LENGTH_SHORT).show();
         // XML reference
-        edit_email = view.findViewById(R.id.edit_email);
-        edit_password = view.findViewById(R.id.edit_password);
-        edit_confirm_password = view.findViewById(R.id.edit_confirm_password);
+        editEmail = view.findViewById(R.id.edit_email);
+        editPassword = view.findViewById(R.id.edit_password);
+        editConfirmPassword = view.findViewById(R.id.edit_confirm_password);
+        editStoreName = view.findViewById(R.id.edit_store_name);
+        storeNameLayout = view.findViewById(R.id.edit_layout_store_name);
+
+        if(user_role.equals(SELLER)){
+            storeNameLayout.setVisibility(View.VISIBLE);
+        }
 
         // To create account
-        btn_create = view.findViewById(R.id.btn_create_account);
-        btn_create.setOnClickListener(new View.OnClickListener() {
+        btnCreate = view.findViewById(R.id.btn_create_account);
+        btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                String email = edit_email.getText().toString();
-                String password = edit_password.getText().toString();
-                String confirm_password = edit_confirm_password.getText().toString();
+                String _EMAIL = editEmail.getText().toString();
+                String _PWD = editPassword.getText().toString();
+                String _CONFIRM_PWD = editConfirmPassword.getText().toString();
+                _STORE_NAME = editStoreName.getText().toString();
 
                 // Checking user entered values if it fit the correct format
-                if (TextUtils.isEmpty(email)) {
+                if (TextUtils.isEmpty(_EMAIL)) {
                     Toast.makeText(getContext(),
                             "Please enter your email.", Toast.LENGTH_SHORT).show();
-                    edit_email.setError("Email is required.");
-                    edit_email.requestFocus();
-                } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    editEmail.setError("Email is required.");
+                    editEmail.requestFocus();
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(_EMAIL).matches()) {
                     Toast.makeText(getContext(),
                             "Please enter your email.", Toast.LENGTH_SHORT).show();
-                    edit_email.setError("Valid email is required.");
-                    edit_email.requestFocus();
-                } else if (TextUtils.isEmpty(password)) {
+                    editEmail.setError("Valid email is required.");
+                    editEmail.requestFocus();
+                } else if (TextUtils.isEmpty(_PWD)) {
                     Toast.makeText(getContext(),
                             "Please enter your password.", Toast.LENGTH_SHORT).show();
-                    edit_password.setError("Password is required.");
-                    edit_password.requestFocus();
-                } else if (password.length() < 6) {
+                    editPassword.setError("Password is required.");
+                    editPassword.requestFocus();
+                } else if (_PWD.length() < 6) {
                     Toast.makeText(getContext(),
                             "Password should be at least 6 digits.", Toast.LENGTH_SHORT).show();
-                    edit_password.setError("Password too weak.");
-                    edit_password.requestFocus();
-                } else if (TextUtils.isEmpty(confirm_password)) {
+                    editPassword.setError("Password too weak.");
+                    editPassword.requestFocus();
+                } else if (TextUtils.isEmpty(_CONFIRM_PWD)) {
                     Toast.makeText(getContext(),
                             "Please enter your password again.", Toast.LENGTH_SHORT).show();
-                    edit_confirm_password.setError("Password confirmation is required.");
-                    edit_confirm_password.requestFocus();
-                } else if (!password.equals(confirm_password)) {
+                    editConfirmPassword.setError("Password confirmation is required.");
+                    editConfirmPassword.requestFocus();
+                } else if (!_PWD.equals(_CONFIRM_PWD)) {
                     Toast.makeText(getContext(),
                             "Please enter same password.", Toast.LENGTH_SHORT).show();
-                    edit_confirm_password.setError("Password confirmation is required.");
-                    edit_confirm_password.requestFocus();
+                    editConfirmPassword.setError("Password confirmation is required.");
+                    editConfirmPassword.requestFocus();
                     // Clean the entered passwords
-                    edit_password.clearComposingText();
-                    edit_confirm_password.clearComposingText();
+                    editPassword.clearComposingText();
+                    editConfirmPassword.clearComposingText();
+                } else if (TextUtils.isEmpty(_STORE_NAME)) {
+                    Toast.makeText(getContext(),
+                            "Please enter your store name.", Toast.LENGTH_SHORT).show();
+                    editStoreName.setError("A store name is required, you can change it in anytime.");
+                    editStoreName.requestFocus();
+
 //                } else if (!checkBoxAgree.isChecked()) {
 //                    Toast.makeText(getContext(),
 //                            "Please confirm term and policy.", Toast.LENGTH_SHORT).show();
-
                 } else {
-                    registerUser(email, password);
-
+                    registerUser(_EMAIL, _PWD);
+                    storeName = _STORE_NAME;
+                    Log.d("Test store name",storeName+"!");
 //                    // Create progress bar
 //                    loadingPB = view.findViewById(R.id.progress_circular_loading);
 //                    if (isProgressVisible) {
@@ -159,16 +177,16 @@ public class UserRegistrationFragment extends Fragment {
 //                        isProgressVisible = true;
 //                        loadingPB.setVisibility(View.VISIBLE);
 //                    }
+
                 }
             }
         });
 
         // To cancel and back to login page
-        btn_cancel = view.findViewById(R.id.btn_cancel);
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
+        btnCancel = view.findViewById(R.id.btn_cancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Back to MainActivity
                 startActivity(new Intent(getContext(), MainActivity.class));
             }
         });
@@ -182,7 +200,17 @@ public class UserRegistrationFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (view == fb) {
-                    btn_register_facebook.performClick();
+                    _STORE_NAME = editStoreName.getText().toString();
+                    if(TextUtils.isEmpty(_STORE_NAME)){
+                        Toast.makeText(getContext(),
+                                "Please enter your store name.", Toast.LENGTH_SHORT).show();
+                        editStoreName.setError("A store name is required, you can change it in anytime.");
+                        editStoreName.requestFocus();
+                    }else {
+                        storeName = _STORE_NAME;
+                        btn_register_facebook.performClick();
+                    }
+
                 }
             }
         });
@@ -230,7 +258,6 @@ public class UserRegistrationFragment extends Fragment {
                             // user data into the firebase realtime db
                             User newUser = new User(email, user_role);
                             CreateUserProfile(firebaseUser, newUser);
-//                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure" + task.getException(), task.getException());
@@ -259,18 +286,6 @@ public class UserRegistrationFragment extends Fragment {
                                 // user data into the firebase realtime db
                                 User newUser = new User(email, user_role);
                                 CreateUserProfile(firebaseUser, newUser);
-
-                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                if (user != null) {
-                                    String uid = user.getUid();
-                                    if (user_role.equals(CUSTOMER)) {
-                                        Customer newCustomer = new Customer(uid);
-                                        ExtractingCustomerReference(firebaseUser, newCustomer);
-                                    } else if (user_role.equals(SELLER)) {
-                                        Seller newSeller = new Seller(uid);
-                                        ExtractingSellerReference(firebaseUser, newSeller);
-                                    }
-                                }
                             } else {
                                 // Handle failure
                                 Toast.makeText(getContext(), "Cannot register a new user, please try again latter.", Toast.LENGTH_SHORT).show();
@@ -291,10 +306,10 @@ public class UserRegistrationFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "extractingUserReference:success");
-                if (user_role == CUSTOMER) {
+                if (user_role.equals(CUSTOMER)) {
                     Customer newCustomer = new Customer(firebaseUser.getUid());
                     ExtractingCustomerReference(firebaseUser, newCustomer);
-                } else if (user_role == SELLER) {
+                } else if (user_role.equals(SELLER)) {
                     Seller newSeller = new Seller(firebaseUser.getUid());
                     ExtractingSellerReference(firebaseUser, newSeller);
                 }
@@ -310,6 +325,18 @@ public class UserRegistrationFragment extends Fragment {
             public void onComplete(@NonNull Task<Void> task) {
 
                 if (task.isSuccessful()) {
+                    // Create a new store
+                    DatabaseReference storeRef = mFirebaseDatabase.child(firebaseUser.getUid()).child("storeInfo");
+                    String sid = storeRef.push().getKey(); // Generates a unique store id.
+                    if (sid != null) {
+                        // Create a new store with sid
+                        Store store = new Store(storeName);
+
+                        // Set the store info under the new store id
+                        storeRef.child(sid).setValue(store);
+                    }
+
+
                     // Send Verification Email
                     firebaseUser.sendEmailVerification();
                     Toast.makeText(getContext(), "Seller registered successfully!", Toast.LENGTH_SHORT).show();
