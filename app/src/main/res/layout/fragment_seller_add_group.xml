@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SellerAddGroupFragment">
+    tools:context=".fragments.SellerAddGroupFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <ScrollView
@@ -32,51 +34,65 @@
 
             <!--  Toggle Button for in stock or group buy order          -->
             <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/tgBtnGp_publish"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="8dp">
+                android:layout_margin="8dp"
+                app:singleSelection="true">
 
                 <Button
+                    android:id="@+id/tgBtn_in_stock_publish"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="In stock" />
 
                 <Button
+                    android:id="@+id/tgBtn_group_buy_publish"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Group Buy" />
+                    android:text="Preorder Group" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            <!-- Default img  -->
-            <ImageView
-                android:layout_width="366dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
-                tools:srcCompat="@tools:sample/avatars" />
-
-            <!-- Product name  -->
-            <com.google.android.material.textfield.TextInputLayout
+            <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/product_name">
+                android:id="@+id/rv_groupImg_publish"/>
+
+<!--            &lt;!&ndash; Default img  &ndash;&gt;-->
+<!--            <ImageView-->
+<!--                android:id="@+id/img_default_publish"-->
+<!--                android:layout_width="366dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_margin="8dp"-->
+<!--                tools:srcCompat="@tools:sample/avatars" />-->
+
+            <!-- Group name  -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editLayout_group_publish"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Group Name">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_groupName_publish"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Prodcut description  -->
+            <!-- Group description  -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editLayout_groupDes_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/product_des">
+                android:hint="Group Description">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_groupDes_publish"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="6"
@@ -85,54 +101,61 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Group Category       -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Product Category"
+                app:boxBackgroundColor="@null">
+
+                <AutoCompleteTextView
+                    android:id="@+id/edit_group_category_publish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="false"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Group Price Range  -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editLayout_groupPriceRange_publish"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Group Price Range">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_groupPriceRange_publish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <!--   RecyclerView to select product styles         -->
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_groupStyle_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <!-- other imgs  -->
-            <ImageView
-                android:layout_width="366dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
-                tools:srcCompat="@tools:sample/avatars" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/btn_start_group_publish"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Start Date" />
+                    android:text="Group Start" />
 
                 <Button
+                    android:id="@+id/btn_end_group_publish"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Start Time" />
+                    android:text="Group End" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="End Date" />
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="End Time" />
             </LinearLayout>
 
             <LinearLayout
@@ -143,6 +166,7 @@
 
                 <!--    Cancel    -->
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_cancel_publish"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -153,6 +177,7 @@
 
                 <!--    Publish    -->
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_publish_publish"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
