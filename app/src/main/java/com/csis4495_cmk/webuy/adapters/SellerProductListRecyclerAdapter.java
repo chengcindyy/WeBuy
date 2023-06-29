@@ -2,6 +2,7 @@ package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -33,7 +35,6 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     private String sellerId;
     private List<String> productImages;
     private ArrayList<Product> products;
-    private Map<String, Product> productMap;
 
     public SellerProductListRecyclerAdapter(){
         // default constructor
@@ -42,14 +43,6 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     public SellerProductListRecyclerAdapter(Context context, OnAddProductButtonClickedListener listener) {
         this.context = context;
         this.listener = listener;
-    }
-
-    public SellerProductListRecyclerAdapter(Context context, ArrayList<Product> products, OnAddProductButtonClickedListener listener) {
-        this.context = context;
-        this.products = products;
-//        this.productMap = mProductMap;
-        this.listener = listener;
-        notifyDataSetChanged();
     }
 
     public void setContext(Context context) {
@@ -64,14 +57,6 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         this.products = products;
     }
 
-    public void setProductMap(Map<String, Product> productMap) {
-        this.productMap = productMap;
-    }
-
-    public void setSellerId(String sellerId) {
-        this.sellerId = sellerId;
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -82,16 +67,15 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         productImages = products.get(position).getProductImages();
+        Log.d("TTT",position + ": " + productImages.get(0));
 
         // DISPLAY PRODUCT IMAGE
         // Before read firebase storage image, set rules: allow read, write: if request.auth != null; (For testing)
         // getReference should pass Storage image folder name
-        if (productImages != null && !productImages.isEmpty()) {
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
-            StorageReference imageReference = storageReference.child(productImages.get(0));
+        if (productImages != null && !productImages.isEmpty()) { //have changed by Mel
+            StorageReference imageReference = FirebaseStorage.getInstance().getReference("ProductImage").child(productId).child(productImages.get(0));
             imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                // Got the download URL and pass it to Picasso to download, show in ImageView and caching
-                Picasso.with(context).load(uri.toString()).into(holder.productImage);
+                Glide.with(context).load(uri.toString()).into(holder.productImage);
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
@@ -136,11 +120,8 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     public void removeItem(int position) {
         // Remove item
         products.remove(position);
-        productMap.remove(productId);
         // Notify the adapter when an item has been removed
         notifyItemRemoved(position);
-//        notifyItemRangeChanged(position, getItemCount());
-//        notifyDataSetChanged();
     }
 
     public interface OnAddProductButtonClickedListener {

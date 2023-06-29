@@ -1,6 +1,5 @@
 package com.csis4495_cmk.webuy.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Product {
@@ -8,7 +7,7 @@ public class Product {
     private String productName;
     private String category;
     private String description;
-    private double tax;
+    private int tax; // 0: no tax  1: GST  2: GST+PST
 
     private List<String> productImages;
     private String sellerId;
@@ -16,12 +15,13 @@ public class Product {
     private List<ProductStyle> productStyles;
 
     private String productPrice; // product price or might be (minStylePrice, maxStylePrice)
+    private List<String> tags;
 
     public Product() {
     }
 
     public Product(String productName, String category, String description,
-                   double tax, List<String> productImages, String sellerId,
+                   int tax, List<String> productImages, String sellerId,
                     List<ProductStyle> productStyles,String productPrice) {
         this.productName = productName;
         this.category = category;
@@ -31,6 +31,20 @@ public class Product {
         this.sellerId = sellerId;
         this.productStyles = productStyles;
         this.productPrice = productPrice;
+    }
+
+    public Product(String productName, String category, String description, int tax,
+                   List<String> productImages, String sellerId, List<ProductStyle> productStyles,
+                   String productPrice, List<String> categories) {
+        this.productName = productName;
+        this.category = category;
+        this.description = description;
+        this.tax = tax;
+        this.productImages = productImages;
+        this.sellerId = sellerId;
+        this.productStyles = productStyles;
+        this.productPrice = productPrice;
+        this.tags = categories;
     }
 
     public String getProductName() {
@@ -45,7 +59,7 @@ public class Product {
         return description;
     }
 
-    public double getTax() {
+    public int getTax() {
         return tax;
     }
 
@@ -67,5 +81,9 @@ public class Product {
 
     public void setProductPrice(String productPrice) {
         this.productPrice = productPrice;
+    }
+
+    public List<String> getTags() {
+        return tags;
     }
 }

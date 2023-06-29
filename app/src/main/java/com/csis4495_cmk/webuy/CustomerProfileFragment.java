@@ -500,7 +500,7 @@ public class CustomerProfileFragment extends Fragment {
         // Set User profile picture (After uploaded)
         Uri uri = firebaseUser.getPhotoUrl();
         if (uri != null){
-            Picasso.with(getContext()).load(uri).into(imgUserProfile);
+            Picasso.get().load(uri).into(imgUserProfile);
         }
 
     }

@@ -13,9 +13,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.csis4495_cmk.webuy.tools.ItemMoveCallback;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +53,10 @@ public class SellerStyleListRecyclerAdapter extends RecyclerView.Adapter<SellerS
 
     @Override
     public void onBindViewHolder(@NonNull StyleListViewHolder holder, int position) {
-        holder.imvStyleImg.setImageURI(Uri.parse(styles.get(position).getStylePic()));
+
+        Log.d("Test StylePicName", styles.get(position).getStylePic());
+        Picasso.get().load(styles.get(position).getStylePic()).into(holder.imvStyleImg);
+
         holder.tvStyleName.setText(styles.get(position).getStyleName());
         holder.tvStylePrice.setText("CA$ " + styles.get(position).getStylePrice());
 
@@ -59,6 +67,7 @@ public class SellerStyleListRecyclerAdapter extends RecyclerView.Adapter<SellerS
 
         // delete btn click -> remove from list
         holder.imgBtnDeleteStyle.setOnClickListener(v -> {
+            mStyleListItemChangedListener.onStyleDelete(styles.get(position).getStylePic());
             styles.remove(holder.getAdapterPosition());
             notifyItemRemoved(holder.getAdapterPosition());
             // pass back the updated stylist
@@ -120,6 +129,7 @@ public class SellerStyleListRecyclerAdapter extends RecyclerView.Adapter<SellerS
     public interface onStyleListItemChanged {
         void onStyleEdit(int position);
         void onStyleListChanged(List<ProductStyle> newStyles);
+        void onStyleDelete(String deletedStylePicUrl);
     }
 
 }

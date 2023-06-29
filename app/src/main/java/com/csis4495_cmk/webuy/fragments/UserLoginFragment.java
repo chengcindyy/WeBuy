@@ -79,7 +79,7 @@ public class UserLoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set navigation controller, and if you want to navigate to other fragment can call this to navigate
-        navController = NavHostFragment.findNavController(UserLoginFragment.this);
+        //navController = NavHostFragment.findNavController(UserLoginFragment.this);
 
         // When user clicked register button : open registration page
         btn_register = view.findViewById(R.id.btn_register);
@@ -90,7 +90,7 @@ public class UserLoginFragment extends Fragment {
             }
         });
 
-        // When user clicked login Button, varify email and login
+        // When user clicked login Button, verify email and login
         btnLogin = view.findViewById(R.id.btn_loginWithId);
         btnLogin.setOnClickListener(v -> {
             showLoginDialog();
@@ -151,6 +151,7 @@ public class UserLoginFragment extends Fragment {
                                     loginUser(firebaseUser);
                                 } else {
                                     // Handle case where user object is null
+                                    Log.d(TAG,"firebaseUser is null");
                                 }
                             }
                         } else {
@@ -250,8 +251,11 @@ public class UserLoginFragment extends Fragment {
                     // Get instance of current user
                     FirebaseUser firebaseUser = auth.getCurrentUser();
                     loginUser(firebaseUser);
+
                 } else {
                     // Handle authentication failure
+                    Toast.makeText(getContext(), "Login Failed, please try again!", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
@@ -259,6 +263,7 @@ public class UserLoginFragment extends Fragment {
     private void loginUser(FirebaseUser firebaseUser) {
         // Check if the user is verified before user can access their profile
         if (firebaseUser.isEmailVerified()) {
+            Log.d(TAG, "Email verified");
             // Query user role from database
             String uid = firebaseUser.getUid();
             mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
@@ -272,25 +277,29 @@ public class UserLoginFragment extends Fragment {
                             String user_role = user.getRole();
                             switch (user_role) {
                                 case "customer":
+                                    Toast.makeText(getContext(), "Login Customer", Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(getActivity(), CustomerHomePageActivity.class));
-                                    navController.navigate(R.id.action_userLoginFragment_to_customerHomeFragment);
+                                    //navController.navigate(R.id.action_userLoginFragment_to_customerHomeFragment);
                                     if(getActivity() != null) { getActivity().finish(); }
                                     break;
                                 case "seller":
                                     // TODO: navigate to seller home page
+                                    Toast.makeText(getContext(), "Login Seller", Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(getActivity(), SellerHomePageActivity.class));
-
                                     if(getActivity() != null) { getActivity().finish(); }
                                     break;
                                 default:
                                     // Handle case where user role is unknown
+                                    Log.e(TAG,"User role is unknown");
                                     break;
                             }
                         } else {
                             // Handle case where user object is null
+                            Log.e(TAG,"User object in realDB is null");
                         }
                     } else {
                         // Handle error
+                        Log.e(TAG,"realDB connection failed");
                     }
                 }
             });
@@ -416,7 +425,7 @@ public class UserLoginFragment extends Fragment {
         builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                loginUserWithFirebase(_email,_password);
+                //loginUserWithFirebase(_email,_password);
             }
         });
 
@@ -465,6 +474,7 @@ public class UserLoginFragment extends Fragment {
         Log.d(TAG, "onStart:success");
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         checkIfUserLoggedIn(currentUser, navController);
+        //FirebaseAuth.getInstance().signOut();
     }
     @Override
     public void onResume() {
@@ -477,6 +487,7 @@ public class UserLoginFragment extends Fragment {
         Log.d(TAG, "checkIfUserLoggedIn: Current user:" + currentUser);
         if (currentUser != null) {
             String uid = currentUser.getUid();
+            Log.d(TAG, "checkIfUserLoggedIn: Uid:" + uid);
             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("User").child(uid);
             userRef.addValueEventListener(new ValueEventListener() {
                 @Override

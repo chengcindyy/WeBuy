@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Product;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -32,11 +33,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
@@ -80,7 +87,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SellerProductListRecyclerAdapter(getContext(), this);
 
-        // Update recycler view contend
+        // Update recycler view content
         SetAllProductDetails();
 
         // Call swipe helper
@@ -123,8 +130,8 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
                     Product product = productSnapshot.getValue(Product.class);
                     String sellerId = product.getSellerId();
                     String currentUser = auth.getCurrentUser().getUid();
-                    Log.d("Seller filter: ", sellerId);
-                    Log.d("Seller filter: ", currentUser);
+//                    Log.d("Seller filter: ", sellerId);
+//                    Log.d("Seller filter: ", currentUser);
                     if(sellerId.equals(currentUser)){
                         SetSellerProductDetails(sellerId);
                     }
@@ -155,7 +162,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
                     allProductIds.add(productId);
                     idsToProductsMap.put(productId, product);
                     adapter.setProductId(productId);
-                    adapter.setProducts(allProductsList);
+                    //adapter.setProducts(allProductsList);
 
                     Log.d("Current product is: ", allProductsList + "!");
                     Log.d("Current product id is: ", allProductIds + "!");
@@ -243,10 +250,44 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                reference.child(productId).removeValue();
+
                 adapter.removeItem(position);
                 allProductIds.remove(position);
                 adapter.notifyItemRemoved(position);
+                reference.child(productId).removeValue();
+
+                //remove images from storage
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    //remove images from storage
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference productImgsRef = storage.getReference().child("ProductImage/" + productId);
+
+                    // List all files in the directory
+                    ListResult listResult = null;
+                    try {
+                        listResult = Tasks.await(productImgsRef.listAll());
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (listResult != null) {
+                        List<StorageReference> items = listResult.getItems();
+
+                        // Delete each file
+                        for (StorageReference item : items) {
+                            try {
+                                Tasks.await(item.delete());
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+
+
             }
         });
 
@@ -273,5 +314,6 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
     public void onResume() {
         super.onResume();
         adapter.notifyItemChanged(position);
+        //adapter.notifyDataSetChanged();
     }
 }
