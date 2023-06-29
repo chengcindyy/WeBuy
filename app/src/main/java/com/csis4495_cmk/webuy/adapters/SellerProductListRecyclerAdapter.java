@@ -107,8 +107,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         holder.productTitle.setText(products.get(position).getProductName());
         holder.productCategory.setText(products.get(position).getCategory());
         holder.productPrice.setText(products.get(position).getProductPrice());
-
-        holder.btn_post.setOnClickListener(v -> listener.onButtonClick(true));
+        holder.btn_post.setOnClickListener(v -> listener.onButtonClick(true, position));
     }
 
     @Override
@@ -144,6 +143,6 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     }
 
     public interface OnAddProductButtonClickedListener {
-        void onButtonClick(Boolean btnClicked);
+        void onButtonClick(Boolean btnClicked, int position);
     }
 }

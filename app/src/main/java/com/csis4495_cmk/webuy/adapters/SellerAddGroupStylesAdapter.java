@@ -77,7 +77,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching
-            Picasso.with(context).load(uri.toString()).into(holder.styleImg);
+            Picasso.get().load(uri.toString()).into(holder.styleImg);
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {

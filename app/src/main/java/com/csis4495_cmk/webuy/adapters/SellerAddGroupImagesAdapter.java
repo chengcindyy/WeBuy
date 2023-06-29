@@ -93,7 +93,7 @@ public class SellerAddGroupImagesAdapter extends RecyclerView.Adapter<SellerAddG
         StorageReference imageReference = storageReference.child(paths.get(position));
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching
-            Picasso.with(context).load(uri.toString()).into(holder.imgViewSingleImg);
+            Picasso.get().load(uri.toString()).into(holder.imgViewSingleImg);
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
