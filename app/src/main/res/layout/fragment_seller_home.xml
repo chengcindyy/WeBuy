@@ -53,14 +53,6 @@
                 android:textSize="20sp" />
 
             <Button
-                android:id="@+id/btn_seller_profile"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
-                android:layout_height="74dp"
-                android:text="Profile"
-                android:textSize="20sp" />
-
-            <Button
                 android:id="@+id/btn_seller_support"
                 style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="match_parent"

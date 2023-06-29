@@ -29,6 +29,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
                 android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -47,6 +48,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
                 android:enabled="false"
                 android:text="" />
 
@@ -66,9 +68,7 @@
                 android:id="@+id/edit_birthday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:allowClickWhenDisabled="true"
-                android:focusable="false"
-                android:clickable="false"
+                android:textAppearance="@style/HintAppearance"
                 android:inputType="date"
                 android:text=""
                 android:textColor="@color/black" />
@@ -88,6 +88,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
                 android:inputType="number"
                 android:text="" />
 
@@ -107,6 +108,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
                 android:inputType="text"
                 android:text="" />
 
@@ -136,6 +138,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAppearance="@style/HintAppearance"
                     android:text="" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -157,33 +160,67 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAppearance="@style/HintAppearance"
                     android:text="" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
-        <!-- PROVINCE -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:hint="Province"
-            android:textColorHint="@color/light_grey"
-            app:boxBackgroundColor="@null"
-            app:hintTextColor="@color/deep_blue"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
 
-            <AutoCompleteTextView
-                android:id="@+id/autoComplete_province"
-                android:layout_width="match_parent"
+            <!-- PROVINCE -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="14sp" />
+                android:layout_weight="1"
+                android:hint="Province"
+                android:textColorHint="@color/light_grey"
+                app:boxBackgroundColor="@null"
+                app:hintTextColor="@color/deep_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <AutoCompleteTextView
+                    android:id="@+id/autoComplete_province"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/HintAppearance"
+                    android:textSize="14sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- PROVINCE -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="5dp"
+                android:hint="Country"
+                android:textColorHint="@color/light_grey"
+                app:boxBackgroundColor="@null"
+                app:hintTextColor="@color/deep_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoComplete_country"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/HintAppearance"
+                    android:textSize="14sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_update"
@@ -192,6 +229,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:background="@drawable/button_solid"
+            android:textAppearance="@style/HintAppearance"
             android:text="@string/update"
             android:textColor="@color/white" />
 

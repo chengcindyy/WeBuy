@@ -30,4 +30,14 @@
         <item name="android:textColorHint">@color/deep_blue</item>
     </style>
 
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="HintAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">sans-serif-condensed-light</item>
+    </style>
+
 </resources>

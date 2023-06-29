@@ -1,6 +1,7 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.fragments;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,10 +15,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -30,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.activities.MainActivity;
 import com.csis4495_cmk.webuy.dialog.CustomerOrderStatusDialog;
 import com.csis4495_cmk.webuy.models.Customer;
@@ -56,20 +60,22 @@ import com.skydoves.expandablelayout.ExpandableLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class CustomerProfileFragment extends Fragment {
 
     private TextView labelUsername;
     private Button logoutButton, btnTest, btnUpdate;
     private ImageView imgUserProfile;
-    private ImageButton btnSetting, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
+    private ImageButton btnChat, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
     private ExpandableLayout expProfile, expOrderStatus, expWishList, expMoreFunctions;
     private DatePickerDialog picker;
     private TextInputLayout editName, editEmail, editPhone, editAddress, editCity, editPostalCode;
     private EditText editBirthday;
-    private ArrayList<String> _FAVORITE;
     private AutoCompleteTextView editProvince;
-
+    private AlertDialog alertDialog;
+    ArrayList<String> _FAVORITE;
     String _USERNAME, _NAME, _EMAIL, _PHONE, _ADDRESS, _CITY, _PROVINCE, _POSTCODE, _PIC, _DOB;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -121,10 +127,26 @@ public class CustomerProfileFragment extends Fragment {
         expWishList = view.findViewById(R.id.expandableLayout_saves);
         expMoreFunctions = view.findViewById(R.id.expandableLayout_more_function);
 
-        setupExpandableLayoutClickListener(expOrderStatus);
-        setupExpandableLayoutClickListener(expProfile);
-        setupExpandableLayoutClickListener(expWishList);
-        setupExpandableLayoutClickListener(expMoreFunctions);
+        // Set parent layout title and icon
+        List<Pair<ExpandableLayout, Pair<Integer, String>>> list = new ArrayList<>();
+        list.add(new Pair<>(expOrderStatus, new Pair<>(R.drawable.baseline_list_24, "View Order")));
+        list.add(new Pair<>(expProfile, new Pair<>(R.drawable.baseline_edit_note_24, "Edit Profile")));
+        list.add(new Pair<>(expWishList, new Pair<>(R.drawable.baseline_favorite_border_24, "Your Wish List")));
+        list.add(new Pair<>(expMoreFunctions, new Pair<>(R.drawable.baseline_more_horiz_24, "More Functions")));
+
+        for (Pair<ExpandableLayout, Pair<Integer, String>> pair : list) {
+            ExpandableLayout expandableLayout = pair.first;
+            View parentLayout = expandableLayout.getParentLayout();
+            ImageView expandableIcon = parentLayout.findViewById(R.id.txv_expandable_layout_icon);
+            TextView expandableTxv = parentLayout.findViewById(R.id.txv_expandable_layout_title);
+
+            // Set icon & title
+            expandableIcon.setImageResource(pair.second.first);
+            expandableTxv.setText(pair.second.second);
+
+            // Set onClick listener
+            setupExpandableLayoutClickListener(expandableLayout);
+        }
 
         // Set order status
         btnViewPending = view.findViewById(R.id.btn_view_pending);
@@ -139,7 +161,7 @@ public class CustomerProfileFragment extends Fragment {
         SetOrderStatusOnClickListener(btnViewDelivered);
 
         // Setting
-        btnSetting = view.findViewById(R.id.btn_setting);
+        btnChat = view.findViewById(R.id.btn_setting);
 
         // Update profile
         btnUpdate = view.findViewById(R.id.btn_update);
@@ -167,13 +189,11 @@ public class CustomerProfileFragment extends Fragment {
         _CITY = editCity.getEditText().getText().toString();
         _PROVINCE = editProvince.getText().toString();
         _POSTCODE = editPostalCode.getEditText().getText().toString();
-        // TODO: Picture needs to work
-        _PIC = String.valueOf(firebaseUser.getPhotoUrl());
         // TODO: get watchlist recycler view
 //        _FAVORITE = customer.getWatchList();
         _DOB = editBirthday.getText().toString();
 
-        Customer customer = new Customer(_NAME,_PHONE,_ADDRESS,_CITY,_PROVINCE,_POSTCODE,_FAVORITE,_PIC,_DOB);
+        Customer customer = new Customer(_NAME,_PHONE,_ADDRESS,_CITY,_PROVINCE,_POSTCODE,_FAVORITE,_DOB);
 
         String userId = firebaseUser.getUid();
         reference = FirebaseDatabase.getInstance().getReference("Customer");
@@ -237,24 +257,37 @@ public class CustomerProfileFragment extends Fragment {
     }
 
     private void SetBirthdayOnClickListener(EditText edit_birthday) {
-        edit_birthday.setOnClickListener(v -> {
-            if (_DOB == null || _DOB.isEmpty()) {
-                Toast.makeText(requireContext(), "Date of birth is not set", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            // Extracting to dd,mm,yyyy by /
-            String textSADoB[] = _DOB.split("/");
-            int day = Integer.parseInt(textSADoB[0]);
-            int month = Integer.parseInt(textSADoB[1]) - 1;
-            int year = Integer.parseInt(textSADoB[2]);
-            //Date Picker Dialog
-            picker = new DatePickerDialog(requireContext(), R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    edit_birthday.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+        edit_birthday.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                int day, month, year;
+                if (_DOB == null || _DOB.isEmpty()) {
+                    // Get current date if _DOB is null or empty
+                    Calendar c = Calendar.getInstance();
+                    year = c.get(Calendar.YEAR);
+                    month = c.get(Calendar.MONTH);
+                    day = c.get(Calendar.DAY_OF_MONTH);
+                } else {
+                    // Extracting to dd,mm,yyyy by /
+                    String textSADoB[] = _DOB.split("/");
+                    day = Integer.parseInt(textSADoB[0]);
+                    month = Integer.parseInt(textSADoB[1]) - 1;
+                    year = Integer.parseInt(textSADoB[2]);
                 }
-            }, year, month, day);
-            picker.show();
+                //Date Picker Dialog
+                picker = new DatePickerDialog(requireContext(), R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        _DOB = dayOfMonth + "/" + (month + 1) + "/" + year;
+                        edit_birthday.setText(_DOB);
+                    }
+                }, year, month, day);
+                picker.show();
+                // To prevent the keyboard from appearing when you click the EditText
+                InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
         });
     }
 
@@ -385,35 +418,17 @@ public class CustomerProfileFragment extends Fragment {
         builder.setView(dialogView);
 
         // Get references to dialog views
-        ImageButton UploadFromDrive = dialogView.findViewById(R.id.btn_upload_image);
-        ImageButton UploadFromCloud = dialogView.findViewById(R.id.btn_select_default_image);
+        ImageButton UploadImage = dialogView.findViewById(R.id.btn_upload_image);
         ImageButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
 
-        UploadFromDrive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mGetContent.launch("image/*");
-            }
-        });
-
-        UploadFromCloud.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+        UploadImage.setOnClickListener(view -> mGetContent.launch("image/*"));
 
         //Create AlertDialog
-        AlertDialog alertDialog = builder.create();
+        alertDialog = builder.create();
         //Show AlertDialog
         alertDialog.show();
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-            }
-        });
+        btnCancel.setOnClickListener(v -> alertDialog.dismiss());
 
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         if (alertDialog.getWindow() != null) {
@@ -431,35 +446,13 @@ public class CustomerProfileFragment extends Fragment {
         }
     }
 
-    private void CreatePathBaseOnUserRole(Uri uri) {
-        String uid = firebaseUser.getUid();
-        reference = FirebaseDatabase.getInstance().getReference("User").child(uid);
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-                String userRole = user.getRole();
-                StorageReference storageRef = storage.child("ProfileImages");
-
-                if(userRole.equals("Customer")){
-                    imageRef = storageRef.child("customerImages");
-                }else{
-                    imageRef = storageRef.child("sellerImages");
-                }
-
-                // Start the upload here
-                uploadImage(uri);
-                PassDataToFirebase(userRole);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getContext(), "checkingCurrentUserRole(): canceled", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void createFireStoragePath(Uri uri) {
+        StorageReference storageRef = storage.child("ProfileImages");
+        imageRef = storageRef.child("customerImages");
+        uploadImageToFireStorage(uri);
     }
 
-    private void uploadImage(Uri uri) {
+    private void uploadImageToFireStorage(Uri uri) {
         // Check that the imageRef is not null
         if (imageRef != null) {
             String uid = firebaseUser.getUid();
@@ -478,14 +471,25 @@ public class CustomerProfileFragment extends Fragment {
                     fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
+                            reference = FirebaseDatabase.getInstance().getReference();
                             Log.d("Test Upload Profile Img: ", "Uri: "+uri.toString());
                             Glide.with(getContext())
                                     .load(uri.toString())
                                     .circleCrop() // or .transform(new CircleCrop())
                                     .into(imgUserProfile);
 
+                            UserProfileChangeRequest request = new UserProfileChangeRequest.
+                                    Builder().setPhotoUri(uri).build();
+                            firebaseUser.updateProfile(request);
+
+                            // Write the download URL to Firebase Database
+                            reference.child("Customer").child(uid).child("profilePic").setValue(uri.toString());
+                            if (alertDialog != null && alertDialog.isShowing()) {
+                                alertDialog.dismiss();
+                            }
                         }
                     });
+                    Toast.makeText(getContext(), "Image upload successfully", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -500,40 +504,18 @@ public class CustomerProfileFragment extends Fragment {
         // Set User profile picture (After uploaded)
         Uri uri = firebaseUser.getPhotoUrl();
         if (uri != null){
-            Picasso.get().load(uri).into(imgUserProfile);
+            Glide.with(getContext())
+                    .load(uri.toString())
+                    .circleCrop() // or .transform(new CircleCrop())
+                    .into(imgUserProfile);
         }
-
-    }
-
-    private void PassDataToFirebase(String userRole) {
-        String uid = firebaseUser.getUid();
-        reference = FirebaseDatabase.getInstance().getReference(userRole).child(uid);
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Customer customer = snapshot.getValue(Customer.class);
-                Seller seller = snapshot.getValue(Seller.class);
-                if(customer != null){
-
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
     }
 
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
-                    CreatePathBaseOnUserRole(uri);
+                    createFireStoragePath(uri);
                 }
             });
     }

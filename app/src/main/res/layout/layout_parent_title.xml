@@ -7,27 +7,28 @@
     android:background="@drawable/layout_title">
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/txv_expandable_layout_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/baseline_favorite_border_24"
+        android:src="@drawable/baseline_edit_note_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/txv_expandable_layout_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:fontFamily="sans-serif-condensed-light"
-        android:text="Your Wish List"
+        android:text="Edit Profile"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView3"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toTopOf="@+id/imageView3" />
+        app:layout_constraintBottom_toBottomOf="@+id/txv_expandable_layout_icon"
+        app:layout_constraintStart_toEndOf="@+id/txv_expandable_layout_icon"
+        app:layout_constraintTop_toTopOf="@+id/txv_expandable_layout_icon" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

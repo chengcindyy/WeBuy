@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/layout_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- NAME -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Owner Name"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/input_lastName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
+                android:text="" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- EMAIL -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="Personal email"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
+                android:text="" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- PHONE -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="Personal phone number"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
+                android:inputType="number"
+                android:text="" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_update_seller_profile"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_solid"
+            android:textAppearance="@style/HintAppearance"
+            android:text="@string/update"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

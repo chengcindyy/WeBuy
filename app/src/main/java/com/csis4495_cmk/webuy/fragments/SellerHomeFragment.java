@@ -62,8 +62,6 @@ public class SellerHomeFragment extends Fragment {
         btnStoreMgmt = view.findViewById(R.id.btn_seller_store_mgmt);
         // TODO: Add Support page
         btnSupport = view.findViewById(R.id.btn_seller_support);
-        // TODO: Add Profile page
-        btnProfile = view.findViewById(R.id.btn_seller_profile);
 
         btnLogout = view.findViewById(R.id.btn_seller_logout);
         btnLogout.setOnClickListener(view1 -> {

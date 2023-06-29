@@ -142,7 +142,6 @@ public class UserLoginFragment extends Fragment {
                             Log.d(TAG, "signInWithCredential:success");
                             firebaseUser = auth.getCurrentUser();
                             if (task.getResult().getAdditionalUserInfo().isNewUser()) {
-                                Toast.makeText(getContext(), "New user", Toast.LENGTH_SHORT).show();
                                 showRoleSelectionAlertDialog();
                             } else {
                                 // Returning user, go to home page
@@ -180,10 +179,10 @@ public class UserLoginFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "extractingUserReference:success");
-                if (user_role == CUSTOMER) {
+                if (user_role.equals(CUSTOMER)) {
                     Customer newCustomer = new Customer(firebaseUser.getUid());
                     ExtractingCustomerReference(firebaseUser, newCustomer);
-                } else if (user_role == SELLER) {
+                } else if (user_role.equals(SELLER)) {
                     Seller newSeller = new Seller(firebaseUser.getUid());
                     ExtractingSellerReference(firebaseUser, newSeller);
                 }
@@ -356,37 +355,15 @@ public class UserLoginFragment extends Fragment {
 
     // [START SHOW ROLE SELECTION DIALOG]
     private void showRoleSelectionAlertDialog() {
-        final String[] dialog_list = {"Customer", "Seller"};
-        final int[] roleIndex = {-1};
-
-        //Set up alert builder
+         //Set up alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Please choose a role for registration.");
-        builder.setSingleChoiceItems(dialog_list, roleIndex[0], new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                roleIndex[0] = which;
-                switch (roleIndex[0]) {
-                    case 0:
-                        user_role = CUSTOMER;
-                        break;
-                    case 1:
-                        user_role = SELLER;
-                        break;
-                    default:
-                        Toast.makeText(getContext(), "Please select one of the options", Toast.LENGTH_SHORT).show();
-                        user_role = ""; // reset user_role if no valid selection
-                        return; // If no valid selection, don't dismiss the dialog or proceed
-                }
-            }
-        });
+        builder.setTitle("Oops!");
+        builder.setMessage("Seems you haven't come here before, let's create a new account!");
 
-        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Go to register page", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                firebaseUser = auth.getCurrentUser();
-                User newUser = new User(firebaseUser.getEmail(), user_role);
-                CreateUserProfile(firebaseUser, newUser);
+                navController.navigate(R.id.roleSelectionFragment);
             }
         });
 
