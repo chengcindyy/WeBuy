@@ -153,8 +153,8 @@ public class SellerAddGroupFragment extends Fragment   {
         navController = NavHostFragment.findNavController(SellerAddGroupFragment.this);
 
         tgBtnGp_publish = view.findViewById(R.id.tgBtnGp_publish);
-//        tgBtn_in_stock_publish = view.findViewById(R.id.tgBtn_in_stock_publish);
-//        tgBtn_group_buy_publish = view.findViewById(R.id.tgBtn_group_buy_publish);
+        tgBtn_in_stock_publish = view.findViewById(R.id.tgBtn_in_stock_publish);
+        tgBtn_group_buy_publish = view.findViewById(R.id.tgBtn_group_buy_publish);
 
         groupName = view.findViewById(R.id.edit_groupName_publish);
         description = view.findViewById(R.id.edit_groupDes_publish);
@@ -186,7 +186,6 @@ public class SellerAddGroupFragment extends Fragment   {
                         Toast.makeText(getContext(), "Group Type "+Integer.toString(groupType) + "Start and End Time: " + startTime + ": " + endTime,Toast.LENGTH_SHORT).show();
                         btnStart.setText("Group Start");
                         btnEnd.setText("Group End");
-
                         btnStart.setEnabled(false);
                         btnEnd.setEnabled(false);
                     }
