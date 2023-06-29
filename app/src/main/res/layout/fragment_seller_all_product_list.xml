@@ -23,7 +23,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
             <!--            <com.google.android.material.appbar.AppBarLayout-->
             <!--                android:id="@+id/seller_product_list_appBarLayout"-->
             <!--                android:layout_width="0dp"-->

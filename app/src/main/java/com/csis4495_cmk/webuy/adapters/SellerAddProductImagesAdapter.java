@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.csis4495_cmk.webuy.tools.ItemMoveCallback;
 import com.csis4495_cmk.webuy.R;
 
@@ -56,6 +57,8 @@ public class SellerAddProductImagesAdapter extends RecyclerView.Adapter<SellerAd
                 holder.tvCoverImg.setVisibility(View.VISIBLE);
             }
             holder.imgViewSingleImg.setImageURI(uriUploadImgs.get(position));
+            // Use Glide to load the image
+            Glide.with(context).load(uriUploadImgs.get(position)).into(holder.imgViewSingleImg);
         }
 
         // last one clicked

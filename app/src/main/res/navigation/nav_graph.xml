@@ -2,7 +2,6 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
     app:startDestination="@id/userLoginFragment">
 
     <fragment
@@ -12,7 +11,7 @@
         tools:layout="@layout/fragment_customer_home" />
     <fragment
         android:id="@+id/customerProfileFragment"
-        android:name="com.csis4495_cmk.webuy.CustomerProfileFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerProfileFragment"
         android:label="fragment_customer_profile"
         tools:layout="@layout/fragment_customer_profile" >
         <action
@@ -105,9 +104,9 @@
         <action
             android:id="@+id/action_sellerProductListFragment_to_sellerAddProductFragment"
             app:destination="@id/sellerAddProductFragment" />
-        <action
-            android:id="@+id/action_sellerProductListFragment_to_sellerEditProductDialog"
-            app:destination="@id/sellerEditProductDialog" />
+<!--        <action-->
+<!--            android:id="@+id/action_sellerProductListFragment_to_sellerEditProductDialog"-->
+<!--            app:destination="@id/sellerEditProductDialog" />-->
     </fragment>
     <fragment
         android:id="@+id/sellerAddGroupFragment"
@@ -116,7 +115,7 @@
         tools:layout="@layout/fragment_seller_add_group" />
     <fragment
         android:id="@+id/sellerProfileFragment"
-        android:name="com.csis4495_cmk.webuy.SellerProfileFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerProfileFragment"
         android:label="fragment_seller_profile"
         tools:layout="@layout/fragment_seller_profile" >
         <action
@@ -133,8 +132,8 @@
         android:name="com.csis4495_cmk.webuy.SellerInventoryFragment"
         android:label="fragment_seller_inventory"
         tools:layout="@layout/fragment_seller_inventory" />
-    <fragment
-        android:id="@+id/sellerEditProductDialog"
-        android:name="com.csis4495_cmk.webuy.dialog.SellerEditProductDialog"
-        android:label="SellerEditProductDialog" />
+<!--    <fragment-->
+<!--        android:id="@+id/sellerEditProductDialog"-->
+<!--        android:name="com.csis4495_cmk.webuy.dialog.SellerEditProductDialog"-->
+<!--        android:label="SellerEditProductDialog" />-->
 </navigation>

@@ -90,7 +90,6 @@
                 app:boxBackgroundColor="@null">
 
                 <AutoCompleteTextView
-                    android:id="@+id/input_Sort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
@@ -108,7 +107,6 @@
                 app:boxBackgroundColor="@null">
 
                 <AutoCompleteTextView
-                    android:id="@+id/input_tag"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
