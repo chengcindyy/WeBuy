@@ -79,7 +79,7 @@ public class UserLoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set navigation controller, and if you want to navigate to other fragment can call this to navigate
-        //navController = NavHostFragment.findNavController(UserLoginFragment.this);
+        navController = NavHostFragment.findNavController(UserLoginFragment.this);
 
         // When user clicked register button : open registration page
         btn_register = view.findViewById(R.id.btn_register);
