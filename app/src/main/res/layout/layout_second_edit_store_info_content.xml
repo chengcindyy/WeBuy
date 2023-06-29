@@ -220,17 +220,6 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_upload_store_img"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/button_outline"
-            android:textAppearance="@style/HintAppearance"
-            android:text="Upload Store Image"
-            android:textColor="@color/deep_blue" />
-
-        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_update_store_profile"
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -240,6 +229,17 @@
             android:textAppearance="@style/HintAppearance"
             android:text="@string/update"
             android:textColor="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_upload_store_img"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_outline"
+            android:textAppearance="@style/HintAppearance"
+            android:text="Upload Store Image"
+            android:textColor="@color/deep_blue" />
 
     </LinearLayout>
 
