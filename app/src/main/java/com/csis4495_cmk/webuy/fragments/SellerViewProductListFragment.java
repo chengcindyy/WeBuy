@@ -1,10 +1,12 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -14,42 +16,44 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
-import com.csis4495_cmk.webuy.dialog.CustomerOrderStatusDialog;
 import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
+
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class SellerViewProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener{
+public class SellerViewProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener {
     private NavController navController;
     private FloatingActionButton btnAddProduct;
-    RecyclerView mRecyclerView;
-    ArrayList<Product> productsArrayList;
-    ArrayList<String> productIds;
-    SellerProductListRecyclerAdapter adapter;
-    FirebaseStorage storage;
-    boolean addProductBtnClicked = false;
-
-
+    private RecyclerView mRecyclerView;
+    private SellerProductListRecyclerAdapter adapter;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
     DatabaseReference reference;
-    FirebaseDatabase db;
+    private androidx.appcompat.widget.SearchView searchView;
+    private boolean addProductBtnClicked = false;
+    private int position;
+    private ArrayList<Product> allProductsList;
+    private ArrayList<String> allProductIds;
+    private Map<String, Product> idsToProductsMap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,50 +70,122 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         // Set navigation controller, how to navigate simply call -> controller.navigate(destination id)
         navController = NavHostFragment.findNavController(SellerViewProductListFragment.this);
 
-        // Processing recycler view
+        allProductsList = new ArrayList<>();
+        allProductIds = new ArrayList<>();
+        idsToProductsMap = new HashMap<>();
+
+        // Set recycler view
         mRecyclerView = view.findViewById(R.id.recyclerView_seller_product_list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new SellerProductListRecyclerAdapter(getContext(), this);
 
-        storage = FirebaseStorage.getInstance();
-        productsArrayList = new ArrayList<>();
-        productIds = new ArrayList<>();
-        adapter = new SellerProductListRecyclerAdapter(getContext(), productsArrayList,this);
-
-        mRecyclerView.setAdapter(adapter);
-        showAllProductDetails();
-
-
-        // Open add product page
-        btnAddProduct = view.findViewById(R.id.fab_add_new_product);
-        btnAddProduct.setOnClickListener(view1 -> Navigation.findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
+        // Update recycler view contend
+        SetAllProductDetails();
 
         // Call swipe helper
         OnRecyclerItemSwipeActionHelper();
+
+        // Search
+        searchView = view.findViewById(R.id.sv_seller_product_list);
+        if (searchView != null) {
+            searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    search(s);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    search(s);
+                    return false;
+                }
+            });
+        }
+
+        // Open add product page
+        btnAddProduct = view.findViewById(R.id.fab_add_new_product);
+        btnAddProduct.setOnClickListener(view1 ->
+                Navigation.findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
     }
 
-    private void showAllProductDetails() {
+
+
+
+    private void SetAllProductDetails() {
         reference = FirebaseDatabase.getInstance().getReference("Product");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                productsArrayList.clear();
-                productIds.clear();
-                for (DataSnapshot productSnapshot: dataSnapshot.getChildren()) {
+                allProductsList.clear();
+                for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
                     Product product = productSnapshot.getValue(Product.class);
-                    String productId = productSnapshot.getKey();
-                    productIds.add(productId);
-                    productsArrayList.add(product);
+                    String sellerId = product.getSellerId();
+                    String currentUser = auth.getCurrentUser().getUid();
+                    Log.d("Seller filter: ", sellerId);
+                    Log.d("Seller filter: ", currentUser);
+                    if(sellerId.equals(currentUser)){
+                        SetSellerProductDetails(sellerId);
+                    }
                 }
-                adapter.setProducts(productsArrayList);
-                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // do nothing
+                // TODO: handle if canceled
             }
         });
+    }
+
+    private void SetSellerProductDetails(String sellerId) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Product");
+        Query query = reference.orderByChild("sellerId").equalTo(sellerId);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                allProductsList.clear();
+                allProductIds.clear();
+                for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
+                    Product product = productSnapshot.getValue(Product.class);
+                    String productId = productSnapshot.getKey();
+
+                    allProductsList.add(product);
+                    allProductIds.add(productId);
+                    idsToProductsMap.put(productId, product);
+                    adapter.setProductId(productId);
+                    adapter.setProducts(allProductsList);
+
+                    Log.d("Current product is: ", allProductsList + "!");
+                    Log.d("Current product id is: ", allProductIds + "!");
+                    Log.d("Now map content are: ", idsToProductsMap + "!");
+                }
+                UpdateRecyclerView(allProductsList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // TODO: handle if canceled
+            }
+        });
+    }
+
+    private void UpdateRecyclerView(ArrayList<Product> pList) {
+        Log.d("Do update, current product is: ", pList + "!");
+        adapter.setProducts(pList);
+        adapter.notifyDataSetChanged();
+        mRecyclerView.setAdapter(adapter);
+    }
+
+    private void search(String str) {
+        Map<String, Product> mProductMap = idsToProductsMap.entrySet()
+                .stream()
+                .filter(map -> map.getValue().getProductName().toLowerCase().contains(str.toLowerCase()) ||
+                        map.getValue().getCategory().toLowerCase().contains(str.toLowerCase())
+                ).collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
+        allProductsList = new ArrayList<>(mProductMap.values());
+        UpdateRecyclerView(allProductsList);
     }
 
     private void OnRecyclerItemSwipeActionHelper() {
@@ -121,22 +197,22 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getLayoutPosition();
+                String productId = "";
+                position = viewHolder.getLayoutPosition();
 
                 // Swiped item left: remove item from database
-                if(direction == ItemTouchHelper.LEFT){
-                    String productId = productIds.get(position);
-                    reference.child(productId).removeValue();
-                    adapter.removeItem(position);
-                    productIds.remove(position);
-                    adapter.notifyItemRemoved(position);
+                if (direction == ItemTouchHelper.LEFT) {
+                    productId = allProductIds.get(position);
+                    showConfirmToRemoveDialog(productId, position);
 
-                // Swiped item right: open edit page
-                }else if (direction == ItemTouchHelper.RIGHT){
+                    // Swiped item right: open edit page
+                } else if (direction == ItemTouchHelper.RIGHT) {
+                    productId = allProductIds.get(position);
                     Bundle bundle = new Bundle();
-                    bundle.putInt("position", position);
-                    Navigation.findNavController(viewHolder.itemView).navigate(R.id.action_sellerProductListFragment_to_sellerEditProductDialog, bundle);
-
+                    bundle.putString("productId", productId);
+                    SellerAddProductFragment sellerAddProductFragment = new SellerAddProductFragment();
+                    sellerAddProductFragment.setArguments(bundle);
+                    Navigation.findNavController(viewHolder.itemView).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment, bundle);
                 }
             }
 
@@ -159,16 +235,43 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
-    @Override
-    public void onButtonClick(Boolean btnClicked, int position) {
-        addProductBtnClicked = true;
-        String productId = productIds.get(position);
-//        Toast.makeText(getContext(),productId,Toast.LENGTH_SHORT).show();
+    private void showConfirmToRemoveDialog(String productId, int position) {
+        //Set up alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Remove this product");
+        builder.setMessage("Are you sure you want to remove this product?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                reference.child(productId).removeValue();
+                adapter.removeItem(position);
+                allProductIds.remove(position);
+                adapter.notifyItemRemoved(position);
+            }
+        });
 
-        //use bundel to save selected productId
-        Bundle bundle  = new Bundle();
-        bundle.putString("new_group_productId", productId);
-        //pass bundle to fragment
-        navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment, bundle);
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                adapter.notifyItemChanged(position);
+            }
+        });
+        //Create AlertDialog
+        AlertDialog alertDialog = builder.create();
+        //Show AlertDialog
+        alertDialog.show();
+    }
+
+    @Override
+    public void onButtonClick(Boolean btnClicked) {
+        addProductBtnClicked = true;
+        navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyItemChanged(position);
     }
 }

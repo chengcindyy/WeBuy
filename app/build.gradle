@@ -38,7 +38,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // Material 3 : If layout inspector error, change to other version: 1.7.0, otherwise 1.9.0
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.7.0'
 
 
     // Navigation component
@@ -61,6 +61,7 @@ dependencies {
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.15.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
+    implementation 'jp.wasabeef:glide-transformations:4.3.0'
 
     // Recyclerview Swipe Decorator
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.4'
@@ -73,10 +74,12 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:13.0.0'
 
     // Picasso
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.8'
 
     // CurrencyEditText
     implementation 'com.cottacush:CurrencyEditText:0.0.10'
 
+    //ExpandableLayout
+    implementation "com.github.skydoves:expandablelayout:1.0.7"
 
 }

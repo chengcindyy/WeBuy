@@ -22,7 +22,6 @@
             android:text="Customer"/>
 
         <Button
-            android:id="@+id/btn_customer_product_detail_test"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Open Customer Product Detail"/>
@@ -37,7 +36,6 @@
             android:text="Seller"/>
 
         <Button
-            android:id="@+id/btn_groups_detail_test"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Open Groups Details Page"/>
@@ -45,7 +43,6 @@
 
 
         <Button
-            android:id="@+id/btn_add_product_test"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Go to SellerAddProduct" />

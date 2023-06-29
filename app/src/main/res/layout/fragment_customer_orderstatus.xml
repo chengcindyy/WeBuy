@@ -31,30 +31,25 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_close">
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tab_pending"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Pending" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tab_confirmed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Confirmed" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tab_processed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Processed" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tab_shipped"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Shipped" />
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tab_canceled"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Canceled" />

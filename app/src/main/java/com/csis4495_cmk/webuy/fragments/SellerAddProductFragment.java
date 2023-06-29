@@ -30,7 +30,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cottacush.android.currencyedittext.CurrencyEditText;
@@ -48,8 +50,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -58,6 +63,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SellerAddProductFragment extends Fragment
         implements
@@ -76,6 +82,7 @@ public class SellerAddProductFragment extends Fragment
     private List<Uri> uriUploadProductImgs;
     private RecyclerView recyclerViewStyles;
     private List<ProductStyle> styleList;
+    private List<ProductStyle> editStyleList;
     private Button btnAddStyle, btnSubmitAddProduct, btnCancelAddProduct;
     private TextInputLayout textLayoutProductPrice, textLayoutStylePriceRange;
     private TextInputEditText textInputProductName, textInputProductDescription, textInputStylePriceRange;
@@ -88,7 +95,10 @@ public class SellerAddProductFragment extends Fragment
     private byte[] imageBytes;
     private String productImgName;
     private int uploadImgCount = 0;
-
+    private String editProductId;
+    private ArrayAdapter<CharSequence> productCatAdapter;
+    private RadioButton taxTadioButton_1, taxTadioButton_2, taxTadioButton_0;
+    private TextView textLayoutTitle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -114,9 +124,13 @@ public class SellerAddProductFragment extends Fragment
         textLayoutProductPrice = view.findViewById(R.id.text_layout_product_price);
         textLayoutStylePriceRange = view.findViewById(R.id.text_layout_style_price_range);
         radioGroupTax = view.findViewById(R.id.radio_group_tax);
+        textLayoutTitle = view.findViewById(R.id.tv_add_product);
+        taxTadioButton_0 = view.findViewById(R.id.radio_btn_no_tax);
+        taxTadioButton_1 = view.findViewById(R.id.radio_btn_gst);
+        taxTadioButton_2 = view.findViewById(R.id.radio_btn_gst_pst);
 
         //0. set product category
-        ArrayAdapter<CharSequence> productCatAdapter = ArrayAdapter.createFromResource(getContext(), R.array.arr_product_category, android.R.layout.simple_list_item_1);
+        productCatAdapter = ArrayAdapter.createFromResource(getContext(), R.array.arr_product_category, android.R.layout.simple_list_item_1);
         textInputProductCategory.setAdapter(productCatAdapter);
         textInputProductCategory.setOnItemClickListener((parent, view2, position, id) -> {});
 
@@ -131,8 +145,8 @@ public class SellerAddProductFragment extends Fragment
         productImgFilePicker = registerForActivityResult(new ActivityResultContracts.GetMultipleContents(), new ActivityResultCallback<List<Uri>>() {
             @Override
             public void onActivityResult(List<Uri> result) {
-                    uriUploadProductImgs = result;
-                    setProductImagesAdapter();
+                uriUploadProductImgs = result;
+                setProductImagesAdapter();
             }
         });
 
@@ -151,7 +165,6 @@ public class SellerAddProductFragment extends Fragment
                 addStyleFragment.show(fragmentManager, "Add Style Frag show");
                 // set interface listener
                 addStyleFragment.setOnSellerAddStyleFragmentListener(SellerAddProductFragment.this);
-
             }
         });
 
@@ -184,13 +197,136 @@ public class SellerAddProductFragment extends Fragment
             Navigation.findNavController(v).popBackStack();
         });
 
+        // 6. Edit product
+//        editStyleList = new ArrayList<>();
+        Bundle editBundle = getArguments();
+        if(editBundle != null){
+            editProductId = editBundle.getString("productId");
+            onShowCurrentProduct(editProductId);
+            textLayoutTitle.setText("Edit a Product");
+        }
     }
+
+    private void onShowCurrentProduct(String editProductId) {
+        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product");
+        productRef.child(editProductId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Product product = snapshot.getValue(Product.class);
+                if(product != null){
+                    List<String> _IMAGES = product.getProductImages();
+                    String _NAME = product.getProductName();
+                    String _DESC = product.getDescription();
+                    String _PRICE = product.getProductPrice();
+                    String _CATEGORY = product.getCategory();
+                    int _TAX = (int) product.getTax();
+
+                    GetImageUriFromStorage(_IMAGES);
+                    textInputProductName.setText(_NAME);
+                    textInputProductDescription.setText(_DESC);
+                    textInputProductPrice.setText(_PRICE);
+                    GetProductCategory(_CATEGORY);
+
+                    switch (_TAX){
+                        case 0:
+                            taxTadioButton_0.setChecked(true);
+                            break;
+                        case 1:
+                            taxTadioButton_1.setChecked(true);
+                            break;
+                        case 2:
+                            taxTadioButton_2.setChecked(true);
+                            break;
+                    }
+
+                    if(product.getProductStyles() != null){
+                        styleList = product.getProductStyles();
+//                        styleList = editStyleList;
+                        Log.d("Test display style", "style amount: "+styleList.stream().count()+"!");
+                        Log.d("Test display style", styleList+"!");
+                        if (styleList != null) {
+                            //with styles
+                            //set the recyclerview
+                            LinearLayoutManager lm = new LinearLayoutManager(getContext());
+                            recyclerViewStyles.setLayoutManager(lm);
+                            Log.d("Test display style", styleList+"!");
+                            setStylesAdapter(styleList);
+
+                            //set product price invisible
+                            textLayoutProductPrice.setVisibility(View.GONE);
+                            textInputProductPrice.setText(null);
+
+                            //set style price range visible
+                            textLayoutStylePriceRange.setVisibility(View.VISIBLE);
+
+                            double minStylePrice = Double.MAX_VALUE;
+                            double maxStylePrice = Double.MIN_VALUE;
+
+                            for (ProductStyle style: styleList) {
+                                double stylePrice = style.getStylePrice();
+                                if (stylePrice < minStylePrice) {
+                                    minStylePrice = stylePrice;
+                                }
+                                if (stylePrice > maxStylePrice) {
+                                    maxStylePrice = stylePrice;
+                                }
+                            }
+
+                            if (minStylePrice == maxStylePrice) {
+                                textInputStylePriceRange.setText("CA$ " + minStylePrice);
+                            } else {
+                                textInputStylePriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
+                            }
+
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void GetProductCategory(String selectedCategory) {
+        for (int i = 0; i < productCatAdapter.getCount(); i++) {
+            if (selectedCategory.equals(productCatAdapter.getItem(i))) {
+                textInputProductCategory.setText(productCatAdapter.getItem(i), false);
+                break;
+            }
+        }
+    }
+
+    // TODO: image cannot load correctly, still needs to work
+    private void GetImageUriFromStorage(List<String> images) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        uriUploadProductImgs = new ArrayList<>();
+        for (String filename : images) {
+            StorageReference imageRef = storageRef.child("ProductImages" + "/" + filename);
+            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                uriUploadProductImgs.add(uri);
+                if (uriUploadProductImgs.size() == images.size()) {
+                    setProductImagesAdapter();
+                }
+            }).addOnFailureListener(exception -> {
+                Log.e("Test", "Download failed", exception);
+            });
+        }
+    }
+
 
     private void checkUserPermission() {
 //        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_MEDIA_IMAGES)
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_MEDIA_IMAGES)
                 != PackageManager.PERMISSION_GRANTED) {
 //            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_MEDIA_IMAGES},
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_MEDIA_IMAGES},
                     REQUEST_PERMISSION_CODE);
             Toast.makeText(requireContext(), "Permission asked", Toast.LENGTH_SHORT).show();
@@ -232,16 +368,20 @@ public class SellerAddProductFragment extends Fragment
         sellerAddProductImagesAdapter.setOnProductImagesListener(this);
     }
 
-    private void setStylesAdapter() {
-        SellerStyleListRecyclerAdapter sellerStyleListRecyclerAdapter = new SellerStyleListRecyclerAdapter(getContext(), styleList);
+    // TODO: add List<ProductStyle> styles as 1st parameter, still needs to work
+    private void setStylesAdapter(List<ProductStyle> styles) {
+        Log.d("Test display style", "setStylesAdapter() run");
+        Log.d("Test display style", "passed styles: "+styles.get(0).getStyleName());
+        SellerStyleListRecyclerAdapter sellerStyleListRecyclerAdapter = new SellerStyleListRecyclerAdapter(getContext(), styles);
         //ItemTouchClass
         ItemTouchHelper.Callback callback =
                 new ItemMoveCallback(sellerStyleListRecyclerAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerViewStyles);
-
+        Log.d("Test display style", "recyclerview styles: "+recyclerViewStyles);
         recyclerViewStyles.setAdapter(sellerStyleListRecyclerAdapter);
         sellerStyleListRecyclerAdapter.setmStyleListChangedListener(this);
+        sellerStyleListRecyclerAdapter.notifyDataSetChanged();
     }
 
     private void submitAddProduct() {
@@ -288,7 +428,14 @@ public class SellerAddProductFragment extends Fragment
                         "Request send.", Toast.LENGTH_SHORT).show();
                 firebaseInstance = FirebaseDatabase.getInstance();
                 firebaseDatabase = firebaseInstance.getReference("Product");  //Product -> productId -> newProduct
-                productId = firebaseDatabase.push().getKey();
+
+
+                if(editProductId != null){
+                    productId = editProductId;
+                } else {
+                    productId = firebaseDatabase.push().getKey();
+                }
+
                 //tax define, so far use taxId as the data we save in db
 
                 //compress product images and upload to FireStorage (uriList to stringList)
@@ -301,8 +448,12 @@ public class SellerAddProductFragment extends Fragment
                 String strPrice = styleList.size() == 0 ? textInputProductPrice.getText().toString() : stylePriceRange;
 
                 //upload product and styles to Realtime DB
+
                 uploadProduct(productName, productCategory,productDescription,
                         taxId, strProductImgNames, styleList, strPrice);
+                Log.d("Edit product", "name: "+productName+" Category: "+productCategory+" Desc: "+
+                        productDescription+" tax id: "+taxId+" Image: "+strProductImgNames+ " style list: "+styleList + " price: "+strPrice);
+
 
                 //go back to the frag you came from
                 Navigation.findNavController(v).popBackStack();
@@ -376,6 +527,7 @@ public class SellerAddProductFragment extends Fragment
     }
 
     private void compressStyleImage(List<ProductStyle> styleList) {
+        Log.d("Edit product", "compressStyleImage() run");
         String styleImgName;
         uploadImgCount = 0;
         for (int i = 0; i< styleList.size(); i++) {
@@ -395,6 +547,7 @@ public class SellerAddProductFragment extends Fragment
 
     }
     private void compressProductImages() {
+        Log.d("Edit product", "compressStyleImage() run");
         strProductImgNames = new ArrayList<>();
         uploadImgCount = 0;
         for (int i = 0; i < uriUploadProductImgs.size(); i++) {
@@ -407,10 +560,12 @@ public class SellerAddProductFragment extends Fragment
                 strProductImgNames.add(productImgName);
                 //to FireStorage
                 uploadImagesToFireStorage(productImgName, imageBytes, uriUploadProductImgs);
+                Log.d("Edit product", "img count"+uploadImgCount);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
     }
 
     private void uploadImagesToFireStorage(String imageName, byte[] imageBytes, List<?> imageList) {
@@ -458,8 +613,6 @@ public class SellerAddProductFragment extends Fragment
 //            setStylesAdapter();
 //        }
 //    }
-
-
 
     @Override
     public void onStyleEdit(int position) {
@@ -538,7 +691,8 @@ public class SellerAddProductFragment extends Fragment
             //set the recyclerview
             LinearLayoutManager lm = new LinearLayoutManager(getContext());
             recyclerViewStyles.setLayoutManager(lm);
-            setStylesAdapter();
+            Log.d("Test display style", styleList+"!");
+            setStylesAdapter(styleList);
 
             //set product price invisible
             textLayoutProductPrice.setVisibility(View.GONE);
