@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.fragments;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -22,13 +22,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.activities.MainActivity;
 import com.csis4495_cmk.webuy.models.Seller;
 import com.csis4495_cmk.webuy.models.Store;
@@ -56,18 +55,22 @@ import java.util.List;
 
 public class SellerProfileFragment extends Fragment {
 
-    private Button logoutButton, btnTest, btnUpdate;
-    private ImageView imgStoreImage;
-    private ExpandableLayout expStoreInfo, expDeliveryInfo, expPaymentInfo, expMoreFunctions;
-    private TextInputLayout editStoreId, editStoreName, editEmail, editBusinessNumber, editAddress, editCity, editPostalCode;
+    private Button logoutButton, btnTest, btnUpdateSellerProfile, btnUpdateStoreProfile, btnUploadStoreImg;
+    private Uri uploadedImgUri;
+    private ExpandableLayout expSellerProfile, expStoreInfo, expDeliveryInfo, expPaymentInfo, expMoreFunctions;
+    private TextInputLayout editStoreId, editName, editEmail, editPhone, editStoreName, editStoreEmail,
+            editBusinessNumber, editAddress, editCity, editPostalCode, editStoreIntro;
     private AutoCompleteTextView editProvince, editCountry;
     private AlertDialog alertDialog;
-    String _USERNAME, _NAME, _EMAIL, _PHONE, _STORE,_ADDRESS, _CITY, _PROVINCE, _POSTCODE, _PIC, _COUNTRY;
-    List<Store> storeInfo;
+    String  _NAME, _EMAIL, _PHONE, _STORE_NAME, _STORE_EMAIL, _STORE_PHONE,
+            _ADDRESS, _CITY, _PROVINCE, _POSTCODE, _COUNTRY, _STORE_INTRO;
+    Store storeInfo;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = auth.getCurrentUser();
     String uid = firebaseUser.getUid();
-    DatabaseReference reference;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference reference = database.getReference("Seller");
+
     StorageReference storage = FirebaseStorage.getInstance().getReference();
     StorageReference imageRef;
 
@@ -83,9 +86,11 @@ public class SellerProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // References
-        editStoreId = view.findViewById(R.id.edit_store_id);
-        editStoreName = view.findViewById(R.id.edit_store_name);
+        editName = view.findViewById(R.id.edit_name);
         editEmail = view.findViewById(R.id.edit_email);
+        editPhone = view.findViewById(R.id.edit_phone);
+        editStoreName = view.findViewById(R.id.edit_store_name);
+        editStoreEmail = view.findViewById(R.id.edit_store_email);
         editBusinessNumber = view.findViewById(R.id.edit_Business_number);
         editAddress = view.findViewById(R.id.edit_address);
         editCity = view.findViewById(R.id.edit_city);
@@ -94,27 +99,29 @@ public class SellerProfileFragment extends Fragment {
         setProvinceAutoCompleteAdapter(editProvince);
         editCountry = view.findViewById(R.id.autoComplete_country);
         setCountryAutoCompleteAdapter(editCountry);
-        //        imgStoreImage = view.findViewById(R.id.img_user_profile);
-//        imgUserProfile.setOnClickListener(view1 -> showUploadPicSelectionDialog());
+        editStoreIntro = view.findViewById(R.id.edit_store_intro);
+        btnUploadStoreImg = view.findViewById(R.id.btn_upload_store_img);
+        btnUploadStoreImg.setOnClickListener(view14 -> showUploadPicSelectionDialog());
 
         if (firebaseUser != null){
             // Notify user if they have not verified email
             checkIfEmailVerified(firebaseUser);
-            showSellerProfileInfo(firebaseUser);
-
+            showSellerProfileInfo();
         } else {
             Toast.makeText(getContext(), "Loading user problem!", Toast.LENGTH_LONG).show();
         }
 
         // Expendable layout
+        expSellerProfile = view.findViewById(R.id.expandableLayout_seller_profile);
+        expStoreInfo = view.findViewById(R.id.expandableLayout_store_profile);
         expDeliveryInfo = view.findViewById(R.id.expandableLayout_order);
-        expStoreInfo = view.findViewById(R.id.expandableLayout_profile);
         expPaymentInfo = view.findViewById(R.id.expandableLayout_saves);
         expMoreFunctions = view.findViewById(R.id.expandableLayout_more_function);
 
         // Set parent layout title and icon
         List<Pair<ExpandableLayout, Pair<Integer, String>>> list = new ArrayList<>();
-        list.add(new Pair<>(expStoreInfo, new Pair<>(R.drawable.baseline_edit_note_24, "Store information")));
+        list.add(new Pair<>(expSellerProfile, new Pair<>(R.drawable.baseline_person_24, "Store owner information")));
+        list.add(new Pair<>(expStoreInfo, new Pair<>(R.drawable.baseline_storefront_24, "Store information")));
         list.add(new Pair<>(expDeliveryInfo, new Pair<>(R.drawable.baseline_local_shipping_24, "Delivery Setting")));
         list.add(new Pair<>(expPaymentInfo, new Pair<>(R.drawable.baseline_payment_24, "Payment Setting")));
         list.add(new Pair<>(expMoreFunctions, new Pair<>(R.drawable.baseline_more_horiz_24, "More Functions")));
@@ -134,13 +141,10 @@ public class SellerProfileFragment extends Fragment {
         }
 
         // Update profile
-//        btnUpdate = view.findViewById(R.id.btn_update);
-//        btnUpdate.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                updateSellerProfile(firebaseUser);
-//            }
-//        });
+        btnUpdateStoreProfile = view.findViewById(R.id.btn_update_store_profile);
+        btnUpdateStoreProfile.setOnClickListener(view13 -> updateStoreProfile());
+        btnUpdateSellerProfile = view.findViewById(R.id.btn_update_seller_profile);
+        btnUpdateSellerProfile.setOnClickListener(view1 -> updateSellerProfile(firebaseUser));
 
         // For Testing
         btnTest = view.findViewById(R.id.btn_test_page);
@@ -151,10 +155,65 @@ public class SellerProfileFragment extends Fragment {
         SetLogoutOnClickListener(logoutButton);
     }
 
+    private void updateStoreProfile() {
+        // Obtain the entered data
+        _STORE_NAME = editStoreName.getEditText().getText().toString();
+        _STORE_EMAIL = editStoreEmail.getEditText().getText().toString();
+        _STORE_PHONE = editBusinessNumber.getEditText().getText().toString();
+        _ADDRESS = editAddress.getEditText().getText().toString();
+        _CITY = editCity.getEditText().getText().toString();
+        _PROVINCE = editProvince.getText().toString();
+        _COUNTRY =editCountry.getText().toString();
+        _POSTCODE = editPostalCode.getEditText().getText().toString();
+        _STORE_INTRO = editStoreIntro.getEditText().getText().toString();
+
+        DatabaseReference storeRef = reference.child(firebaseUser.getUid()).child("storeInfo");
+        storeInfo = new Store(_STORE_NAME, _STORE_EMAIL, _STORE_PHONE, _ADDRESS, _CITY, _PROVINCE, _COUNTRY, _POSTCODE,_STORE_INTRO);
+
+        storeRef.setValue(storeInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Toast.makeText(getContext(), "Data update successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    try {
+                        throw task.getException();
+                    } catch (Exception e){
+                        Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
+    }
+
+    private void updateSellerProfile(FirebaseUser firebaseUser) {
+        // Obtain the entered data
+        _NAME = editName.getEditText().getText().toString();
+        _EMAIL = editEmail.getEditText().getText().toString();
+        _PHONE = editPhone.getEditText().getText().toString();
+
+        Seller seller = new Seller(_NAME,_EMAIL,_PHONE, storeInfo);
+        reference.child(uid).setValue(seller).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    // Setting new fields
+                    UserProfileChangeRequest updatableProfileField = new UserProfileChangeRequest.Builder().setDisplayName(_NAME).build();
+                    firebaseUser.updateProfile(updatableProfileField);
+                    Toast.makeText(getContext(), "Data update successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    try {
+                        throw task.getException();
+                    } catch (Exception e){
+                        Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
+    }
 
 
-    private void showSellerProfileInfo(FirebaseUser firebaseUser) {
-
+    private void showSellerProfileInfo() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Seller");
         reference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -164,24 +223,39 @@ public class SellerProfileFragment extends Fragment {
 
                     _NAME = seller.getName();
                     _PHONE = seller.getPhone();
-                    _EMAIL = firebaseUser.getDisplayName();
+                    _EMAIL = seller.getEmail();
 
-
-//                    _ADDRESS = seller.getAddress();
-//                    _CITY = seller.getCity();
-//                    _PROVINCE = seller.getProvince();
-//                    _COUNTRY = seller.getCountry();
-//                    _POSTCODE = seller.getPostalCode();
-
-                    editStoreName.getEditText().setText(_NAME);
-                    editBusinessNumber.getEditText().setText(_PHONE);
+                    editName.getEditText().setText(_NAME);
+                    editPhone.getEditText().setText(_PHONE);
                     editEmail.getEditText().setText(_EMAIL);
-//                    editAddress.getEditText().setText(_ADDRESS);
-//                    editCity.getEditText().setText(_CITY);
-//                    editProvince.setText(_PROVINCE);
-//                    editCountry.setText(_COUNTRY);
-//                    editPostalCode.getEditText().setText(_POSTCODE);
 
+                    // iterate through each storeInfo
+                    storeInfo = snapshot.child("storeInfo").getValue(Store.class);
+
+                    if(storeInfo != null) {
+                        _STORE_NAME = storeInfo.getStoreName();
+                        _STORE_PHONE = storeInfo.getPhone();
+                        _STORE_EMAIL = storeInfo.getEmail();
+                        _ADDRESS = storeInfo.getAddress();
+                        _CITY = storeInfo.getCity();
+                        _PROVINCE = storeInfo.getProvince();
+                        _COUNTRY = storeInfo.getCountry();
+                        _POSTCODE = storeInfo.getPostalCode();
+                        _STORE_INTRO = storeInfo.getIntro();
+
+                        editStoreName.getEditText().setText(_STORE_NAME);
+                        editBusinessNumber.getEditText().setText(_STORE_PHONE);
+                        editStoreEmail.getEditText().setText(_STORE_EMAIL);
+                        editAddress.getEditText().setText(_ADDRESS);
+                        editCity.getEditText().setText(_CITY);
+                        editProvince.setText(_PROVINCE);
+                        editCountry.setText(_COUNTRY);
+                        editPostalCode.getEditText().setText(_POSTCODE);
+                        editStoreIntro.getEditText().setText(_STORE_INTRO);
+
+                    }else{
+                        Toast.makeText(requireActivity(), "No store information available.", Toast.LENGTH_LONG).show();
+                    }
                 }else{
                     Toast.makeText(requireActivity(), "something went wrong! " +
                             "Show profile was canceled", Toast.LENGTH_LONG).show();
@@ -195,35 +269,7 @@ public class SellerProfileFragment extends Fragment {
             }
         });
     }
-//    private void updateSellerProfile(FirebaseUser firebaseUser) {
-//        // Obtain the entered data
-//        _NAME = editStoreName.getEditText().getText().toString();
-//        _PHONE = editBusinessNumber.getEditText().getText().toString();
-//        _EMAIL = editEmail.getEditText().toString();
-//
-//        Seller seller = new Seller(_NAME,_PHONE,_EMAIL);
-//
-//        String userId = firebaseUser.getUid();
-//        reference = FirebaseDatabase.getInstance().getReference("Seller");
-//        reference.child(userId).setValue(seller).addOnCompleteListener(new OnCompleteListener<Void>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Void> task) {
-//                if (task.isSuccessful()){
-//                    // Setting new fields
-//                    UserProfileChangeRequest updatableProfileField = new UserProfileChangeRequest.Builder().setDisplayName(_USERNAME).build();
-//                    firebaseUser.updateProfile(updatableProfileField);
-//                    Toast.makeText(getContext(), "Data update successfully", Toast.LENGTH_SHORT).show();
-////
-//                } else {
-//                    try {
-//                        throw task.getException();
-//                    } catch (Exception e){
-//                        Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//            }
-//        });
-//    }
+
 
     private void SetLogoutOnClickListener(Button logoutButton) {
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -378,23 +424,21 @@ public class SellerProfileFragment extends Fragment {
                         public void onSuccess(Uri uri) {
                             reference = FirebaseDatabase.getInstance().getReference();
                             Log.d("Test Upload Profile Img: ", "Uri: "+uri.toString());
-                            Glide.with(getContext())
-                                    .load(uri.toString())
-                                    .circleCrop() // or .transform(new CircleCrop())
-                                    .into(imgStoreImage);
 
                             UserProfileChangeRequest request = new UserProfileChangeRequest.
                                     Builder().setPhotoUri(uri).build();
                             firebaseUser.updateProfile(request);
 
                             // Write the download URL to Firebase Database
-                            reference.child("Seller").child(uid).child("profilePic").setValue(uri.toString());
+                            reference.child("Seller").child(uid).child("storeInfo").child("storePic").setValue(uri.toString());
                             if (alertDialog != null && alertDialog.isShowing()) {
                                 alertDialog.dismiss();
                             }
                         }
                     });
+                    Log.d("Test Upload Profile Img: ", "Uri: "+uploadedImgUri);
                     Toast.makeText(getContext(), "Image upload successfully", Toast.LENGTH_SHORT).show();
+
                 }
             });
 
@@ -403,8 +447,6 @@ public class SellerProfileFragment extends Fragment {
         }
     }
 
-
-
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
@@ -412,4 +454,4 @@ public class SellerProfileFragment extends Fragment {
                     createFireStoragePath(uri);
                 }
             });
-}
+    }

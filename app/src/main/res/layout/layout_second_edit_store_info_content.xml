@@ -12,29 +12,6 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- STORE ID -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edit_store_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Store id"
-            android:textColorHint="@color/light_grey"
-            app:boxBackgroundColor="@null"
-            app:hintTextColor="@color/deep_blue"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/input_lastName"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false"
-                android:textAppearance="@style/HintAppearance"
-                android:text="" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
         <!-- STORE NAME -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edit_store_name"
@@ -56,11 +33,11 @@
 
         <!-- EMAIL -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edit_email"
+            android:id="@+id/edit_store_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:hint="Email"
+            android:hint="Business email"
             android:textColorHint="@color/light_grey"
             app:boxBackgroundColor="@null"
             app:hintTextColor="@color/deep_blue">
@@ -100,7 +77,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:hint="Address"
+            android:hint="Store address"
             android:textColorHint="@color/light_grey"
             app:boxBackgroundColor="@null"
             app:hintTextColor="@color/deep_blue">
@@ -222,8 +199,39 @@
 
         </LinearLayout>
 
+        <!-- STORE INTRO -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_store_intro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="Store introduction"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
+                android:inputType="textMultiLine"
+                android:text="" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_update"
+            android:id="@+id/btn_upload_store_img"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_outline"
+            android:textAppearance="@style/HintAppearance"
+            android:text="Upload Store Image"
+            android:textColor="@color/deep_blue" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_update_store_profile"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_gravity="center"

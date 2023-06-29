@@ -32,6 +32,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -200,6 +201,7 @@ public class UserRegistrationFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (view == fb) {
+
                     _STORE_NAME = editStoreName.getText().toString();
                     if(TextUtils.isEmpty(_STORE_NAME)){
                         Toast.makeText(getContext(),
@@ -327,15 +329,8 @@ public class UserRegistrationFragment extends Fragment {
                 if (task.isSuccessful()) {
                     // Create a new store
                     DatabaseReference storeRef = mFirebaseDatabase.child(firebaseUser.getUid()).child("storeInfo");
-                    String sid = storeRef.push().getKey(); // Generates a unique store id.
-                    if (sid != null) {
-                        // Create a new store with sid
-                        Store store = new Store(storeName);
-
-                        // Set the store info under the new store id
-                        storeRef.child(sid).setValue(store);
-                    }
-
+                    Store store = new Store(storeName);
+                    storeRef.setValue(store);
 
                     // Send Verification Email
                     firebaseUser.sendEmailVerification();
@@ -386,4 +381,11 @@ public class UserRegistrationFragment extends Fragment {
         });
     }
     // [END FIREBASE REGISTRATION]
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        LoginManager.getInstance().logOut();
+    }
 }

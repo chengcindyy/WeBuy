@@ -115,7 +115,7 @@
         tools:layout="@layout/fragment_seller_add_group" />
     <fragment
         android:id="@+id/sellerProfileFragment"
-        android:name="com.csis4495_cmk.webuy.SellerProfileFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerProfileFragment"
         android:label="fragment_seller_profile"
         tools:layout="@layout/fragment_seller_profile" >
         <action

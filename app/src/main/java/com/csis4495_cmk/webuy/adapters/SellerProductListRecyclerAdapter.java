@@ -91,7 +91,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
             StorageReference imageReference = storageReference.child(productImages.get(0));
             imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                 // Got the download URL and pass it to Picasso to download, show in ImageView and caching
-                Picasso.with(context).load(uri.toString()).into(holder.productImage);
+                Picasso.get().load(uri.toString()).into(holder.productImage);
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {

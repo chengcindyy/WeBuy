@@ -7,7 +7,7 @@ public class Seller {
     private String name;
     private String phone;
     private String email;
-    private List<Store> storeInfo;
+    private Store storeInfo;
 
 
     public Seller() {
@@ -18,14 +18,14 @@ public class Seller {
         this.uid = uid;
     }
 
-    public Seller(String name, String phone, String email, List<Store> storeInfo) {
+    public Seller(String name, String email, String phone, Store storeInfo) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.storeInfo = storeInfo;
     }
 
-    public List<Store> getStoreInfo() {
+    public Store getStoreInfo() {
         return storeInfo;
     }
 

@@ -17,7 +17,7 @@
             android:id="@+id/edit_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Name"
+            android:hint="Owner Name"
             android:textColorHint="@color/light_grey"
             app:boxBackgroundColor="@null"
             app:hintTextColor="@color/deep_blue"
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:hint="Email"
+            android:hint="Personal email"
             android:textColorHint="@color/light_grey"
             app:boxBackgroundColor="@null"
             app:hintTextColor="@color/deep_blue">
@@ -49,7 +49,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/HintAppearance"
-                android:enabled="false"
                 android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -60,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:hint="Phone"
+            android:hint="Personal phone number"
             android:textColorHint="@color/light_grey"
             app:boxBackgroundColor="@null"
             app:hintTextColor="@color/deep_blue">
@@ -75,7 +74,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_update"
+            android:id="@+id/btn_update_seller_profile"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_gravity="center"
