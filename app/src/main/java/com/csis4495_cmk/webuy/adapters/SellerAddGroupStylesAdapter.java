@@ -2,12 +2,15 @@ package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContentInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,11 +33,18 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
     private Context context;
     private List<ProductStyle> styles = new ArrayList<>();
 
-    private onImgBtnDeleteStyleListener onImgBtnDeleteStyleListener;
+    private OnImgBtnDeleteStyleListener onImgBtnDeleteStyleListener;
 
-    public void setOnImgBtnDeleteStyleListener(onImgBtnDeleteStyleListener listener){
+    private OnStyleChangedListner onStyleChangedListner;
+
+    public void setOnStyleChangedListner (OnStyleChangedListner listner){
+        this.onStyleChangedListner = listner;
+    }
+
+    public void setOnImgBtnDeleteStyleListener(OnImgBtnDeleteStyleListener listener){
         this.onImgBtnDeleteStyleListener = listener;
     }
+
 
     public SellerAddGroupStylesAdapter() {
     }
@@ -43,6 +53,9 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
         this.styles = styles;
     }
 
+    public SellerAddGroupStylesAdapter(Context context) {
+        this.context = context;
+    }
 
     @NonNull
     @Override
@@ -105,6 +118,79 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             stylePrice = itemView.findViewById(R.id.edit_group_style_price);
             styleQty = itemView.findViewById(R.id.edit_group_style_qty);
             deleteStyle = itemView.findViewById(R.id.imgBtn_delete_group_style);
+            styleName.setEnabled(false);
+
+            stylePrice.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    ProductStyle currentStyle = styles.get(getAdapterPosition());
+                    String newInfo = s.toString();
+                    if(!newInfo.isEmpty()){
+                        try {
+                            double newPrice = Double.parseDouble(s.toString());
+                            if( newPrice <= 0){
+                                Toast.makeText(context, "The price must be greater than 0", Toast.LENGTH_SHORT).show();
+                                stylePrice.setText("");
+                                stylePrice.requestFocus();
+                            }else{
+                                currentStyle.setStylePrice(newPrice);
+                                onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
+                            }
+                        } catch (NumberFormatException e) {
+                        }
+                    }
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+
+            styleQty.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    ProductStyle currentStyle = styles.get(getAdapterPosition());
+                    String newInfo = s.toString();
+                    if(!newInfo.isEmpty()){
+                        try {
+                            int qty = Integer.parseInt(s.toString());
+                            if (qty < -1){
+                                Toast.makeText(context, "The minimum quantity is -1 for unlimited quantity order", Toast.LENGTH_SHORT).show();
+                                styleQty.setText("");
+                                styleQty.requestFocus();
+                            }else if(qty == 0){
+                                Toast.makeText(context, "The quantity cannot be 0", Toast.LENGTH_SHORT).show();
+                                styleQty.setText("");
+                                styleQty.requestFocus();
+                            }
+                            else {
+                                currentStyle.setStyleQty(qty);
+                                onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
+                            }
+                        } catch (NumberFormatException e) {
+                        }
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+
+
+                }
+            });
+
         }
 
         public void bindStyles(ProductStyle s){
@@ -115,8 +201,13 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
     }
 
-    public interface onImgBtnDeleteStyleListener{
+    public interface OnImgBtnDeleteStyleListener{
         void onDeleteClick(int position);
     }
+
+    public interface OnStyleChangedListner{
+        void onStyleChange(int position, ProductStyle style);
+    }
+
 
 }

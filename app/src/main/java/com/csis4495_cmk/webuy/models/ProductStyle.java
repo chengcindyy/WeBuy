@@ -6,12 +6,31 @@ public class ProductStyle {
     double stylePrice;
     String stylePic;
 
+    int styleQty;
+
+
+
     public ProductStyle() {}
 
     public ProductStyle(String styleName, double stylePrice, String stylePic) {
         this.styleName = styleName;
         this.stylePrice = stylePrice;
         this.stylePic = stylePic;
+    }
+
+    public ProductStyle(String styleName, double stylePrice, String stylePic, int styleQty) {
+        this.styleName = styleName;
+        this.stylePrice = stylePrice;
+        this.stylePic = stylePic;
+        this.styleQty = styleQty;
+    }
+
+    public int getStyleQty() {
+        return styleQty;
+    }
+
+    public void setStyleQty(int styleQty) {
+        this.styleQty = styleQty;
     }
 
     public String getStyleName() {

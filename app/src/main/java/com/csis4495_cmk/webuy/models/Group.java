@@ -12,7 +12,7 @@ public class Group {
 
     private String description;
 
-    private List<String> productImages;
+    private List<String> groupImages;
 
     private int tax;
 
@@ -25,24 +25,50 @@ public class Group {
 
     private int status;
 
-    private String productPrice; // product price or might be (minStylePrice, maxStylePrice)
+    private String groupPrice; // product price or might be (minStylePrice, maxStylePrice)
+
+    private String productId;
 
     public Group() {
     }
 
-    public Group(String groupName, int groupType, String category, String description, List<String> productImages, int tax, String sellerId, List<ProductStyle> productStyles, Date startTime, Date endTime, int status, String productPrice) {
+    public Group(String groupName, int groupType, String category, String description, List<String> groupImages, int tax, String sellerId, List<ProductStyle> productStyles, Date startTime, Date endTime, int status, String groupPrice) {
         this.groupName = groupName;
         this.groupType = groupType;
         this.category = category;
         this.description = description;
-        this.productImages = productImages;
+        this.groupImages = groupImages;
         this.tax = tax;
         this.sellerId = sellerId;
         this.productStyles = productStyles;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
-        this.productPrice = productPrice;
+        this.groupPrice = groupPrice;
+    }
+
+    public List<String> getGroupImages() {
+        return groupImages;
+    }
+
+    public void setGroupImages(List<String> groupImages) {
+        this.groupImages = groupImages;
+    }
+
+    public String getGroupPrice() {
+        return groupPrice;
+    }
+
+    public void setGroupPrice(String groupPrice) {
+        this.groupPrice = groupPrice;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getGroupName() {
@@ -77,13 +103,6 @@ public class Group {
         this.description = description;
     }
 
-    public List<String> getProductImages() {
-        return productImages;
-    }
-
-    public void setProductImages(List<String> productImages) {
-        this.productImages = productImages;
-    }
 
     public double getTax() {
         return tax;
@@ -133,40 +152,7 @@ public class Group {
         this.status = status;
     }
 
-    public String getProductPrice() {
-        return productPrice;
-    }
 
-    public void setProductPrice(String productPrice) {
-        this.productPrice = productPrice;
-    }
 
-    //    private String groupName;
-//    private String duration;
-//    private String productId;
-//    private String description;
-//    private int status;
-//
-//    public Group() {
-//    }
-//
-//    public String getGroupName() {
-//        return groupName;
-//    }
-//
-//    public String getDuration() {
-//        return duration;
-//    }
-//
-//    public String getProductId() {
-//        return productId;
-//    }
-//
-//    public String getDescription() {
-//        return description;
-//    }
-//
-//    public int getStatus() {
-//        return status;
-//    }
+
 }

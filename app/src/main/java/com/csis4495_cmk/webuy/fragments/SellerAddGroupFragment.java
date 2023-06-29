@@ -16,10 +16,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,11 +32,8 @@ import android.widget.Toast;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupImagesAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerAddProductImagesAdapter;
 import com.csis4495_cmk.webuy.models.ProductStyle;
-import com.csis4495_cmk.webuy.tools.ItemMoveCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -55,10 +52,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import io.grpc.Context;
 
-
-public class SellerAddGroupFragment extends Fragment {
+public class SellerAddGroupFragment extends Fragment   {
 
     private NavController navController;
 
@@ -76,7 +71,14 @@ public class SellerAddGroupFragment extends Fragment {
     private TextInputEditText groupPriceRange;
     private int groupType;
 
+    private String groupid;
+
+    List<Double> priceRanges;
+
+    private String sellerId;
     private int tax;
+
+    private int status;
     private String productId;
     private RecyclerView rv_img, rv_style;
 
@@ -85,7 +87,7 @@ public class SellerAddGroupFragment extends Fragment {
     private SellerAddGroupImagesAdapter imagesAdapter;
 
     List<ProductStyle> groupStyles;
-    List<Uri> productImageUris;
+//    List<Uri> productImageUris;
     List<String> imgPaths;
     private Button btnStart, btnEnd ;
     private Date startTime, endTime;
@@ -111,6 +113,11 @@ public class SellerAddGroupFragment extends Fragment {
             productId = getArguments().getString("new_group_productId");
         }
 
+        if (firebaseUser != null) {
+            String sellerId = firebaseUser.getUid();
+            // Now you can use the userId as needed
+        }
+
         rv_img = view.findViewById(R.id.rv_groupImg_publish);
         rv_style = view.findViewById(R.id.rv_groupStyle_publish);
 
@@ -120,14 +127,15 @@ public class SellerAddGroupFragment extends Fragment {
         rv_style.setLayoutManager(styleLayoutManager);
         rv_img.setLayoutManager(gridLayoutManager);
 //      rv_style.setHasFixedSize(true);
-        stylesAdapter = new SellerAddGroupStylesAdapter();
+        stylesAdapter = new SellerAddGroupStylesAdapter(getContext());
         rv_style.setAdapter(stylesAdapter);
         imagesAdapter = new SellerAddGroupImagesAdapter();
         rv_img.setAdapter(imagesAdapter);
 
-        productImageUris = new ArrayList<>();
+//        productImageUris = new ArrayList<>();
         groupStyles = new ArrayList<>();
         imgPaths = new ArrayList<>();
+        priceRanges = new ArrayList<>();
 
         getProdcutData();
 
@@ -145,8 +153,8 @@ public class SellerAddGroupFragment extends Fragment {
         navController = NavHostFragment.findNavController(SellerAddGroupFragment.this);
 
         tgBtnGp_publish = view.findViewById(R.id.tgBtnGp_publish);
-        tgBtn_in_stock_publish = view.findViewById(R.id.tgBtn_in_stock_publish);
-        tgBtn_group_buy_publish = view.findViewById(R.id.tgBtn_group_buy_publish);
+//        tgBtn_in_stock_publish = view.findViewById(R.id.tgBtn_in_stock_publish);
+//        tgBtn_group_buy_publish = view.findViewById(R.id.tgBtn_group_buy_publish);
 
         groupName = view.findViewById(R.id.edit_groupName_publish);
         description = view.findViewById(R.id.edit_groupDes_publish);
@@ -173,17 +181,21 @@ public class SellerAddGroupFragment extends Fragment {
                 case R.id.tgBtn_in_stock_publish:
                     if(isChecked){
                         groupType = 0;
-                        btnStart.setEnabled(false);
-                        Toast.makeText(getContext(), "Group Type "+Integer.toString(groupType),Toast.LENGTH_SHORT).show();
-
+                        startTime = null;
+                        endTime = null;
+                        Toast.makeText(getContext(), "Group Type "+Integer.toString(groupType) + "Start and End Time: " + startTime + ": " + endTime,Toast.LENGTH_SHORT).show();
                         btnStart.setText("Group Start");
+                        btnEnd.setText("Group End");
+
+                        btnStart.setEnabled(false);
                         btnEnd.setEnabled(false);
-                        btnStart.setText("Group End");
                     }
                     break;
                 case R.id.tgBtn_group_buy_publish:
                     if(isChecked){
                         groupType = 1;
+                        startTime = new Date();
+                        endTime = new Date();
                         btnStart.setEnabled(true);
                         btnEnd.setEnabled(true);
                         Toast.makeText(getContext(), "Group Type "+Integer.toString(groupType),Toast.LENGTH_SHORT).show();
@@ -191,20 +203,28 @@ public class SellerAddGroupFragment extends Fragment {
                     break;
                 default:
                     groupType = 0;
+                    startTime = null;
+                    endTime = null;
+                    btnStart.setText("Group Start");
+                    btnEnd.setText("Group End");
+
                     btnStart.setEnabled(false);
                     btnEnd.setEnabled(false);
             }
         });
 
         //Set group startTime and endTime
-        startTime = new Date();
-        endTime = new Date();
+//        startTime = null;
+//        endTime = null;
         btnStart.setOnClickListener(v -> {
+            startTime = new Date();
             openDateDialog(startTime, updatedstartTime -> {
+                validateStartime();
                 btnStart.setText("From " + startTime);
             });
         });
         btnEnd.setOnClickListener(v -> {
+            endTime = new Date();
             openDateDialog(endTime, updatedstartTime -> {
                 validateEndTime();
                 btnEnd.setText("To "+ endTime);
@@ -217,17 +237,121 @@ public class SellerAddGroupFragment extends Fragment {
         btnPublish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sumbitNewGroup();
             }
         });
 
-        //Set delete style image button listener
-        stylesAdapter.setOnImgBtnDeleteStyleListener(new SellerAddGroupStylesAdapter.onImgBtnDeleteStyleListener() {
+        //Set delete style button listener
+        stylesAdapter.setOnImgBtnDeleteStyleListener(new SellerAddGroupStylesAdapter.OnImgBtnDeleteStyleListener() {
             @Override
             public void onDeleteClick(int position) {
                 groupStyles.remove(position);
+                priceRanges.remove(position);
                 stylesAdapter.updateStyleData(groupStyles);
+                if(groupStyles.size()>0){
+                    groupPriceRange.setEnabled(false);
+                }else if(groupStyles.size()==0){
+                    groupPriceRange.setEnabled(true);
+                    groupPriceRange.findFocus();
+
+                }
             }
         });
+
+
+        //Set edit style price and quantity listener
+        stylesAdapter.setOnStyleChangedListner(new SellerAddGroupStylesAdapter.OnStyleChangedListner() {
+
+            @Override
+            public void onStyleChange(int position, ProductStyle style) {
+                groupStyles.set(position, style);
+//                Toast.makeText(getContext(), Double.toString( style.getStylePrice()), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), Integer.toString(style.getStyleQty()), Toast.LENGTH_SHORT).show();
+//                groupPriceRange.setText(Double.toString(style.getStylePrice()));
+//                description.setText(Integer.toString(style.getStyleQty()));
+
+                double minStylePrice = Double.MAX_VALUE;
+                double maxStylePrice = Double.MIN_VALUE;
+
+                for (ProductStyle ps: groupStyles) {
+                    double stylePrice = ps.getStylePrice();
+                    if (stylePrice < minStylePrice) {
+                        minStylePrice = stylePrice;
+                    }
+                    if (stylePrice > maxStylePrice) {
+                        maxStylePrice = stylePrice;
+                    }
+                }
+
+                if (minStylePrice == maxStylePrice) {
+                    groupPriceRange.setText("CA$ " + minStylePrice);
+                } else {
+                    groupPriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
+                }
+
+            }
+        });
+
+    }
+
+    private void sumbitNewGroup() {
+        String gName = groupName.getText().toString();
+        String gDescription = description.getText().toString();
+        String gCategory = groupCategory.getText().toString();
+        String gPriceRange = groupPriceRange.getText().toString();
+
+        if (TextUtils.isEmpty(gName)) {
+            Toast.makeText(getContext(),
+                    "Please enter the group name.", Toast.LENGTH_SHORT).show();
+            groupName.setError("Group name is required.");
+            groupName.requestFocus();
+        }
+        if (TextUtils.isEmpty(gDescription)) {
+            Toast.makeText(getContext(),
+                    "Please enter the group description.", Toast.LENGTH_SHORT).show();
+            description.setError("Group description is required.");
+            description.requestFocus();
+        }
+
+        if (TextUtils.isEmpty(gCategory)) {
+            Toast.makeText(getContext(),
+                    "Please enter the group category.", Toast.LENGTH_SHORT).show();
+            groupCategory.setError("Group category is required.");
+            groupCategory.requestFocus();
+        }
+        if (TextUtils.isEmpty(gPriceRange) && groupStyles.size()==0) {
+            Toast.makeText(getContext(),
+                    "Please enter the group price.", Toast.LENGTH_SHORT).show();
+
+            groupPriceRange.setError("Group price is required.");
+            groupPriceRange.requestFocus();
+        }
+
+        if (groupType == 0){
+            startTime = null;
+            endTime = null;
+        }else{
+            if (btnStart.getText().equals("Group Start")){
+                    startTime = new Date();
+                    openDateDialog(startTime, updatedstartTime -> {
+                        validateStartime();
+                        btnStart.setText("From " + startTime);
+                    });
+            }else if(btnEnd.getText().equals("Group End")){
+                endTime = new Date();
+                openDateDialog(endTime, updatedstartTime -> {
+                    validateEndTime();
+                    btnEnd.setText("To "+ endTime);
+                });
+            }
+            Date currentTime = new Date();
+            if (startTime.compareTo( currentTime) > 0){
+                status = 0;
+            }else if (startTime.compareTo(currentTime) ==0){
+                status = 1;
+            }
+        }
+
 
     }
 
@@ -257,12 +381,13 @@ public class SellerAddGroupFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    //Validate endTime later than startTime
+    //Validate end time later than start sime and current time;
     public void validateEndTime(){
-        if (startTime.compareTo(endTime) >= 0 ){
+        Date currentTime = new Date();
+        if (startTime.compareTo(endTime) >= 0 || endTime.compareTo(currentTime) <0  ){
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("Invalid End Time!");
-            builder.setMessage("Group end time must be after start time");
+            builder.setMessage("Group end time must be after start time and current time");
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     openDateDialog(endTime, updatedstartTime -> {
@@ -277,14 +402,36 @@ public class SellerAddGroupFragment extends Fragment {
         }
     }
 
+    //Validate start time later than current time;
+    public void validateStartime(){
+        Date currentTime = new Date();
+        if (startTime.compareTo(currentTime) < 0  ){
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Invalid Start Time!");
+            builder.setMessage("Group start time must be after current time");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    openDateDialog(startTime, updatedstartTime -> {
+                        btnStart.setText("From " + startTime);
+                        validateStartime();
+                    });
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
+
+
     public interface OnDateTimeSetListener {
         void onDateTimeSet(Date dateTime);
     }
 
     //Get Product data
     private void getProdcutData(){
-        List<String> imgPaths = new ArrayList<>();
-        productImageUris.clear();
+//        List<String> imgPaths = new ArrayList<>();
+        imgPaths.clear();
         DatabaseReference productReference = databaseReference.child("Product").child(productId);
         productReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
@@ -310,20 +457,33 @@ public class SellerAddGroupFragment extends Fragment {
                             groupPriceRange.setText(productPriceText);
                         }
                         Toast.makeText(getContext(), "Tax: "+Integer.toString(tax),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Group Type: "+Integer.toString(groupType),Toast.LENGTH_SHORT).show();
+
                         DataSnapshot productImgSnapshot = dataSnapshot.child("productImages");
                         for (DataSnapshot img : productImgSnapshot.getChildren()) {
                             String imgPath = img.getValue(String.class);
                             imgPaths.add(imgPath);
                         }
+
+                        //Set delete group image button listener
+                        if(imgPaths.size() > 1){
+                            imagesAdapter.setOnGroupDeleteImgListener(new SellerAddGroupImagesAdapter.onGroupDeleteImgListener() {
+                                @Override
+                                public void onDeleteClick(int position) {
+                                    imgPaths.remove(position);
+                                    imagesAdapter.updateGroupImgPaths(imgPaths);
+                                    Toast.makeText(getContext(), "imgPaths size: " + Integer.toString(imgPaths.size()), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }else{
+                            imagesAdapter.setOnGroupDeleteImgListener(new SellerAddGroupImagesAdapter.onGroupDeleteImgListener() {
+                                @Override
+                                public void onDeleteClick(int position) {
+
+                                }
+                            });
+                        }
                         imagesAdapter.updateGroupImgPaths(imgPaths);
-                        imagesAdapter.setOnGroupDeleteImgListener(new SellerAddGroupImagesAdapter.onGroupDeleteImgListener() {
-                            @Override
-                            public void onDeleteClick(int position) {
-                                Toast.makeText(getContext(), "size = " + imgPaths.size(), Toast.LENGTH_SHORT).show();
-                                imgPaths.remove(position);
-                                imagesAdapter.updateGroupImgPaths(imgPaths);
-                            }
-                        });
                     }
                 } else {
                     Log.d(TAG, "Cannot retrieve data from database");
@@ -339,12 +499,21 @@ public class SellerAddGroupFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 groupStyles.clear();
+                priceRanges.clear();
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                     String name = snapshot.child("styleName").getValue(String.class);
                     String img = snapshot.child("stylePic").getValue(String.class);
                     Double price = snapshot.child("stylePrice").getValue(Double.class);
                     ProductStyle ps = new ProductStyle(name, price, img);
                     groupStyles.add(ps);
+                    priceRanges.add(price);
+                }
+
+                if(groupStyles.size()>0){
+                    groupPriceRange.setEnabled(false);
+                }else if(groupStyles.size()==0){
+                    groupPriceRange.setEnabled(true);
+                    groupPriceRange.findFocus();
                 }
                 stylesAdapter.updateStyleData(groupStyles);
             }

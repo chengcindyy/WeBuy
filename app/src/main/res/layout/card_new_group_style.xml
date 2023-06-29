@@ -69,13 +69,13 @@
                 android:id="@+id/editLayout_group_style_qty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/qty">
+                android:hint="Qty(-1 for Unlimited)">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_group_style_qty"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number" />
+                    android:inputType="numberSigned" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
