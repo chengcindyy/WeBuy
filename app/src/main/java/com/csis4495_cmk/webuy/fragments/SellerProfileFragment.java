@@ -114,16 +114,16 @@ public class SellerProfileFragment extends Fragment {
         // Expendable layout
         expSellerProfile = view.findViewById(R.id.expandableLayout_seller_profile);
         expStoreInfo = view.findViewById(R.id.expandableLayout_store_profile);
-        expDeliveryInfo = view.findViewById(R.id.expandableLayout_order);
-        expPaymentInfo = view.findViewById(R.id.expandableLayout_saves);
+//        expDeliveryInfo = view.findViewById(R.id.expandableLayout_order);
+//        expPaymentInfo = view.findViewById(R.id.expandableLayout_saves);
         expMoreFunctions = view.findViewById(R.id.expandableLayout_more_function);
 
         // Set parent layout title and icon
         List<Pair<ExpandableLayout, Pair<Integer, String>>> list = new ArrayList<>();
         list.add(new Pair<>(expSellerProfile, new Pair<>(R.drawable.baseline_person_24, "Store owner information")));
         list.add(new Pair<>(expStoreInfo, new Pair<>(R.drawable.baseline_storefront_24, "Store information")));
-        list.add(new Pair<>(expDeliveryInfo, new Pair<>(R.drawable.baseline_local_shipping_24, "Delivery Setting")));
-        list.add(new Pair<>(expPaymentInfo, new Pair<>(R.drawable.baseline_payment_24, "Payment Setting")));
+//        list.add(new Pair<>(expDeliveryInfo, new Pair<>(R.drawable.baseline_local_shipping_24, "Delivery Setting")));
+//        list.add(new Pair<>(expPaymentInfo, new Pair<>(R.drawable.baseline_payment_24, "Payment Setting")));
         list.add(new Pair<>(expMoreFunctions, new Pair<>(R.drawable.baseline_more_horiz_24, "More Functions")));
 
         for (Pair<ExpandableLayout, Pair<Integer, String>> pair : list) {

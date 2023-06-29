@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 public class Store {
 
-    private String owner; // sellerId
-    private ArrayList<String> employeeList; // sellerIds
     private String storeName;
     //private String facebookGroup;
     private String email;
@@ -18,6 +16,7 @@ public class Store {
     private String postalCode;
     private String intro;
     private String storePic;
+    private ArrayList<String> employeeList; // sellerIds
     private String[] acceptedPaymentType;
     private ArrayList<DeliveryFee> deliveryFeeList;
     private String[] categories;
@@ -39,14 +38,6 @@ public class Store {
         this.postalCode = postalCode;
         this.phone = phone;
         this.intro = intro;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     public ArrayList<String> getEmployeeList() {

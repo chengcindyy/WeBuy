@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/layout_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!--DELIVERY TYPE-->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dropMenu_delivery_methods"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue"
+            android:textColorHint="@color/light_grey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Delivery Method">
+
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:textAppearance="@style/HintAppearance"
+                android:inputType="none"
+                app:simpleItems="@array/arr_delivery_types"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- CUSTOMIZE NAME -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_delivery_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Logistics Name"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue"
+            android:layout_marginTop="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/input_lastName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/HintAppearance"
+                android:text="" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal">
+
+           <!-- PRICE RANGE  -->
+           <com.google.android.material.textfield.TextInputLayout
+               android:id="@+id/edit_shipping_fee_range_from"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="5dp"
+               android:layout_weight="1"
+               android:hint="When over $"
+               android:textColorHint="@color/light_grey"
+               app:boxBackgroundColor="@null"
+               app:hintTextColor="@color/deep_blue">
+
+               <com.google.android.material.textfield.TextInputEditText
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:textAppearance="@style/HintAppearance"
+                   android:text="" />
+
+           </com.google.android.material.textfield.TextInputLayout>
+
+           <!-- PRICE RANGE  -->
+           <com.google.android.material.textfield.TextInputLayout
+               android:id="@+id/edit_shipping_fee_range_fee"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:layout_marginStart="5dp"
+               android:layout_marginTop="5dp"
+               android:hint="Fee"
+               android:textColorHint="@color/light_grey"
+               app:boxBackgroundColor="@null"
+               app:hintTextColor="@color/deep_blue">
+
+               <com.google.android.material.textfield.TextInputEditText
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:textAppearance="@style/HintAppearance"
+                   android:text="" />
+
+           </com.google.android.material.textfield.TextInputLayout>
+
+       </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_update_seller_profile"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_solid"
+            android:textAppearance="@style/HintAppearance"
+            android:text="@string/create"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

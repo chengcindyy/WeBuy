@@ -15,6 +15,16 @@
         <item>Other</item>
     </string-array>
 
+    <!--Use for spinner (filter)-->
+
+    <string-array name="arr_delivery_types">
+        <item>Face to Face/Store Pick Up</item>
+        <item>Home delivery</item>
+        <item>Cash on Delivery (COD)</item>
+        <item>Designated Area Self-Pickup</item>
+    </string-array>
+
+
 
     <string name="app_name">WeBuy</string>
     <string name="next">Next</string>
@@ -42,6 +52,7 @@
     <string name="birthday">Birthday</string>
     <string name="update">Update</string>
     <string name="store_name">Store name</string>
+    <string name="create">Create</string>
 
 
 </resources>
