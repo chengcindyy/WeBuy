@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -138,7 +138,7 @@ public class SellerAddGroupFragment extends Fragment   {
         imgPaths = new ArrayList<>();
         priceRanges = new ArrayList<>();
 
-        getProdcutData();
+        getProductData();
 
         getProductStyle();
 
@@ -244,6 +244,12 @@ public class SellerAddGroupFragment extends Fragment   {
             public void onClick(View v) {
                 submitNewGroup();
             }
+        });
+
+        //cancel publish and back to previous page
+        btnCancel.setOnClickListener(v->{
+            //go back to the frag you came from
+            Navigation.findNavController(v).popBackStack();
         });
 
         //Set delete style button listener
@@ -441,7 +447,7 @@ public class SellerAddGroupFragment extends Fragment   {
     }
 
     //Get Product data
-    private void getProdcutData(){
+    private void getProductData(){
 //        List<String> imgPaths = new ArrayList<>();
         imgPaths.clear();
         DatabaseReference productReference = databaseReference.child("Product").child(productId);

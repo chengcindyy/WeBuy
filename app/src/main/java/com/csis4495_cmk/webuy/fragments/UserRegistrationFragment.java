@@ -156,7 +156,7 @@ public class UserRegistrationFragment extends Fragment {
                     // Clean the entered passwords
                     editPassword.clearComposingText();
                     editConfirmPassword.clearComposingText();
-                } else if (TextUtils.isEmpty(_STORE_NAME)) {
+                } else if (user_role =="SELLER" && TextUtils.isEmpty(_STORE_NAME)) {
                     Toast.makeText(getContext(),
                             "Please enter your store name.", Toast.LENGTH_SHORT).show();
                     editStoreName.setError("A store name is required, you can change it in anytime.");
