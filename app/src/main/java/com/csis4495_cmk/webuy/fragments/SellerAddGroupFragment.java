@@ -70,12 +70,16 @@ public class SellerAddGroupFragment extends Fragment   {
     private TextInputEditText groupName;
     private TextInputEditText description;
 
+    private TextInputEditText group_no_style_qty;
+
     private TextInputEditText groupPriceRange;
 //    private CurrencyEditText groupPriceRange;
     private int groupType;
 
 
     private String groupId;
+
+    private int no_qty;
 
 
     private String sellerId;
@@ -171,9 +175,10 @@ public class SellerAddGroupFragment extends Fragment   {
         description = view.findViewById(R.id.edit_groupDes_publish);
         groupPriceRange =view.findViewById(R.id.edit_groupPriceRange_publish);
 
+        group_no_style_qty = view.findViewById(R.id.edit_groupQty_publish);
+
         btnStart = view.findViewById(R.id.btn_start_group_publish);
         btnEnd = view.findViewById(R.id.btn_end_group_publish);
-
 
         //Get group category options
         groupCategory = view.findViewById(R.id.edit_group_category_publish);
@@ -270,7 +275,8 @@ public class SellerAddGroupFragment extends Fragment   {
                 }else if(groupStyles.size()==0){
                     groupPriceRange.setEnabled(true);
                     groupPriceRange.findFocus();
-
+                    group_no_style_qty.setVisibility(View.VISIBLE);
+                    group_no_style_qty.findFocus();
                 }
             }
         });
@@ -339,6 +345,8 @@ public class SellerAddGroupFragment extends Fragment   {
         String gCategory = groupCategory.getText().toString();
         String gPriceRange = groupPriceRange.getText().toString();
 
+        String gNoStyleQty = group_no_style_qty.getText().toString();
+
         if (TextUtils.isEmpty(gName)) {
             isComplete = false;
             Toast.makeText(getContext(),
@@ -404,18 +412,26 @@ public class SellerAddGroupFragment extends Fragment   {
                     btnEnd.setText("To "+ endTime);
                 }, "Setup end time");
             }
+            currentTime = new Date();
             if (startTime.compareTo(currentTime) > 0){
                 //Group not started yet, status = 0
                 groupStatus = 0;
-                newGroup.setStartTime(startTime);
-                newGroup.setEndTime(endTime);
+                newGroup.setStartTimestamp(startTime.getTime());
+                newGroup.setEndTimestamp(endTime.getTime());
                 newGroup.setStatus(groupStatus);
-            }else if (startTime.compareTo(currentTime) <= 0){
+                Log.d("DEBUG", "Current time: " + currentTime);
+                Log.d("DEBUG", "Start time: " + startTime);
+                Log.d("DEBUG", "Group Status: " + groupStatus);
+            }else if (startTime.compareTo(currentTime) <  0){
                 //Group started, status = 1
                 groupStatus = 1;
-                newGroup.setStartTime(startTime);
-                newGroup.setEndTime(endTime);
+                newGroup.setStartTimestamp(startTime.getTime());
+                newGroup.setEndTimestamp(endTime.getTime());
                 newGroup.setStatus(groupStatus);
+                Log.d("DEBUG", "Current time: " + currentTime);
+                Log.d("DEBUG", "Start time: " + startTime);
+                Log.d("DEBUG", "Group Status: " + groupStatus);
+
             }
 
         }
@@ -443,7 +459,7 @@ public class SellerAddGroupFragment extends Fragment   {
                     // trigger alert
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("Invalid Quantity");
-                    builder.setMessage("The quantity for " + entry.getKey() + " must be at least 1");
+                    builder.setMessage("The quantity for in stock item must be at least 1");
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                         }
@@ -473,19 +489,54 @@ public class SellerAddGroupFragment extends Fragment   {
             }
         }
 
-        if(!groupQtyMap.isEmpty()){
-            newGroup.setGroupQtyMap(groupQtyMap);
+        if (groupStyles.size() != groupQtyMap.size()){
+            Toast.makeText(getContext(), "The style list and the style qty is not matched", Toast.LENGTH_SHORT).show();
+            Log.d("Test","The style list and the style qty is not matched");
         }
 
         if (groupStyles.size()>0){
             newGroup.setGroupStyles(groupStyles);
         }
 
-        if (groupStyles.size() != groupQtyMap.size()){
-            Toast.makeText(getContext(), "The style list and the style qty is not matched", Toast.LENGTH_SHORT).show();
-            Log.d("Test","The style list and the style qty is not matched");
+        if(groupStyles.size() ==0){
+            if (TextUtils.isEmpty(gNoStyleQty)) {
+                isComplete = false;
+//                Toast.makeText(getContext(),
+//                        "Please enter the group quantity.", Toast.LENGTH_SHORT).show();
+                group_no_style_qty.setError("Group quantity is required.");
+                group_no_style_qty.requestFocus();
+            }
+
+            try{
+                no_qty = Integer.valueOf(gNoStyleQty);
+                if(no_qty == 0){
+                    isComplete = false;
+                    group_no_style_qty.setError("The quantity cannot be 0,");
+                    group_no_style_qty.setText("");
+                    group_no_style_qty.requestFocus();
+                }else if (no_qty < -1){
+                    isComplete = false;
+                    group_no_style_qty .setError("The minimum quantity is -1 for unlimited quantity order");
+                    group_no_style_qty.setText("");
+                    group_no_style_qty.requestFocus();
+                }
+
+                if(groupType == 0){
+                    if(no_qty ==-1){
+                        isComplete = false;
+                        group_no_style_qty .setError("The quantity for in stock item " + gName + " must be at least 1");
+                    }
+                }
+                groupQtyMap.put(gName, no_qty);
+
+            }catch (Exception e){
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
 
+        if(!groupQtyMap.isEmpty()){
+            newGroup.setGroupQtyMap(groupQtyMap);
+        }
 
         UploadGroup(newGroup, isComplete);
 
@@ -564,7 +615,6 @@ public class SellerAddGroupFragment extends Fragment   {
             AlertDialog dialog = builder.create();
             dialog.show();
 
-
         }
     }
 
@@ -580,6 +630,9 @@ public class SellerAddGroupFragment extends Fragment   {
                         btnStart.setText("From " + startTime);
                         validateStartime();
                     },  "Setup start time");
+                    Log.d("DEBUG", "Current time: " + currentTime);
+                    Log.d("DEBUG", "Start time: " + startTime);
+                    Log.d("DEBUG", "Group Status: " + groupStatus);
                 }
             });
 
@@ -608,6 +661,7 @@ public class SellerAddGroupFragment extends Fragment   {
                         String prodcutDesText = dataSnapshot.child("description").getValue(String.class);
                         String prodcutCategoryText = dataSnapshot.child("category").getValue(String.class);
                         String productPriceText = dataSnapshot.child("productPrice").getValue(String.class);
+                        Toast.makeText(getContext(), productPriceText, Toast.LENGTH_LONG).show();
                         tax = dataSnapshot.child("tax").getValue(Integer.class);
                         if (prodcutNameText != null) {
                             groupName.setText(prodcutNameText);
@@ -676,37 +730,37 @@ public class SellerAddGroupFragment extends Fragment   {
 
                 if(groupStyles.size()>0){
                     groupPriceRange.setEnabled(false);
+                    double minStylePrice = Double.MAX_VALUE;
+                    double maxStylePrice = Double.MIN_VALUE;
+
+                    for (ProductStyle ps: groupStyles) {
+                        double stylePrice = ps.getStylePrice();
+                        if (stylePrice < minStylePrice) {
+                            minStylePrice = stylePrice;
+                        }
+                        if (stylePrice > maxStylePrice) {
+                            maxStylePrice = stylePrice;
+                        }
+                    }
+
+                    Log.d("1 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
+
+
+                    if (minStylePrice == maxStylePrice) {
+                        groupPriceRange.setText("CA$ " + minStylePrice);
+                        Log.d("2 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
+
+                    } else {
+                        groupPriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
+                        Log.d("3 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
+
+                    }
                 }else if(groupStyles.size()==0){
                     groupPriceRange.setEnabled(true);
                     groupPriceRange.findFocus();
+                    group_no_style_qty.setVisibility(View.VISIBLE);
+                    group_no_style_qty.findFocus();
                 }
-
-                double minStylePrice = Double.MAX_VALUE;
-                double maxStylePrice = Double.MIN_VALUE;
-
-                for (ProductStyle ps: groupStyles) {
-                    double stylePrice = ps.getStylePrice();
-                    if (stylePrice < minStylePrice) {
-                        minStylePrice = stylePrice;
-                    }
-                    if (stylePrice > maxStylePrice) {
-                        maxStylePrice = stylePrice;
-                    }
-                }
-
-                Log.d("1 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
-
-
-                if (minStylePrice == maxStylePrice) {
-                    groupPriceRange.setText("CA$ " + minStylePrice);
-                    Log.d("2 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
-
-                } else {
-                    groupPriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
-                    Log.d("3 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
-
-                }
-
 
                 stylesAdapter.updateStyleData2(productId, groupStyles);
             }

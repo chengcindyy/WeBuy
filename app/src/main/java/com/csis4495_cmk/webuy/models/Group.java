@@ -26,6 +26,11 @@ public class Group {
     private Date startTime;
     private Date endTime;
 
+    private Long startTimestamp;
+
+    private Long endTimestamp;
+
+
     private int status;
 
     private String groupPrice; // product price or might be (minStylePrice, maxStylePrice)
@@ -50,6 +55,21 @@ public class Group {
         this.groupPrice = groupPrice;
     }
 
+    public Long getStartTimestamp() {
+        return startTimestamp;
+    }
+
+    public void setStartTimestamp(Long startTimestamp) {
+        this.startTimestamp = startTimestamp;
+    }
+
+    public Long getEndTimestamp() {
+        return endTimestamp;
+    }
+
+    public void setEndTimestamp(Long endTimestamp) {
+        this.endTimestamp = endTimestamp;
+    }
 
     public Map<String, Integer> getGroupQtyMap() {
         return groupQtyMap;

@@ -165,7 +165,8 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                         try {
                             double newPrice = Double.parseDouble(s.toString());
                             if( newPrice <= 0){
-                                Toast.makeText(context, "The price must be greater than 0", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(context, "The price must be greater than 0", Toast.LENGTH_SHORT).show();
+                                stylePrice.setError("The price must be greater than 0");
                                 stylePrice.setText("");
                                 stylePrice.requestFocus();
                             }else{
@@ -218,11 +219,13 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                         try {
                             int qty = Integer.parseInt(s.toString());
                             if (qty < -1){
-                                Toast.makeText(context, "The minimum quantity is -1 for unlimited quantity order", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(context, "The minimum quantity is -1 for unlimited quantity order", Toast.LENGTH_SHORT).show();
+                                styleQty.setError("The minimum quantity is -1 for unlimited quantity order");
                                 styleQty.setText("");
                                 styleQty.requestFocus();
                             }else if(qty == 0){
-                                Toast.makeText(context, "The quantity cannot be 0", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(context, "The quantity cannot be 0", Toast.LENGTH_SHORT).show();
+                                styleQty.setError("The quantity cannot be 0,");
                                 styleQty.setText("");
                                 styleQty.requestFocus();
                             }
