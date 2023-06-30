@@ -151,7 +151,7 @@ public class SellerAddGroupFragment extends Fragment   {
         imgPaths = new ArrayList<>();
         groupQtyMap = new HashMap<>();
 
-        getProdcutData();
+        getProductData();
 
         getProductStyle();
 
@@ -261,6 +261,12 @@ public class SellerAddGroupFragment extends Fragment   {
 
         btnPublish.setOnClickListener(v -> {
             onSubmitNewGroup();
+        });
+
+        //cancel publish and back to previous page
+        btnCancel.setOnClickListener(v->{
+            //go back to the frag you came from
+            Navigation.findNavController(v).popBackStack();
         });
 
         //Set delete style button listener
@@ -647,7 +653,7 @@ public class SellerAddGroupFragment extends Fragment   {
     }
 
     //Get Product data
-    private void getProdcutData(){
+    private void getProductData(){
 //        List<String> imgPaths = new ArrayList<>();
         imgPaths.clear();
         DatabaseReference productReference = databaseReference.child("Product").child(productId);
