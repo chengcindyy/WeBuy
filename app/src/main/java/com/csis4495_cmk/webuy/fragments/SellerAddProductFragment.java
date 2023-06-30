@@ -1,6 +1,8 @@
 package com.csis4495_cmk.webuy.fragments;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -46,6 +49,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,12 +62,17 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 public class SellerAddProductFragment extends Fragment
         implements
@@ -71,18 +80,25 @@ public class SellerAddProductFragment extends Fragment
         SellerAddProductImagesAdapter.onProductImagesListener,
         SellerStyleListRecyclerAdapter.onStyleListItemChanged {
 
+    private final String TAG = SellerAddProductFragment.class.getSimpleName();
     private final int REQUEST_PERMISSION_CODE = 10;
     private FirebaseAuth auth;
-    private StorageReference productImgsReference;
-    private DatabaseReference firebaseDatabase;
-    private FirebaseDatabase firebaseInstance;
+
+    private StorageReference allProductImgsRef = FirebaseStorage.getInstance().getReference("ProductImage");
+    private StorageReference productImgsRef;
+    private FirebaseDatabase firebaseInstance = FirebaseDatabase.getInstance();
+    //private DatabaseReference firebaseDatabase;
+    private DatabaseReference productRef = firebaseInstance.getReference("Product");
+
     private FirebaseUser firebaseUser;
     private ActivityResultLauncher<String> productImgFilePicker;
     private RecyclerView recyclerViewProductImgs;
-    private List<Uri> uriUploadProductImgs;
+    private List<Uri> uriUploadProductImgs = new ArrayList<>();
+    private List<Uri> uriDownloadProductImgs = new ArrayList<>();
+    private List<Uri> uriDownloadDeletedImgs = new ArrayList<>();
     private RecyclerView recyclerViewStyles;
     private List<ProductStyle> styleList;
-    private List<ProductStyle> editStyleList;
+    private List<String> tagList;
     private Button btnAddStyle, btnSubmitAddProduct, btnCancelAddProduct;
     private TextInputLayout textLayoutProductPrice, textLayoutStylePriceRange;
     private TextInputEditText textInputProductName, textInputProductDescription, textInputStylePriceRange;
@@ -94,8 +110,7 @@ public class SellerAddProductFragment extends Fragment
     private List<String> strProductImgNames;
     private byte[] imageBytes;
     private String productImgName;
-    private int uploadImgCount = 0;
-    private String editProductId;
+
     private ArrayAdapter<CharSequence> productCatAdapter;
     private RadioButton taxTadioButton_1, taxTadioButton_2, taxTadioButton_0;
     private TextView textLayoutTitle;
@@ -129,29 +144,38 @@ public class SellerAddProductFragment extends Fragment
         taxTadioButton_1 = view.findViewById(R.id.radio_btn_gst);
         taxTadioButton_2 = view.findViewById(R.id.radio_btn_gst_pst);
 
-        //0. set product category
+        //0-1. set edit product
+        Bundle editBundle = getArguments();
+        if(editBundle != null){
+            productId = editBundle.getString("productId");
+            showCurrentProduct(productId);
+            textLayoutTitle.setText("Edit a Product");
+        }
+
+        //0-2. set product category
         productCatAdapter = ArrayAdapter.createFromResource(getContext(), R.array.arr_product_category, android.R.layout.simple_list_item_1);
         textInputProductCategory.setAdapter(productCatAdapter);
         textInputProductCategory.setOnItemClickListener((parent, view2, position, id) -> {});
 
         //1. set images recycler view with default to add image
-        uriUploadProductImgs = new ArrayList<>();
         GridLayoutManager gm = new GridLayoutManager(getContext(), 4);
         recyclerViewProductImgs = view.findViewById(R.id.rv_add_product_img);
         recyclerViewProductImgs.setLayoutManager(gm);
-        setProductImagesAdapter(); // imgsList is empty at this point
+        Log.d("Test img initial set", uriUploadProductImgs.size()+"");
+        setProductImagesAdapter(); // imgsList is not empty if it is edit-product
 
         //add images when add img in rv clicked
-        productImgFilePicker = registerForActivityResult(new ActivityResultContracts.GetMultipleContents(), new ActivityResultCallback<List<Uri>>() {
-            @Override
-            public void onActivityResult(List<Uri> result) {
-                uriUploadProductImgs = result;
-                setProductImagesAdapter();
-            }
-        });
+        productImgFilePicker = registerForActivityResult(
+                new ActivityResultContracts.GetMultipleContents() {}, new ActivityResultCallback<List<Uri>>() {
+                    @Override
+                    public void onActivityResult(List<Uri> result) {
+                        uriUploadProductImgs.addAll(result);
+                        setProductImagesAdapter();
+                    }
+                });
 
         //2. add style
-        styleList = new ArrayList<>();
+        styleList = new ArrayList<>(); //new!!!!
         recyclerViewStyles = view.findViewById(R.id.rv_added_style);
         btnAddStyle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,7 +187,7 @@ public class SellerAddProductFragment extends Fragment
 
                 // Show the addStyleFragment
                 addStyleFragment.show(fragmentManager, "Add Style Frag show");
-                // set interface listener
+                // set interface listener(addStyleFrag -> addProductFrag)
                 addStyleFragment.setOnSellerAddStyleFragmentListener(SellerAddProductFragment.this);
             }
         });
@@ -185,7 +209,7 @@ public class SellerAddProductFragment extends Fragment
                     break;
             }
 
-            Log.d("Test", taxId+"!");
+            Log.d("Test", "Tax id " +taxId + " Selected");
         });
 
         //4. submit added product
@@ -197,18 +221,9 @@ public class SellerAddProductFragment extends Fragment
             Navigation.findNavController(v).popBackStack();
         });
 
-        // 6. Edit product
-//        editStyleList = new ArrayList<>();
-        Bundle editBundle = getArguments();
-        if(editBundle != null){
-            editProductId = editBundle.getString("productId");
-            onShowCurrentProduct(editProductId);
-            textLayoutTitle.setText("Edit a Product");
-        }
     }
 
-    private void onShowCurrentProduct(String editProductId) {
-        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product");
+    private void showCurrentProduct(String editProductId) {
         productRef.child(editProductId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -219,13 +234,15 @@ public class SellerAddProductFragment extends Fragment
                     String _DESC = product.getDescription();
                     String _PRICE = product.getProductPrice();
                     String _CATEGORY = product.getCategory();
-                    int _TAX = (int) product.getTax();
+                    int _TAX = product.getTax(); //need to cast to int??
 
-                    GetImageUriFromStorage(_IMAGES);
+                    getImageUriFromStorage(_IMAGES); //we'll set images here as download finished
+
                     textInputProductName.setText(_NAME);
                     textInputProductDescription.setText(_DESC);
                     textInputProductPrice.setText(_PRICE);
-                    GetProductCategory(_CATEGORY);
+
+                    getProductCategory(_CATEGORY);
 
                     switch (_TAX){
                         case 0:
@@ -239,46 +256,72 @@ public class SellerAddProductFragment extends Fragment
                             break;
                     }
 
-                    if(product.getProductStyles() != null){
+                    if( product.getProductStyles() != null){
                         styleList = product.getProductStyles();
-//                        styleList = editStyleList;
-                        Log.d("Test display style", "style amount: "+styleList.stream().count()+"!");
-                        Log.d("Test display style", styleList+"!");
-                        if (styleList != null) {
-                            //with styles
-                            //set the recyclerview
-                            LinearLayoutManager lm = new LinearLayoutManager(getContext());
-                            recyclerViewStyles.setLayoutManager(lm);
-                            Log.d("Test display style", styleList+"!");
-                            setStylesAdapter(styleList);
+                        Log.d("Test display style", "style amount: "+styleList.size()+"");
 
-                            //set product price invisible
-                            textLayoutProductPrice.setVisibility(View.GONE);
-                            textInputProductPrice.setText(null);
+                        //download style pic and setStylePic to downloadUrl
+                        StorageReference productImgsRef = FirebaseStorage.getInstance().getReference("ProductImage").child(productId);
+                        //new from gpt
+                        List<Task<Uri>> tasks = new ArrayList<>();
 
-                            //set style price range visible
-                            textLayoutStylePriceRange.setVisibility(View.VISIBLE);
+                        for (ProductStyle style: styleList) {
+                            StorageReference styleImgRef = productImgsRef.child(style.getStylePic());
+                            Task<Uri> getDownloadUrlTask = styleImgRef.getDownloadUrl();
+                            tasks.add(getDownloadUrlTask);
 
-                            double minStylePrice = Double.MAX_VALUE;
-                            double maxStylePrice = Double.MIN_VALUE;
-
-                            for (ProductStyle style: styleList) {
-                                double stylePrice = style.getStylePrice();
-                                if (stylePrice < minStylePrice) {
-                                    minStylePrice = stylePrice;
-                                }
-                                if (stylePrice > maxStylePrice) {
-                                    maxStylePrice = stylePrice;
-                                }
-                            }
-
-                            if (minStylePrice == maxStylePrice) {
-                                textInputStylePriceRange.setText("CA$ " + minStylePrice);
-                            } else {
-                                textInputStylePriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
-                            }
-
+                            getDownloadUrlTask.addOnSuccessListener(uri -> {
+                                // Got the download URL and setStylePic to downloadUrl
+                                style.setStylePic(uri.toString());
+                                Log.d("Test StylePicUrl", uri.toString());
+                                uriDownloadProductImgs.add(uri);
+                                Log.d("Test img (download uri)", uri.toString() + "");
+                            }).addOnFailureListener(exception -> {
+                                // Handle errors, if image doesn't exist, show a default image
+                                Log.d("Test StylePicUrl","cannot get download url");
+                            });
                         }
+
+                        Tasks.whenAllSuccess(tasks).addOnCompleteListener(new OnCompleteListener<List<Object>>() {
+                            @Override
+                            public void onComplete(@NonNull Task<List<Object>> task) {
+                                if (task.isSuccessful()) {
+                                    withStyleAndChangePrice();
+                                } else {
+                                    // Handle failure
+                                    Log.d("Test StylePicUrl","not all tasks completed successfully");
+                                }
+                            }
+                        });
+
+//                        List<Task<Uri>> tasks = new ArrayList<>();
+//                        for (ProductStyle style : styleList) {
+//                            StorageReference styleImgRef = productImgsRef.child(style.getStylePic());
+//
+//                            tasks.add(styleImgRef.getDownloadUrl().addOnSuccessListener(uri -> {
+//                                // Got the download URL and setStylePic to downloadUrl
+//                                style.setStylePic(uri.toString());
+//                                //Log.d("Test StylePicUrl", style.getStylePic());
+//                                //uriDownloadProductImgs.add(uri);
+//                                //Log.d("Test img (download uri)", uri.toString());
+//                                Log.d("Test Download", uriDownloadProductImgs.size()+"");
+//                            }).addOnFailureListener(new OnFailureListener() {
+//                                @Override
+//                                public void onFailure(@NonNull Exception exception) {
+//                                    // Handle errors, if image doesn't exist, show a default image
+//                                    Log.d("Test StylePicUrl", "cannot get download url");
+//                                }
+//                            }));
+//                        }
+
+                        Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                            @Override
+                            public void onSuccess(List<Object> list) {
+                                // All URLs have been retrieved, now you can call withStyleAndChangePrice()
+
+                                withStyleAndChangePrice();
+                            }
+                        });
 
                     }
                 }
@@ -291,7 +334,7 @@ public class SellerAddProductFragment extends Fragment
         });
     }
 
-    private void GetProductCategory(String selectedCategory) {
+    private void getProductCategory(String selectedCategory) {
         for (int i = 0; i < productCatAdapter.getCount(); i++) {
             if (selectedCategory.equals(productCatAdapter.getItem(i))) {
                 textInputProductCategory.setText(productCatAdapter.getItem(i), false);
@@ -301,28 +344,42 @@ public class SellerAddProductFragment extends Fragment
     }
 
     // TODO: image cannot load correctly, still needs to work
-    private void GetImageUriFromStorage(List<String> images) {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
+    private void getImageUriFromStorage(List<String> productImages) {
 
-        uriUploadProductImgs = new ArrayList<>();
-        for (String filename : images) {
-            StorageReference imageRef = storageRef.child("ProductImages" + "/" + filename);
-            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                uriUploadProductImgs.add(uri);
-                if (uriUploadProductImgs.size() == images.size()) {
-                    setProductImagesAdapter();
-                }
-            }).addOnFailureListener(exception -> {
-                Log.e("Test", "Download failed", exception);
-            });
+        //product image download
+        productImgsRef = allProductImgsRef.child(productId);
+        List<Task<Uri>> tasks = new ArrayList<>();
+
+        for (String filename : productImages) {
+            StorageReference imageRef = productImgsRef.child(filename);
+            tasks.add(imageRef.getDownloadUrl());
         }
+
+        Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+            @Override
+            public void onSuccess(List<Object> objects) {
+                for (Object object : objects) {
+                    Uri uri = (Uri) object;
+                    uriUploadProductImgs.add(uri);
+                    uriDownloadProductImgs.add(uri);
+                    Log.d("Test img (download uri)", uri.toString() + "");
+                }
+                setProductImagesAdapter(); //need to wait till all success then set the adapter
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("Test img download", "Download failed", e);
+            }
+        });
+
     }
 
-
     private void checkUserPermission() {
+//        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_MEDIA_IMAGES)
                 != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_MEDIA_IMAGES},
                     REQUEST_PERMISSION_CODE);
             Toast.makeText(requireContext(), "Permission asked", Toast.LENGTH_SHORT).show();
@@ -343,16 +400,12 @@ public class SellerAddProductFragment extends Fragment
 //            }
 //        }
 //    }
-
     private void pickProductImages() {
         productImgFilePicker.launch("image/*");
-        if (uriUploadProductImgs != null) {
-            uriUploadProductImgs = new ArrayList<>(uriUploadProductImgs);
-            uriUploadProductImgs.clear();
-        }
     }
 
     private void setProductImagesAdapter() {
+        Log.d("Test img when set", uriUploadProductImgs.size()+"");
         SellerAddProductImagesAdapter sellerAddProductImagesAdapter = new SellerAddProductImagesAdapter(getActivity(), uriUploadProductImgs);
         //ItemTouchClass
         ItemTouchHelper.Callback callback =
@@ -365,7 +418,7 @@ public class SellerAddProductFragment extends Fragment
     }
 
     // TODO: add List<ProductStyle> styles as 1st parameter, still needs to work
-    private void setStylesAdapter(List<ProductStyle> styles) {
+    private void setStylesAdapter(@NonNull List<ProductStyle> styles) {
         Log.d("Test display style", "setStylesAdapter() run");
         Log.d("Test display style", "passed styles: "+styles.get(0).getStyleName());
         SellerStyleListRecyclerAdapter sellerStyleListRecyclerAdapter = new SellerStyleListRecyclerAdapter(getContext(), styles);
@@ -389,7 +442,6 @@ public class SellerAddProductFragment extends Fragment
             Double productPrice = textInputProductPrice.getNumericValue();
             String stylePriceRange = textInputStylePriceRange.getText().toString();
 
-
             //check required input
             if (TextUtils.isEmpty(productName)) {
                 Toast.makeText(getContext(),
@@ -412,44 +464,75 @@ public class SellerAddProductFragment extends Fragment
             } else if (uriUploadProductImgs.size() == 0) {
                 Toast.makeText(getContext(),
                         "Please add at least one product image.", Toast.LENGTH_SHORT).show();
-            } else if (styleList.size() == 0 && productPrice == 0) {
+            } else if (styleList.isEmpty() && productPrice == 0) {
                 Toast.makeText(getContext(),
                         "Please enter the product price.", Toast.LENGTH_SHORT).show();
                 textInputProductPrice.setError("Product price is required.");
                 textInputProductPrice.requestFocus();
-            } else if (styleList.size() != 0 && stylePriceRange == null) {
+            } else if (!styleList.isEmpty() && stylePriceRange == null) {
                 Toast.makeText(getContext(),"Style price went wrong",Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getContext(),
                         "Request send.", Toast.LENGTH_SHORT).show();
-                firebaseInstance = FirebaseDatabase.getInstance();
-                firebaseDatabase = firebaseInstance.getReference("Product");  //Product -> productId -> newProduct
 
-
-                if(editProductId != null){
-                    productId = editProductId;
-                } else {
-                    productId = firebaseDatabase.push().getKey();
+                if(productId == null){ //it is a new product
+                    productId = productRef.push().getKey(); //Product -> productId -> newProduct
+                    Log.d("Test","new product: "+productId);
                 }
 
                 //tax define, so far use taxId as the data we save in db
+
+                //clear the old firebase storage
+                productImgsRef = allProductImgsRef.child(productId);
+                //...
 
                 //compress product images and upload to FireStorage (uriList to stringList)
                 compressProductImages();
 
                 //compress style image and upload to FireStorage (uri to string)
-                compressStyleImage(styleList);
+                if(styleList != null) {
+                    compressStyleImage(styleList);
+                }
 
                 //decide which price string to save
                 String strPrice = styleList.size() == 0 ? textInputProductPrice.getText().toString() : stylePriceRange;
 
                 //upload product and styles to Realtime DB
-
                 uploadProduct(productName, productCategory,productDescription,
                         taxId, strProductImgNames, styleList, strPrice);
-                Log.d("Edit product", "name: "+productName+" Category: "+productCategory+" Desc: "+
+                Log.d("Test Edit product", "name: "+productName+" Category: "+productCategory+" Desc: "+
                         productDescription+" tax id: "+taxId+" Image: "+strProductImgNames+ " style list: "+styleList + " price: "+strPrice);
 
+                //delete the deleteImg from Storage
+                for (Uri deletedUri: uriDownloadDeletedImgs) {
+                    String path = deletedUri.getPath();
+                    String decodedPath = null;
+                    try {
+                        decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    String fileName = decodedPath.substring(decodedPath.lastIndexOf('/') + 1);
+
+                    // Create a reference to the file to delete
+                    StorageReference deletedImgRef = productImgsRef.child(fileName);
+
+                    // Delete the file
+                    deletedImgRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // File deleted successfully
+                            Log.d("Test delete from storage", "onSuccess: deleted file");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Uh-oh, an error occurred!
+                            Log.d("Test delete from storage", "onFailure: did not delete file");
+                        }
+                    });
+
+                }
 
                 //go back to the frag you came from
                 Navigation.findNavController(v).popBackStack();
@@ -459,7 +542,7 @@ public class SellerAddProductFragment extends Fragment
     }
 
     private void uploadProduct(String productName, String category, String productDescription,
-                               double tax, List<String> strProductImgNames,
+                               int tax, List<String> strProductImgNames,
                                List<ProductStyle> productStyles, String strPrice) {
 
         auth = FirebaseAuth.getInstance();
@@ -468,7 +551,7 @@ public class SellerAddProductFragment extends Fragment
         Product newProduct = new Product(productName,category,productDescription,
                 tax, strProductImgNames, firebaseUser.getUid(), productStyles, strPrice);
 
-        firebaseDatabase.child(productId).setValue(newProduct).addOnCompleteListener(new OnCompleteListener<Void>() {
+        productRef.child(productId).setValue(newProduct).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
@@ -484,96 +567,93 @@ public class SellerAddProductFragment extends Fragment
             }
         });
 
-        //
-//        // Convert the Product object to a HashMap using Gson library
-//        Gson gson = new Gson();
-//        Type type = new TypeToken<HashMap<String, Object>>() {}.getType();
-//        HashMap<String, Object> productMap = gson.fromJson(gson.toJson(newProduct), type);
-//
-////        HashMap<String, Object> imgMap = new HashMap<>();
-////        for (int i = 0; i < strProductImgNames.size(); i++) {
-////            imgMap.put(String.valueOf(i), strProductImgNames.get(i));
-////        }
-////        // Update the productMap with the imgMap
-////        productMap.put("strProductImgNames", imgMap);
-//
-//        // Save the productMap to the Realtime Database
-//        firebaseDatabase.child(productId).setValue(productMap)
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        // Data saved successfully
-//                        Toast.makeText(getContext(), "Product Upload Successfully", Toast.LENGTH_SHORT).show();
-//                        Intent intent = new Intent(getContext(), TestPageActivity.class);
-//                        // Prevent seller go back
-//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(intent);
-//                        finish();
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        // Failed to save data
-//                        Toast.makeText(getContext(), "Product Upload Failed", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//
-
     }
 
-    private void compressStyleImage(List<ProductStyle> styleList) {
-        Log.d("Edit product", "compressStyleImage() run");
+    private void compressStyleImage(@NonNull List<ProductStyle> styleList) {
+        Log.d("Test Edit product", "compressStyleImage() run");
         String styleImgName;
-        uploadImgCount = 0;
-        for (int i = 0; i< styleList.size(); i++) {
+
+        for (int i = 0; i < styleList.size(); i++) {
             try {
-                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), Uri.parse(styleList.get(i).getStylePic()));
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
-                imageBytes = stream.toByteArray();
-                styleImgName = productId + "_" + styleList.get(i).getStyleName() + ".jpg";
-                styleList.get(i).setStylePic(styleImgName);
-                //to FireStorage
-                uploadImagesToFireStorage(styleImgName, imageBytes, styleList);
+                Uri url = Uri.parse(styleList.get(i).getStylePic());
+                if (uriDownloadProductImgs.contains(url)) {
+                    String path = url.getPath();
+                    String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
+                    String fileName = decodedPath.substring(decodedPath.lastIndexOf('/') + 1);
+                    styleImgName = fileName;
+                    styleList.get(i).setStylePic(styleImgName);
+                    Log.d("Test compress style(old)", styleImgName);
+
+                } else {
+                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), url);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+                    imageBytes = stream.toByteArray();
+
+                    //unique image name
+                    String uniqueID = UUID.randomUUID().toString();
+                    styleImgName = uniqueID + ".jpg";
+                    styleList.get(i).setStylePic(styleImgName);
+                    Log.d("Test compress style(new)", styleImgName);
+                    //to FireStorage
+                    uploadImagesToFireStorage(styleImgName, imageBytes, styleList);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
     private void compressProductImages() {
-        Log.d("Edit product", "compressStyleImage() run");
+        Log.d("Test Edit product", "compressProductImage() run");
         strProductImgNames = new ArrayList<>();
-        uploadImgCount = 0;
+        Log.d("Test compress product imgs", uriUploadProductImgs.size() + " in the list");
         for (int i = 0; i < uriUploadProductImgs.size(); i++) {
             try {
-                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uriUploadProductImgs.get(i));
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
-                imageBytes = stream.toByteArray();
-                productImgName = productId + "_" + i + ".jpg";
-                strProductImgNames.add(productImgName);
-                //to FireStorage
-                uploadImagesToFireStorage(productImgName, imageBytes, uriUploadProductImgs);
-                Log.d("Edit product", "img count"+uploadImgCount);
+                if (uriDownloadProductImgs.contains(uriUploadProductImgs.get(i))) {
+                    Uri url = uriUploadProductImgs.get(i);
+                    String path = url.getPath();
+                    String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
+                    String fileName = decodedPath.substring(decodedPath.lastIndexOf('/') + 1);
+                    productImgName = fileName;
+                    Log.d("Test compress file", productImgName);
+                    strProductImgNames.add(fileName);
+                } else {
+                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uriUploadProductImgs.get(i));
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+                    imageBytes = stream.toByteArray();
+
+                    //unique image name
+                    String uniqueID = UUID.randomUUID().toString();
+                    productImgName = uniqueID + ".jpg";
+                    strProductImgNames.add(productImgName);
+
+                    //to FireStorage
+                    uploadImagesToFireStorage(productImgName, imageBytes, uriUploadProductImgs);
+                }
+
+                Log.d("Test compress product imgs", strProductImgNames.size() + " names in the list");
+
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.d("Test compress fail", uriUploadProductImgs.get(i) + "");
             }
         }
 
     }
 
     private void uploadImagesToFireStorage(String imageName, byte[] imageBytes, List<?> imageList) {
-        productImgsReference = FirebaseStorage.getInstance().getReference().child("ProductImages");
-        StorageReference imgReference = productImgsReference.child(imageName);
-        // I am saving all the product images from different sellers at the same place now
+
+        StorageReference imgReference = productImgsRef.child(imageName);
+
         imgReference.putBytes(imageBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            private int uploadImgCount = 0;
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 uploadImgCount++;
                 if(uploadImgCount == imageList.size()) {
-                    Log.d("upload", "All Images Are Uploaded");
+                    Log.d("Test Upload to Storage", imageList.size()+ " images are uploaded");
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -587,6 +667,15 @@ public class SellerAddProductFragment extends Fragment
     @Override
     public void onAddNewProductImg() {
         checkUserPermission();
+    }
+
+    @Override
+    public void onDeleteProductImg(Uri deletedUri) {
+        if (uriDownloadProductImgs.contains(deletedUri)) {
+            uriDownloadDeletedImgs.add(deletedUri);
+            Log.d("Test delete List", deletedUri.toString());
+            Log.d("Test delete List", uriDownloadDeletedImgs.size() + " in the list");
+        }
     }
 
 //    public void setStyleToList(String styleName, Double price, String imgUri, int idx) {
@@ -671,8 +760,18 @@ public class SellerAddProductFragment extends Fragment
     }
 
     @Override
+    public void onStyleDelete(String deletedStylePicUrl) {
+        Uri deletedUrl = Uri.parse(deletedStylePicUrl);
+        if (uriDownloadProductImgs.contains(deletedUrl)) {
+            uriDownloadDeletedImgs.add(deletedUrl);
+            Log.d("Test Download delete List", deletedStylePicUrl);
+            Log.d("Test Download delete List", uriDownloadDeletedImgs.size() + " in the list");
+        }
+    }
+
+    @Override
     public void onAddStyleToList(String styleName, Double price, String imgUri, int idx) {
-        Log.d("Test", styleName+ " " + price + " " + imgUri + " " + idx);
+        Log.d("Test add style", styleName+ " " + price + " " + imgUri + " " + idx);
         ProductStyle newStyle = new ProductStyle(styleName, price, imgUri);
 
         if (idx == -1) { //Add a new style
@@ -683,11 +782,24 @@ public class SellerAddProductFragment extends Fragment
             styleList.get(idx).setStylePic(imgUri);
         }
 
-        if (styleList != null) { //with styles
+        withStyleAndChangePrice();
+    }
+
+    @Override
+    public void onStyleImgDelete(Uri deletedUri) {
+        uriDownloadDeletedImgs.add(deletedUri);
+        Log.d("Test delete List!", deletedUri.toString());
+        Log.d("Test delete List!", uriDownloadDeletedImgs.size() + " in the list");
+
+    }
+
+    public void withStyleAndChangePrice() {
+        if (styleList != null) {
+            //with styles
             //set the recyclerview
             LinearLayoutManager lm = new LinearLayoutManager(getContext());
             recyclerViewStyles.setLayoutManager(lm);
-            Log.d("Test display style", styleList+"!");
+            Log.d("Test display style", styleList+"");
             setStylesAdapter(styleList);
 
             //set product price invisible

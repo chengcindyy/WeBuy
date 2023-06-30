@@ -2,6 +2,7 @@ package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.media.metrics.BundleSession;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -74,12 +75,13 @@ public class SellerAddProductImagesAdapter extends RecyclerView.Adapter<SellerAd
 
         // delete - need to update the new list
         holder.btnDelete.setOnClickListener(v -> {
+            mProductImagesListener.onDeleteProductImg(uriUploadImgs.get(position));
             uriUploadImgs.remove(holder.getAdapterPosition());
             //notifyItemRemoved(holder.getAdapterPosition()); //it won't make the first one cover img
             notifyDataSetChanged();
         });
 
-        // long click - change position
+
 
     }
 
@@ -136,5 +138,6 @@ public class SellerAddProductImagesAdapter extends RecyclerView.Adapter<SellerAd
 
     public interface onProductImagesListener {
         void onAddNewProductImg();
+        void onDeleteProductImg(Uri deletedUri);
     }
 }

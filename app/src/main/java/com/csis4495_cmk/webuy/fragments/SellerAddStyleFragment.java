@@ -23,6 +23,7 @@ import com.cottacush.android.currencyedittext.CurrencyEditText;
 import com.csis4495_cmk.webuy.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputEditText;
+import com.squareup.picasso.Picasso;
 
 public class SellerAddStyleFragment extends BottomSheetDialogFragment {
 
@@ -41,6 +42,7 @@ public class SellerAddStyleFragment extends BottomSheetDialogFragment {
     private String styleName;
     private Double stylePrice;
     private Uri styleImg;
+    private Uri editStyleImg;
     private int styleIdx = -1; // -1 means new style
 
     public SellerAddStyleFragment() {
@@ -118,7 +120,8 @@ public class SellerAddStyleFragment extends BottomSheetDialogFragment {
             //set the data to corresponded box
             textInputStyleName.setText(styleName);
             textInputStylePrice.setText(stylePrice.toString());
-            imgBtnAddImg.setImageURI(styleImg);
+            Picasso.get().load(styleImg).into(imgBtnAddImg);
+            //imgBtnAddImg.setImageURI(styleImg);
             //Update Clicked
             btnAddOrUpdateClicked();
         }
@@ -129,7 +132,11 @@ public class SellerAddStyleFragment extends BottomSheetDialogFragment {
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             styleImgFilePicker.launch(intent);
-            imgBtnAddImg.setImageURI(styleImg);
+            //get downloaded edit img
+            if (styleImg!=null && styleImg.toString().contains("https://")) {
+                editStyleImg = styleImg;
+                Log.d("Test edit style Uri", editStyleImg.toString());
+            }
         });
 
         // add a new style
@@ -159,8 +166,11 @@ public class SellerAddStyleFragment extends BottomSheetDialogFragment {
             } else {
                 if (mSellerAddStyleFragmentListener != null) {
                     mSellerAddStyleFragmentListener.onAddStyleToList(styleName, stylePrice, styleImg.toString(), styleIdx);
-                } else {
-                    Log.d("Test","isnull");
+                }
+                //
+                if (editStyleImg != null && styleImg != editStyleImg) {
+                    mSellerAddStyleFragmentListener.onStyleImgDelete(editStyleImg);
+                    Log.d("Test stylePic delete", editStyleImg.toString());
                 }
                     onDismiss(getDialog());
             }
@@ -170,6 +180,6 @@ public class SellerAddStyleFragment extends BottomSheetDialogFragment {
 
     public interface onSellerAddStyleFragmentListener{
         void onAddStyleToList(String styleName, Double price, String imgUri, int idx);
-
+        void onStyleImgDelete(Uri deletedUri);
     }
 }

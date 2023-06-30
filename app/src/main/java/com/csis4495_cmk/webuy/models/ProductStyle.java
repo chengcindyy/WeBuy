@@ -6,6 +6,10 @@ public class ProductStyle {
     double stylePrice;
     String stylePic;
 
+
+
+
+
     public ProductStyle() {}
 
     public ProductStyle(String styleName, double stylePrice, String stylePic) {
@@ -13,6 +17,7 @@ public class ProductStyle {
         this.stylePrice = stylePrice;
         this.stylePic = stylePic;
     }
+
 
     public String getStyleName() {
         return styleName;

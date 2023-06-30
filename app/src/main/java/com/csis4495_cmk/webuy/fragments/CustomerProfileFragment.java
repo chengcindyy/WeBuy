@@ -435,11 +435,14 @@ public class CustomerProfileFragment extends Fragment {
             layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
         }
 
-        int heightDp = 250;
+        int heightDp = 230;
+        int widthDp = 210;
         float density = getResources().getDisplayMetrics().density;
         int heightPixel = (int) (heightDp * density);
+        int widthPixel = (int) (widthDp * density);
 
         layoutParams.height = heightPixel;
+        layoutParams.width = widthPixel;
 
         if (alertDialog.getWindow() != null) {
             alertDialog.getWindow().setAttributes(layoutParams);

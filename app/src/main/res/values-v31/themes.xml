@@ -13,7 +13,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_splash</item>
         <item name="android:windowSplashScreenBackground">#FFFFFF</item>
     </style>
 </resources>

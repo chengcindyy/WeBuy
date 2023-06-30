@@ -84,6 +84,7 @@ public class SellerHomePageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Seller seller = snapshot.getValue(Seller.class);
                 String storePic = seller.getStoreInfo().getStorePic();
+
                 if(storePic != null){
                     imageUrl = storePic;
                     Log.d("Upload img: imageUrl ", imageUrl);

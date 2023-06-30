@@ -110,7 +110,7 @@
     </fragment>
     <fragment
         android:id="@+id/sellerAddGroupFragment"
-        android:name="com.csis4495_cmk.webuy.SellerAddGroupFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerAddGroupFragment"
         android:label="fragment_seller_add_group"
         tools:layout="@layout/fragment_seller_add_group" />
     <fragment
