@@ -442,7 +442,7 @@ public class SellerAddGroupFragment extends Fragment   {
                 isComplete = false;
                 // trigger alert
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Invalid Quantity");
+                builder.setTitle("No Quantity");
                 builder.setMessage("Please input the quantity for " + entry.getKey());
 //                builder.setMessage("Please input the quantity for " + entry.getKey());
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -489,10 +489,10 @@ public class SellerAddGroupFragment extends Fragment   {
             }
         }
 
-        if (groupStyles.size() != groupQtyMap.size()){
-            Toast.makeText(getContext(), "The style list and the style qty is not matched", Toast.LENGTH_SHORT).show();
-            Log.d("Test","The style list and the style qty is not matched");
-        }
+//        if (groupStyles.size() != groupQtyMap.size()){
+//            Toast.makeText(getContext(), "The style list and the style qty is not matched", Toast.LENGTH_SHORT).show();
+//            Log.d("Test","The style list and the style qty is not matched");
+//        }
 
         if (groupStyles.size()>0){
             newGroup.setGroupStyles(groupStyles);
@@ -530,7 +530,7 @@ public class SellerAddGroupFragment extends Fragment   {
                 groupQtyMap.put(gName, no_qty);
 
             }catch (Exception e){
-                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
 
