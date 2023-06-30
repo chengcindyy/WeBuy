@@ -2,6 +2,7 @@ package com.csis4495_cmk.webuy.models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class Group {
     private String groupName;
@@ -18,7 +19,17 @@ public class Group {
 
     private String sellerId;
 
-    private List<ProductStyle> productStyles;
+    private List<ProductStyle> groupStyles;
+
+    public Map<String, Integer> getGroupStylesMap() {
+        return groupStylesMap;
+    }
+
+    public void setGroupStylesMap(Map<String, Integer> groupStylesMap) {
+        this.groupStylesMap = groupStylesMap;
+    }
+
+    private Map<String, Integer> groupStylesMap;
 
     private Date startTime;
     private Date endTime;
@@ -32,7 +43,7 @@ public class Group {
     public Group() {
     }
 
-    public Group(String groupName, int groupType, String category, String description, List<String> groupImages, int tax, String sellerId, List<ProductStyle> productStyles, Date startTime, Date endTime, int status, String groupPrice) {
+    public Group(String groupName, int groupType, String category, String description, List<String> groupImages, int tax, String sellerId, List<ProductStyle> groupStyles, Date startTime, Date endTime, int status, String groupPrice) {
         this.groupName = groupName;
         this.groupType = groupType;
         this.category = category;
@@ -40,7 +51,7 @@ public class Group {
         this.groupImages = groupImages;
         this.tax = tax;
         this.sellerId = sellerId;
-        this.productStyles = productStyles;
+        this.groupStyles = groupStyles;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
@@ -120,12 +131,12 @@ public class Group {
         this.sellerId = sellerId;
     }
 
-    public List<ProductStyle> getProductStyles() {
-        return productStyles;
+    public List<ProductStyle> getGroupStyles() {
+        return groupStyles;
     }
 
-    public void setProductStyles(List<ProductStyle> productStyles) {
-        this.productStyles = productStyles;
+    public void setGroupStyles(List<ProductStyle> groupStyles) {
+        this.groupStyles = groupStyles;
     }
 
     public Date getStartTime() {

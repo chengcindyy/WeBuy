@@ -81,7 +81,7 @@ public class SellerAddProductImagesAdapter extends RecyclerView.Adapter<SellerAd
             notifyDataSetChanged();
         });
 
-        // long click - change position
+
 
     }
 

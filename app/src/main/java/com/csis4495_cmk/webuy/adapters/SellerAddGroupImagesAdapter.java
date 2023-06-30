@@ -31,6 +31,8 @@ public class SellerAddGroupImagesAdapter extends RecyclerView.Adapter<SellerAddG
     Context context;
     List<String> paths = new ArrayList<>();
 
+    String productId;
+
     private onGroupDeleteImgListener onGroupDeleteImgListener;
 
     private onGroupAddImgListener onGroupAddImgListener;
@@ -90,7 +92,7 @@ public class SellerAddGroupImagesAdapter extends RecyclerView.Adapter<SellerAddG
 //        }
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
-        StorageReference imageReference = storageReference.child(paths.get(position));
+        StorageReference imageReference = storageReference.child(productId+"/"+paths.get(position));
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching
             Picasso.get().load(uri.toString()).into(holder.imgViewSingleImg);
@@ -124,6 +126,13 @@ public class SellerAddGroupImagesAdapter extends RecyclerView.Adapter<SellerAddG
     }
 
     public void updateGroupImgPaths(List<String> uriPaths) {
+        paths.clear();
+        paths.addAll(uriPaths);
+        notifyDataSetChanged();
+    }
+
+    public void updateGroupImgPaths2(String productId, List<String> uriPaths) {
+        this.productId = productId;
         paths.clear();
         paths.addAll(uriPaths);
         notifyDataSetChanged();

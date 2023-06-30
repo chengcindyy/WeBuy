@@ -33,6 +33,8 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
     private Context context;
     private List<ProductStyle> styles = new ArrayList<>();
 
+    String productId;
+
     private OnImgBtnDeleteStyleListener onImgBtnDeleteStyleListener;
 
     private OnStyleChangedListner onStyleChangedListner;
@@ -73,7 +75,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
         //load style image
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
 //        StorageReference imageReference = storageReference.child(styles.get(position).getStylePic());
-        StorageReference imageReference = storageReference.child(style.getStylePic());
+        StorageReference imageReference = storageReference.child(productId+"/"+style.getStylePic());
 
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching
@@ -97,6 +99,13 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
     }
 
     public void updateStyleData(List<ProductStyle> ps){
+        styles.clear();
+        styles.addAll(ps);
+        notifyDataSetChanged();
+    }
+
+    public void updateStyleData2(String productId,  List<ProductStyle> ps){
+        this.productId = productId;
         styles.clear();
         styles.addAll(ps);
         notifyDataSetChanged();
@@ -128,6 +137,28 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                    ProductStyle currentStyle = styles.get(getAdapterPosition());
+//                    String newInfo = s.toString();
+//                    if(!newInfo.isEmpty()){
+//                        try {
+//                            double newPrice = Double.parseDouble(s.toString());
+//                            if( newPrice <= 0){
+//                                Toast.makeText(context, "The price must be greater than 0", Toast.LENGTH_SHORT).show();
+//                                stylePrice.setText("");
+//                                stylePrice.requestFocus();
+//                            }else{
+//                                currentStyle.setStylePrice(newPrice);
+//                                int qty = 0;
+//                                onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
+//                            }
+//                        } catch (NumberFormatException e) {
+//                        }
+//                    }
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
                     ProductStyle currentStyle = styles.get(getAdapterPosition());
                     String newInfo = s.toString();
                     if(!newInfo.isEmpty()){
@@ -139,16 +170,12 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                                 stylePrice.requestFocus();
                             }else{
                                 currentStyle.setStylePrice(newPrice);
+                                int qty = 0;
                                 onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
                             }
                         } catch (NumberFormatException e) {
                         }
                     }
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
 
                 }
             });
@@ -161,6 +188,30 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                    ProductStyle currentStyle = styles.get(getAdapterPosition());
+//                    String newInfo = s.toString();
+//                    if(!newInfo.isEmpty()){
+//                        try {
+//                            int qty = Integer.parseInt(s.toString());
+//                            if (qty < -1){
+//                                Toast.makeText(context, "The minimum quantity is -1 for unlimited quantity order", Toast.LENGTH_SHORT).show();
+//                                styleQty.setText("");
+//                                styleQty.requestFocus();
+//                            }else if(qty == 0){
+//                                Toast.makeText(context, "The quantity cannot be 0", Toast.LENGTH_SHORT).show();
+//                                styleQty.setText("");
+//                                styleQty.requestFocus();
+//                            }
+//                            else {
+//                                onStyleChangedListner.onStyleChange2(getAdapterPosition(), currentStyle, qty);
+//                            }
+//                        } catch (NumberFormatException e) {
+//                        }
+//                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
                     ProductStyle currentStyle = styles.get(getAdapterPosition());
                     String newInfo = s.toString();
                     if(!newInfo.isEmpty()){
@@ -176,16 +227,11 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                                 styleQty.requestFocus();
                             }
                             else {
-                                currentStyle.setStyleQty(qty);
-                                onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
+                                onStyleChangedListner.onStyleChange2(getAdapterPosition(), currentStyle, qty);
                             }
                         } catch (NumberFormatException e) {
                         }
                     }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
 
 
 
@@ -194,20 +240,29 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
         }
 
+        public boolean isAnyFieldEmpty() {
+            return styleQty.getText().toString().trim().isEmpty()
+                    || stylePrice.getText().toString().trim().isEmpty();
+        }
+
         public void bindStyles(ProductStyle s){
             styleName.setText(s.getStyleName());
             stylePrice.setText(Double.toString(s.getStylePrice()));
             styleQty.setText("");
         }
 
+
     }
+
 
     public interface OnImgBtnDeleteStyleListener{
         void onDeleteClick(int position);
     }
 
     public interface OnStyleChangedListner{
+        void onStyleChange2(int position, ProductStyle style, int qty);
         void onStyleChange(int position, ProductStyle style);
+
     }
 
 

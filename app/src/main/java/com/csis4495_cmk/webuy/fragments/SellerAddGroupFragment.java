@@ -29,12 +29,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.cottacush.android.currencyedittext.CurrencyEditText;
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.activities.MainActivity;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupImagesAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -51,7 +54,9 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class SellerAddGroupFragment extends Fragment   {
@@ -59,27 +64,28 @@ public class SellerAddGroupFragment extends Fragment   {
     private NavController navController;
 
     private FirebaseAuth auth;
-    private StorageReference storageReference;
     private DatabaseReference databaseReference;
+    DatabaseReference groupRef;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseUser firebaseUser;
-
     private MaterialButtonToggleGroup tgBtnGp_publish;
     private Button tgBtn_in_stock_publish;
     private Button tgBtn_group_buy_publish;
     private TextInputEditText groupName;
     private TextInputEditText description;
+
     private TextInputEditText groupPriceRange;
+//    private CurrencyEditText groupPriceRange;
     private int groupType;
 
-    private String groupid;
 
-    List<Double> priceRanges;
+    private String groupId;
+
 
     private String sellerId;
     private int tax;
 
-    private int status;
+    private int groupStatus;
     private String productId;
     private RecyclerView rv_img, rv_style;
 
@@ -88,8 +94,10 @@ public class SellerAddGroupFragment extends Fragment   {
     private SellerAddGroupImagesAdapter imagesAdapter;
 
     List<ProductStyle> groupStyles;
-//    List<Uri> productImageUris;
     List<String> imgPaths;
+
+    Map<String, Integer> groupStylesMap;
+
     private Button btnStart, btnEnd ;
     private Date startTime, endTime;
 
@@ -107,15 +115,18 @@ public class SellerAddGroupFragment extends Fragment   {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_seller_add_group, container, false);
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+
+        auth = FirebaseAuth.getInstance();
+        firebaseUser = auth.getCurrentUser();
+        groupRef = firebaseDatabase.getReference("Group");
         //Get passed bundle
         if (getArguments() != null) {
             productId = getArguments().getString("new_group_productId");
         }
-
         if (firebaseUser != null) {
-            String sellerId = firebaseUser.getUid();
+            sellerId = firebaseUser.getUid();
             // Now you can use the userId as needed
         }
 
@@ -136,7 +147,7 @@ public class SellerAddGroupFragment extends Fragment   {
 //        productImageUris = new ArrayList<>();
         groupStyles = new ArrayList<>();
         imgPaths = new ArrayList<>();
-        priceRanges = new ArrayList<>();
+        groupStylesMap = new HashMap<>();
 
         getProdcutData();
 
@@ -171,7 +182,7 @@ public class SellerAddGroupFragment extends Fragment   {
         groupCategory.setAdapter(productCatAdapter);
         groupCategory.setOnItemClickListener((parent, view2, position, id) -> {});
 
-        //Set default group type
+        //Set default group type as in stock
         tgBtnGp_publish.check(tgBtn_in_stock_publish.getId());
         tgBtn_in_stock_publish.setClickable(false);
         groupType = 0;
@@ -201,7 +212,7 @@ public class SellerAddGroupFragment extends Fragment   {
                         endTime = new Date();
                         btnStart.setEnabled(true);
                         btnEnd.setEnabled(true);
-                        Toast.makeText(getContext(), "Group Type "+Integer.toString(groupType),Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getContext(), "Group Type "+Integer.toString(groupType),Toast.LENGTH_SHORT).show();
                         tgBtn_group_buy_publish.setClickable(false);
                         tgBtn_in_stock_publish.setClickable(true);
                     }
@@ -250,9 +261,9 @@ public class SellerAddGroupFragment extends Fragment   {
         stylesAdapter.setOnImgBtnDeleteStyleListener(new SellerAddGroupStylesAdapter.OnImgBtnDeleteStyleListener() {
             @Override
             public void onDeleteClick(int position) {
+                groupStylesMap.remove(groupStyles.get(position).getStyleName());
                 groupStyles.remove(position);
-                priceRanges.remove(position);
-                stylesAdapter.updateStyleData(groupStyles);
+                stylesAdapter.updateStyleData2(productId, groupStyles);
                 if(groupStyles.size()>0){
                     groupPriceRange.setEnabled(false);
                 }else if(groupStyles.size()==0){
@@ -268,12 +279,22 @@ public class SellerAddGroupFragment extends Fragment   {
         stylesAdapter.setOnStyleChangedListner(new SellerAddGroupStylesAdapter.OnStyleChangedListner() {
 
             @Override
-            public void onStyleChange(int position, ProductStyle style) {
+            public void onStyleChange2(int position, ProductStyle style, int qty) {
+                groupStylesMap.put(groupStyles.get(position).getStyleName(), qty);
+                Toast.makeText(getContext(), groupStyles.get(position).getStyleName() + "qty: " +  groupStylesMap.get(groupStyles.get(position).getStyleName()) , Toast.LENGTH_SHORT ).show();
                 groupStyles.set(position, style);
-//                Toast.makeText(getContext(), Double.toString( style.getStylePrice()), Toast.LENGTH_SHORT).show();
-//                Toast.makeText(getContext(), Integer.toString(style.getStyleQty()), Toast.LENGTH_SHORT).show();
-//                groupPriceRange.setText(Double.toString(style.getStylePrice()));
-//                description.setText(Integer.toString(style.getStyleQty()));
+            }
+
+            @Override
+            public void onStyleChange(int position, ProductStyle style) {
+                String oldKey = groupStyles.get(position).getStyleName();
+                Integer qty = groupStylesMap.get(oldKey);
+                if(groupStylesMap.containsKey(oldKey)){
+                    groupStylesMap.remove(oldKey);
+                    groupStylesMap.put(style.getStyleName(), qty);
+                }
+
+                groupStyles.set(position, style);
 
                 double minStylePrice = Double.MAX_VALUE;
                 double maxStylePrice = Double.MIN_VALUE;
@@ -288,11 +309,18 @@ public class SellerAddGroupFragment extends Fragment   {
                     }
                 }
 
+                Log.d("4 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
+
                 if (minStylePrice == maxStylePrice) {
                     groupPriceRange.setText("CA$ " + minStylePrice);
+                    Log.d("5 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
+
                 } else {
                     groupPriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
+                    Log.d("6 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
+
                 }
+
 
             }
         });
@@ -334,10 +362,23 @@ public class SellerAddGroupFragment extends Fragment   {
             groupPriceRange.requestFocus();
         }
 
+        newGroup.setSellerId(sellerId);
+        newGroup.setProductId(productId);
+        newGroup.setGroupName(gName);
+        newGroup.setDescription(gDescription);
+        newGroup.setCategory(gCategory);
+        newGroup.setGroupPrice(gPriceRange);
+        newGroup.setGroupType(groupType);
+        newGroup.setGroupImages(imgPaths);
+
+        newGroup.setTax(tax);
+
         if (groupType == 0){
+            //group = in stock
             startTime = null;
             endTime = null;
         }else{
+            //group = pre order
             if (btnStart.getText().equals("Group Start")){
                     startTime = new Date();
                     openDateDialog(startTime, updatedstartTime -> {
@@ -353,18 +394,104 @@ public class SellerAddGroupFragment extends Fragment   {
             }
             Date currentTime = new Date();
             if (startTime.compareTo( currentTime) > 0){
-                status = 0;
+                //Group not yet start
+                groupStatus = 0;
+                newGroup.setStartTime(startTime);
+                newGroup.setEndTime(endTime);
+                newGroup.setStatus(groupStatus);
             }else if (startTime.compareTo(currentTime) ==0){
-                status = 1;
+                //Group started
+                groupStatus = 1;
+                newGroup.setStartTime(startTime);
+                newGroup.setEndTime(endTime);
+                newGroup.setStatus(groupStatus);
+            }
+
+        }
+
+        for(Map.Entry<String, Integer> entry : groupStylesMap.entrySet()){
+            //check if the style qty is missing
+            if ( entry.getValue() == null){
+                // trigger alert
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Invalid Quantity");
+                builder.setMessage("Please input the quantity for " + entry.getKey());
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                break;
+
+            }
+            if (groupType == 0){
+                if ( entry.getValue() < 1){
+                    // trigger alert
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Invalid Quantity");
+                    builder.setMessage("The quantity for " + entry.getKey() + "must be at least one");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    break;
+
+                }
+            }
+
+        }
+
+        for(int i = 0 ; i< stylesAdapter.getItemCount(); i++){
+            SellerAddGroupStylesAdapter.ViewHolder viewHolder = (SellerAddGroupStylesAdapter.ViewHolder)rv_style.findViewHolderForAdapterPosition(i);
+            if(viewHolder != null && viewHolder.isAnyFieldEmpty()){
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Empty Field");
+                builder.setMessage("Please input all the fields");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                break;
             }
         }
 
+        if(!groupStylesMap.isEmpty()){
+            newGroup.setGroupStylesMap(groupStylesMap);
+        }
 
+        if (groupStyles.size()>0){
+            newGroup.setGroupStyles(groupStyles);
+        }
 
+        if(groupId == null){ //it is a new product
+            groupId = groupRef.push().getKey(); //Product -> productId -> newProduct
+            Log.d("Test","new group: "+ groupId);
+            UploadGroup(newGroup);
+        }
 
+    }
 
-
-
+    private void UploadGroup(Group group){
+        groupRef.child(groupId).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d("Test Upload", "Group Upload Successfully");
+                } else {
+                    Log.d("Test Upload", "Grooup Upload Failed");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT);
+            }
+        });
     }
 
     //Date picker
@@ -463,18 +590,16 @@ public class SellerAddGroupFragment extends Fragment   {
                             description.setText(prodcutDesText);
                         }
                         if (prodcutCategoryText != null) {
-                            groupCategory.setText(prodcutCategoryText,false);
+                            groupCategory.setText(prodcutCategoryText);
                         }
                         if(productPriceText !=null){
                             groupPriceRange.setText(productPriceText);
                         }
-                        Toast.makeText(getContext(), "Tax: "+Integer.toString(tax),Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getContext(), "Group Type: "+Integer.toString(groupType),Toast.LENGTH_SHORT).show();
 
                         DataSnapshot productImgSnapshot = dataSnapshot.child("productImages");
                         for (DataSnapshot img : productImgSnapshot.getChildren()) {
                             String imgPath = img.getValue(String.class);
-                            imgPaths.add(productId+"/"+imgPath);
+                            imgPaths.add(imgPath);
                         }
 
                         //Set delete group image button listener
@@ -483,8 +608,8 @@ public class SellerAddGroupFragment extends Fragment   {
                                 @Override
                                 public void onDeleteClick(int position) {
                                     imgPaths.remove(position);
-                                    imagesAdapter.updateGroupImgPaths(imgPaths);
-                                    Toast.makeText(getContext(), "imgPaths size: " + Integer.toString(imgPaths.size()), Toast.LENGTH_SHORT).show();
+                                    imagesAdapter.updateGroupImgPaths2(productId,imgPaths);
+//                                    Toast.makeText(getContext(), "imgPaths size: " + Integer.toString(imgPaths.size()), Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }else{
@@ -495,7 +620,7 @@ public class SellerAddGroupFragment extends Fragment   {
                                 }
                             });
                         }
-                        imagesAdapter.updateGroupImgPaths(imgPaths);
+                        imagesAdapter.updateGroupImgPaths2(productId,imgPaths);
                     }
                 } else {
                     Log.d(TAG, "Cannot retrieve data from database");
@@ -511,14 +636,15 @@ public class SellerAddGroupFragment extends Fragment   {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 groupStyles.clear();
-                priceRanges.clear();
+                groupStylesMap.clear();
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                     String name = snapshot.child("styleName").getValue(String.class);
                     String img = snapshot.child("stylePic").getValue(String.class);
                     Double price = snapshot.child("stylePrice").getValue(Double.class);
-                    ProductStyle ps = new ProductStyle(name, price, productId+"/"+img);
+                    ProductStyle ps = new ProductStyle(name, price, img);
                     groupStyles.add(ps);
-                    priceRanges.add(price);
+                    groupStylesMap.put(ps.getStyleName(),null);
+                    Toast.makeText(getContext(), ps.getStyleName() + "qty: " +  groupStylesMap.get(ps) , Toast.LENGTH_SHORT ).show();
                 }
 
                 if(groupStyles.size()>0){
@@ -527,7 +653,35 @@ public class SellerAddGroupFragment extends Fragment   {
                     groupPriceRange.setEnabled(true);
                     groupPriceRange.findFocus();
                 }
-                stylesAdapter.updateStyleData(groupStyles);
+
+                double minStylePrice = Double.MAX_VALUE;
+                double maxStylePrice = Double.MIN_VALUE;
+
+                for (ProductStyle ps: groupStyles) {
+                    double stylePrice = ps.getStylePrice();
+                    if (stylePrice < minStylePrice) {
+                        minStylePrice = stylePrice;
+                    }
+                    if (stylePrice > maxStylePrice) {
+                        maxStylePrice = stylePrice;
+                    }
+                }
+
+                Log.d("1 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
+
+
+                if (minStylePrice == maxStylePrice) {
+                    groupPriceRange.setText("CA$ " + minStylePrice);
+                    Log.d("2 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
+
+                } else {
+                    groupPriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
+                    Log.d("3 Price Range","min "+ minStylePrice + " max: " + maxStylePrice);
+
+                }
+
+
+                stylesAdapter.updateStyleData2(productId, groupStyles);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

@@ -127,7 +127,19 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_groupPriceRange_publish"
                     android:layout_width="match_parent"
+                    app:localeTag="en-CA"
                     android:layout_height="wrap_content" />
+
+<!--                <com.cottacush.android.currencyedittext.CurrencyEditText-->
+<!--                    android:id="@+id/edit_groupPriceRange_publish"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:ems="10"-->
+<!--                    app:currencySymbol="CA$"-->
+<!--                    app:localeTag="en-CA"-->
+<!--                    app:maxNumberOfDecimalDigits="2"-->
+<!--                    app:useCurrencySymbolAsHint="false" />-->
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <!--   RecyclerView to select product styles         -->
