@@ -12,6 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="android:fontFamily">sans-serif-condensed-light</item>
     </style>
     <!--Calender-->
     <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">

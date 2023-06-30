@@ -100,12 +100,9 @@ public class UserLoginFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         fbLoginButton = view.findViewById(R.id.btn_login_facebook);
         fb = view.findViewById(R.id.fb);
-        fb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (view == fb) {
-                    fbLoginButton.performClick();
-                }
+        fb.setOnClickListener(view1 -> {
+            if (view1 == fb) {
+                fbLoginButton.performClick();
             }
         });
         fbLoginButton.setPermissions("email");
@@ -282,7 +279,6 @@ public class UserLoginFragment extends Fragment {
                                     if(getActivity() != null) { getActivity().finish(); }
                                     break;
                                 case "seller":
-                                    // TODO: navigate to seller home page
                                     Toast.makeText(getContext(), "Login Seller", Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(getActivity(), SellerHomePageActivity.class));
                                     if(getActivity() != null) { getActivity().finish(); }
@@ -324,6 +320,11 @@ public class UserLoginFragment extends Fragment {
             edit_password.setError("Password is required.");
             edit_password.requestFocus();
             return false;
+        } else if (firebaseUser == null) {
+            Toast.makeText(getContext(), "Your WeBuy account could not be found.", Toast.LENGTH_SHORT).show();
+            edit_email.setError("Please ensure that your email is correct.");
+            edit_email.requestFocus();
+            return false;
         } else {
             return true;
         }
@@ -358,11 +359,12 @@ public class UserLoginFragment extends Fragment {
          //Set up alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Oops!");
-        builder.setMessage("Seems you haven't come here before, let's create a new account!");
+        builder.setMessage("It seems you haven't visited us before, let's get you started with a new account!");
 
-        builder.setPositiveButton("Go to register page", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Proceed to the registration page", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                LoginManager.getInstance().logOut();
                 navController.navigate(R.id.roleSelectionFragment);
             }
         });
