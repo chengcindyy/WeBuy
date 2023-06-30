@@ -17,6 +17,8 @@ public class Product {
     private String productPrice; // product price or might be (minStylePrice, maxStylePrice)
     private List<String> tags;
 
+    private String coverImgUrl;
+
     public Product() {
     }
 
@@ -85,5 +87,13 @@ public class Product {
 
     public List<String> getTags() {
         return tags;
+    }
+
+    public String getCoverImgUrl() {
+        return coverImgUrl;
+    }
+
+    public void setCoverImgUrl(String coverImgUrl) {
+        this.coverImgUrl = coverImgUrl;
     }
 }

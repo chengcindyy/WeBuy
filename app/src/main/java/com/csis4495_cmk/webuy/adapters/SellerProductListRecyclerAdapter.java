@@ -83,22 +83,27 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         productImages = products.get(position).getProductImages();
-        Log.d("TTT",position + ": " + productImages.get(0));
+        Log.d("Test img",position + ": " + productImages.get(0));
 
         // DISPLAY PRODUCT IMAGE
         // Before read firebase storage image, set rules: allow read, write: if request.auth != null; (For testing)
         // getReference should pass Storage image folder name
-        if (productImages != null && !productImages.isEmpty()) { //have changed by Mel
-            StorageReference imageReference = FirebaseStorage.getInstance().getReference("ProductImage").child(productId).child(productImages.get(0));
-            imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                Glide.with(context).load(uri.toString()).into(holder.productImage);
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle errors, if image doesn't exist, show a default image
-                    holder.productImage.setImageResource(R.drawable.default_image);
-                }
-            });
+//        if (productImages != null && !productImages.isEmpty()) { //have changed by Mel
+//            StorageReference imageReference = FirebaseStorage.getInstance().getReference("ProductImage").child(productId).child(productImages.get(0));
+//            imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+//                Glide.with(context).load(uri.toString()).into(holder.productImage);
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    // Handle errors, if image doesn't exist, show a default image
+//                    holder.productImage.setImageResource(R.drawable.default_image);
+//                }
+//            });
+//        } else {
+//            holder.productImage.setImageResource(R.drawable.default_image);
+//        }
+        if(products.get(position).getCoverImgUrl() != null) {
+            Picasso.get().load(products.get(position).getCoverImgUrl()).into(holder.productImage);
         } else {
             holder.productImage.setImageResource(R.drawable.default_image);
         }

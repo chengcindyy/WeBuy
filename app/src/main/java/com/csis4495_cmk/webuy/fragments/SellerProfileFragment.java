@@ -329,10 +329,25 @@ public class SellerProfileFragment extends Fragment {
     }
 
     private void checkIfEmailVerified(FirebaseUser firebaseUser) {
-        if (! firebaseUser.isEmailVerified()){
-            showAlertDialog();
-        }
+        firebaseUser.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    FirebaseUser updatedUser = FirebaseAuth.getInstance().getCurrentUser();
+                    if (updatedUser.isEmailVerified()) {
+                        // The email is verified, so you can bypass the dialog.
+                        // Continue your normal flow here.
+                    } else {
+                        // The email is still not verified, show the dialog.
+                        showAlertDialog();
+                    }
+                } else {
+                    Log.e("checkIfEmailVerified: ", "Failed to reload user.");
+                }
+            }
+        });
     }
+
 
     private void showAlertDialog() {
         //Set up alert builder
@@ -386,11 +401,14 @@ public class SellerProfileFragment extends Fragment {
             layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
         }
 
-        int heightDp = 250;
+        int heightDp = 230;
+        int widthDp = 210;
         float density = getResources().getDisplayMetrics().density;
         int heightPixel = (int) (heightDp * density);
+        int widthPixel = (int) (widthDp * density);
 
         layoutParams.height = heightPixel;
+        layoutParams.width = widthPixel;
 
         if (alertDialog.getWindow() != null) {
             alertDialog.getWindow().setAttributes(layoutParams);

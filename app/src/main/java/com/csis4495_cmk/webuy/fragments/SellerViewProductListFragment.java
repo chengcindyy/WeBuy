@@ -2,6 +2,7 @@ package com.csis4495_cmk.webuy.fragments;
 
 import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,9 @@ import android.view.ViewGroup;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Product;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,6 +65,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
     private ArrayList<Product> allProductsList;
     private ArrayList<String> allProductIds;
     private Map<String, Product> idsToProductsMap;
+    private ArrayList<String> allCoverImgsList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,6 +85,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         allProductsList = new ArrayList<>();
         allProductIds = new ArrayList<>();
         idsToProductsMap = new HashMap<>();
+        allCoverImgsList = new ArrayList<>();
 
         // Set recycler view
         mRecyclerView = view.findViewById(R.id.recyclerView_seller_product_list);
@@ -88,7 +94,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         adapter = new SellerProductListRecyclerAdapter(getContext(), this);
 
         // Update recycler view content
-        SetAllProductDetails();
+        setAllProductDetails();
 
         // Call swipe helper
         OnRecyclerItemSwipeActionHelper();
@@ -120,22 +126,83 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
 
 
 
-    private void SetAllProductDetails() {
+    private void setAllProductDetails() {
+        StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
         reference = FirebaseDatabase.getInstance().getReference("Product");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //allProductsList.clear();
                 allProductsList.clear();
+                allProductIds.clear();
+                allCoverImgsList.clear();
+                List<Task<Uri>> tasks = new ArrayList<>();
+
+                //all products
                 for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
                     Product product = productSnapshot.getValue(Product.class);
                     String sellerId = product.getSellerId();
                     String currentUser = auth.getCurrentUser().getUid();
-//                    Log.d("Seller filter: ", sellerId);
-//                    Log.d("Seller filter: ", currentUser);
+
+                    //seller's products
                     if(sellerId.equals(currentUser)){
-                        SetSellerProductDetails(sellerId);
+                        //SetSellerProductDetails(sellerId);
+//                        allProductsList.clear();
+//                        allProductIds.clear();
+//                        allCoverImgsList.clear();
+
+                        String productId = productSnapshot.getKey();
+                        allProductsList.add(product);
+                        allProductIds.add(productId);
+                        idsToProductsMap.put(productId, product);
+                        adapter.setProductId(productId);
+
+                        //get coverImgUrl
+                        String coverImgName = product.getProductImages().get(0);
+                        Log.d("Test StoragePath" ,imgRef.child(productId).child(coverImgName).getPath());
+                        Log.d("Test StorageGetUrl", "pId: "+ productId + ", Name: " +coverImgName);
+                        tasks.add(imgRef.child(productId).child(coverImgName).getDownloadUrl());
+
+                        Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                            @Override
+                            public void onSuccess(List<Object> objects) {
+                                // All tasks are successful, and each object corresponds to a download URL
+                                allCoverImgsList.clear();
+                                for (Object object : objects) {
+                                    Uri uri = (Uri) object;
+
+                                    allCoverImgsList.add(uri.toString());
+                                }
+
+                                UpdateRecyclerView(allProductsList);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Handle failure for any of the tasks
+                                Log.e("Test StorageGetUrl", "Download Url Failed");
+                                allCoverImgsList.add(null);
+                            }
+                        });
+//                        imgRef.child(productId).child(product.getProductImages().get(0)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                            @Override
+//                            public void onSuccess(Uri uri) {
+//                               allCoverImgsList.add(uri.toString());
+//                            }
+//                        }).addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.e("StorageGetUrl", "Failed");
+//                            }
+//                        });
+
+                        Log.d("Current product is: ", allProductsList + "!");
+                        Log.d("Current product id is: ", allProductIds + "!");
+                        Log.d("Now map content are: ", idsToProductsMap + "!");
                     }
+
                 }
+                //UpdateRecyclerView(allProductsList);
             }
 
             @Override
@@ -179,7 +246,11 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
     }
 
     private void UpdateRecyclerView(ArrayList<Product> pList) {
-        Log.d("Do update, current product is: ", pList + "!");
+        Log.d("Do update, current product is: ", pList + "");
+        Log.d("Test coverImgs size: ", allCoverImgsList.size() + "");
+        for(int i = 0; i< pList.size(); i++) {
+            pList.get(i).setCoverImgUrl(allCoverImgsList.get(i));
+        }
         adapter.setProducts(pList);
         adapter.notifyDataSetChanged();
         mRecyclerView.setAdapter(adapter);
@@ -306,10 +377,8 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
 
     @Override
     public void onButtonClick(Boolean btnClicked, int position) {
-//        addProductBtnClicked = true;
-//        navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddGroupFragment);
 
-        //use bundel to save selected productId
+        //use bundle to save selected productId
         String productId = allProductIds.get(position);
         Bundle bundle  = new Bundle();
         bundle.putString("new_group_productId", productId);

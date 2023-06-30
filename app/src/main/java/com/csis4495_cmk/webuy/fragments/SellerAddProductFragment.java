@@ -653,7 +653,7 @@ public class SellerAddProductFragment extends Fragment
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 uploadImgCount++;
                 if(uploadImgCount == imageList.size()) {
-                    Log.d("Test upload", imageList.size()+ " images Are Uploaded");
+                    Log.d("Test Upload to Storage", imageList.size()+ " images are uploaded");
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
