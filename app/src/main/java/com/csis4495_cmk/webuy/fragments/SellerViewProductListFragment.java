@@ -167,6 +167,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
                             @Override
                             public void onSuccess(List<Object> objects) {
                                 // All tasks are successful, and each object corresponds to a download URL
+                                allCoverImgsList.clear();
                                 for (Object object : objects) {
                                     Uri uri = (Uri) object;
 
