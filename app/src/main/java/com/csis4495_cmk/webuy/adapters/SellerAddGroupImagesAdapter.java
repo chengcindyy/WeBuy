@@ -89,7 +89,7 @@ public class SellerAddGroupImagesAdapter extends RecyclerView.Adapter<SellerAddG
 //            holder.imgViewSingleImg.setImageResource(R.drawable.baseline_add_photo_alternate_50);
 //        }
 
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
         StorageReference imageReference = storageReference.child(paths.get(position));
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching

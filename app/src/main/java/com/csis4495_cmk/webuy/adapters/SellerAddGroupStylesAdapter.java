@@ -71,7 +71,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
         holder.bindStyles(style);
 
         //load style image
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
 //        StorageReference imageReference = storageReference.child(styles.get(position).getStylePic());
         StorageReference imageReference = storageReference.child(style.getStylePic());
 
@@ -101,6 +101,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
         styles.addAll(ps);
         notifyDataSetChanged();
     }
+
     @Override
     public int getItemCount() {
         return styles.size();

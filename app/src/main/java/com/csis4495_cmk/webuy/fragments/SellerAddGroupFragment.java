@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupImagesAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
+import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -172,6 +173,7 @@ public class SellerAddGroupFragment extends Fragment   {
 
         //Set default group type
         tgBtnGp_publish.check(tgBtn_in_stock_publish.getId());
+        tgBtn_in_stock_publish.setClickable(false);
         groupType = 0;
         btnStart.setEnabled(false);
         btnEnd.setEnabled(false);
@@ -188,6 +190,8 @@ public class SellerAddGroupFragment extends Fragment   {
                         btnEnd.setText("Group End");
                         btnStart.setEnabled(false);
                         btnEnd.setEnabled(false);
+                        tgBtn_group_buy_publish.setClickable(true);
+                        tgBtn_in_stock_publish.setClickable(false);
                     }
                     break;
                 case R.id.tgBtn_group_buy_publish:
@@ -198,6 +202,8 @@ public class SellerAddGroupFragment extends Fragment   {
                         btnStart.setEnabled(true);
                         btnEnd.setEnabled(true);
                         Toast.makeText(getContext(), "Group Type "+Integer.toString(groupType),Toast.LENGTH_SHORT).show();
+                        tgBtn_group_buy_publish.setClickable(false);
+                        tgBtn_in_stock_publish.setClickable(true);
                     }
                     break;
                 default:
@@ -206,9 +212,9 @@ public class SellerAddGroupFragment extends Fragment   {
                     endTime = null;
                     btnStart.setText("Group Start");
                     btnEnd.setText("Group End");
-
                     btnStart.setEnabled(false);
                     btnEnd.setEnabled(false);
+                    tgBtn_group_buy_publish.setClickable(true);
             }
         });
 
@@ -236,7 +242,7 @@ public class SellerAddGroupFragment extends Fragment   {
         btnPublish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sumbitNewGroup();
+                submitNewGroup();
             }
         });
 
@@ -293,7 +299,9 @@ public class SellerAddGroupFragment extends Fragment   {
 
     }
 
-    private void sumbitNewGroup() {
+    private void submitNewGroup() {
+        Group newGroup = new Group();
+
         String gName = groupName.getText().toString();
         String gDescription = description.getText().toString();
         String gCategory = groupCategory.getText().toString();
@@ -350,6 +358,11 @@ public class SellerAddGroupFragment extends Fragment   {
                 status = 1;
             }
         }
+
+
+
+
+
 
 
     }
@@ -461,7 +474,7 @@ public class SellerAddGroupFragment extends Fragment   {
                         DataSnapshot productImgSnapshot = dataSnapshot.child("productImages");
                         for (DataSnapshot img : productImgSnapshot.getChildren()) {
                             String imgPath = img.getValue(String.class);
-                            imgPaths.add(imgPath);
+                            imgPaths.add(productId+"/"+imgPath);
                         }
 
                         //Set delete group image button listener
@@ -503,7 +516,7 @@ public class SellerAddGroupFragment extends Fragment   {
                     String name = snapshot.child("styleName").getValue(String.class);
                     String img = snapshot.child("stylePic").getValue(String.class);
                     Double price = snapshot.child("stylePrice").getValue(Double.class);
-                    ProductStyle ps = new ProductStyle(name, price, img);
+                    ProductStyle ps = new ProductStyle(name, price, productId+"/"+img);
                     groupStyles.add(ps);
                     priceRanges.add(price);
                 }
