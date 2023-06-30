@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,9 +29,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.cottacush.android.currencyedittext.CurrencyEditText;
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.activities.MainActivity;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupImagesAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
 import com.csis4495_cmk.webuy.models.Group;
@@ -48,8 +46,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -96,12 +92,14 @@ public class SellerAddGroupFragment extends Fragment   {
     List<ProductStyle> groupStyles;
     List<String> imgPaths;
 
-    Map<String, Integer> groupStylesMap;
+    Map<String, Integer> groupQtyMap;
 
     private Button btnStart, btnEnd ;
     private Date startTime, endTime;
 
     private AppCompatButton btnCancel, btnPublish;
+
+    private Date currentTime;
 
     private AutoCompleteTextView groupCategory;
 
@@ -147,7 +145,7 @@ public class SellerAddGroupFragment extends Fragment   {
 //        productImageUris = new ArrayList<>();
         groupStyles = new ArrayList<>();
         imgPaths = new ArrayList<>();
-        groupStylesMap = new HashMap<>();
+        groupQtyMap = new HashMap<>();
 
         getProdcutData();
 
@@ -160,6 +158,7 @@ public class SellerAddGroupFragment extends Fragment   {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        currentTime = new Date();
 
         //Set navigation controller, how to navigate simply call -> controller.navigate(destination id)
         navController = NavHostFragment.findNavController(SellerAddGroupFragment.this);
@@ -186,6 +185,7 @@ public class SellerAddGroupFragment extends Fragment   {
         tgBtnGp_publish.check(tgBtn_in_stock_publish.getId());
         tgBtn_in_stock_publish.setClickable(false);
         groupType = 0;
+        groupStatus = 1;
         btnStart.setEnabled(false);
         btnEnd.setEnabled(false);
         //To change group type
@@ -194,6 +194,7 @@ public class SellerAddGroupFragment extends Fragment   {
                 case R.id.tgBtn_in_stock_publish:
                     if(isChecked){
                         groupType = 0;
+                        groupStatus = 1;
                         startTime = null;
                         endTime = null;
                         Toast.makeText(getContext(), "Group Type "+Integer.toString(groupType) + "Start and End Time: " + startTime + ": " + endTime,Toast.LENGTH_SHORT).show();
@@ -219,6 +220,7 @@ public class SellerAddGroupFragment extends Fragment   {
                     break;
                 default:
                     groupType = 0;
+                    groupStatus = 1;
                     startTime = null;
                     endTime = null;
                     btnStart.setText("Group Start");
@@ -237,31 +239,30 @@ public class SellerAddGroupFragment extends Fragment   {
             openDateDialog(startTime, updatedstartTime -> {
                 validateStartime();
                 btnStart.setText("From " + startTime);
-            });
+            },  "Setup start time");
         });
         btnEnd.setOnClickListener(v -> {
             endTime = new Date();
             openDateDialog(endTime, updatedstartTime -> {
                 validateEndTime();
                 btnEnd.setText("To "+ endTime);
-            });
+            }, "Setup end time");
         });
 
         btnCancel = view.findViewById(R.id.btn_cancel_publish);
         btnPublish = view.findViewById(R.id.btn_publish_publish);
 
-        btnPublish.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submitNewGroup();
-            }
+        btnCancel.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+
+        btnPublish.setOnClickListener(v -> {
+            onSubmitNewGroup();
         });
 
         //Set delete style button listener
         stylesAdapter.setOnImgBtnDeleteStyleListener(new SellerAddGroupStylesAdapter.OnImgBtnDeleteStyleListener() {
             @Override
             public void onDeleteClick(int position) {
-                groupStylesMap.remove(groupStyles.get(position).getStyleName());
+                groupQtyMap.remove(groupStyles.get(position).getStyleName());
                 groupStyles.remove(position);
                 stylesAdapter.updateStyleData2(productId, groupStyles);
                 if(groupStyles.size()>0){
@@ -280,18 +281,20 @@ public class SellerAddGroupFragment extends Fragment   {
 
             @Override
             public void onStyleChange2(int position, ProductStyle style, int qty) {
-                groupStylesMap.put(groupStyles.get(position).getStyleName(), qty);
-                Toast.makeText(getContext(), groupStyles.get(position).getStyleName() + "qty: " +  groupStylesMap.get(groupStyles.get(position).getStyleName()) , Toast.LENGTH_SHORT ).show();
+                groupQtyMap.put(groupStyles.get(position).getStyleName(), qty);
+
+                Toast.makeText(getContext(), groupStyles.get(position).getStyleName() + "qty: " +  groupQtyMap.get(groupStyles.get(position).getStyleName()) , Toast.LENGTH_SHORT ).show();
+
                 groupStyles.set(position, style);
             }
 
             @Override
             public void onStyleChange(int position, ProductStyle style) {
                 String oldKey = groupStyles.get(position).getStyleName();
-                Integer qty = groupStylesMap.get(oldKey);
-                if(groupStylesMap.containsKey(oldKey)){
-                    groupStylesMap.remove(oldKey);
-                    groupStylesMap.put(style.getStyleName(), qty);
+                Integer qty = groupQtyMap.get(oldKey);
+                if(groupQtyMap.containsKey(oldKey)){
+                    groupQtyMap.remove(oldKey);
+                    groupQtyMap.put(style.getStyleName(), qty);
                 }
 
                 groupStyles.set(position, style);
@@ -327,8 +330,9 @@ public class SellerAddGroupFragment extends Fragment   {
 
     }
 
-    private void submitNewGroup() {
+    private void onSubmitNewGroup() {
         Group newGroup = new Group();
+        boolean isComplete = true;
 
         String gName = groupName.getText().toString();
         String gDescription = description.getText().toString();
@@ -336,12 +340,14 @@ public class SellerAddGroupFragment extends Fragment   {
         String gPriceRange = groupPriceRange.getText().toString();
 
         if (TextUtils.isEmpty(gName)) {
+            isComplete = false;
             Toast.makeText(getContext(),
                     "Please enter the group name.", Toast.LENGTH_SHORT).show();
             groupName.setError("Group name is required.");
             groupName.requestFocus();
         }
         if (TextUtils.isEmpty(gDescription)) {
+            isComplete = false;
             Toast.makeText(getContext(),
                     "Please enter the group description.", Toast.LENGTH_SHORT).show();
             description.setError("Group description is required.");
@@ -349,15 +355,16 @@ public class SellerAddGroupFragment extends Fragment   {
         }
 
         if (TextUtils.isEmpty(gCategory)) {
+            isComplete = false;
             Toast.makeText(getContext(),
                     "Please enter the group category.", Toast.LENGTH_SHORT).show();
             groupCategory.setError("Group category is required.");
             groupCategory.requestFocus();
         }
         if (TextUtils.isEmpty(gPriceRange) && groupStyles.size()==0) {
+            isComplete = false;
             Toast.makeText(getContext(),
                     "Please enter the group price.", Toast.LENGTH_SHORT).show();
-
             groupPriceRange.setError("Group price is required.");
             groupPriceRange.requestFocus();
         }
@@ -374,33 +381,37 @@ public class SellerAddGroupFragment extends Fragment   {
         newGroup.setTax(tax);
 
         if (groupType == 0){
-            //group = in stock
+            //groupType = in stock
             startTime = null;
             endTime = null;
+            //Group started, status = 1
+            groupStatus = 1;
+            newGroup.setStatus(groupStatus);
         }else{
-            //group = pre order
+            //groupType = pre order
             if (btnStart.getText().equals("Group Start")){
+                isComplete = false;
                     startTime = new Date();
                     openDateDialog(startTime, updatedstartTime -> {
                         validateStartime();
                         btnStart.setText("From " + startTime);
-                    });
+                    }, "Setup start time");
             }else if(btnEnd.getText().equals("Group End")){
+                isComplete = false;
                 endTime = new Date();
                 openDateDialog(endTime, updatedstartTime -> {
                     validateEndTime();
                     btnEnd.setText("To "+ endTime);
-                });
+                }, "Setup end time");
             }
-            Date currentTime = new Date();
-            if (startTime.compareTo( currentTime) > 0){
-                //Group not yet start
+            if (startTime.compareTo(currentTime) > 0){
+                //Group not started yet, status = 0
                 groupStatus = 0;
                 newGroup.setStartTime(startTime);
                 newGroup.setEndTime(endTime);
                 newGroup.setStatus(groupStatus);
-            }else if (startTime.compareTo(currentTime) ==0){
-                //Group started
+            }else if (startTime.compareTo(currentTime) <= 0){
+                //Group started, status = 1
                 groupStatus = 1;
                 newGroup.setStartTime(startTime);
                 newGroup.setEndTime(endTime);
@@ -409,13 +420,15 @@ public class SellerAddGroupFragment extends Fragment   {
 
         }
 
-        for(Map.Entry<String, Integer> entry : groupStylesMap.entrySet()){
+        for(Map.Entry<String, Integer> entry : groupQtyMap.entrySet()){
             //check if the style qty is missing
             if ( entry.getValue() == null){
+                isComplete = false;
                 // trigger alert
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Invalid Quantity");
                 builder.setMessage("Please input the quantity for " + entry.getKey());
+//                builder.setMessage("Please input the quantity for " + entry.getKey());
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                     }
@@ -423,14 +436,14 @@ public class SellerAddGroupFragment extends Fragment   {
                 AlertDialog dialog = builder.create();
                 dialog.show();
                 break;
-
             }
             if (groupType == 0){
                 if ( entry.getValue() < 1){
+                    isComplete = false;
                     // trigger alert
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("Invalid Quantity");
-                    builder.setMessage("The quantity for " + entry.getKey() + "must be at least one");
+                    builder.setMessage("The quantity for " + entry.getKey() + " must be at least 1");
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                         }
@@ -438,7 +451,6 @@ public class SellerAddGroupFragment extends Fragment   {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                     break;
-
                 }
             }
 
@@ -447,6 +459,7 @@ public class SellerAddGroupFragment extends Fragment   {
         for(int i = 0 ; i< stylesAdapter.getItemCount(); i++){
             SellerAddGroupStylesAdapter.ViewHolder viewHolder = (SellerAddGroupStylesAdapter.ViewHolder)rv_style.findViewHolderForAdapterPosition(i);
             if(viewHolder != null && viewHolder.isAnyFieldEmpty()){
+                isComplete = false;
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Empty Field");
                 builder.setMessage("Please input all the fields");
@@ -460,42 +473,54 @@ public class SellerAddGroupFragment extends Fragment   {
             }
         }
 
-        if(!groupStylesMap.isEmpty()){
-            newGroup.setGroupStylesMap(groupStylesMap);
+        if(!groupQtyMap.isEmpty()){
+            newGroup.setGroupQtyMap(groupQtyMap);
         }
 
         if (groupStyles.size()>0){
             newGroup.setGroupStyles(groupStyles);
         }
 
+        if (groupStyles.size() != groupQtyMap.size()){
+            Toast.makeText(getContext(), "The style list and the style qty is not matched", Toast.LENGTH_SHORT).show();
+            Log.d("Test","The style list and the style qty is not matched");
+        }
+
+
+        UploadGroup(newGroup, isComplete);
+
+    }
+
+    private void UploadGroup(Group group, boolean isComplete){
         if(groupId == null){ //it is a new product
             groupId = groupRef.push().getKey(); //Product -> productId -> newProduct
             Log.d("Test","new group: "+ groupId);
-            UploadGroup(newGroup);
+
+        }
+        if(isComplete){
+            groupRef.child(groupId).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("Test Upload", "Group Upload Successfully");
+                    } else {
+                        Log.d("Test Upload", "Grooup Upload Failed");
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT);
+                }
+            });
+
+            Navigation.findNavController(getView()).popBackStack();
         }
 
     }
 
-    private void UploadGroup(Group group){
-        groupRef.child(groupId).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.d("Test Upload", "Group Upload Successfully");
-                } else {
-                    Log.d("Test Upload", "Grooup Upload Failed");
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT);
-            }
-        });
-    }
-
     //Date picker
-    private void openDateDialog(Date date, OnDateTimeSetListener listener) {
+    private void openDateDialog(Date date, OnDateTimeSetListener listener, String title) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         int year = c.get(Calendar.YEAR);
@@ -517,12 +542,12 @@ public class SellerAddGroupFragment extends Fragment   {
                             }, hour, minute, false);
                     timePickerDialog.show();
                 }, year, month, day);
+        datePickerDialog.setTitle(title);
         datePickerDialog.show();
     }
 
     //Validate end time later than start sime and current time;
     public void validateEndTime(){
-        Date currentTime = new Date();
         if (startTime.compareTo(endTime) >= 0 || endTime.compareTo(currentTime) <0  ){
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("Invalid End Time!");
@@ -532,18 +557,19 @@ public class SellerAddGroupFragment extends Fragment   {
                     openDateDialog(endTime, updatedstartTime -> {
                         btnEnd.setText("To " + endTime);
                         validateEndTime();
-                    });
+                    }, "Setup end time");
                 }
             });
 
             AlertDialog dialog = builder.create();
             dialog.show();
+
+
         }
     }
 
     //Validate start time later than current time;
     public void validateStartime(){
-        Date currentTime = new Date();
         if (startTime.compareTo(currentTime) < 0  ){
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("Invalid Start Time!");
@@ -553,7 +579,7 @@ public class SellerAddGroupFragment extends Fragment   {
                     openDateDialog(startTime, updatedstartTime -> {
                         btnStart.setText("From " + startTime);
                         validateStartime();
-                    });
+                    },  "Setup start time");
                 }
             });
 
@@ -636,15 +662,16 @@ public class SellerAddGroupFragment extends Fragment   {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 groupStyles.clear();
-                groupStylesMap.clear();
+                groupQtyMap.clear();
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                     String name = snapshot.child("styleName").getValue(String.class);
                     String img = snapshot.child("stylePic").getValue(String.class);
                     Double price = snapshot.child("stylePrice").getValue(Double.class);
                     ProductStyle ps = new ProductStyle(name, price, img);
                     groupStyles.add(ps);
-                    groupStylesMap.put(ps.getStyleName(),null);
-                    Toast.makeText(getContext(), ps.getStyleName() + "qty: " +  groupStylesMap.get(ps) , Toast.LENGTH_SHORT ).show();
+                    groupQtyMap.put(ps.getStyleName(),null);
+
+                    Toast.makeText(getContext(), ps.getStyleName() + "qty: " +  groupQtyMap.get(ps) , Toast.LENGTH_SHORT ).show();
                 }
 
                 if(groupStyles.size()>0){

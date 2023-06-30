@@ -142,6 +142,22 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Group qty for no style list product  -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editLayout_groupQty_publish"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Qty(-1 for Unlimited)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_groupQty_publish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberSigned"
+                    android:visibility="gone"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+
             <!--   RecyclerView to select product styles         -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_groupStyle_publish"

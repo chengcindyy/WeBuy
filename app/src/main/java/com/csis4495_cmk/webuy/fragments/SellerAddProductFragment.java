@@ -98,6 +98,7 @@ public class SellerAddProductFragment extends Fragment
     private List<Uri> uriDownloadDeletedImgs = new ArrayList<>();
     private RecyclerView recyclerViewStyles;
     private List<ProductStyle> styleList;
+
     private List<String> tagList;
     private Button btnAddStyle, btnSubmitAddProduct, btnCancelAddProduct;
     private TextInputLayout textLayoutProductPrice, textLayoutStylePriceRange;

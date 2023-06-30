@@ -21,15 +21,7 @@ public class Group {
 
     private List<ProductStyle> groupStyles;
 
-    public Map<String, Integer> getGroupStylesMap() {
-        return groupStylesMap;
-    }
-
-    public void setGroupStylesMap(Map<String, Integer> groupStylesMap) {
-        this.groupStylesMap = groupStylesMap;
-    }
-
-    private Map<String, Integer> groupStylesMap;
+    private Map<String, Integer> groupQtyMap;
 
     private Date startTime;
     private Date endTime;
@@ -56,6 +48,15 @@ public class Group {
         this.endTime = endTime;
         this.status = status;
         this.groupPrice = groupPrice;
+    }
+
+
+    public Map<String, Integer> getGroupQtyMap() {
+        return groupQtyMap;
+    }
+
+    public void setGroupQtyMap(Map<String, Integer> groupQtyMap) {
+        this.groupQtyMap = groupQtyMap;
     }
 
     public List<String> getGroupImages() {
