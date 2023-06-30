@@ -159,7 +159,7 @@ public class UserRegistrationFragment extends Fragment {
                 } else if (TextUtils.isEmpty(_STORE_NAME)) {
                     Toast.makeText(getContext(),
                             "Please enter your store name.", Toast.LENGTH_SHORT).show();
-                    editStoreName.setError("A store name is required, you can change it in anytime.");
+                    editStoreName.setError("A store name is required, but you can change it at any time.");
                     editStoreName.requestFocus();
 
 //                } else if (!checkBoxAgree.isChecked()) {
