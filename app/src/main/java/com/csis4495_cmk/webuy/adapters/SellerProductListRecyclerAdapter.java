@@ -35,6 +35,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     private String sellerId;
     private List<String> productImages;
     private ArrayList<Product> products;
+    private Map<String, Product> productMap;
 
     public SellerProductListRecyclerAdapter(){
         // default constructor
@@ -43,6 +44,13 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
     public SellerProductListRecyclerAdapter(Context context, OnAddProductButtonClickedListener listener) {
         this.context = context;
         this.listener = listener;
+    }
+
+    public SellerProductListRecyclerAdapter(Context context, ArrayList<Product> products, OnAddProductButtonClickedListener listener) {
+        this.context = context;
+        this.products = products;
+        this.listener = listener;
+        notifyDataSetChanged();
     }
 
     public void setContext(Context context) {
@@ -55,6 +63,14 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
 
     public void setProducts(ArrayList<Product> products) {
         this.products = products;
+    }
+
+    public void setProductMap(Map<String, Product> productMap) {
+        this.productMap = productMap;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
     }
 
     @NonNull
