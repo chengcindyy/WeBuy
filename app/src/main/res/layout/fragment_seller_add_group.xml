@@ -127,7 +127,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_groupPriceRange_publish"
                     android:layout_width="match_parent"
-                    app:localeTag="en-CA"
+                    android:text="CA$"
                     android:layout_height="wrap_content" />
 
 <!--                <com.cottacush.android.currencyedittext.CurrencyEditText-->
@@ -141,6 +141,27 @@
 <!--                    app:useCurrencySymbolAsHint="false" />-->
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!--     Product Price     -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editLayout_groupPriceCurrency_publish"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Product Price"
+                android:visibility="visible">
+
+                <com.cottacush.android.currencyedittext.CurrencyEditText
+                    android:id="@+id/edit_groupPriceCurrecny_publish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    app:currencySymbol="CA$"
+                    app:localeTag="en-CA"
+                    app:maxNumberOfDecimalDigits="2"
+                    app:useCurrencySymbolAsHint="false" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <!-- Group qty for no style list product  -->
             <com.google.android.material.textfield.TextInputLayout

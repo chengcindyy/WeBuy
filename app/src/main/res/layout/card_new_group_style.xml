@@ -56,11 +56,22 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/price">
 
-                <com.google.android.material.textfield.TextInputEditText
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/edit_group_style_price"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="numberDecimal" />-->
+
+                <com.cottacush.android.currencyedittext.CurrencyEditText
                     android:id="@+id/edit_group_style_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
+                    android:ems="10"
+                    app:currencySymbol="CA$"
+                    app:localeTag="en-CA"
+                    app:maxNumberOfDecimalDigits="2"
+                    app:useCurrencySymbolAsHint="false" />
+
 
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContentInfo;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddGroupStylesAdapter.ViewHolder> {
@@ -98,12 +100,6 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
         });
     }
 
-    public void updateStyleData(List<ProductStyle> ps){
-        styles.clear();
-        styles.addAll(ps);
-        notifyDataSetChanged();
-    }
-
     public void updateStyleData2(String productId,  List<ProductStyle> ps){
         this.productId = productId;
         styles.clear();
@@ -137,24 +133,31 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                    ProductStyle currentStyle = styles.get(getAdapterPosition());
+//                   ProductStyle currentStyle = styles.get(getAdapterPosition());
 //                    String newInfo = s.toString();
 //                    if(!newInfo.isEmpty()){
-//                        try {
-//                            double newPrice = Double.parseDouble(s.toString());
-//                            if( newPrice <= 0){
-//                                Toast.makeText(context, "The price must be greater than 0", Toast.LENGTH_SHORT).show();
-//                                stylePrice.setText("");
-//                                stylePrice.requestFocus();
-//                            }else{
-//                                currentStyle.setStylePrice(newPrice);
-//                                int qty = 0;
-//                                onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
+//                        Log.d("TextWatcher", "new price input");
+//                        if(newInfo.length()>4){
+//                            try {
+//                                newInfo = newInfo.substring(4);
+//                                double newPrice = Double.parseDouble(newInfo);
+//                                Log.d("TextWatcher", "new price = " + newPrice);
+//                                if( newPrice <= 0){
+//                                    stylePrice.setError("The price must be greater than 0");
+//                                    Log.d("TextWatcher", "new price = 0");
+//                                    stylePrice.setText("");
+//                                    stylePrice.requestFocus();
+//                                }else{
+//                                    currentStyle.setStylePrice(newPrice);
+//                                    Log.d("TextWatcher", "new price = " + newPrice);
+//                                    onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
+//                                }
+//                            } catch (NumberFormatException e) {
+//                                Log.d("TextWatcher", "new price error " + e.toString());
+//
 //                            }
-//                        } catch (NumberFormatException e) {
 //                        }
 //                    }
-
                 }
 
                 @Override
@@ -162,19 +165,26 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                     ProductStyle currentStyle = styles.get(getAdapterPosition());
                     String newInfo = s.toString();
                     if(!newInfo.isEmpty()){
-                        try {
-                            double newPrice = Double.parseDouble(s.toString());
-                            if( newPrice <= 0){
-//                                Toast.makeText(context, "The price must be greater than 0", Toast.LENGTH_SHORT).show();
-                                stylePrice.setError("The price must be greater than 0");
-                                stylePrice.setText("");
-                                stylePrice.requestFocus();
-                            }else{
-                                currentStyle.setStylePrice(newPrice);
-                                int qty = 0;
-                                onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
+                        Log.d("TextWatcher", "new price input");
+                        if(newInfo.length()>4){
+                            try {
+                                newInfo = newInfo.substring(4);
+                                double newPrice = Double.parseDouble(newInfo);
+                                Log.d("TextWatcher", "new price = " + newPrice);
+                                if( newPrice <= 0){
+                                    stylePrice.setError("The price must be greater than 0");
+                                    Log.d("TextWatcher", "new price = 0");
+                                    stylePrice.setText(s.toString().substring(0,4));
+                                    stylePrice.requestFocus();
+                                }else{
+                                    currentStyle.setStylePrice(newPrice);
+                                    Log.d("TextWatcher", "new price = " + newPrice);
+                                    onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
+                                }
+                            } catch (NumberFormatException e) {
+                                Log.d("TextWatcher", "new price error " + e.toString());
+
                             }
-                        } catch (NumberFormatException e) {
                         }
                     }
 
@@ -235,8 +245,6 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                         } catch (NumberFormatException e) {
                         }
                     }
-
-
 
                 }
             });
