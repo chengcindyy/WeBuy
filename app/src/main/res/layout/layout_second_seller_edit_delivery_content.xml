@@ -29,7 +29,6 @@
                 android:id="@+id/dropMenu_delivery_methods"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
-                android:textAppearance="@style/HintAppearance"
                 android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -52,7 +51,6 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/HintAppearance"
                 android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -79,7 +77,6 @@
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
                    android:ems="10"
-                   android:textAppearance="@style/HintAppearance"
                    app:currencySymbol="CA$"
                    app:localeTag="en-CA"
                    app:maxNumberOfDecimalDigits="2"
@@ -105,7 +102,6 @@
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
                    android:ems="10"
-                   android:textAppearance="@style/HintAppearance"
                    app:currencySymbol="CA$"
                    app:localeTag="en-CA"
                    app:maxNumberOfDecimalDigits="2"
@@ -122,7 +118,6 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:background="@drawable/button_solid"
-            android:textAppearance="@style/HintAppearance"
             android:text="@string/create"
             android:textColor="@color/white" />
 

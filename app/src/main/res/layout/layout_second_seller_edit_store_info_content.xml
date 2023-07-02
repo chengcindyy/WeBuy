@@ -26,7 +26,6 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/HintAppearance"
                 android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -45,7 +44,6 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/HintAppearance"
                 android:inputType="textEmailAddress"
                 android:text="" />
 
@@ -65,7 +63,6 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/HintAppearance"
                 android:inputType="number"
                 android:text="" />
 
@@ -85,7 +82,6 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/HintAppearance"
                 android:inputType="text"
                 android:text="" />
 
@@ -115,7 +111,6 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/HintAppearance"
                     android:text="" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -137,7 +132,6 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/HintAppearance"
                     android:text="" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -168,7 +162,6 @@
                     android:id="@+id/autoComplete_province"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/HintAppearance"
                     android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -192,7 +185,6 @@
                     android:id="@+id/autoComplete_country"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/HintAppearance"
                     android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -213,7 +205,6 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/HintAppearance"
                 android:inputType="textMultiLine"
                 android:text="" />
 
@@ -226,7 +217,6 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:background="@drawable/button_solid"
-            android:textAppearance="@style/HintAppearance"
             android:text="@string/update"
             android:textColor="@color/white" />
 
@@ -237,7 +227,6 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:background="@drawable/button_outline"
-            android:textAppearance="@style/HintAppearance"
             android:text="Upload Store Image"
             android:textColor="@color/deep_blue" />
 
