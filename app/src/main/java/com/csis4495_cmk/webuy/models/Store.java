@@ -1,6 +1,7 @@
 package com.csis4495_cmk.webuy.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Store {
 
@@ -18,7 +19,7 @@ public class Store {
     private String storePic;
     private ArrayList<String> employeeList; // sellerIds
     private String[] acceptedPaymentType;
-    private ArrayList<DeliveryFee> deliveryFeeList;
+    private HashMap<String, Delivery> deliveryInfoList;
     private String[] categories;
 
     public Store() {
@@ -26,6 +27,10 @@ public class Store {
 
     public Store(String storeName) {
         this.storeName = storeName;
+    }
+
+    public Store(HashMap<String, Delivery> deliveryInfoList) {
+        this.deliveryInfoList = deliveryInfoList;
     }
 
     public Store(String storeName, String email, String phone, String address, String city, String province, String country, String postalCode, String intro) {
@@ -136,12 +141,12 @@ public class Store {
         this.acceptedPaymentType = acceptedPaymentType;
     }
 
-    public ArrayList<DeliveryFee> getDeliveryFeeList() {
-        return deliveryFeeList;
+    public HashMap<String, Delivery> getDeliveryInfoList() {
+        return deliveryInfoList;
     }
 
-    public void setDeliveryFeeList(ArrayList<DeliveryFee> deliveryFeeList) {
-        this.deliveryFeeList = deliveryFeeList;
+    public void setDeliveryInfoList(HashMap<String, Delivery> deliveryInfoList) {
+        this.deliveryInfoList = deliveryInfoList;
     }
 
     public String[] getCategories() {

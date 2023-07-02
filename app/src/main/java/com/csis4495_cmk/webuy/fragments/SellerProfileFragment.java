@@ -55,7 +55,7 @@ import java.util.List;
 
 public class SellerProfileFragment extends Fragment {
 
-    private Button logoutButton, btnTest, btnUpdateSellerProfile, btnUpdateStoreProfile, btnUploadStoreImg;
+    private Button logoutButton, btnTest, btnUpdateSellerProfile, btnUpdateStoreProfile, btnUploadStoreImg, btnDeliverySetting;
     private Uri uploadedImgUri;
     private ExpandableLayout expSellerProfile, expStoreInfo, expDeliveryInfo, expPaymentInfo, expMoreFunctions;
     private TextInputLayout editStoreId, editName, editEmail, editPhone, editStoreName, editStoreEmail,
@@ -102,6 +102,19 @@ public class SellerProfileFragment extends Fragment {
         editStoreIntro = view.findViewById(R.id.edit_store_intro);
         btnUploadStoreImg = view.findViewById(R.id.btn_upload_store_img);
         btnUploadStoreImg.setOnClickListener(view14 -> showUploadPicSelectionDialog());
+        btnDeliverySetting = view.findViewById(R.id.btn_delivery_settings);
+        expSellerProfile = view.findViewById(R.id.expandableLayout_seller_profile);
+        // Expendable layout
+        setupExpandableLayout(expSellerProfile, R.drawable.baseline_person_24, "Store owner information");
+        expStoreInfo = view.findViewById(R.id.expandableLayout_store_profile);
+        setupExpandableLayout(expStoreInfo, R.drawable.baseline_storefront_24, "Store information");
+        expMoreFunctions = view.findViewById(R.id.expandableLayout_more_function);
+        setupExpandableLayout(expMoreFunctions, R.drawable.baseline_more_horiz_24, "More Functions");
+        // Update profile
+        btnUpdateStoreProfile = view.findViewById(R.id.btn_update_store_profile);
+        btnUpdateStoreProfile.setOnClickListener(view13 -> updateStoreProfile());
+        btnUpdateSellerProfile = view.findViewById(R.id.btn_update_seller_profile);
+        btnUpdateSellerProfile.setOnClickListener(view1 -> updateSellerProfile(firebaseUser));
 
         if (firebaseUser != null){
             // Notify user if they have not verified email
@@ -111,20 +124,21 @@ public class SellerProfileFragment extends Fragment {
             Toast.makeText(getContext(), "Loading user problem!", Toast.LENGTH_LONG).show();
         }
 
-        // Expendable layout
-        expSellerProfile = view.findViewById(R.id.expandableLayout_seller_profile);
-        expStoreInfo = view.findViewById(R.id.expandableLayout_store_profile);
-//        expDeliveryInfo = view.findViewById(R.id.expandableLayout_order);
-//        expPaymentInfo = view.findViewById(R.id.expandableLayout_saves);
-        expMoreFunctions = view.findViewById(R.id.expandableLayout_more_function);
+        // Delivery Setting
+        btnDeliverySetting.setOnClickListener(view1 -> Navigation.findNavController(view1).navigate(R.id.action_sellerProfileFragment_to_sellerDeliveryInfoFragment));
 
-        // Set parent layout title and icon
+        // For Testing
+        btnTest = view.findViewById(R.id.btn_test_page);
+        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));// End Testing
+
+        // Logout
+        logoutButton = view.findViewById(R.id.btn_logout);
+        SetLogoutOnClickListener(logoutButton);
+    }
+
+    private void setupExpandableLayout(ExpandableLayout layout, int res, String Title) {
         List<Pair<ExpandableLayout, Pair<Integer, String>>> list = new ArrayList<>();
-        list.add(new Pair<>(expSellerProfile, new Pair<>(R.drawable.baseline_person_24, "Store owner information")));
-        list.add(new Pair<>(expStoreInfo, new Pair<>(R.drawable.baseline_storefront_24, "Store information")));
-//        list.add(new Pair<>(expDeliveryInfo, new Pair<>(R.drawable.baseline_local_shipping_24, "Delivery Setting")));
-//        list.add(new Pair<>(expPaymentInfo, new Pair<>(R.drawable.baseline_payment_24, "Payment Setting")));
-        list.add(new Pair<>(expMoreFunctions, new Pair<>(R.drawable.baseline_more_horiz_24, "More Functions")));
+        list.add(new Pair<>(layout, new Pair<>(res, Title)));
 
         for (Pair<ExpandableLayout, Pair<Integer, String>> pair : list) {
             ExpandableLayout expandableLayout = pair.first;
@@ -139,20 +153,6 @@ public class SellerProfileFragment extends Fragment {
             // Set onClick listener
             setupExpandableLayoutClickListener(expandableLayout);
         }
-
-        // Update profile
-        btnUpdateStoreProfile = view.findViewById(R.id.btn_update_store_profile);
-        btnUpdateStoreProfile.setOnClickListener(view13 -> updateStoreProfile());
-        btnUpdateSellerProfile = view.findViewById(R.id.btn_update_seller_profile);
-        btnUpdateSellerProfile.setOnClickListener(view1 -> updateSellerProfile(firebaseUser));
-
-        // For Testing
-        btnTest = view.findViewById(R.id.btn_test_page);
-        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));// End Testing
-
-        // Logout
-        logoutButton = view.findViewById(R.id.btn_logout);
-        SetLogoutOnClickListener(logoutButton);
     }
 
     private void updateStoreProfile() {

@@ -1,15 +1,20 @@
 package com.csis4495_cmk.webuy.models;
 
-public class DeliveryFee {
+public class Delivery {
     private String deliveredMethod; //pickup, locations(Vancouver, Burnaby...)
     private String displayName;
-    private String from;
+    private Double from;
     private double fee;
 
-    public DeliveryFee() {
+    public Delivery() {
     }
 
-
+    public Delivery(String method, String name, Double from, double fee) {
+        this.deliveredMethod = method;
+        this.displayName = name;
+        this.from = from;
+        this.fee = fee;
+    }
 
     public String getDeliveredMethod() {
         return deliveredMethod;
@@ -27,11 +32,11 @@ public class DeliveryFee {
         this.displayName = displayName;
     }
 
-    public String getFrom() {
+    public Double getFrom() {
         return from;
     }
 
-    public void setFrom(String from) {
+    public void setFrom(Double from) {
         this.from = from;
     }
 

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.SellerViewDeliveryInfoFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="15dp"
+        android:orientation="vertical">
+
+        <com.skydoves.expandablelayout.ExpandableLayout
+            android:id="@+id/expandableLayout_store_delivery_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            app:expandable_duration="300"
+            app:expandable_animation="bounce"
+            app:expandable_isExpanded="false"
+            app:expandable_parentLayout="@layout/layout_parent_title"
+            app:expandable_secondLayout="@layout/layout_second_seller_show_delivery_info_content">
+
+        </com.skydoves.expandablelayout.ExpandableLayout>
+
+        <com.skydoves.expandablelayout.ExpandableLayout
+            android:id="@+id/expandableLayout_seller_add_delivery_method"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            app:expandable_duration="300"
+            app:expandable_animation="bounce"
+            app:expandable_isExpanded="false"
+            app:expandable_parentLayout="@layout/layout_parent_title"
+            app:expandable_secondLayout="@layout/layout_second_seller_edit_delivery_content">
+
+        </com.skydoves.expandablelayout.ExpandableLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

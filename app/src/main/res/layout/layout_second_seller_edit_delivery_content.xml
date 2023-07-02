@@ -14,21 +14,23 @@
 
         <!--DELIVERY TYPE-->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/dropMenu_delivery_methods"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-            app:boxBackgroundColor="@null"
-            app:hintTextColor="@color/deep_blue"
-            android:textColorHint="@color/light_grey"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Delivery Method">
+            android:hint="Delivery Methods"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <AutoCompleteTextView
+                android:id="@+id/dropMenu_delivery_methods"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:textAppearance="@style/HintAppearance"
-                android:inputType="none"
-                app:simpleItems="@array/arr_delivery_types"/>
+                android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -37,7 +39,7 @@
             android:id="@+id/edit_delivery_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Logistics Name"
+            android:hint="Custom Name"
             android:textColorHint="@color/light_grey"
             app:boxBackgroundColor="@null"
             app:hintTextColor="@color/deep_blue"
@@ -62,49 +64,59 @@
 
            <!-- PRICE RANGE  -->
            <com.google.android.material.textfield.TextInputLayout
-               android:id="@+id/edit_shipping_fee_range_from"
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_marginTop="5dp"
                android:layout_weight="1"
-               android:hint="When over $"
+               android:hint="When over"
                android:textColorHint="@color/light_grey"
                app:boxBackgroundColor="@null"
-               app:hintTextColor="@color/deep_blue">
+               app:hintTextColor="@color/deep_blue"
+               android:visibility="visible">
 
-               <com.google.android.material.textfield.TextInputEditText
+               <com.cottacush.android.currencyedittext.CurrencyEditText
+                   android:id="@+id/edit_shipping_fee_range_from"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
+                   android:ems="10"
                    android:textAppearance="@style/HintAppearance"
-                   android:text="" />
+                   app:currencySymbol="CA$"
+                   app:localeTag="en-CA"
+                   app:maxNumberOfDecimalDigits="2"
+                   app:useCurrencySymbolAsHint="false" />
 
            </com.google.android.material.textfield.TextInputLayout>
 
            <!-- PRICE RANGE  -->
            <com.google.android.material.textfield.TextInputLayout
-               android:id="@+id/edit_shipping_fee_range_fee"
+
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_weight="1"
                android:layout_marginStart="5dp"
                android:layout_marginTop="5dp"
-               android:hint="Fee"
+               android:hint="Shipping fee is"
                android:textColorHint="@color/light_grey"
                app:boxBackgroundColor="@null"
                app:hintTextColor="@color/deep_blue">
 
-               <com.google.android.material.textfield.TextInputEditText
+               <com.cottacush.android.currencyedittext.CurrencyEditText
+                   android:id="@+id/edit_shipping_fee_range_fee"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
+                   android:ems="10"
                    android:textAppearance="@style/HintAppearance"
-                   android:text="" />
+                   app:currencySymbol="CA$"
+                   app:localeTag="en-CA"
+                   app:maxNumberOfDecimalDigits="2"
+                   app:useCurrencySymbolAsHint="false" />
 
            </com.google.android.material.textfield.TextInputLayout>
 
        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_update_seller_profile"
+            android:id="@+id/btn_create_delivery_info"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_gravity="center"
