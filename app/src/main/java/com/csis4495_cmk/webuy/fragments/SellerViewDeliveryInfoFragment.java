@@ -85,11 +85,11 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
         keysList = new ArrayList<>();
         // Set ListView
         mRecyclerView = view.findViewById(R.id.recyclerView_delivery_info);
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SellerDeliveryRecyclerAdapter(getContext(), deliveryHashMap, keysList);
         mRecyclerView.setAdapter(adapter);
-
+        expDeliveryInfo.requestLayout();
 
         showDeliveryInfo();
 
@@ -161,6 +161,7 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
                         Log.d("Test map", keysList.get(0));
                         adapter.notifyDataSetChanged();
                         mRecyclerView.setAdapter(adapter);
+                        expDeliveryInfo.requestLayout();
 
                     } else {
                         try {
