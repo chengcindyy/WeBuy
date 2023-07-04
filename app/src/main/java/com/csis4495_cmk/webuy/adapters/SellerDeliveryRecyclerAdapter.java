@@ -58,4 +58,12 @@ public class SellerDeliveryRecyclerAdapter extends RecyclerView.Adapter<SellerDe
         }
     }
 
+    public void removeItem(int position) {
+        String keyToRemove = keys.get(position);
+        keys.remove(position);
+        deliveryMap.remove(keyToRemove);
+        notifyItemRemoved(position);
+    }
+
+
 }

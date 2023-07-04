@@ -1,10 +1,15 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import android.content.DialogInterface;
+import android.graphics.Canvas;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,7 +29,6 @@ import android.widget.Toast;
 import com.cottacush.android.currencyedittext.CurrencyEditText;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerDeliveryRecyclerAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Delivery;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -42,6 +46,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
+
 public class SellerViewDeliveryInfoFragment extends Fragment {
 
     private ExpandableLayout expDeliveryInfo, expCreateDelivery;
@@ -51,8 +57,10 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private Button btnCreate;
     private List<String> keysList;
-    SellerDeliveryRecyclerAdapter adapter;
+    private SellerDeliveryRecyclerAdapter adapter;
     private HashMap<String, Delivery> deliveryHashMap;
+    private String methodId = "";
+    private Delivery deliveryInfo;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = auth.getCurrentUser();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -93,19 +101,129 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
 
         showDeliveryInfo();
 
-
-
-
         // Button
         btnCreate = view.findViewById(R.id.btn_create_delivery_info);
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createNewDeliveryInfoListView();
+                createOrUpdateNewDeliveryInfoRecyclerView();
             }
         });
 
+        // Call swipe helper
+        OnRecyclerItemSwipeActionHelper();
 
+    }
+
+    private void OnRecyclerItemSwipeActionHelper() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position;
+                position = viewHolder.getLayoutPosition();
+
+                // Swiped item left: remove item from database
+                if (direction == ItemTouchHelper.LEFT) {
+                    methodId = keysList.get(position);
+                    showConfirmToRemoveDialog(methodId, position);
+
+                // Swiped item right: open edit page
+                } else if (direction == ItemTouchHelper.RIGHT) {
+                    methodId = keysList.get(position);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("methodId", methodId);
+                    SellerAddProductFragment sellerAddProductFragment = new SellerAddProductFragment();
+                    sellerAddProductFragment.setArguments(bundle);
+                    showDeliveryData();
+
+                }
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                        .addSwipeLeftBackgroundColor(ContextCompat.getColor(getContext(), R.color.delete_red))
+                        .addSwipeLeftActionIcon(R.drawable.baseline_delete_24)
+                        .addSwipeRightBackgroundColor(ContextCompat.getColor(getContext(), R.color.android_green))
+                        .addSwipeRightActionIcon(R.drawable.baseline_edit_24)
+                        .create()
+                        .decorate();
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void showDeliveryData() {
+        DatabaseReference deliveryRef = reference.child(firebaseUser.getUid()).child("storeInfo").child("deliveryInfoList");
+        deliveryRef.child(methodId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                deliveryInfo = snapshot.getValue(Delivery.class);
+                deliveryInfo = snapshot.getValue(Delivery.class);
+                if(deliveryInfo != null){
+                    if(deliveryInfo != null){
+                        String _METHOD = deliveryInfo.getDeliveredMethod();
+                        String _NAME = deliveryInfo.getDisplayName();
+                        Double _FROM = deliveryInfo.getFrom();
+                        Double _FEE = deliveryInfo.getFee();
+
+                        editDeliveryMethods.setText(_METHOD);
+                        editCustomName.getEditText().setText(_NAME);
+                        editSpendOver.setText(String.valueOf(_FROM));
+                        editShippingFee.setText(String.valueOf(_FEE));
+
+                        btnCreate.setText("Update");
+                    } else {
+                        Toast.makeText(getContext(), "No delivery information available.", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Log.e("MethodId", "Snapshot to Delivery conversion failed.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Do nothing
+            }
+        });
+
+    }
+
+    private void showConfirmToRemoveDialog(String methodId, int position) {
+        //Set up alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Remove this product");
+        builder.setMessage("Are you sure you want to remove this product?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                adapter.removeItem(position);
+                adapter.notifyItemRemoved(position);
+                reference.child(firebaseUser.getUid()).child("storeInfo").child("deliveryInfoList").child(methodId).removeValue();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                adapter.notifyItemChanged(position);
+            }
+        });
+        //Create AlertDialog
+        AlertDialog alertDialog = builder.create();
+        //Show AlertDialog
+        alertDialog.show();
     }
 
     private void showDeliveryInfo() {
@@ -125,18 +243,17 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
                         keysList.add(key);
                     }
                 }
-
                 adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle error here
+                // Do nothing
             }
         });
     }
 
-    private void createNewDeliveryInfoListView() {
+    private void createOrUpdateNewDeliveryInfoRecyclerView() {
         String _METHOD, _NAME;
         Double _FROM, _FEE;
         // Obtain the entered data
@@ -147,22 +264,28 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
 
         Delivery newDeliveryInfo = new Delivery(_METHOD,_NAME,_FROM,_FEE);
 
-        DatabaseReference deliveryRef = reference.child(firebaseUser.getUid()).child("storeInfo");
-        String key = deliveryRef.child("deliveryInfoList").push().getKey();
-        if (key != null) {
-            deliveryRef.child("deliveryInfoList").child(key).setValue(newDeliveryInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+        DatabaseReference deliveryRef = reference.child(firebaseUser.getUid()).child("storeInfo").child("deliveryInfoList");
+
+        if(methodId.isEmpty()){
+            methodId = deliveryRef.push().getKey();
+        }
+
+        // Update or create new delivery info
+        if (methodId != null) {
+            deliveryRef.child(methodId).setValue(newDeliveryInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
                         Toast.makeText(getContext(), "Data update successfully", Toast.LENGTH_SHORT).show();
-                        deliveryHashMap.put(key, newDeliveryInfo);
-                        keysList.add(key);
-                        Log.d("Test map", deliveryHashMap.get(key).getDisplayName());
+                        deliveryHashMap.put(methodId, newDeliveryInfo);
+                        if (!keysList.contains(methodId)) {
+                            keysList.add(methodId);
+                        }
+                        Log.d("Test map", deliveryHashMap.get(methodId).getDisplayName());
                         Log.d("Test map", keysList.get(0));
                         adapter.notifyDataSetChanged();
                         mRecyclerView.setAdapter(adapter);
                         expDeliveryInfo.requestLayout();
-
                     } else {
                         try {
                             throw task.getException();
@@ -174,6 +297,7 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
             });
         }
     }
+
 
     private void setupExpandableLayout(ExpandableLayout layout, int res, String Title) {
         List<Pair<ExpandableLayout, Pair<Integer, String>>> list = new ArrayList<>();
@@ -196,7 +320,7 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
 
     private void setDeliveryAutoCompleteAdapter(AutoCompleteTextView editDeliveryMethods) {
         // States (Canada)
-        String[] states = new String[]{"Face to Face/Store Pick Up", "Home delivery", "Cash on Delivery (COD)", "Designated Area Self-Pickup"};
+        String[] states = new String[]{"[Store Pick Up] ", "[Home delivery] ", "[Cash on Delivery] ", "[Designated Area Self-Pickup] "};
         ArrayAdapter<String> stateAdapter = new ArrayAdapter<>(
                 requireContext(), android.R.layout.simple_spinner_dropdown_item, states);
         editDeliveryMethods.setAdapter(stateAdapter);
