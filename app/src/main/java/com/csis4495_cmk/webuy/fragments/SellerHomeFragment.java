@@ -56,6 +56,13 @@ public class SellerHomeFragment extends Fragment {
 
         // TODO: Add Posting page
         btnPostings = view.findViewById(R.id.btn_seller_postings);
+        btnPostings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navController.navigate(R.id.action_sellerHomeFragment_to_sellerGroupList2);
+            }
+        });
+
         // TODO: Add Inventory page
         btnInventory = view.findViewById(R.id.btn_seller_inventory);
         // TODO: Add Store management page

@@ -33,7 +33,7 @@
                 style="@style/Widget.Material3.Button.ElevatedButton"
                 android:layout_width="match_parent"
                 android:layout_height="74dp"
-                android:text="Postings"
+                android:text="Groups"
                 android:textSize="20sp" />
 
             <Button

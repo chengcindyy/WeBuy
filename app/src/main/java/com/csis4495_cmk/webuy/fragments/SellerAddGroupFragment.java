@@ -61,6 +61,10 @@ public class SellerAddGroupFragment extends Fragment {
 
     private NavController navController;
 
+    private static final int NOT_YET_OPENED = 0;
+    private static final int OPENING = 1;
+    private static final int CLOSED = 2;
+
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
     DatabaseReference groupRef;
@@ -202,7 +206,8 @@ public class SellerAddGroupFragment extends Fragment {
         tgBtnGp_publish.check(tgBtn_in_stock_publish.getId());
         tgBtn_in_stock_publish.setClickable(false);
         groupType = 0;
-        groupStatus = 1;
+//        groupStatus = 1;
+        groupStatus = OPENING;
         btnStart.setEnabled(false);
         btnEnd.setEnabled(false);
         //To change group type
@@ -211,7 +216,8 @@ public class SellerAddGroupFragment extends Fragment {
                 case R.id.tgBtn_in_stock_publish:
                     if (isChecked) {
                         groupType = 0;
-                        groupStatus = 1;
+//                        groupStatus = 1;
+                        groupStatus = OPENING;
                         startTime = null;
                         endTime = null;
 //                        Toast.makeText(getContext(), "Group Type "+Integer.toString(groupType) + "Start and End Time: " + startTime + ": " + endTime,Toast.LENGTH_SHORT).show();
@@ -237,7 +243,8 @@ public class SellerAddGroupFragment extends Fragment {
                     break;
                 default:
                     groupType = 0;
-                    groupStatus = 1;
+//                    groupStatus = 1;
+                    groupStatus = OPENING;
                     startTime = null;
                     endTime = null;
                     btnStart.setText("Group Start");
@@ -494,7 +501,7 @@ public class SellerAddGroupFragment extends Fragment {
         String gDescription = description.getText().toString();
         String gCategory = groupCategory.getText().toString();
 
-        String gPriceCurrency = groupPriceCurrency.getText().toString();
+        String gPriceCurrency = groupPriceCurrency.getText().toString().substring(4);
         String gPriceRange = groupPriceRange.getText().toString();
 
         String gNoStyleQty = group_no_style_qty.getText().toString();
@@ -550,8 +557,9 @@ public class SellerAddGroupFragment extends Fragment {
             //groupType = in stock
             startTime = null;
             endTime = null;
-            //Group started, status = 1
-            groupStatus = 1;
+            //Group started, status = OPENING (1)
+//            groupStatus = 1;
+            groupStatus = OPENING;
             newGroup.setStatus(groupStatus);
         } else {
             //groupType = pre order
@@ -572,8 +580,9 @@ public class SellerAddGroupFragment extends Fragment {
             }
             currentTime = new Date();
             if (startTime.compareTo(currentTime) > 0) {
-                //Group not started yet, status = 0
-                groupStatus = 0;
+                //Group not started yet, status = NOT_YET_OPENED (0)
+//                groupStatus = 0;
+                groupStatus = NOT_YET_OPENED;
                 newGroup.setStartTimestamp(startTime.getTime());
                 newGroup.setEndTimestamp(endTime.getTime());
                 newGroup.setStatus(groupStatus);
@@ -582,7 +591,8 @@ public class SellerAddGroupFragment extends Fragment {
                 Log.d("DEBUG", "Group Status: " + groupStatus);
             } else if (startTime.compareTo(currentTime) < 0) {
                 //Group started, status = 1
-                groupStatus = 1;
+//                groupStatus = 1;
+                groupStatus = OPENING;
                 newGroup.setStartTimestamp(startTime.getTime());
                 newGroup.setEndTimestamp(endTime.getTime());
                 newGroup.setStatus(groupStatus);
@@ -657,6 +667,7 @@ public class SellerAddGroupFragment extends Fragment {
         }
 
         if (groupStyles.size() == 0) {
+            groupQtyMap.clear();
             if (TextUtils.isEmpty(gNoStyleQty)) {
                 isComplete = false;
 //                Toast.makeText(getContext(),

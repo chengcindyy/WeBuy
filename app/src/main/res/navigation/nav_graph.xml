@@ -87,6 +87,9 @@
         <action
             android:id="@+id/action_sellerHomeFragment_to_sellerInventoryFragment"
             app:destination="@id/sellerInventoryFragment" />
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_sellerGroupList2"
+            app:destination="@id/sellerGroupList" />
     </fragment>
     <fragment
         android:id="@+id/sellerAddProductFragment"
@@ -132,7 +135,12 @@
         android:name="com.csis4495_cmk.webuy.SellerInventoryFragment"
         android:label="fragment_seller_inventory"
         tools:layout="@layout/fragment_seller_inventory" />
-<!--    <fragment-->
+    <fragment
+        android:id="@+id/sellerGroupList"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerGroupListFragment"
+        android:label="fragment_seller_group_list"
+        tools:layout="@layout/fragment_seller_group_list" />
+    <!--    <fragment-->
 <!--        android:id="@+id/sellerEditProductDialog"-->
 <!--        android:name="com.csis4495_cmk.webuy.dialog.SellerEditProductDialog"-->
 <!--        android:label="SellerEditProductDialog" />-->
