@@ -501,7 +501,8 @@ public class SellerAddGroupFragment extends Fragment {
         String gDescription = description.getText().toString();
         String gCategory = groupCategory.getText().toString();
 
-        String gPriceCurrency = groupPriceCurrency.getText().toString().substring(4);
+//        String gPriceCurrency = groupPriceCurrency.getText().toString().substring(4);
+        String gPriceCurrency = groupPriceCurrency.getText().toString();
         String gPriceRange = groupPriceRange.getText().toString();
 
         String gNoStyleQty = group_no_style_qty.getText().toString();
@@ -528,7 +529,7 @@ public class SellerAddGroupFragment extends Fragment {
             groupCategory.setError("Group category is required.");
             groupCategory.requestFocus();
         }
-        if (TextUtils.isEmpty(gPriceCurrency) && groupStyles.size() == 0) {
+        if (TextUtils.isEmpty(gPriceCurrency.substring(4)) && groupStyles.size() == 0) {
             isComplete = false;
             Toast.makeText(getContext(),
                     "Please enter the group price.", Toast.LENGTH_SHORT).show();
