@@ -86,24 +86,27 @@ public class SellerGroupListStyleListRecyclerAdapter extends RecyclerView.Adapte
 
     @Override
     public void onBindViewHolder(@NonNull SellerGroupListStyleListRecyclerAdapter.ViewHolder holder, int position) {
-        ProductStyle p = styles.get(position);
+        ProductStyle ps = styles.get(position);
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
-        StorageReference imageReference = storageReference.child(productId+"/"+p.getStylePic());
+        StorageReference imageReference = storageReference.child(productId+"/"+ps.getStylePic());
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching
             Picasso.get().load(uri.toString()).into(holder.styleImg);
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle errors, if image doesn't exist, show a default image
                 holder.styleImg.setImageResource(R.drawable.baseline_add_photo_alternate_50);
             }
         });
 
-        holder.styleName.setText(p.getStyleName());
-        holder.stylePrice.setText("CA$ " + p.getStylePrice());
-        holder.styleQty.setText(qtyMap.get(p.getStyleName()));
+        holder.styleName.setText(ps.getStyleName());
+        Double sPrice = ps.getStylePrice();
+        holder.stylePrice.setText("CA$ " + Double.valueOf(sPrice));
+        Integer sQty = qtyMap.get(ps.getStyleName());
+        if(sQty != null) {
+            holder.styleQty.setText("Qty: "+ String.valueOf(sQty));
+        }
 
     }
 

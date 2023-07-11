@@ -67,7 +67,7 @@ public class SellerAddGroupFragment extends Fragment {
 
     private FirebaseAuth auth;
     private DatabaseReference databaseReference;
-    DatabaseReference groupRef;
+    private DatabaseReference groupRef;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseUser firebaseUser;
     private MaterialButtonToggleGroup tgBtnGp_publish;
@@ -102,10 +102,10 @@ public class SellerAddGroupFragment extends Fragment {
 
     private SellerAddGroupImagesAdapter imagesAdapter;
 
-    List<ProductStyle> groupStyles;
-    List<String> imgPaths;
+    private List<ProductStyle> groupStyles;
+    private List<String> imgPaths;
 
-    Map<String, Integer> groupQtyMap;
+    private Map<String, Integer> groupQtyMap;
 
     private Button btnStart, btnEnd;
     private Date startTime, endTime;

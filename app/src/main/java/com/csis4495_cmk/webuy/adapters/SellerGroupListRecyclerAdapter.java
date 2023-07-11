@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,7 +29,6 @@ import java.util.Map;
 public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerGroupListRecyclerAdapter.ViewHolder> {
     Context context;
     List<Group> groups = new ArrayList<>();
-
 
     public SellerGroupListRecyclerAdapter() {
     }
@@ -89,28 +89,35 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
         holder.groupName.setText(g.getGroupName());
         holder.groupPrice.setText(g.getGroupPrice());
 
-        if(groupStyles.size()>0){
+        if(groupStyles != null && groupStyles.size() > 0 ){
             holder.groupQty.setVisibility(View.GONE);
             SellerGroupListStyleListRecyclerAdapter styleAdapter = new SellerGroupListStyleListRecyclerAdapter(context, groupStyles, groupQty, productId);
             holder.groupStylesRV.setAdapter(styleAdapter);
             holder.groupStylesRV.setLayoutManager(new LinearLayoutManager(context));
+            styleAdapter.notifyDataSetChanged();
         }else{
-            holder.groupQty.setText(qtyMap.get(g.getGroupName()));
+            Integer gQty = qtyMap.get(g.getGroupName());
+            if(gQty !=null){
+                holder.groupQty.setText("Qty: "+ Integer.toString(gQty));
+//                Toast.makeText(getContext(), "Qty" + Integer.toString(gQty), Toast.LENGTH_SHORT).show();
+            }
             holder.groupStylesRV.setVisibility(View.GONE);
         }
 
-        if(g.getStartTimestamp()==null){
-            holder.groupStart.setVisibility(View.GONE);
-            Date startTime = new Date(g.getStartTimestamp());
+        Long startTimestamp = g.getStartTimestamp();
+        if(startTimestamp!=null){
+            Date startTime = new Date(startTimestamp);
             holder.groupStart.setText("From " + startTime);
-
         }else{
-
+            holder.groupStart.setVisibility(View.GONE);
         }
-        if(g.getEndTime()==null){
+
+        Long endTimestamp = g.getEndTimestamp();
+        if(endTimestamp!=null){
+            Date endTime = new Date(endTimestamp);
+            holder.groupEnd.setText("To " + endTime);
+        }else{
             holder.groupEnd.setVisibility(View.GONE);
-            Date endTime = new Date(g.getEndTimestamp());
-            holder.groupStart.setText("From " + endTime);
         }
 
     }
