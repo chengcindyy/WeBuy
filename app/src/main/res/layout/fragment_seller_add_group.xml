@@ -168,7 +168,7 @@
                 android:id="@+id/editLayout_groupQty_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Qty(-1 for Unlimited)">
+                android:hint="Qty(-1 for Unlimited Group)">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_groupQty_publish"

@@ -170,7 +170,7 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
             Date endTime = new Date(endTimestamp);
             holder.groupEnd.setText("To " + endTime);
 
-            if (endTimestamp > currentTime) {
+            if (endTimestamp > currentTime && currentTime > startTimestamp) {
                 long remainingTime = endTimestamp - currentTime;
                 CountDownTimer timer = new CountDownTimer(remainingTime, 1000) {
                     @Override
@@ -203,8 +203,6 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
             holder.groupEnd.setVisibility(View.GONE);
             holder.countDown.setVisibility(View.GONE);
         }
-
-
 
     }
 

@@ -11,6 +11,18 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/tv_group_list_no_opening"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="There are no opening groups"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_group_list_opening"
         android:layout_width="0dp"
@@ -21,4 +33,5 @@
         app:layout_constraintTop_toTopOf="parent" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
+
 </RelativeLayout>

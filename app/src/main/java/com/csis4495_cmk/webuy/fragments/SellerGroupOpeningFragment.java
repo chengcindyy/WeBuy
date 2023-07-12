@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerGroupListRecyclerAdapter;
@@ -47,15 +48,13 @@ public class SellerGroupOpeningFragment extends Fragment {
 
     private DatabaseReference groupRef;
 
-
-
-    private ValueEventListener valueEventListener;
-
     private SellerGroupListRecyclerAdapter groupListRecyclerAdapter;
 
     private String sellerId;
 
    private List<Group> openingGroups = new ArrayList<>();
+
+   private TextView tv_group_list_no_opening;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,6 +82,8 @@ public class SellerGroupOpeningFragment extends Fragment {
 
         mRecyclerView = view.findViewById(R.id.rv_group_list_opening);
 
+        tv_group_list_no_opening = view.findViewById(R.id.tv_group_list_no_opening);
+
         groupListRecyclerAdapter = new SellerGroupListRecyclerAdapter();
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -104,6 +105,7 @@ public class SellerGroupOpeningFragment extends Fragment {
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                openingGroups.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     Group gp = dataSnapshot.getValue(Group.class);
                     if(gp.getSellerId().equals(sellerId)){
@@ -140,9 +142,18 @@ public class SellerGroupOpeningFragment extends Fragment {
                         }
                     }
                 }
-                groupListRecyclerAdapter.setContext(getContext());
-                groupListRecyclerAdapter.setGroups(openingGroups);
-                groupListRecyclerAdapter.notifyDataSetChanged();
+
+                if (openingGroups.isEmpty()) {
+                    tv_group_list_no_opening.setVisibility(View.VISIBLE);
+                    mRecyclerView.setVisibility(View.GONE);
+                }else{
+                    tv_group_list_no_opening.setVisibility(View.GONE);
+                    mRecyclerView.setVisibility(View.VISIBLE);
+
+                    groupListRecyclerAdapter.setContext(getContext());
+                    groupListRecyclerAdapter.setGroups(openingGroups);
+                    groupListRecyclerAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
