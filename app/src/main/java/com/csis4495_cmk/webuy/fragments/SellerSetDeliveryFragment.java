@@ -48,7 +48,7 @@ import java.util.List;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class SellerViewDeliveryInfoFragment extends Fragment {
+public class SellerSetDeliveryFragment extends Fragment {
 
     private ExpandableLayout expDeliveryInfo, expCreateDelivery;
     private TextInputLayout editCustomName;
@@ -78,29 +78,28 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // References
+        // ExpandableLayout
+        expDeliveryInfo = view.findViewById(R.id.expandableLayout_store_delivery_info);
+        expCreateDelivery = view.findViewById(R.id.expandableLayout_seller_add_delivery_method);
+        setupExpandableLayout(expDeliveryInfo, R.drawable.baseline_info_24, "Delivery information");
+        setupExpandableLayout(expCreateDelivery, R.drawable.baseline_playlist_add_24, "Create a new method");
+        // Text fields
         editDeliveryMethods = view.findViewById(R.id.dropMenu_delivery_methods);
         setDeliveryAutoCompleteAdapter(editDeliveryMethods);
         editCustomName = view.findViewById(R.id.edit_delivery_name);
         editSpendOver = view.findViewById(R.id.edit_shipping_fee_range_from);
         editShippingFee = view.findViewById(R.id.edit_shipping_fee_range_fee);
-        // Setup ExpandableLayout
-        expDeliveryInfo = view.findViewById(R.id.expandableLayout_store_delivery_info);
-        expCreateDelivery = view.findViewById(R.id.expandableLayout_seller_add_delivery_method);
-        setupExpandableLayout(expDeliveryInfo, R.drawable.baseline_info_24, "Delivery information");
-        setupExpandableLayout(expCreateDelivery, R.drawable.baseline_playlist_add_24, "Create a new method");
         // Lists
         deliveryHashMap = new HashMap<>();
         keysList = new ArrayList<>();
-        // Set ListView
+        // Set RecyclerView
         mRecyclerView = view.findViewById(R.id.recyclerView_delivery_info);
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SellerDeliveryRecyclerAdapter(getContext(), deliveryHashMap, keysList);
         mRecyclerView.setAdapter(adapter);
         expDeliveryInfo.requestLayout();
-
         showDeliveryInfo();
-
         // Button
         btnCreate = view.findViewById(R.id.btn_create_delivery_info);
         btnCreate.setOnClickListener(new View.OnClickListener() {
@@ -109,10 +108,8 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
                 createOrUpdateNewDeliveryInfoRecyclerView();
             }
         });
-
         // Call swipe helper
         OnRecyclerItemSwipeActionHelper();
-
     }
 
     private void OnRecyclerItemSwipeActionHelper() {
@@ -168,7 +165,6 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
         deliveryRef.child(methodId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                deliveryInfo = snapshot.getValue(Delivery.class);
                 deliveryInfo = snapshot.getValue(Delivery.class);
                 if(deliveryInfo != null){
                     if(deliveryInfo != null){
@@ -286,6 +282,7 @@ public class SellerViewDeliveryInfoFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                         mRecyclerView.setAdapter(adapter);
                         expDeliveryInfo.requestLayout();
+                        methodId = "";
                     } else {
                         try {
                             throw task.getException();

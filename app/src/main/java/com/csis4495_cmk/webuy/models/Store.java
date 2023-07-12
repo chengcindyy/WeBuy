@@ -17,8 +17,10 @@ public class Store {
     private String postalCode;
     private String intro;
     private String storePic;
+    private String bankAccount;
+    private String bankAccountHolder;
     private ArrayList<String> employeeList; // sellerIds
-    private String[] acceptedPaymentType;
+    private ArrayList<String> acceptedPaymentType;
     private HashMap<String, Delivery> deliveryInfoList;
     private String[] categories;
 
@@ -43,6 +45,11 @@ public class Store {
         this.postalCode = postalCode;
         this.phone = phone;
         this.intro = intro;
+    }
+
+    public Store(String account, String holder) {
+        this.bankAccount = account;
+        this.bankAccountHolder = holder;
     }
 
     public ArrayList<String> getEmployeeList() {
@@ -133,11 +140,11 @@ public class Store {
         this.storePic = storePic;
     }
 
-    public String[] getAcceptedPaymentType() {
+    public ArrayList<String> getAcceptedPaymentType() {
         return acceptedPaymentType;
     }
 
-    public void setAcceptedPaymentType(String[] acceptedPaymentType) {
+    public void setAcceptedPaymentType(ArrayList<String> acceptedPaymentType) {
         this.acceptedPaymentType = acceptedPaymentType;
     }
 
@@ -155,5 +162,21 @@ public class Store {
 
     public void setCategories(String[] categories) {
         this.categories = categories;
+    }
+
+    public String getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setBankAccount(String bankAccount) {
+        this.bankAccount = bankAccount;
+    }
+
+    public String getBankAccountHolder() {
+        return bankAccountHolder;
+    }
+
+    public void setBankAccountHolder(String bankAccountHolder) {
+        this.bankAccountHolder = bankAccountHolder;
     }
 }

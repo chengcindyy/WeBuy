@@ -115,7 +115,7 @@
         tools:layout="@layout/fragment_seller_add_group" />
     <fragment
         android:id="@+id/sellerProfileFragment"
-        android:name="com.csis4495_cmk.webuy.fragments.SellerProfileFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerSetProfileFragment"
         android:label="fragment_seller_profile"
         tools:layout="@layout/fragment_seller_profile" >
         <action
@@ -124,6 +124,9 @@
         <action
             android:id="@+id/action_sellerProfileFragment_to_sellerDeliveryInfoFragment"
             app:destination="@id/sellerDeliveryInfoFragment" />
+        <action
+            android:id="@+id/action_sellerProfileFragment_to_sellerPaymentSettingFragment"
+            app:destination="@id/sellerPaymentSettingFragment" />
     </fragment>
     <fragment
         android:id="@+id/sellerStoreManagementFragment"
@@ -137,9 +140,14 @@
         tools:layout="@layout/fragment_seller_inventory" />
     <fragment
         android:id="@+id/sellerDeliveryInfoFragment"
-        android:name="com.csis4495_cmk.webuy.fragments.SellerViewDeliveryInfoFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerSetDeliveryFragment"
         android:label="fragment_seller_delivery_info"
         tools:layout="@layout/fragment_seller_delivery_info" />
+    <fragment
+        android:id="@+id/sellerPaymentSettingFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerSetPaymentFragment"
+        android:label="fragment_seller_payment_setting2"
+        tools:layout="@layout/fragment_seller_payment_setting" />
     <!--    <fragment-->
 <!--        android:id="@+id/sellerEditProductDialog"-->
 <!--        android:name="com.csis4495_cmk.webuy.dialog.SellerEditProductDialog"-->

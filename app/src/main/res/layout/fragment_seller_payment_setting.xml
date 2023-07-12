@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.SellerSetPaymentFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="15dp"
+        android:orientation="vertical">
+
+        <com.skydoves.expandablelayout.ExpandableLayout
+            android:id="@+id/expandableLayout_payment_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:expandable_duration="300"
+            app:expandable_animation="bounce"
+            app:expandable_isExpanded="true"
+            app:expandable_parentLayout="@layout/layout_parent_title"
+            app:expandable_secondLayout="@layout/layout_second_seller_edit_payment_content">
+
+        </com.skydoves.expandablelayout.ExpandableLayout>
+
+        <com.skydoves.expandablelayout.ExpandableLayout
+            android:id="@+id/expandableLayout_seller_bank_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:expandable_duration="300"
+            app:expandable_animation="bounce"
+            app:expandable_isExpanded="true"
+            app:expandable_parentLayout="@layout/layout_parent_title"
+            app:expandable_secondLayout="@layout/layout_second_seller_edit_bank_content">
+
+        </com.skydoves.expandablelayout.ExpandableLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

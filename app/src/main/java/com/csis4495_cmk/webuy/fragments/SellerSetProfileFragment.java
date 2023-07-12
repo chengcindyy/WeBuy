@@ -53,9 +53,9 @@ import com.skydoves.expandablelayout.ExpandableLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SellerProfileFragment extends Fragment {
+public class SellerSetProfileFragment extends Fragment {
 
-    private Button logoutButton, btnTest, btnUpdateSellerProfile, btnUpdateStoreProfile, btnUploadStoreImg, btnDeliverySetting;
+    private Button logoutButton, btnTest, btnPaymentSetting, btnUpdateSellerProfile, btnUpdateStoreProfile, btnUploadStoreImg, btnDeliverySetting;
     private Uri uploadedImgUri;
     private ExpandableLayout expSellerProfile, expStoreInfo, expDeliveryInfo, expPaymentInfo, expMoreFunctions;
     private TextInputLayout editStoreId, editName, editEmail, editPhone, editStoreName, editStoreEmail,
@@ -102,8 +102,12 @@ public class SellerProfileFragment extends Fragment {
         editStoreIntro = view.findViewById(R.id.edit_store_intro);
         btnUploadStoreImg = view.findViewById(R.id.btn_upload_store_img);
         btnUploadStoreImg.setOnClickListener(view14 -> showUploadPicSelectionDialog());
-        btnDeliverySetting = view.findViewById(R.id.btn_delivery_settings);
         expSellerProfile = view.findViewById(R.id.expandableLayout_seller_profile);
+        // Button
+        btnDeliverySetting = view.findViewById(R.id.btn_delivery_settings);
+        btnDeliverySetting.setOnClickListener(view1 -> Navigation.findNavController(view1).navigate(R.id.action_sellerProfileFragment_to_sellerDeliveryInfoFragment));
+        btnPaymentSetting = view.findViewById(R.id.btn_payment_settings);
+        btnPaymentSetting.setOnClickListener(view15 -> Navigation.findNavController(view15).navigate(R.id.action_sellerProfileFragment_to_sellerPaymentSettingFragment));
         // Expendable layout
         setupExpandableLayout(expSellerProfile, R.drawable.baseline_person_24, "Store owner information");
         expStoreInfo = view.findViewById(R.id.expandableLayout_store_profile);
@@ -123,14 +127,9 @@ public class SellerProfileFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "Loading user problem!", Toast.LENGTH_LONG).show();
         }
-
-        // Delivery Setting
-        btnDeliverySetting.setOnClickListener(view1 -> Navigation.findNavController(view1).navigate(R.id.action_sellerProfileFragment_to_sellerDeliveryInfoFragment));
-
         // For Testing
         btnTest = view.findViewById(R.id.btn_test_page);
-        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));// End Testing
-
+        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));
         // Logout
         logoutButton = view.findViewById(R.id.btn_logout);
         SetLogoutOnClickListener(logoutButton);
