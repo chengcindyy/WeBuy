@@ -139,7 +139,11 @@
         android:id="@+id/sellerGroupList"
         android:name="com.csis4495_cmk.webuy.fragments.SellerGroupListFragment"
         android:label="fragment_seller_group_list"
-        tools:layout="@layout/fragment_seller_group_list" />
+        tools:layout="@layout/fragment_seller_group_list" >
+        <action
+            android:id="@+id/action_sellerGroupList_to_sellerAddGroupFragment"
+            app:destination="@id/sellerAddGroupFragment" />
+    </fragment>
     <!--    <fragment-->
 <!--        android:id="@+id/sellerEditProductDialog"-->
 <!--        android:name="com.csis4495_cmk.webuy.dialog.SellerEditProductDialog"-->

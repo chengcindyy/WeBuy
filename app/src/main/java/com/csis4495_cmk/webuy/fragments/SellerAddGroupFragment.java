@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cottacush.android.currencyedittext.CurrencyEditText;
@@ -75,21 +76,18 @@ public class SellerAddGroupFragment extends Fragment {
     private Button tgBtn_group_buy_publish;
     private TextInputEditText groupName;
     private TextInputEditText description;
-
     private TextInputEditText group_no_style_qty;
-
-
     private TextInputLayout editLayout_groupPriceRange_publish;
     private TextInputLayout editLayout_groupPriceCurrency_publish;
     private TextInputEditText groupPriceRange;
     private CurrencyEditText groupPriceCurrency;
+    private TextView publishTitle;
 
     private int groupType;
 
     private String groupId;
 
     private int no_qty;
-
 
     private String sellerId;
     private int tax;
@@ -132,10 +130,22 @@ public class SellerAddGroupFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         firebaseUser = auth.getCurrentUser();
         groupRef = firebaseDatabase.getReference("Group");
+
+        publishTitle = view.findViewById(R.id.tv_group_publish_title);
         //Get passed bundle
-        if (getArguments() != null) {
-            productId = getArguments().getString("new_group_productId");
+        Bundle bundle = getArguments();
+        if ( bundle != null) {
+            if(bundle.containsKey("new_group_productId")){
+                productId = bundle.getString("new_group_productId");
+                publishTitle.setText("Publish a new product group");
+            }else if(bundle.containsKey("edit_group_productId")){
+                productId = bundle.getString("edit_group_productId");
+                groupId = bundle.getString("edit_group_groupId");
+                publishTitle.setText("Edit a group");
+            }
+
         }
+
         if (firebaseUser != null) {
             sellerId = firebaseUser.getUid();
             // Now you can use the userId as needed

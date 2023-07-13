@@ -83,13 +83,13 @@ public class SellerGroupClosingSoonFragment extends Fragment {
 
         mRecyclerView.setAdapter(groupListRecyclerAdapter);
 
-        getDatabaseData();
+        getGroupsData();
 
         return view;
 
     }
 
-    private void getDatabaseData(){
+    private void getGroupsData(){
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

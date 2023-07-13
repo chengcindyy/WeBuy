@@ -85,7 +85,7 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
 
         mRecyclerView.setAdapter(groupListRecyclerAdapter);
 
-        getDatabaseData();
+        getGroupsData();
 
         return view;
     }
@@ -96,7 +96,7 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
 
     }
 
-    private void getDatabaseData(){
+    private void getGroupsData(){
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

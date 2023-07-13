@@ -1,13 +1,18 @@
 package com.csis4495_cmk.webuy.fragments;
 
-import android.app.Activity;
+import android.content.DialogInterface;
+import android.graphics.Canvas;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,6 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
+
 public class SellerGroupOpeningFragment extends Fragment {
 
     private NavController navController;
@@ -54,7 +61,12 @@ public class SellerGroupOpeningFragment extends Fragment {
 
    private List<Group> openingGroups = new ArrayList<>();
 
+   private List<String> groupIds = new ArrayList<>();
+
    private TextView tv_group_list_no_opening;
+
+   private int position;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,7 +102,9 @@ public class SellerGroupOpeningFragment extends Fragment {
 
         mRecyclerView.setAdapter(groupListRecyclerAdapter);
 
-        getDatabaseData();
+        OnRecyclerItemSwipeActionHelper();
+
+        getGroupsData();
 
         return view;
     }
@@ -101,14 +115,17 @@ public class SellerGroupOpeningFragment extends Fragment {
 
     }
 
-    private void getDatabaseData(){
+    private void getGroupsData(){
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 openingGroups.clear();
+                groupIds.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     Group gp = dataSnapshot.getValue(Group.class);
                     if(gp.getSellerId().equals(sellerId)){
+                        String groupId = dataSnapshot.getKey();
+
                         // Ensure the qtyMap is not null
                         Map<String, Integer> groupQtyMap = gp.getGroupQtyMap();
                         if (groupQtyMap == null) {
@@ -131,14 +148,13 @@ public class SellerGroupOpeningFragment extends Fragment {
 
                             }
 
-                            String groupId = dataSnapshot.getKey();
                             DatabaseReference currentGp = groupRef.child(groupId);
                             currentGp.child("status").setValue(gp.getStatus());
                         }
 
                         if(gp.getStatus()==1){
                             openingGroups.add(gp);
-
+                            groupIds.add(groupId);
                         }
                     }
                 }
@@ -162,6 +178,94 @@ public class SellerGroupOpeningFragment extends Fragment {
             }
         });
 
+    }
+
+    private void OnRecyclerItemSwipeActionHelper(){
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT){
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                String groupId = "";
+                String productId = "";
+                position = viewHolder.getLayoutPosition();
+                // Swiped item left: close the group (set status to 2)
+
+                if (direction == ItemTouchHelper.LEFT) {
+                    groupId = groupIds.get(position);
+                    showConfirmToCloseDialog(groupId, position);
+                }
+
+                if (direction == ItemTouchHelper.RIGHT){
+                    groupId = groupIds.get(position);
+                    productId = openingGroups.get(position).getProductId();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("edit_group_productId", productId);
+                    bundle.putString("edit_group_groupId", groupId);
+
+                    SellerAddGroupFragment sellerAddGroupFragment = new SellerAddGroupFragment();
+                    sellerAddGroupFragment.setArguments(bundle);
+                    Navigation.findNavController(viewHolder.itemView).navigate(R.id.action_sellerGroupList_to_sellerAddGroupFragment, bundle);
+                    groupListRecyclerAdapter.setGroups(openingGroups);
+                    groupListRecyclerAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                        .addSwipeLeftBackgroundColor(ContextCompat.getColor(getContext(), R.color.delete_red))
+                        .addSwipeLeftActionIcon(R.drawable.baseline_close_48)
+                        .addSwipeRightBackgroundColor(ContextCompat.getColor(getContext(), R.color.android_green))
+                        .addSwipeRightActionIcon(R.drawable.baseline_edit_48)
+                        .create()
+                        .decorate();
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void showConfirmToCloseDialog(String groupId, int position){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Close this group");
+        builder.setMessage("Are you sure you want to close this group?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                openingGroups.remove(position);
+                groupIds.remove(position);
+                groupListRecyclerAdapter.setGroups(openingGroups);
+                groupListRecyclerAdapter.notifyDataSetChanged();
+                DatabaseReference selectedGp = groupRef.child(groupId);
+                selectedGp.child("status").setValue(2);
+            }
+        });
+
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                groupListRecyclerAdapter.setGroups(openingGroups);
+                groupListRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
+        //Create AlertDialog
+        AlertDialog alertDialog = builder.create();
+        //Show AlertDialog
+        alertDialog.show();
     }
 
 }
