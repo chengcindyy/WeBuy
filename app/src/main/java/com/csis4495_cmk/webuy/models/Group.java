@@ -26,9 +26,9 @@ public class Group {
     private Date startTime;
     private Date endTime;
 
-    private Long startTimestamp;
+    private long startTimestamp;
 
-    private Long endTimestamp;
+    private long endTimestamp;
 
 
     private int status;
@@ -63,7 +63,7 @@ public class Group {
         this.startTimestamp = startTimestamp;
     }
 
-    public Long getEndTimestamp() {
+    public long getEndTimestamp() {
         return endTimestamp;
     }
 

@@ -1,5 +1,6 @@
 package com.csis4495_cmk.webuy.models;
 
+//delete it
 public class SubProduct {
 
     private String productId;

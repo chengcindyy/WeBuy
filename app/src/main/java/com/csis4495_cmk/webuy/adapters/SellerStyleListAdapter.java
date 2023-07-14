@@ -1,7 +1,6 @@
 package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,7 +48,7 @@ public class SellerStyleListAdapter extends RecyclerView.Adapter<SellerStyleList
 
     @Override
     public void onBindViewHolder(@NonNull StyleListViewHolder holder, int position) {
-        holder.imvStyleImg.setImageURI(Uri.parse(styles.get(position).getStylePic()));
+        holder.imvStyleImg.setImageURI(Uri.parse(styles.get(position).getStylePicName()));
         holder.tvStyleName.setText(styles.get(position).getStyleName());
         holder.tvStylePrice.setText("CA$ " + styles.get(position).getStylePrice());
         // item click -> enable editing (position to fragment, fragment to activity to adapter)

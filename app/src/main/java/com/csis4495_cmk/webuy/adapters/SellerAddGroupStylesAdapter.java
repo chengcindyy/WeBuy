@@ -1,27 +1,21 @@
 package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
-import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.ContentInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -75,7 +69,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
         //load style image
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
 //        StorageReference imageReference = storageReference.child(styles.get(position).getStylePic());
-        StorageReference imageReference = storageReference.child(productId+"/"+style.getStylePic());
+        StorageReference imageReference = storageReference.child(productId+"/"+style.getStylePicName());
 
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching

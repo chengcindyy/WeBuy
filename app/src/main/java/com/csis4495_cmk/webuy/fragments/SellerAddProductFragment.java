@@ -1,8 +1,6 @@
 package com.csis4495_cmk.webuy.fragments;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -23,7 +21,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -62,12 +59,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -96,6 +91,8 @@ public class SellerAddProductFragment extends Fragment
     private List<Uri> uriUploadProductImgs = new ArrayList<>();
     private List<Uri> uriDownloadProductImgs = new ArrayList<>();
     private List<Uri> uriDownloadDeletedImgs = new ArrayList<>();
+
+    //private List<String> imgSavedDownloadUrls = new ArrayList<>();
     private RecyclerView recyclerViewStyles;
     private List<ProductStyle> styleList;
 
@@ -110,6 +107,7 @@ public class SellerAddProductFragment extends Fragment
     private String productId;
     private List<String> strProductImgNames;
     private byte[] imageBytes;
+
     private String productImgName;
 
     private ArrayAdapter<CharSequence> productCatAdapter;
@@ -267,13 +265,13 @@ public class SellerAddProductFragment extends Fragment
                         List<Task<Uri>> tasks = new ArrayList<>();
 
                         for (ProductStyle style: styleList) {
-                            StorageReference styleImgRef = productImgsRef.child(style.getStylePic());
+                            StorageReference styleImgRef = productImgsRef.child(style.getStylePicName());
                             Task<Uri> getDownloadUrlTask = styleImgRef.getDownloadUrl();
                             tasks.add(getDownloadUrlTask);
 
                             getDownloadUrlTask.addOnSuccessListener(uri -> {
                                 // Got the download URL and setStylePic to downloadUrl
-                                style.setStylePic(uri.toString());
+                                style.setStylePicName(uri.toString());
                                 Log.d("Test StylePicUrl", uri.toString());
                                 uriDownloadProductImgs.add(uri);
                                 Log.d("Test img (download uri)", uri.toString() + "");
@@ -363,9 +361,11 @@ public class SellerAddProductFragment extends Fragment
                     Uri uri = (Uri) object;
                     uriUploadProductImgs.add(uri);
                     uriDownloadProductImgs.add(uri);
+                    //imgSavedDownloadUrls.add(uri.toString());
                     Log.d("Test img (download uri)", uri.toString() + "");
                 }
                 setProductImagesAdapter(); //need to wait till all success then set the adapter
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -535,6 +535,10 @@ public class SellerAddProductFragment extends Fragment
 
                 }
 
+//                //get downloadUrl and set to the product
+//                getImageUriFromStorage(strProductImgNames);
+//                productRef.child(productId).child("productImageUrls").setValue(imgSavedDownloadUrls);
+
                 //go back to the frag you came from
                 Navigation.findNavController(v).popBackStack();
             }
@@ -576,13 +580,13 @@ public class SellerAddProductFragment extends Fragment
 
         for (int i = 0; i < styleList.size(); i++) {
             try {
-                Uri url = Uri.parse(styleList.get(i).getStylePic());
+                Uri url = Uri.parse(styleList.get(i).getStylePicName());
                 if (uriDownloadProductImgs.contains(url)) {
                     String path = url.getPath();
                     String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
                     String fileName = decodedPath.substring(decodedPath.lastIndexOf('/') + 1);
                     styleImgName = fileName;
-                    styleList.get(i).setStylePic(styleImgName);
+                    styleList.get(i).setStylePicName(styleImgName);
                     Log.d("Test compress style(old)", styleImgName);
 
                 } else {
@@ -594,7 +598,7 @@ public class SellerAddProductFragment extends Fragment
                     //unique image name
                     String uniqueID = UUID.randomUUID().toString();
                     styleImgName = uniqueID + ".jpg";
-                    styleList.get(i).setStylePic(styleImgName);
+                    styleList.get(i).setStylePicName(styleImgName);
                     Log.d("Test compress style(new)", styleImgName);
                     //to FireStorage
                     uploadImagesToFireStorage(styleImgName, imageBytes, styleList);
@@ -611,7 +615,7 @@ public class SellerAddProductFragment extends Fragment
         Log.d("Test compress product imgs", uriUploadProductImgs.size() + " in the list");
         for (int i = 0; i < uriUploadProductImgs.size(); i++) {
             try {
-                if (uriDownloadProductImgs.contains(uriUploadProductImgs.get(i))) {
+                if (uriDownloadProductImgs.contains(uriUploadProductImgs.get(i))) { //already in storage
                     Uri url = uriUploadProductImgs.get(i);
                     String path = url.getPath();
                     String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
@@ -707,7 +711,7 @@ public class SellerAddProductFragment extends Fragment
         SellerAddStyleFragment editStyleFragment = SellerAddStyleFragment.newInstance(
                 editStyle.getStyleName(),
                 editStyle.getStylePrice(),
-                editStyle.getStylePic(),
+                editStyle.getStylePicName(),
                 position);
 
         //Get the fragmentManager and start a transaction
@@ -780,7 +784,7 @@ public class SellerAddProductFragment extends Fragment
         } else { //update the style
             styleList.get(idx).setStyleName(styleName);
             styleList.get(idx).setStylePrice(price);
-            styleList.get(idx).setStylePic(imgUri);
+            styleList.get(idx).setStylePicName(imgUri);
         }
 
         withStyleAndChangePrice();

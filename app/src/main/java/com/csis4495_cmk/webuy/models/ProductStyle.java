@@ -4,18 +4,15 @@ public class ProductStyle {
 
     String styleName;
     double stylePrice;
-    String stylePic;
-
-
-
-
+    String stylePicName;
+    String stylePicUrl;
 
     public ProductStyle() {}
 
-    public ProductStyle(String styleName, double stylePrice, String stylePic) {
+    public ProductStyle(String styleName, double stylePrice, String stylePicName) {
         this.styleName = styleName;
         this.stylePrice = stylePrice;
-        this.stylePic = stylePic;
+        this.stylePicName = stylePicName;
     }
 
 
@@ -27,8 +24,8 @@ public class ProductStyle {
         return stylePrice;
     }
 
-    public String getStylePic() {
-        return stylePic;
+    public String getStylePicName() {
+        return stylePicName;
     }
 
     public void setStyleName(String styleName) {
@@ -39,7 +36,7 @@ public class ProductStyle {
         this.stylePrice = stylePrice;
     }
 
-    public void setStylePic(String stylePic) {
-        this.stylePic = stylePic;
+    public void setStylePicName(String stylePicName) {
+        this.stylePicName = stylePicName;
     }
 }

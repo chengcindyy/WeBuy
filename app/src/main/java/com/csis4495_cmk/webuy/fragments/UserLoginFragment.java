@@ -41,6 +41,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,6 +57,7 @@ public class UserLoginFragment extends Fragment {
     private String user_role = "";
     private final String CUSTOMER = "customer";
     private final String SELLER = "seller";
+    private boolean isEmailExisted;
     private FirebaseAuth auth;
     private LoginButton fbLoginButton;
     private CallbackManager callbackManager = CallbackManager.Factory.create();
@@ -304,29 +306,58 @@ public class UserLoginFragment extends Fragment {
             showAlertDialog();
         }
     }
-    private boolean userEnteredDataVerification(String loginEmail, String loginPassword) {
+    private void userEnteredDataVerification(String loginEmail, String loginPassword, AlertDialog alertDialog) {
         if (TextUtils.isEmpty(loginEmail)) {
             Toast.makeText(getContext(), "Please enter your email", Toast.LENGTH_SHORT).show();
             edit_email.setError("Email is required.");
             edit_email.requestFocus();
-            return false;
+            //return false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(loginEmail).matches()) {
             Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
             edit_email.setError("Valid email is required.");
             edit_email.requestFocus();
-            return false;
+            //return false;
         } else if (TextUtils.isEmpty(loginPassword)) {
             Toast.makeText(getContext(), "Please enter your password", Toast.LENGTH_SHORT).show();
             edit_password.setError("Password is required.");
             edit_password.requestFocus();
-            return false;
-        } else if (firebaseUser == null) {
-            Toast.makeText(getContext(), "Your WeBuy account could not be found.", Toast.LENGTH_SHORT).show();
-            edit_email.setError("Please ensure that your email is correct.");
-            edit_email.requestFocus();
-            return false;
+           //return false;
         } else {
-            return true;
+            //checkEmailExists(loginEmail);
+            boolean isVerified;
+            auth.fetchSignInMethodsForEmail(loginEmail)
+                    .addOnCompleteListener(task -> {
+                        boolean emailExists = task.getResult().getSignInMethods() != null &&
+                                !task.getResult().getSignInMethods().isEmpty();
+                        handleEmailExists(emailExists);
+                        loginUserWithFirebase(loginEmail,loginPassword);
+                        alertDialog.dismiss();
+                    })
+                    .addOnFailureListener(e -> {
+                        if (e instanceof FirebaseAuthInvalidUserException) {
+                            // Email is not registered
+                            handleEmailExists(false);
+                        } else {
+                            // Handle other exceptions
+                            handleEmailExists(false);
+                            Log.d("Login", e.toString());
+                        }
+                        Toast.makeText(getContext(), "Your WeBuy account could not be found.", Toast.LENGTH_SHORT).show();
+                        edit_email.setError("Please ensure that your email is correct.");
+                        edit_email.requestFocus();
+                    });
+        }
+    }
+
+    private void handleEmailExists(boolean emailExists) {
+        if (emailExists) {
+            // Email exists in Firebase Authentication
+            Log.d("Login","Email exists in Firebase Authentication.");
+            isEmailExisted = true;
+        } else {
+            // Email does not exist in Firebase Authentication
+            Log.d("Login","Email does not exist in Firebase Authentication.");
+            isEmailExisted = false;
         }
     }
     // [END FIREBASE LOGIN]
@@ -404,7 +435,6 @@ public class UserLoginFragment extends Fragment {
         builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //loginUserWithFirebase(_email,_password);
             }
         });
 
@@ -427,10 +457,11 @@ public class UserLoginFragment extends Fragment {
                 String loginEmail = edit_email.getText().toString();
                 String loginPassword = edit_password.getText().toString();
 
-                if (userEnteredDataVerification(loginEmail, loginPassword)) {
-                    alertDialog.dismiss();
-                    loginUserWithFirebase(loginEmail, loginPassword);
-                }
+                userEnteredDataVerification(loginEmail, loginPassword, alertDialog);
+//                if (userEnteredDataVerification(loginEmail, loginPassword, alertDialog)) {
+//                    alertDialog.dismiss();
+//                    //loginUserWithFirebase(loginEmail, loginPassword);
+//                }
             }
         });
 
