@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.SellerProfileFragment">
+    tools:context=".fragments.SellerSetProfileFragment">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -30,7 +30,7 @@
                 app:expandable_animation="bounce"
                 app:expandable_isExpanded="false"
                 app:expandable_parentLayout="@layout/layout_parent_title"
-                app:expandable_secondLayout="@layout/layout_second_edit_store_info_content">
+                app:expandable_secondLayout="@layout/layout_second_seller_edit_store_info_content">
 
             </com.skydoves.expandablelayout.ExpandableLayout>
 
@@ -43,7 +43,7 @@
                 app:expandable_animation="bounce"
                 app:expandable_isExpanded="false"
                 app:expandable_parentLayout="@layout/layout_parent_title"
-                app:expandable_secondLayout="@layout/layout_second_edit_seller_info_content">
+                app:expandable_secondLayout="@layout/layout_second_seller_edit_seller_info_content">
 
             </com.skydoves.expandablelayout.ExpandableLayout>
 
@@ -83,7 +83,7 @@
                 app:expandable_animation="bounce"
                 app:expandable_isExpanded="true"
                 app:expandable_parentLayout="@layout/layout_parent_title"
-                app:expandable_secondLayout="@layout/layout_second_show_seller_more_function">
+                app:expandable_secondLayout="@layout/layout_second_seller_show_more_function">
 
             </com.skydoves.expandablelayout.ExpandableLayout>
 

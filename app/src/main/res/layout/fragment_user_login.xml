@@ -59,6 +59,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:text="First time here? Please "
+                    android:fontFamily="@font/font_family"
                     android:gravity="end|center"
                     android:textSize="13sp"/>
 

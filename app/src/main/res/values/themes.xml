@@ -12,7 +12,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="android:fontFamily">sans-serif-condensed-light</item>
     </style>
     <!--Calender-->
     <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
@@ -34,16 +33,13 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-    </style>
-
-    <style name="HintAppearance" parent="TextAppearance.AppCompat">
-        <item name="android:textSize">15sp</item>
-        <item name="android:fontFamily">sans-serif-condensed-light</item>
+        <item name="android:fontFamily">@font/font_family</item>
     </style>
 
     <style name="roundedImageViewRounded">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+        <item name="android:fontFamily">@font/font_family</item>
     </style>
 
 </resources>

@@ -120,7 +120,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
         return products.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productTitle;
         TextView productCategory;
