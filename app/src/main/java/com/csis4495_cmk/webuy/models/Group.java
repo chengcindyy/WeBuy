@@ -136,7 +136,7 @@ public class Group {
     }
 
 
-    public double getTax() {
+    public int getTax() {
         return tax;
     }
 

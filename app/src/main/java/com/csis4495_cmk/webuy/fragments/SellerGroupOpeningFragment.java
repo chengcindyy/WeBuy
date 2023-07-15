@@ -202,7 +202,8 @@ public class SellerGroupOpeningFragment extends Fragment {
 
                 if (direction == ItemTouchHelper.RIGHT){
                     groupId = groupIds.get(position);
-                    productId = openingGroups.get(position).getProductId();
+                    Group selectedGroup = openingGroups.get(position);
+                    productId = selectedGroup.getProductId();
                     Bundle bundle = new Bundle();
                     bundle.putString("edit_group_productId", productId);
                     bundle.putString("edit_group_groupId", groupId);
