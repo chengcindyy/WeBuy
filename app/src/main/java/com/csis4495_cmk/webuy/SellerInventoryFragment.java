@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,8 +18,13 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 
 import com.csis4495_cmk.webuy.adapters.SellerInventoryListRecyclerAdapter;
+import com.csis4495_cmk.webuy.fragments.SellerViewProductListFragment;
 import com.csis4495_cmk.webuy.models.Group;
+import com.csis4495_cmk.webuy.models.Product;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -25,14 +32,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SellerInventoryFragment extends Fragment {
+public class SellerInventoryFragment extends Fragment implements SellerInventoryListRecyclerAdapter.OnDirectToProductPageOnClickListener{
 
+    private NavController navController;
     private SearchView searchBar;
     private TabLayout tabLayout;
     private RecyclerView mRecyclerView;
@@ -56,6 +66,7 @@ public class SellerInventoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // References
+        navController = NavHostFragment.findNavController(SellerInventoryFragment.this);
         // SearchBar
         searchBar = view.findViewById(R.id.search_product);
         // TabLayout
@@ -69,10 +80,8 @@ public class SellerInventoryFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.recyclerView_seller_inventory_list);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new SellerInventoryListRecyclerAdapter(getContext(), allItemsList);
+        adapter = new SellerInventoryListRecyclerAdapter(getContext(), this);
         setInventoryDetails();
-        UpdateRecyclerView();
-
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -80,16 +89,13 @@ public class SellerInventoryFragment extends Fragment {
 
                 switch (tabLayout.getSelectedTabPosition()) {
                     case 1:
-                        adapter.updateData(inStockItemsList);
-                        Log.d("Test firebase read", "In-stock tab clicked");
+                        adapter.setDisplayItemsList(inStockItemsList);
                         break;
                     case 2:
-                        adapter.updateData(preOrderItemsList);
-                        Log.d("Test firebase read", "Pre-order tab clicked");
+                        adapter.setDisplayItemsList(preOrderItemsList);
                         break;
                     default:
-                        adapter.updateData(allItemsList);
-                        Log.d("Test firebase read", "all Items tab clicked");
+                        adapter.setDisplayItemsList(allItemsList);
                         break;
                 }
             }
@@ -108,7 +114,7 @@ public class SellerInventoryFragment extends Fragment {
     }
 
     private void setInventoryDetails() {
-        Log.d("Test firebase read", "setInventoryDetails in method");
+        StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
         reference = FirebaseDatabase.getInstance().getReference("Group");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -117,26 +123,53 @@ public class SellerInventoryFragment extends Fragment {
                 inStockItemsList.clear();
                 preOrderItemsList.clear();
                 allCoverImgsList.clear();
+                List<Task<Uri>> tasks = new ArrayList<>();
 
                 for (DataSnapshot productSnapshot : snapshot.getChildren()){
                     Group group = productSnapshot.getValue(Group.class);
                     String sellerId = group.getSellerId();
+                    String productId = group.getProductId();
                     // Check sellerId to only display a seller's groups
                     if(sellerId != null && sellerId.equals(auth.getCurrentUser().getUid())){
 
                         GroupItemEntry groupEntry = new GroupItemEntry(group, group.getGroupQtyMap());
                         allItemsList.add(groupEntry);
-                        adapter.updateData(allItemsList);
+                        adapter.setDisplayItemsList(allItemsList);
                         if (group.getGroupType() == 0) {
                             inStockItemsList.add(groupEntry);
-                            adapter.updateData(inStockItemsList);
                         } else {
                             preOrderItemsList.add(groupEntry);
-                            adapter.updateData(preOrderItemsList);
                         }
+
+                        //get coverImgUrl
+                        String coverImgName = group.getGroupImages().get(0);
+                        Log.d("Test StoragePath" ,imgRef.child(productId).child(coverImgName).getPath());
+                        Log.d("Test StorageGetUrl", "pId: "+ productId + ", Name: " +coverImgName);
+                        tasks.add(imgRef.child(productId).child(coverImgName).getDownloadUrl());
+
+                        Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                            @Override
+                            public void onSuccess(List<Object> objects) {
+                                // All tasks are successful, and each object corresponds to a download URL
+                                allCoverImgsList.clear();
+                                for (Object object : objects) {
+                                    Uri uri = (Uri) object;
+
+                                    allCoverImgsList.add(uri.toString());
+                                }
+
+                                UpdateRecyclerView(allItemsList);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Handle failure for any of the tasks
+                                Log.e("Test StorageGetUrl", "Download Url Failed");
+                                allCoverImgsList.add(null);
+                            }
+                        });
                     }
                 }
-//                updateTabData();
             }
 
             @Override
@@ -146,52 +179,27 @@ public class SellerInventoryFragment extends Fragment {
         });
     }
 
-    private void UpdateRecyclerView() {
+    private void UpdateRecyclerView(ArrayList<GroupItemEntry> pList) {
+        Log.d("Do update, current product is: ", pList + "");
+        Log.d("Test coverImgs size: ", allCoverImgsList.size() + "");
+        for(int i = 0; i< pList.size(); i++) {
+            pList.get(i).setCoverImgUrl(allCoverImgsList.get(i));
+        }
+        adapter.setDisplayItemsList(pList);
         adapter.notifyDataSetChanged();
         mRecyclerView.setAdapter(adapter);
     }
 
-//    private void updateTabData() {
-//        switch (tabLayout.getSelectedTabPosition()) {
-//            case 1:
-//                adapter.updateData(filterInStockItems(allItemsList));
-//                break;
-//            case 2:
-//                adapter.updateData(filterPreOrderItems(allItemsList));
-//                break;
-//            default:
-//                adapter.updateData(new ArrayList<>(allItemsList));
-//                break;
-//        }
-//    }
 
-//    private ArrayList<GroupItemEntry> filterInStockItems(ArrayList<GroupItemEntry> items) {
-//        ArrayList<GroupItemEntry> inStockItems = new ArrayList<>();
-//        for (GroupItemEntry item : items) {
-//            if (item.getGroup().getGroupType() == 0) {
-//                inStockItems.add(item);
-//            }
-//        }
-//        return inStockItems;
-//    }
-//
-//    private ArrayList<GroupItemEntry> filterPreOrderItems(ArrayList<GroupItemEntry> items) {
-//        ArrayList<GroupItemEntry> preOrderItems = new ArrayList<>();
-//        for (GroupItemEntry item : items) {
-//            if (item.getGroup().getGroupType() != 0) {
-//                preOrderItems.add(item);
-//            }
-//        }
-//        return preOrderItems;
-//    }
+    @Override
+    public void onButtonClick(Boolean btnClicked, int position) {
 
-//    public void onTabSelected(TabLayout.Tab tab) {
-//        updateTabData();
-//    }
+    }
 
     public class GroupItemEntry {
         private Group group;
         private Map<String, Integer> entries;
+        private String coverImgUrl;
 
         public GroupItemEntry(Group group, Map<String, Integer> entries) {
             this.group = group;
@@ -204,6 +212,14 @@ public class SellerInventoryFragment extends Fragment {
 
         public Map<String, Integer> getEntries() {
             return entries;
+        }
+
+        public void setCoverImgUrl(String coverImgUrl) {
+            this.coverImgUrl = coverImgUrl;
+        }
+
+        public String getCoverImgUrl() {
+            return coverImgUrl;
         }
     }
 

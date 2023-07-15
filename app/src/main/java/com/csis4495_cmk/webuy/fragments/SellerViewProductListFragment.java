@@ -207,7 +207,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // TODO: handle if canceled
+                // Do nothing
             }
         });
     }
