@@ -8,7 +8,7 @@
     android:layout_margin="5dp"
     android:clickable="true"
     android:foreground="?selectableItemBackground"
-    app:cardBackgroundColor="#b8cad4"
+    app:cardBackgroundColor="#C4DFDA"
     app:cardCornerRadius="12dp"
     app:cardElevation="3dp"
     app:contentPadding="4dp">
@@ -22,7 +22,7 @@
         <!--        Add style image-->
        <ImageView
            android:id="@+id/img_group_style"
-           android:layout_width="100dp"
+           android:layout_width="80dp"
            android:layout_height="match_parent"
            android:src="@mipmap/ic_launcher"
            android:layout_weight="1"
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="3"
+            android:layout_weight="5"
             android:layout_gravity="center"  >
 
             <!--        Edit style    -->
@@ -56,11 +56,22 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/price">
 
-                <com.google.android.material.textfield.TextInputEditText
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/edit_group_style_price"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="numberDecimal" />-->
+
+                <com.cottacush.android.currencyedittext.CurrencyEditText
                     android:id="@+id/edit_group_style_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
+                    android:ems="10"
+                    app:currencySymbol="CA$"
+                    app:localeTag="en-CA"
+                    app:maxNumberOfDecimalDigits="2"
+                    app:useCurrencySymbolAsHint="false" />
+
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -69,7 +80,7 @@
                 android:id="@+id/editLayout_group_style_qty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Qty(-1 for Unlimited)">
+                android:hint="Qty(-1 for Unlimited Group)">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_group_style_qty"

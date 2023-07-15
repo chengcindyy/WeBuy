@@ -325,7 +325,8 @@ public class UserLoginFragment extends Fragment {
             edit_email.setError("Please ensure that your email is correct.");
             edit_email.requestFocus();
             return false;
-        } else {
+        }
+        else {
             return true;
         }
     }
