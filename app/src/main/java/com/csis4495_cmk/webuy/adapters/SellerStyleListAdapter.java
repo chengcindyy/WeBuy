@@ -1,6 +1,7 @@
 package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,62 +13,56 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.csis4495_cmk.webuy.tools.ItemMoveCallback;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.ProductStyle;
-import com.squareup.picasso.Picasso;
+import com.csis4495_cmk.webuy.tools.ItemMoveCallback;
 
 import java.util.Collections;
 import java.util.List;
 
-public class SellerStyleListRecyclerAdapter extends RecyclerView.Adapter<SellerStyleListRecyclerAdapter.StyleListViewHolder>
-                                    implements ItemMoveCallback.ItemTouchHelperContract<SellerStyleListRecyclerAdapter.StyleListViewHolder>{
+public class SellerStyleListAdapter extends RecyclerView.Adapter<SellerStyleListAdapter.StyleListViewHolder>
+                                    implements ItemMoveCallback.ItemTouchHelperContract<SellerStyleListAdapter.StyleListViewHolder>{
 
     private List<ProductStyle> styles;
 
-    onStyleListItemChanged mStyleListItemChangedListener;
+    SellerStyleListAdapter.onItemClick mListener;
 
     Context context;
 
-    public SellerStyleListRecyclerAdapter(Context context, List<ProductStyle> styles) {
+    public SellerStyleListAdapter(Context context, List<ProductStyle> styles) {
         this.styles = styles;
         this.context = context;
     }
 
-    public void setmStyleListChangedListener(onStyleListItemChanged mListener) {
-        this.mStyleListItemChangedListener = mListener;
+    public void setmListener(onItemClick mListener) {
+        this.mListener = mListener;
     }
 
     @NonNull
     @Override
     public StyleListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_seller_style_with_delete,viewGroup,false);
-       StyleListViewHolder viewHolder = new StyleListViewHolder(itemView);
+       SellerStyleListAdapter.StyleListViewHolder viewHolder = new SellerStyleListAdapter.StyleListViewHolder(itemView);
        return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull StyleListViewHolder holder, int position) {
-
-        Log.d("Test StylePicName", styles.get(position).getStylePicName());
-        Picasso.get().load(styles.get(position).getStylePicName()).into(holder.imvStyleImg);
-
+        holder.imvStyleImg.setImageURI(Uri.parse(styles.get(position).getStylePicName()));
         holder.tvStyleName.setText(styles.get(position).getStyleName());
         holder.tvStylePrice.setText("CA$ " + styles.get(position).getStylePrice());
-
         // item click -> enable editing (position to fragment, fragment to activity to adapter)
         holder.view.setOnClickListener(v -> {
-            mStyleListItemChangedListener.onStyleEdit(position);
+            mListener.onStyleEdit(position);
         });
-
         // delete btn click -> remove from list
         holder.imgBtnDeleteStyle.setOnClickListener(v -> {
-            mStyleListItemChangedListener.onStyleDelete(styles.get(position).getStylePicName());
             styles.remove(holder.getAdapterPosition());
             notifyItemRemoved(holder.getAdapterPosition());
-            // pass back the updated stylist
-            mStyleListItemChangedListener.onStyleListChanged(styles);
         });
+        // add data to firebase
+        // edit version
+        // add in group
     }
 
     @Override
@@ -121,10 +116,8 @@ public class SellerStyleListRecyclerAdapter extends RecyclerView.Adapter<SellerS
         }
     }
 
-    public interface onStyleListItemChanged {
+    public interface onItemClick {
         void onStyleEdit(int position);
-        void onStyleListChanged(List<ProductStyle> newStyles);
-        void onStyleDelete(String deletedStylePicUrl);
     }
 
 }

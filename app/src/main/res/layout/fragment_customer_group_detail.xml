@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.CustomerGroupDetailFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Swipe images and saved button -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPagerGroupImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <!-- Style images -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"/>
+
+        <!-- Group name -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Group Name"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <!--    group price    -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Group Price"
+            android:textSize="14sp" />
+        <!--    type, sold amount, rating    -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Type -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Type"
+                android:textSize="12sp" />
+
+            <!-- Sold amount -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sold Amount"
+                android:textSize="12sp"
+                android:layout_marginStart="16dp" />
+
+            <!-- Rating -->
+
+        </LinearLayout>
+        <!--    description    -->
+        <!--    start time, end time    -->
+        <!--    amount, location    -->
+        <!--    seller pic, store name, store rating    -->
+        <!--    fab- add to cart(then pop up, style, amount)    -->
+
+    </ScrollView>
+
+
+</FrameLayout>

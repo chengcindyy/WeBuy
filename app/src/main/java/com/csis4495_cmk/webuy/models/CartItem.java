@@ -3,7 +3,7 @@ package com.csis4495_cmk.webuy.models;
 public class CartItem {
     private String groupId;
     private String productId;
-    private String subPId;
+    private String styleName;
     private int amount;
 
     public CartItem() {
@@ -17,8 +17,8 @@ public class CartItem {
         return productId;
     }
 
-    public String getSubPId() {
-        return subPId;
+    public String getStyleName() {
+        return styleName;
     }
 
     public int getAmount() {
