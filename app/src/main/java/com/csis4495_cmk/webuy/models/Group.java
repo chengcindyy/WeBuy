@@ -36,6 +36,7 @@ public class Group {
     private String groupPrice; // product price or might be (minStylePrice, maxStylePrice)
 
     private String productId;
+    private String coverImgUrl;
 
     public Group() {
     }
@@ -184,7 +185,11 @@ public class Group {
         this.status = status;
     }
 
+    public String getCoverImgUrl() {
+        return coverImgUrl;
+    }
 
-
-
+    public void setCoverImgUrl(String coverImgUrl) {
+        this.coverImgUrl = coverImgUrl;
+    }
 }

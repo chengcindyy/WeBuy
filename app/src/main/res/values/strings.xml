@@ -24,6 +24,7 @@
         <item>Designated Area Self-Pickup</item>
     </string-array>
 
+
     <string name="app_name">WeBuy</string>
     <string name="next">Next</string>
     <string name="email">Email</string>
@@ -51,6 +52,11 @@
     <string name="update">Update</string>
     <string name="store_name">Store name</string>
     <string name="create">Create</string>
+    <string name="save">Save</string>
+    <string name="eTransfer">e-Transfer</string>
+    <string name="cash_on_delivery">Cash on delivery</string>
+    <string name="pay_in_store">Pay in store</string>
+    <string name="debit_or_credit">Debit or Credit</string>
 
 
 </resources>

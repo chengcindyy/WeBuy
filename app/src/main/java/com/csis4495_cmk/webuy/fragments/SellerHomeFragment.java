@@ -47,21 +47,19 @@ public class SellerHomeFragment extends Fragment {
         navController = NavHostFragment.findNavController(SellerHomeFragment.this);
 
         btnProducts = view.findViewById(R.id.btn_seller_products);
-        btnProducts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.action_sellerHomeFragment_to_sellerProductListFragment);
-            }
-        });
+        setOpenNewFragmentOnClickListener(btnProducts,R.id.action_sellerHomeFragment_to_sellerProductListFragment);
 
         // TODO: Add Posting page
         btnPostings = view.findViewById(R.id.btn_seller_postings);
-        // TODO: Add Inventory page
+
         btnInventory = view.findViewById(R.id.btn_seller_inventory);
+        setOpenNewFragmentOnClickListener(btnInventory,R.id.action_sellerHomeFragment_to_sellerInventoryFragment);
+
         // TODO: Add Store management page
         btnStoreMgmt = view.findViewById(R.id.btn_seller_store_mgmt);
         // TODO: Add Support page
         btnSupport = view.findViewById(R.id.btn_seller_support);
+
 
         btnLogout = view.findViewById(R.id.btn_seller_logout);
         btnLogout.setOnClickListener(view1 -> {
@@ -74,14 +72,12 @@ public class SellerHomeFragment extends Fragment {
         });
 
         btnTestPage = view.findViewById(R.id.btn_open_test_page);
-        btnTestPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.action_sellerHomeFragment_to_testFragment);
-            }
-        });
+        setOpenNewFragmentOnClickListener(btnTestPage,R.id.action_sellerHomeFragment_to_testFragment);
 
+    }
 
+    private void setOpenNewFragmentOnClickListener(Button btnTestPage, int action) {
+        btnTestPage.setOnClickListener(view -> navController.navigate(action));
     }
 
 
