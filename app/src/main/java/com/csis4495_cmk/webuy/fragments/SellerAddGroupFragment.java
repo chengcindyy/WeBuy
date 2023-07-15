@@ -727,7 +727,8 @@ public class SellerAddGroupFragment extends Fragment   {
                     String name = snapshot.child("styleName").getValue(String.class);
                     String img = snapshot.child("stylePic").getValue(String.class);
                     Double price = snapshot.child("stylePrice").getValue(Double.class);
-                    ProductStyle ps = new ProductStyle(name, price, img);
+                    String styleId = snapshot.child("styleId").getValue(String.class);
+                    ProductStyle ps = new ProductStyle(name, price, img, styleId);
                     groupStyles.add(ps);
                     groupQtyMap.put(ps.getStyleName(),null);
 

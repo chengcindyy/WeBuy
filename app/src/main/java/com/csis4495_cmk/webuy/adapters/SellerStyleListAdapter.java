@@ -13,9 +13,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.csis4495_cmk.webuy.ItemMoveCallback;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.tools.ItemMoveCallback;
 
 import java.util.Collections;
 import java.util.List;

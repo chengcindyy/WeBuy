@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/customerHomeFragment"
-        android:name="com.csis4495_cmk.webuy.CustomerHomeFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerHomeFragment"
         android:label="fragment_customer_home"
         tools:layout="@layout/fragment_customer_home" />
     <fragment

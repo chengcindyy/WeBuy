@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.fragments;
 
 import android.os.Bundle;
 
@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
+import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CustomerHomeViewPagerAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;

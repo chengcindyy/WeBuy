@@ -46,21 +46,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
-            android:layout_marginHorizontal="11dp"
-            android:layout_marginTop="-20dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="-19dp"
             android:text="category" />
-        <!--        <ToggleButton-->
-        <!--            style="?attr/materialIconButtonFilledStyle"-->
-        <!--            android:layout_width="30dp"-->
-        <!--            android:layout_height="30dp"-->
-        <!--            android:id="@+id/saveToWatchlistButton"-->
-        <!--            android:layout_gravity="top|end"-->
-        <!--            android:layout_marginTop="-230dp"-->
-        <!--            android:layout_marginBottom="200dp"-->
-        <!--            android:layout_marginHorizontal="15dp"-->
-        <!--            android:checked="false"-->
-        <!--            android:alpha="0.2"-->
-        <!--            android:background="@drawable/baseline_unsave_border_24" />-->
 
         <TextView
             android:id="@+id/groupName"
@@ -147,14 +135,16 @@
         </LinearLayout>
 
         <ToggleButton
-            android:id="@+id/saveToWatchlistButton"
+            android:id="@+id/saveToWishListButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="top|end"
             android:layout_marginHorizontal="15dp"
-            android:layout_marginTop="-265dp"
-            android:alpha="0.2"
+            android:layout_marginTop="-260dp"
+            android:alpha="1"
             android:background="@drawable/baseline_unsave_border_24"
+            android:textOn=""
+            android:textOff=""
             android:checked="false" />
 
 

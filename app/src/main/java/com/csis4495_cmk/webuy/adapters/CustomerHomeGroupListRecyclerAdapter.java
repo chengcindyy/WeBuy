@@ -2,6 +2,7 @@ package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -9,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,12 +24,18 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.activities.SellerHomePageActivity;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Seller;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.time.Duration;
@@ -34,6 +43,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +52,10 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
 
     Context context;
 
+    public StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
+    private String productId;
     private String groupImage;
+    private String groupImageUrl;
     private String groupCategory;
     private int groupType; // in-stock: 0 ; pre-order: 1
     private String groupName;
@@ -82,9 +95,46 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        // save or unsave to wish list
+        //pre set the save btn
+        holder.btnWishList.setOnClickListener(v -> {
+            if (holder.btnWishList.isChecked()) {
+                holder.btnWishList.setBackgroundResource(R.drawable.baseline_saved_24);
+                Toast.makeText(context,"Item added to Wish List",Toast.LENGTH_SHORT).show();
+            } else {
+                holder.btnWishList.setBackgroundResource(R.drawable.baseline_unsave_border_24);
+                Toast.makeText(context,"Item removed from Wish List",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //image
+        productId = groups.get(position).getProductId();
         //want image url here
         groupImage = groups.get(position).getGroupImages().get(0);
-        //Picasso.with(context).load(groupImage).into(holder.imvGroupImage);
+//        List<Task<Uri>> tasks = new ArrayList<>();
+//        tasks.add(imgRef.child(productId).child(groupImage).getDownloadUrl());
+//        Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+//            @Override
+//            public void onSuccess(List<Object> objects) {
+//                groupImageUrl = ((Uri) objects.get(0)).toString();
+//            }
+//        });
+        imgRef.child(productId).child(groupImage).getDownloadUrl()
+                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        groupImageUrl = uri.toString();
+                        Picasso.get().load(groupImageUrl).into(holder.imvGroupImage);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors that occur while getting the download URL
+                        e.printStackTrace();
+                    }
+                });
 
         groupCategory = groups.get(position).getCategory();
         holder.tvGroupCategory.setText(groupCategory);
@@ -110,15 +160,22 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
         if (groupType == 1) {
             // Convert the timestamp to LocalDateTime
             LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(groups.get(position).getEndTimestamp()), ZoneOffset.UTC);
+            Log.d("custTest",groupName+ " EndDate: "+ dateTime);
             // Get the current date
-            LocalDate currentDate = LocalDate.now();
-            // Calculate the duration between the timestamp and the current date
-            Duration duration = Duration.between(dateTime.toLocalDate().atStartOfDay(), currentDate.atStartOfDay());
-            // the number of days in the duration
-            dayLeft = (int) duration.toDays();
-            holder.tvTimer.setText("due in " + dayLeft + " day(s)");
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            Log.d("custTest",groupName+ " CurrentDate: "+ currentDateTime);
+            // Calculate the duration between the two LocalDateTime objects
+            Duration duration = Duration.between(currentDateTime, dateTime);
+
+            // Calculate the number of days and remaining hours
+            long totalHours = duration.toHours();
+            int daysLeft = (int) totalHours / 24;
+            int hoursLeft = (int) totalHours % 24;
+
+            holder.tvTimer.setText("due in " + daysLeft + " d " + hoursLeft + " h");
         }
 
+        //seller name and pic
         sellerId = groups.get(position).getSellerId();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Seller");
         reference.child(sellerId).addValueEventListener(new ValueEventListener() {  // change to addValueEventListener
@@ -160,7 +217,7 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
             mGroupListener.onGroupClicked();
         });
 
-        ////
+        //TODO: change the status and can filter the status (default show status 1)
         groupStatus = groups.get(position).getStatus(); // notStarted: 0; started: 1; ended: 2
         startTimestamp = groups.get(position).getStartTimestamp();
         endTimestamp = groups.get(position).getEndTimestamp();
@@ -173,6 +230,8 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
+
+        ToggleButton btnWishList;
         ImageView imvGroupImage;
         TextView tvGroupCategory;
         TextView tvGroupType;
@@ -186,6 +245,7 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            btnWishList = itemView.findViewById(R.id.saveToWishListButton);
             imvGroupImage = itemView.findViewById(R.id.groupImage);
             tvGroupCategory = itemView.findViewById(R.id.groupCategory);
             tvGroupType = itemView.findViewById(R.id.groupType);

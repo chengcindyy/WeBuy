@@ -20,13 +20,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerHomePageNewFragment extends Fragment implements CustomerHomeGroupListRecyclerAdapter.onGroupListener{
+public class CustomerHomeGroupsFragment extends Fragment implements CustomerHomeGroupListRecyclerAdapter.onGroupListener{
 
     private FirebaseDatabase firebaseInstance = FirebaseDatabase.getInstance();
     private DatabaseReference allGroupRef = firebaseInstance.getReference("Group");
@@ -35,15 +33,19 @@ public class CustomerHomePageNewFragment extends Fragment implements CustomerHom
 
     private ArrayList<String> filter;
 
-    public CustomerHomePageNewFragment() {
+    private String category;
+    public CustomerHomeGroupsFragment() {
 
+    }
+    public CustomerHomeGroupsFragment(String category) {
+        this.category = category;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View rootview = inflater.inflate(R.layout.fragment_customer_home_page_new, container, false);
+        final View rootview = inflater.inflate(R.layout.viewpager_customer_home_groups, container, false);
         return rootview;
     }
 
@@ -70,25 +72,33 @@ public class CustomerHomePageNewFragment extends Fragment implements CustomerHom
                     //status
 
                     //category
+                    Log.d("custTest", "Category: "+category);
+                    if(category!= null) {
+                        if (group.getCategory().equals(category)) {
+                            groupList.add(group);
+                        }
+                    } else {
+                        groupList.add(group);
+                    }
 
                     //time
 
                     //soldAmount
-                    groupList.add(group);
+
+
                 }
                 Log.d("custTest", groupList.size()+"");
 
                 CustomerHomeGroupListRecyclerAdapter adapter = new CustomerHomeGroupListRecyclerAdapter(getContext(), groupList);
                 recyclerView.setAdapter(adapter);
+                adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("custTest", error.getMessage());
             }
         });
-
-
 
     }
 

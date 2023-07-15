@@ -777,7 +777,9 @@ public class SellerAddProductFragment extends Fragment
     @Override
     public void onAddStyleToList(String styleName, Double price, String imgUri, int idx) {
         Log.d("Test add style", styleName+ " " + price + " " + imgUri + " " + idx);
-        ProductStyle newStyle = new ProductStyle(styleName, price, imgUri);
+        UUID uniqueKey = UUID.randomUUID();
+        String keyAsString = uniqueKey.toString();
+        ProductStyle newStyle = new ProductStyle(styleName, price, imgUri, keyAsString);
 
         if (idx == -1) { //Add a new style
             styleList.add(newStyle);
