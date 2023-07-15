@@ -21,6 +21,7 @@
             android:padding="12dp">
 
             <TextView
+                android:id="@+id/tv_group_publish_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -102,20 +103,34 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Group Category       -->
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="Product Category"-->
+<!--                app:boxBackgroundColor="@null">-->
+
+<!--                <AutoCompleteTextView-->
+<!--                    android:id="@+id/edit_group_category_publish"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:cursorVisible="false"-->
+<!--                    android:inputType="none" />-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:id="@+id/editLayout_group_category_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Product Category"
-                app:boxBackgroundColor="@null">
+                android:hint="Group Category">
 
-                <AutoCompleteTextView
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_group_category_publish"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:cursorVisible="false"
-                    android:inputType="none" />
+                    android:layout_height="wrap_content" />
+
             </com.google.android.material.textfield.TextInputLayout>
+
 
             <!-- Group Price Range  -->
             <com.google.android.material.textfield.TextInputLayout
@@ -127,7 +142,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_groupPriceRange_publish"
                     android:layout_width="match_parent"
-                    app:localeTag="en-CA"
+                    android:text="CA$"
                     android:layout_height="wrap_content" />
 
 <!--                <com.cottacush.android.currencyedittext.CurrencyEditText-->
@@ -142,12 +157,33 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!--     Product Price     -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editLayout_groupPriceCurrency_publish"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Product Price"
+                android:visibility="visible">
+
+                <com.cottacush.android.currencyedittext.CurrencyEditText
+                    android:id="@+id/edit_groupPriceCurrecny_publish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    app:currencySymbol="CA$"
+                    app:localeTag="en-CA"
+                    app:maxNumberOfDecimalDigits="2"
+                    app:useCurrencySymbolAsHint="false" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
             <!-- Group qty for no style list product  -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/editLayout_groupQty_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Qty(-1 for Unlimited)">
+                android:hint="Qty(-1 for Unlimited Group)">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_groupQty_publish"

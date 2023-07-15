@@ -321,6 +321,7 @@ public class UserLoginFragment extends Fragment {
             Toast.makeText(getContext(), "Please enter your password", Toast.LENGTH_SHORT).show();
             edit_password.setError("Password is required.");
             edit_password.requestFocus();
+
            //return false;
         } else {
             //checkEmailExists(loginEmail);
@@ -358,6 +359,7 @@ public class UserLoginFragment extends Fragment {
             // Email does not exist in Firebase Authentication
             Log.d("Login","Email does not exist in Firebase Authentication.");
             isEmailExisted = false;
+
         }
     }
     // [END FIREBASE LOGIN]

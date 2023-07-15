@@ -2,8 +2,18 @@ package com.csis4495_cmk.webuy.models;
 
 public class Order {
     private String customerId;
-    private String orderList[];
+//    private String orderList[];
+
     private double totalPrice;
+    //= itemsTotal + gstTotal + pstTotal + deliveryFee
+
+    private double itemsTotal;
+    //E {style price * qty}
+
+    private double gstTotal;
+
+    private double pstTotal;
+
     private String orderedDate;
     private double deliveryFee;
     private String address;
@@ -21,9 +31,9 @@ public class Order {
         return customerId;
     }
 
-    public String[] getOrderList() {
-        return orderList;
-    }
+//    public String[] getOrderList() {
+//        return orderList;
+//    }
 
     public double getTotalPrice() {
         return totalPrice;

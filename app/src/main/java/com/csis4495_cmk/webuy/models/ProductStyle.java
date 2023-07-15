@@ -7,6 +7,7 @@ public class ProductStyle {
     String stylePicName;
     String styleId;
 
+
     public ProductStyle() {}
 
     public ProductStyle(String styleName, double stylePrice, String stylePicName, String styleId) {

@@ -77,8 +77,6 @@
             app:srcCompat="@drawable/baseline_add_business_24"
             app:tint="@color/add_business_orange" />
 
-
-
         <!-- Image button for editing prodcut-->
 
         <!-- Image button for deleting prodcut-->
