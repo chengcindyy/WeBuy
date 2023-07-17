@@ -11,6 +11,7 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.Delivery;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SellerDeliveryRecyclerAdapter extends RecyclerView.Adapter<SellerDeliveryRecyclerAdapter.ViewHolder> {
 
@@ -36,9 +37,21 @@ public class SellerDeliveryRecyclerAdapter extends RecyclerView.Adapter<SellerDe
         Delivery delivery = deliveryMap.get(keys.get(position));
 
         holder.deliveryMethod.setText(delivery.getDeliveredMethod());
-        holder.customName.setText(delivery.getDisplayName());
-        holder.spendOver.setText(String.valueOf(delivery.getFrom()));
-        holder.deliveryFee.setText(String.valueOf(delivery.getFee()));
+        holder.location.setText(delivery.getPickUpLocation());
+        if(delivery.getDeliveredMethod().equals("[Home delivery] ")){
+            holder.location.setText(delivery.getDeliveryCity());
+        }
+
+        Map<String, Double> feeMap = delivery.getFeeMap();
+        if(feeMap != null){
+            for (Map.Entry<String, Double> feeMapEntry : feeMap.entrySet()) {
+                String _FULLKEY = feeMapEntry.getKey();
+                String[] parts = _FULLKEY.split("_");
+                String _PRICE = parts[1];
+                holder.spendOver.setText(_PRICE);
+                holder.deliveryFee.setText(feeMapEntry.getValue().toString());
+            }
+        }
     }
 
     @Override
@@ -47,12 +60,12 @@ public class SellerDeliveryRecyclerAdapter extends RecyclerView.Adapter<SellerDe
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView deliveryMethod, customName, spendOver, deliveryFee;
+        TextView deliveryMethod, location, spendOver, deliveryFee;
 
         public ViewHolder(View itemView) {
             super(itemView);
             deliveryMethod = itemView.findViewById(R.id.txv_method);
-            customName = itemView.findViewById(R.id.txv_method_display_name);
+            location = itemView.findViewById(R.id.txv_method_location);
             spendOver = itemView.findViewById(R.id.tvx_from);
             deliveryFee = itemView.findViewById(R.id.txv_shipping_fee);
         }

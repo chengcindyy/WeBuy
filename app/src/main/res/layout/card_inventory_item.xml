@@ -41,7 +41,7 @@
         <ImageView
             android:id="@+id/img_product_img"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="250dp"
             android:layout_margin="10dp"
             android:scaleType="fitXY"
             android:src="@drawable/app_default_image"
@@ -57,21 +57,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/img_product_img">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:orientation="horizontal">
+                android:layout_margin="10dp">
 
                 <TableLayout
+                    android:id="@+id/tableLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:stretchColumns="*"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/img_product_img"
-                    app:layout_constraintStart_toStartOf="@+id/img_product_img"
-                    app:layout_constraintTop_toBottomOf="@+id/img_product_img">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TableRow>
 
@@ -155,9 +153,12 @@
                     android:id="@+id/recyclerView_inventory_info"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2.5" />
+                    android:layout_weight="2.5"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/tableLayout"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </HorizontalScrollView>
 
