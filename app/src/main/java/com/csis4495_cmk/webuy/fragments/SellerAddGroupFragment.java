@@ -56,6 +56,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -183,14 +184,12 @@ public class SellerAddGroupFragment extends Fragment {
 
         if (isNewGroup) {
             getProductData();
-
             getProductStyle();
         } else {
             getEditGroupData();
         }
 
-        simpleDateFormat = new SimpleDateFormat("HH:mm yyyy-MM-dd");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("PST"));
+        simpleDateFormat = new SimpleDateFormat("HH:mm yyyy-MM-dd", Locale.CANADA);
 
         return view;
     }
@@ -308,6 +307,7 @@ public class SellerAddGroupFragment extends Fragment {
                     groupQtyMap.remove(groupStyles.get(position).getStyleName());
                     groupStyles.remove(position);
                     stylesAdapter.updateStyleData2(productId, groupStyles);
+                    stylesAdapter.notifyDataSetChanged();
 
                     if (groupStyles.size() > 0) {
                         groupPriceCurrency.setVisibility(View.GONE);
@@ -339,7 +339,6 @@ public class SellerAddGroupFragment extends Fragment {
                             groupPriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
                             Log.d("Price Range", "min " + minStylePrice + " max: " + maxStylePrice);
                         }
-
                     } else if (groupStyles.size() == 1) {
                         editLayout_groupPriceRange_publish.setVisibility(View.GONE);
                         groupPriceRange.setVisibility(View.GONE);
@@ -350,7 +349,8 @@ public class SellerAddGroupFragment extends Fragment {
                         groupPriceCurrency.setEnabled(false);
                         groupPriceCurrency.setText(Double.toString(groupStyles.get(0).getStylePrice()));
                         groupPriceCurrency.findFocus();
-                    } else if (groupStyles.size() == 0) {
+                    }
+                    else if (groupStyles.size() == 0) {
                         editLayout_groupPriceRange_publish.setVisibility(View.GONE);
                         groupPriceRange.setVisibility(View.GONE);
                         groupPriceRange.setEnabled(false);
@@ -475,7 +475,6 @@ public class SellerAddGroupFragment extends Fragment {
                             Log.d("Price Range", "min " + minStylePrice + " max: " + maxStylePrice);
                         }
 
-
                     } else if (groupStyles.size() == 1) {
                         editLayout_groupPriceRange_publish.setVisibility(View.GONE);
                         groupPriceRange.setVisibility(View.GONE);
@@ -542,9 +541,7 @@ public class SellerAddGroupFragment extends Fragment {
                                     btnStart.setEnabled(true);
                                 }
                                 btnEnd.setEnabled(true);
-
                             }
-
                         tax = editGroup.getTax();
                         groupName.setText(editGroup.getGroupName());
                         description.setText(editGroup.getDescription());

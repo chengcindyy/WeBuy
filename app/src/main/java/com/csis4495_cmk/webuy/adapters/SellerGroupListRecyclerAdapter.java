@@ -138,7 +138,6 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
         Long endTimestamp = g.getEndTimestamp();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm yyyy-MM-dd");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("PST"));
 
         if (startTimestamp != 0) {
             Date startTime = new Date(startTimestamp);
