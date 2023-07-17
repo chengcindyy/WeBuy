@@ -5,7 +5,6 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
     app:cardElevation="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +22,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/txv_method_display_name"
+            android:id="@+id/txv_method_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
@@ -36,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="Cost: CA$"
+            android:text="Shipping fee: CA$"
             app:layout_constraintEnd_toStartOf="@+id/txv_shipping_fee"
             app:layout_constraintTop_toTopOf="@+id/tvx_from_label" />
 
@@ -54,11 +53,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:text="When over $:"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="Price begin from $CA:"
             app:layout_constraintStart_toStartOf="@+id/txv_method"
-            app:layout_constraintTop_toBottomOf="@+id/txv_method_display_name" />
+            app:layout_constraintTop_toBottomOf="@+id/txv_method_location" />
 
         <TextView
             android:id="@+id/tvx_from"
@@ -68,6 +65,17 @@
             android:text=""
             app:layout_constraintStart_toEndOf="@+id/tvx_from_label"
             app:layout_constraintTop_toTopOf="@+id/tvx_from_label" />
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="377dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvx_from_label" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
