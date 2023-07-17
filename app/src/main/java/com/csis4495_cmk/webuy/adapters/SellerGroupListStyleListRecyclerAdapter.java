@@ -79,7 +79,7 @@ public class SellerGroupListStyleListRecyclerAdapter extends RecyclerView.Adapte
     @NonNull
     @Override
     public SellerGroupListStyleListRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_seller_groupd_detail_style,parent,false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_seller_group_detail_style,parent,false);
         SellerGroupListStyleListRecyclerAdapter.ViewHolder viewHolder = new SellerGroupListStyleListRecyclerAdapter.ViewHolder(itemView);
         return viewHolder;
     }
@@ -89,7 +89,7 @@ public class SellerGroupListStyleListRecyclerAdapter extends RecyclerView.Adapte
         ProductStyle ps = styles.get(position);
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
-        StorageReference imageReference = storageReference.child(productId+"/"+ps.getStylePic());
+        StorageReference imageReference = storageReference.child(productId+"/"+ps.getStylePicName());
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching
             Picasso.get().load(uri.toString()).into(holder.styleImg);

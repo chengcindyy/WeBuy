@@ -1,5 +1,7 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +21,8 @@ import android.widget.TextView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerGroupListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -55,6 +60,9 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
     private List<Group> notYetOpenedGroups = new ArrayList<>();
 
     private TextView tv_group_list_no_not_yet_opened;
+
+    private List<String> groupIds = new ArrayList<>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -96,24 +104,21 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
 
     }
 
-    private void getGroupsData(){
+    private void getGroupsData() {
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 notYetOpenedGroups.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                groupIds.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Group gp = dataSnapshot.getValue(Group.class);
-                    if(gp.getSellerId().equals(sellerId)){
-                        // Ensure the qtyMap is not null
-                        Map<String, Integer> groupQtyMap = gp.getGroupQtyMap();
-                        if (groupQtyMap == null) {
-                            groupQtyMap = new HashMap<>();
-                            gp.setGroupQtyMap(groupQtyMap);
-                        }
+                    long currentTime = System.currentTimeMillis();
 
+                    //Get seller's not closed groups data
+                    if (gp.getSellerId().equals(sellerId) && gp.getStatus() != 2) {
+                        String groupId = dataSnapshot.getKey();
 
-                        if(gp.getGroupType()==1){
-                            long currentTime = System.currentTimeMillis();
+                        if (gp.getGroupType() == 1) {
                             if (currentTime < gp.getStartTimestamp()) {
                                 // Group is not yet opened
                                 gp.setStatus(0);
@@ -123,17 +128,23 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
                             } else {
                                 // Group is opening
                                 gp.setStatus(1);
-
                             }
-
-                            String groupId = dataSnapshot.getKey();
                             DatabaseReference currentGp = groupRef.child(groupId);
-                            currentGp.child("status").setValue(gp.getStatus());
+                            currentGp.child("status").setValue(gp.getStatus()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "Group status is updated: " + Integer.toString(gp.getStatus()));
+                                    } else {
+                                        Log.d(TAG, "Group status update error", task.getException());
+                                    }
+                                }
+                            });
                         }
 
-                        if(gp.getStatus()==0){
+                        if (gp.getStatus() == 0) {
                             notYetOpenedGroups.add(gp);
-
+                            groupIds.add(groupId);
                         }
                     }
                 }
@@ -141,12 +152,12 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
                 if (notYetOpenedGroups.isEmpty()) {
                     tv_group_list_no_not_yet_opened.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.GONE);
-                }else{
+                } else {
                     tv_group_list_no_not_yet_opened.setVisibility(View.GONE);
                     mRecyclerView.setVisibility(View.VISIBLE);
-
                     groupListRecyclerAdapter.setContext(getContext());
                     groupListRecyclerAdapter.setGroups(notYetOpenedGroups);
+                    groupListRecyclerAdapter.setGroupIds(groupIds);
                     groupListRecyclerAdapter.notifyDataSetChanged();
                 }
             }
@@ -156,9 +167,5 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
 
             }
         });
-
     }
-
-
-
 }

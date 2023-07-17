@@ -22,16 +22,15 @@
 
         <ImageView
             android:id="@+id/img_group_img"
-            android:layout_width="80dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="189dp"
+            android:layout_height="161dp"
+            android:layout_marginStart="8dp"
             android:background="@color/cancel_grey"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tv_group_start"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5"
-            />
+            app:layout_constraintVertical_bias="0.099" />
 
 
         <TextView
@@ -39,52 +38,48 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textSize="20dp"
+            android:text="Group Name"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/img_group_img"
-            app:layout_constraintTop_toTopOf="parent"
-            android:text="Group Name"/>
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_group_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="Group Description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            android:maxLines="6"
+            android:lines="3"
+            android:scrollbars="vertical"
+            app:layout_constraintStart_toEndOf="@+id/img_group_img"
+            app:layout_constraintTop_toBottomOf="@+id/tv_group_name" />
 
         <TextView
             android:id="@+id/tv_group_price"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textSize="18dp"
+            android:text="Group Price"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/img_group_img"
-            app:layout_constraintTop_toBottomOf="@+id/tv_group_name"
-            android:text="Group Price"/>
-
-        <TextView
-            android:id="@+id/tv_group_qty"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textSize="18dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_group_img"
-            app:layout_constraintTop_toBottomOf="@+id/tv_group_price"
-            android:text="Group Quantity"
-            />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_group_style"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_group_img"
-            app:layout_constraintTop_toBottomOf="@+id/tv_group_qty" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_group_description" />
 
         <TextView
             android:id="@+id/tv_group_start"
@@ -92,15 +87,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textSize="18dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_group_img"
-            app:layout_constraintTop_toBottomOf="@+id/rv_group_style"
             android:text="Group Start Date"
-            />
-
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_group_img" />
 
         <TextView
             android:id="@+id/tv_group_end"
@@ -108,14 +102,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textSize="18dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_group_img"
-            app:layout_constraintTop_toBottomOf="@+id/tv_group_start"
             android:text="Group End Date"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_group_start" />
 
         <TextView
             android:id="@+id/tv_group_count_down"
@@ -123,15 +116,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textSize="18dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/img_group_img"
-            app:layout_constraintTop_toBottomOf="@+id/tv_group_end"
             android:text="Count down"
-            />
-
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_group_end" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
