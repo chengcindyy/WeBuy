@@ -105,11 +105,10 @@ public class SellerGroupClosingSoonFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     Group gp = dataSnapshot.getValue(Group.class);
                     long currentTime = System.currentTimeMillis();
+                    String groupId = dataSnapshot.getKey();
 
-                    //Get seller's not closed groups data
-                    if(gp.getSellerId().equals(sellerId) && gp.getStatus()!= 2){
-                        String groupId = dataSnapshot.getKey();
-
+                    //Get seller's not closed groups data and update status
+                    if(gp.getSellerId().equals(sellerId) && gp.getStatus() != 2){
                         if(gp.getGroupType() == 1){
                             if (currentTime < gp.getStartTimestamp()) {
                                 // Group is not yet opened
@@ -152,10 +151,10 @@ public class SellerGroupClosingSoonFragment extends Fragment {
 
                     groupListRecyclerAdapter.setContext(getContext());
                     groupListRecyclerAdapter.setGroups(closingSoonGroups);
+                    groupListRecyclerAdapter.setGroupIds(groupIds);
                     groupListRecyclerAdapter.notifyDataSetChanged();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 

@@ -56,7 +56,6 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
-            android:singleLine="true"
             android:text="Group Description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

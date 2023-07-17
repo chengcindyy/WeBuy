@@ -140,7 +140,7 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm yyyy-MM-dd");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("PST"));
 
-        if (startTimestamp != null) {
+        if (startTimestamp != 0) {
             Date startTime = new Date(startTimestamp);
 
             holder.groupStart.setText("From " + simpleDateFormat.format(startTime));
@@ -194,7 +194,7 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
 
         }
 
-        if (endTimestamp != null ) {
+        if (endTimestamp != 0 ) {
             Date endTime = new Date(endTimestamp);
             holder.groupEnd.setText("To " + simpleDateFormat.format(endTime));
 
@@ -240,13 +240,14 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
 
             }
 
-            if(currentTime > endTimestamp || g.getStatus() == 2){
-                holder.countDown.setVisibility(View.GONE);
-            }
-
         } else {
             holder.groupEnd.setVisibility(View.GONE);
             holder.countDown.setVisibility(View.GONE);
+        }
+
+        if((currentTime > endTimestamp && endTimestamp != 0 ) || g.getStatus() == 2){
+            holder.countDown.setVisibility(View.VISIBLE);
+            holder.countDown.setText("Group Closed");
         }
 
     }

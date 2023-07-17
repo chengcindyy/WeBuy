@@ -113,11 +113,10 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Group gp = dataSnapshot.getValue(Group.class);
                     long currentTime = System.currentTimeMillis();
+                    String groupId = dataSnapshot.getKey();
 
-                    //Get seller's not closed groups data
+                    //Get seller's not closed groups data and update status
                     if (gp.getSellerId().equals(sellerId) && gp.getStatus() != 2) {
-                        String groupId = dataSnapshot.getKey();
-
                         if (gp.getGroupType() == 1) {
                             if (currentTime < gp.getStartTimestamp()) {
                                 // Group is not yet opened
@@ -161,7 +160,6 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
                     groupListRecyclerAdapter.notifyDataSetChanged();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
