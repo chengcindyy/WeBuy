@@ -1,5 +1,7 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +27,8 @@ import android.widget.TextView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerGroupListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -59,13 +64,13 @@ public class SellerGroupOpeningFragment extends Fragment {
 
     private String sellerId;
 
-   private List<Group> openingGroups = new ArrayList<>();
+    private List<Group> openingGroups = new ArrayList<>();
 
-   private List<String> groupIds = new ArrayList<>();
+    private List<String> groupIds = new ArrayList<>();
 
-   private TextView tv_group_list_no_opening;
+    private TextView tv_group_list_no_opening;
 
-   private int position;
+    private int position;
 
 
     @Override
@@ -115,27 +120,20 @@ public class SellerGroupOpeningFragment extends Fragment {
 
     }
 
-    private void getGroupsData(){
+    private void getGroupsData() {
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 openingGroups.clear();
                 groupIds.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Group gp = dataSnapshot.getValue(Group.class);
-                    if(gp.getSellerId().equals(sellerId)){
-                        String groupId = dataSnapshot.getKey();
+                    long currentTime = System.currentTimeMillis();
+                    String groupId = dataSnapshot.getKey();
 
-                        // Ensure the qtyMap is not null
-                        Map<String, Integer> groupQtyMap = gp.getGroupQtyMap();
-                        if (groupQtyMap == null) {
-                            groupQtyMap = new HashMap<>();
-                            gp.setGroupQtyMap(groupQtyMap);
-                        }
-
-
-                        if(gp.getGroupType()==1){
-                            long currentTime = System.currentTimeMillis();
+                    //Get seller's not closed groups data and update status
+                    if (gp.getSellerId().equals(sellerId) && gp.getStatus() != 2) {
+                        if (gp.getGroupType() == 1) {
                             if (currentTime < gp.getStartTimestamp()) {
                                 // Group is not yet opened
                                 gp.setStatus(0);
@@ -145,14 +143,21 @@ public class SellerGroupOpeningFragment extends Fragment {
                             } else {
                                 // Group is opening
                                 gp.setStatus(1);
-
                             }
-
                             DatabaseReference currentGp = groupRef.child(groupId);
-                            currentGp.child("status").setValue(gp.getStatus());
+                            currentGp.child("status").setValue(gp.getStatus()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "Group status is updated: " + Integer.toString(gp.getStatus()));
+                                    } else {
+                                        Log.d(TAG, "Group status update error", task.getException());
+                                    }
+                                }
+                            });
                         }
 
-                        if(gp.getStatus()==1){
+                        if (gp.getStatus() == 1) {
                             openingGroups.add(gp);
                             groupIds.add(groupId);
                         }
@@ -162,16 +167,16 @@ public class SellerGroupOpeningFragment extends Fragment {
                 if (openingGroups.isEmpty()) {
                     tv_group_list_no_opening.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.GONE);
-                }else{
+                } else {
                     tv_group_list_no_opening.setVisibility(View.GONE);
                     mRecyclerView.setVisibility(View.VISIBLE);
 
                     groupListRecyclerAdapter.setContext(getContext());
                     groupListRecyclerAdapter.setGroups(openingGroups);
+                    groupListRecyclerAdapter.setGroupIds(groupIds);
                     groupListRecyclerAdapter.notifyDataSetChanged();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -180,8 +185,8 @@ public class SellerGroupOpeningFragment extends Fragment {
 
     }
 
-    private void OnRecyclerItemSwipeActionHelper(){
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT){
+    private void OnRecyclerItemSwipeActionHelper() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
 
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -200,7 +205,7 @@ public class SellerGroupOpeningFragment extends Fragment {
                     showConfirmToCloseDialog(groupId, position);
                 }
 
-                if (direction == ItemTouchHelper.RIGHT){
+                if (direction == ItemTouchHelper.RIGHT) {
                     groupId = groupIds.get(position);
                     Group selectedGroup = openingGroups.get(position);
                     productId = selectedGroup.getProductId();
@@ -212,6 +217,7 @@ public class SellerGroupOpeningFragment extends Fragment {
                     sellerAddGroupFragment.setArguments(bundle);
                     Navigation.findNavController(viewHolder.itemView).navigate(R.id.action_sellerGroupList_to_sellerAddGroupFragment, bundle);
                     groupListRecyclerAdapter.setGroups(openingGroups);
+                    groupListRecyclerAdapter.setGroupIds(groupIds);
                     groupListRecyclerAdapter.notifyDataSetChanged();
                 }
 
@@ -237,7 +243,7 @@ public class SellerGroupOpeningFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
-    private void showConfirmToCloseDialog(String groupId, int position){
+    private void showConfirmToCloseDialog(String groupId, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Close this group");
         builder.setMessage("Are you sure you want to close this group?");
@@ -245,12 +251,24 @@ public class SellerGroupOpeningFragment extends Fragment {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                DatabaseReference selectedGp = groupRef.child(groupId);
+                selectedGp.child("status").setValue(2).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Group status is updated: 2");
+
+                        } else {
+                            Log.d(TAG, "Group status update error", task.getException());
+                        }
+                    }
+                });
                 openingGroups.remove(position);
                 groupIds.remove(position);
                 groupListRecyclerAdapter.setGroups(openingGroups);
+                groupListRecyclerAdapter.setGroupIds(groupIds);
                 groupListRecyclerAdapter.notifyDataSetChanged();
-                DatabaseReference selectedGp = groupRef.child(groupId);
-                selectedGp.child("status").setValue(2);
+
             }
         });
 
@@ -260,6 +278,7 @@ public class SellerGroupOpeningFragment extends Fragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
                 groupListRecyclerAdapter.setGroups(openingGroups);
+                groupListRecyclerAdapter.setGroupIds(groupIds);
                 groupListRecyclerAdapter.notifyDataSetChanged();
             }
         });

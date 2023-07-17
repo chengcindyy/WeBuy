@@ -50,12 +50,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 
 public class SellerAddGroupFragment extends Fragment {
@@ -119,6 +122,8 @@ public class SellerAddGroupFragment extends Fragment {
 
     private Group editGroup;
 
+    private SimpleDateFormat simpleDateFormat;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -179,11 +184,12 @@ public class SellerAddGroupFragment extends Fragment {
 
         if (isNewGroup) {
             getProductData();
-
             getProductStyle();
         } else {
             getEditGroupData();
         }
+
+        simpleDateFormat = new SimpleDateFormat("HH:mm yyyy-MM-dd", Locale.CANADA);
 
         return view;
     }
@@ -279,14 +285,14 @@ public class SellerAddGroupFragment extends Fragment {
                 startTime = new Date();
                 openDateDialog(startTime, updatedstartTime -> {
                     validateStartime();
-                    btnStart.setText("From " + startTime);
+                    btnStart.setText("From " + simpleDateFormat.format(startTime));
                 }, "Setup start time");
             });
             btnEnd.setOnClickListener(v -> {
                 endTime = new Date();
                 openDateDialog(endTime, updatedstartTime -> {
                     validateEndTime();
-                    btnEnd.setText("To " + endTime);
+                    btnEnd.setText("To " + simpleDateFormat.format(endTime));
                 }, "Setup end time");
             });
 
@@ -301,6 +307,7 @@ public class SellerAddGroupFragment extends Fragment {
                     groupQtyMap.remove(groupStyles.get(position).getStyleName());
                     groupStyles.remove(position);
                     stylesAdapter.updateStyleData2(productId, groupStyles);
+                    stylesAdapter.notifyDataSetChanged();
 
                     if (groupStyles.size() > 0) {
                         groupPriceCurrency.setVisibility(View.GONE);
@@ -332,7 +339,6 @@ public class SellerAddGroupFragment extends Fragment {
                             groupPriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
                             Log.d("Price Range", "min " + minStylePrice + " max: " + maxStylePrice);
                         }
-
                     } else if (groupStyles.size() == 1) {
                         editLayout_groupPriceRange_publish.setVisibility(View.GONE);
                         groupPriceRange.setVisibility(View.GONE);
@@ -343,7 +349,8 @@ public class SellerAddGroupFragment extends Fragment {
                         groupPriceCurrency.setEnabled(false);
                         groupPriceCurrency.setText(Double.toString(groupStyles.get(0).getStylePrice()));
                         groupPriceCurrency.findFocus();
-                    } else if (groupStyles.size() == 0) {
+                    }
+                    else if (groupStyles.size() == 0) {
                         editLayout_groupPriceRange_publish.setVisibility(View.GONE);
                         groupPriceRange.setVisibility(View.GONE);
                         groupPriceRange.setEnabled(false);
@@ -468,7 +475,6 @@ public class SellerAddGroupFragment extends Fragment {
                             Log.d("Price Range", "min " + minStylePrice + " max: " + maxStylePrice);
                         }
 
-
                     } else if (groupStyles.size() == 1) {
                         editLayout_groupPriceRange_publish.setVisibility(View.GONE);
                         groupPriceRange.setVisibility(View.GONE);
@@ -535,9 +541,7 @@ public class SellerAddGroupFragment extends Fragment {
                                     btnStart.setEnabled(true);
                                 }
                                 btnEnd.setEnabled(true);
-
                             }
-
                         tax = editGroup.getTax();
                         groupName.setText(editGroup.getGroupName());
                         description.setText(editGroup.getDescription());
@@ -631,7 +635,6 @@ public class SellerAddGroupFragment extends Fragment {
             startTime = null;
             endTime = null;
             //Group started, status = OPENING (1)
-//            groupStatus = 1;
             groupStatus = OPENING;
             newGroup.setStatus(groupStatus);
         } else {
@@ -641,14 +644,14 @@ public class SellerAddGroupFragment extends Fragment {
                 startTime = new Date();
                 openDateDialog(startTime, updatedstartTime -> {
                     validateStartime();
-                    btnStart.setText("From " + startTime);
+                    btnStart.setText("From " + simpleDateFormat.format(startTime));
                 }, "Setup start time");
             } else if (btnEnd.getText().equals("Group End")) {
                 isComplete = false;
                 endTime = new Date();
                 openDateDialog(endTime, updatedstartTime -> {
                     validateEndTime();
-                    btnEnd.setText("To " + endTime);
+                    btnEnd.setText("To " + simpleDateFormat.format(endTime));
                 }, "Setup end time");
             }
             currentTime = new Date();
@@ -848,7 +851,7 @@ public class SellerAddGroupFragment extends Fragment {
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     openDateDialog(endTime, updatedstartTime -> {
-                        btnEnd.setText("To " + endTime);
+                        btnEnd.setText("To " + simpleDateFormat.format(endTime));
                         validateEndTime();
                     }, "Setup end time");
                 }
@@ -869,7 +872,7 @@ public class SellerAddGroupFragment extends Fragment {
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     openDateDialog(startTime, updatedstartTime -> {
-                        btnStart.setText("From " + startTime);
+                        btnStart.setText("From " + simpleDateFormat.format(startTime));
                         validateStartime();
                     }, "Setup start time");
                     Log.d("DEBUG", "Current time: " + currentTime);
@@ -962,7 +965,7 @@ public class SellerAddGroupFragment extends Fragment {
                 groupQtyMap.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String name = snapshot.child("styleName").getValue(String.class);
-                    String img = snapshot.child("stylePic").getValue(String.class);
+                    String img = snapshot.child("stylePicName").getValue(String.class);
                     Double price = snapshot.child("stylePrice").getValue(Double.class);
                     String styleId = snapshot.child("styleId").getValue(String.class);
                     ProductStyle ps = new ProductStyle(name, price, img, styleId);

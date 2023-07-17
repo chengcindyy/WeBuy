@@ -21,7 +21,7 @@
 
         <!--        Add style image-->
        <ImageView
-           android:id="@+id/img_group_style"
+           android:id="@+id/img_new_group_style"
            android:layout_width="80dp"
            android:layout_height="match_parent"
            android:src="@mipmap/ic_launcher"

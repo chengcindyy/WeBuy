@@ -1,5 +1,7 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +21,8 @@ import android.widget.TextView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerGroupListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -52,6 +57,8 @@ public class SellerGroupClosedFragment extends Fragment {
     private String sellerId;
 
     private List<Group> closedGroups = new ArrayList<>();
+
+    private List<String> groupIds = new ArrayList<>();
 
     private TextView tv_group_list_no_closed;
 
@@ -94,39 +101,42 @@ public class SellerGroupClosedFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 closedGroups.clear();
+                groupIds.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     Group gp = dataSnapshot.getValue(Group.class);
+                    long currentTime = System.currentTimeMillis();
+                    String groupId = dataSnapshot.getKey();
+
                     if(gp.getSellerId().equals(sellerId)){
-                        // Ensure the qtyMap is not null
-                        Map<String, Integer> groupQtyMap = gp.getGroupQtyMap();
-                        if (groupQtyMap == null) {
-                            groupQtyMap = new HashMap<>();
-                            gp.setGroupQtyMap(groupQtyMap);
-                        }
-
-
-                        if(gp.getGroupType()==1){
-                            long currentTime = System.currentTimeMillis();
-                            if (currentTime < gp.getStartTimestamp()) {
-                                // Group is not yet opened
-                                gp.setStatus(0);
-                            } else if (currentTime > gp.getEndTimestamp()) {
-                                // Group is closed
-                                gp.setStatus(2);
-                            } else {
-                                // Group is opening
-                                gp.setStatus(1);
-
+                        //Get seller's not closed groups data and update status
+                        if(gp.getStatus() != 2){
+                            if(gp.getGroupType() == 1){
+                                if (currentTime < gp.getStartTimestamp()) {
+                                    // Group is not yet opened
+                                    gp.setStatus(0);
+                                } else if (currentTime > gp.getEndTimestamp()) {
+                                    // Group is closed
+                                    gp.setStatus(2);
+                                } else {
+                                    // Group is opening
+                                    gp.setStatus(1);
+                                }
+                                DatabaseReference currentGp = groupRef.child(groupId);
+                                currentGp.child("status").setValue(gp.getStatus()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "Group status is updated: " + Integer.toString(gp.getStatus()));
+                                        } else {
+                                            Log.d(TAG, "Group status update error", task.getException());
+                                        }
+                                    }
+                                });
                             }
-
-                            String groupId = dataSnapshot.getKey();
-                            DatabaseReference currentGp = groupRef.child(groupId);
-                            currentGp.child("status").setValue(gp.getStatus());
                         }
-
-                        if(gp.getStatus()==2){
+                        if(gp.getStatus() == 2){
                             closedGroups.add(gp);
-
+                            groupIds.add(groupId);
                         }
                     }
                 }
@@ -140,6 +150,7 @@ public class SellerGroupClosedFragment extends Fragment {
 
                     groupListRecyclerAdapter.setContext(getContext());
                     groupListRecyclerAdapter.setGroups(closedGroups);
+                    groupListRecyclerAdapter.setGroupIds(groupIds);
                     groupListRecyclerAdapter.notifyDataSetChanged();
                 }
             }
