@@ -33,11 +33,11 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
     private Context context;
     private List<ProductStyle> styles = new ArrayList<>();
 
+    private boolean isNewGroup = true;
+
     String productId;
 
     private OnImgBtnDeleteStyleListener onImgBtnDeleteStyleListener;
-
-    private OnEditTextChangedListener onEditTextChangedListener;
 
     private OnStyleChangedListner onStyleChangedListner;
 
@@ -67,14 +67,6 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
     public OnImgBtnDeleteStyleListener getOnImgBtnDeleteStyleListener() {
         return onImgBtnDeleteStyleListener;
-    }
-
-    public OnEditTextChangedListener getOnEditTextChangedListener() {
-        return onEditTextChangedListener;
-    }
-
-    public void setOnEditTextChangedListener(OnEditTextChangedListener listner) {
-        this.onEditTextChangedListener = listner;
     }
 
     public OnStyleChangedListner getOnStyleChangedListner() {
@@ -168,86 +160,83 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             deleteStyle = itemView.findViewById(R.id.imgBtn_delete_group_style);
             styleName.setEnabled(false);
 
-//            stylePrice.addTextChangedListener(new TextWatcher() {
-//                @Override
-//                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                }
-//
-//                @Override
-//                public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//                }
-//
-//                @Override
-//                public void afterTextChanged(Editable s) {
-//                    ProductStyle currentStyle = styles.get(getAdapterPosition());
-//                    String newInfo = s.toString();
-//                    if(!newInfo.isEmpty()){
-//                        Log.d("TextWatcher", "new price input");
-//                        if(newInfo.length()>4){
-//                            try {
-//                                newInfo = newInfo.substring(4);
-//                                double newPrice = Double.parseDouble(newInfo);
-//                                Log.d("TextWatcher", "new price = " + newPrice);
-//                                if( newPrice <= 0){
-//                                    stylePrice.setError("The price must be greater than 0");
-//                                    Log.d("TextWatcher", "new price = 0");
-//                                    stylePrice.setText(s.toString().substring(0,4));
-//                                    stylePrice.requestFocus();
-//                                }else{
-//                                    currentStyle.setStylePrice(newPrice);
-//                                    Log.d("TextWatcher", "new price = " + newPrice);
-//                                    onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
-//                                }
-//                            } catch (NumberFormatException e) {
-//                                Log.d("TextWatcher", "new price error " + e.toString());
-//
-//                            }
-//                        }
-//                    }
-//
-//                }
-//            });
-//
-//            styleQty.addTextChangedListener(new TextWatcher() {
-//                @Override
-//                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//                }
-//
-//                @Override
-//                public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//                }
-//
-//                @Override
-//                public void afterTextChanged(Editable s) {
-//                    ProductStyle currentStyle = styles.get(getAdapterPosition());
-//                    String newInfo = s.toString();
-//                    if(!newInfo.isEmpty()){
-//                        try {
-//                            int qty = Integer.parseInt(s.toString());
-//                            if (qty < -1){
-////                                Toast.makeText(context, "The minimum quantity is -1 for unlimited quantity order", Toast.LENGTH_SHORT).show();
-//                                styleQty.setError("The minimum quantity is -1 for unlimited quantity order");
-//                                styleQty.setText("");
-//                                styleQty.requestFocus();
-//                            }else if(qty == 0){
-////                                Toast.makeText(context, "The quantity cannot be 0", Toast.LENGTH_SHORT).show();
-//                                styleQty.setError("The quantity cannot be 0,");
-//                                styleQty.setText("");
-//                                styleQty.requestFocus();
-//                            }
-//                            else {
-//                                onStyleChangedListner.onStyleChange2(getAdapterPosition(), currentStyle, qty);
-//                            }
-//                        } catch (NumberFormatException e) {
-//                        }
-//                    }
-//
-//                }
-//            });
+            stylePrice.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    ProductStyle currentStyle = styles.get(getAdapterPosition());
+                    String newInfo = s.toString();
+                    if(!newInfo.isEmpty()){
+                        Log.d("TextWatcher", "new price input");
+//                        if(newInfo.length()>4){
+                            try {
+//                                newInfo = newInfo.substring(4);
+                                double newPrice = Double.parseDouble(newInfo.trim().replace("CA$",""));
+                                Log.d("TextWatcher", "new price = " + newPrice);
+                                if( newPrice <= 0){
+                                    stylePrice.setError("The price must be greater than 0");
+                                    Log.d("TextWatcher", "new price = 0");
+                                    stylePrice.setText("CA$ ");
+                                    stylePrice.requestFocus();
+                                }else{
+                                    currentStyle.setStylePrice(newPrice);
+                                    Log.d("TextWatcher", "new price = " + newPrice);
+                                    onStyleChangedListner.onStyleChange(getAdapterPosition(), currentStyle);
+                                }
+                            } catch (NumberFormatException e) {
+                                Log.d("TextWatcher", "new price error " + e.toString());
+
+                            }
+                        }
+                    }
+            });
+
+            styleQty.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    ProductStyle currentStyle = styles.get(getAdapterPosition());
+                    String newInfo = s.toString();
+                    if(!newInfo.isEmpty()){
+                        try {
+                            int qty = Integer.parseInt(s.toString());
+                            if (qty < -1){
+//                                Toast.makeText(context, "The minimum quantity is -1 for unlimited quantity order", Toast.LENGTH_SHORT).show();
+                                styleQty.setError("The minimum quantity is -1 for unlimited quantity order");
+                                styleQty.setText("");
+                                styleQty.requestFocus();
+                            }else if(qty == 0 && isNewGroup){
+//                                Toast.makeText(context, "The quantity cannot be 0", Toast.LENGTH_SHORT).show();
+                                styleQty.setError("The quantity cannot be 0,");
+                                styleQty.setText("");
+                                styleQty.requestFocus();
+                            }
+                            else {
+                                onStyleChangedListner.onStyleChange2(getAdapterPosition(), currentStyle, qty);
+                            }
+                        } catch (NumberFormatException e) {
+                        }
+                    }
+
+                }
+            });
         }
 
         public boolean isAnyFieldEmpty() {
@@ -261,11 +250,6 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             styleQty.setText("");
         }
     }
-
-    public interface OnEditTextChangedListener{
-        void onTextChanged(int position, String s);
-    }
-
 
     public interface OnImgBtnDeleteStyleListener{
         void onDeleteClick(int position);

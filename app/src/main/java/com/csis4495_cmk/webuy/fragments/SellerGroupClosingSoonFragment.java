@@ -135,7 +135,7 @@ public class SellerGroupClosingSoonFragment extends Fragment {
 
                         long remainingTime = gp.getEndTimestamp() - currentTime;
                         long remainingInDays = TimeUnit.MILLISECONDS.toDays(remainingTime);
-                        if (remainingInDays < 5 && gp.getStatus() == 1) {
+                        if (remainingInDays < 5 && gp.getStatus() == 1 && gp.getEndTimestamp() !=0 ) {
                             closingSoonGroups.add(gp);
                             groupIds.add(groupId);
                         }

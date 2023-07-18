@@ -304,7 +304,7 @@ public class SellerAddGroupFragment extends Fragment {
             stylesAdapter.setOnImgBtnDeleteStyleListener(new SellerAddGroupStylesAdapter.OnImgBtnDeleteStyleListener() {
                 @Override
                 public void onDeleteClick(int position) {
-                    groupQtyMap.remove(groupStyles.get(position).getStyleName());
+                    groupQtyMap.remove("s_"+groupStyles.get(position).getStyleId());
                     groupStyles.remove(position);
                     stylesAdapter.updateStyleData2(productId, groupStyles);
                     stylesAdapter.notifyDataSetChanged();
@@ -371,7 +371,7 @@ public class SellerAddGroupFragment extends Fragment {
 
                 @Override
                 public void onStyleChange2(int position, ProductStyle style, int qty) {
-                    groupQtyMap.put(groupStyles.get(position).getStyleName(), qty);
+                    groupQtyMap.put("s_"+groupStyles.get(position).getStyleId(), qty);
 
 //                Toast.makeText(getContext(), groupStyles.get(position).getStyleName() + "qty: " +  groupQtyMap.get(groupStyles.get(position).getStyleName()) , Toast.LENGTH_SHORT ).show();
 
@@ -434,12 +434,12 @@ public class SellerAddGroupFragment extends Fragment {
 
                 @Override
                 public void onStyleChange(int position, ProductStyle style) {
-                    String oldKey = groupStyles.get(position).getStyleName();
+                    String oldKey = "s_"+groupStyles.get(position).getStyleId();
                     Integer qty = groupQtyMap.get(oldKey);
 
                     if (groupQtyMap.containsKey(oldKey)) {
                         groupQtyMap.remove(oldKey);
-                        groupQtyMap.put(style.getStyleName(), qty);
+                        groupQtyMap.put("s_"+style.getStyleId(), qty);
                     }
 
                     groupStyles.set(position, style);
@@ -677,17 +677,17 @@ public class SellerAddGroupFragment extends Fragment {
                 Log.d("DEBUG", "Group Status: " + groupStatus);
 
             }
-
         }
 
         for (Map.Entry<String, Integer> entry : groupQtyMap.entrySet()) {
+
             //check if the style qty is missing
             if (entry.getValue() == null) {
                 isComplete = false;
                 // trigger alert
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("No Quantity");
-                builder.setMessage("Please input the quantity for " + entry.getKey());
+                builder.setMessage("Please input the quantity for the style");
 //                builder.setMessage("Please input the quantity for " + entry.getKey());
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -748,7 +748,7 @@ public class SellerAddGroupFragment extends Fragment {
                 isComplete = false;
 //                Toast.makeText(getContext(),
 //                        "Please enter the group quantity.", Toast.LENGTH_SHORT).show();
-                group_no_style_qty.setError("Group quantity is required.");
+                group_no_style_qty.setError("Please input the group quantity");
                 group_no_style_qty.requestFocus();
             }
 
@@ -772,7 +772,7 @@ public class SellerAddGroupFragment extends Fragment {
                         group_no_style_qty.setError("The quantity for in stock item " + gName + " must be at least 1");
                     }
                 }
-                groupQtyMap.put(gName, no_qty);
+                groupQtyMap.put("p_"+productId, no_qty);
 
             } catch (Exception e) {
 //                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -970,7 +970,7 @@ public class SellerAddGroupFragment extends Fragment {
                     String styleId = snapshot.child("styleId").getValue(String.class);
                     ProductStyle ps = new ProductStyle(name, price, img, styleId);
                     groupStyles.add(ps);
-                    groupQtyMap.put(ps.getStyleName(), null);
+                    groupQtyMap.put("s_"+ps.getStyleId(), null);
 
 //                    Toast.makeText(getContext(), ps.getStyleName() + "qty: " +  groupQtyMap.get(ps) , Toast.LENGTH_SHORT ).show();
                 }
