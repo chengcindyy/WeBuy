@@ -30,52 +30,25 @@
             app:layout_constraintStart_toEndOf="@+id/txv_method"
             app:layout_constraintTop_toTopOf="@+id/txv_method" />
 
-        <TextView
-            android:id="@+id/txv_shipping_fee_label"
-            android:layout_width="wrap_content"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_price_range_info"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="Shipping fee: CA$"
-            app:layout_constraintEnd_toStartOf="@+id/txv_shipping_fee"
-            app:layout_constraintTop_toTopOf="@+id/tvx_from_label" />
-
-        <TextView
-            android:id="@+id/txv_shipping_fee"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text=""
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/txv_shipping_fee_label" />
-
-        <TextView
-            android:id="@+id/tvx_from_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Price begin from $CA:"
             app:layout_constraintStart_toStartOf="@+id/txv_method"
             app:layout_constraintTop_toBottomOf="@+id/txv_method_location" />
-
-        <TextView
-            android:id="@+id/tvx_from"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text=""
-            app:layout_constraintStart_toEndOf="@+id/tvx_from_label"
-            app:layout_constraintTop_toTopOf="@+id/tvx_from_label" />
 
         <View
             android:id="@+id/divider2"
             android:layout_width="377dp"
             android:layout_height="1dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="5dp"
             android:background="?android:attr/listDivider"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvx_from_label" />
+            app:layout_constraintTop_toBottomOf="@+id/recyclerView_price_range_info" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

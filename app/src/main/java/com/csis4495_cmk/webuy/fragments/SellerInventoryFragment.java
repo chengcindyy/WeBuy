@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy;
+package com.csis4495_cmk.webuy.fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,10 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
+import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.adapters.InventoryRecyclerViewAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerInventoryListRecyclerAdapter;
-import com.csis4495_cmk.webuy.fragments.SellerViewProductListFragment;
+import com.csis4495_cmk.webuy.adapters.SellerInventoryViewPager;
 import com.csis4495_cmk.webuy.models.Group;
-import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -36,11 +37,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SellerInventoryFragment extends Fragment implements SellerInventoryListRecyclerAdapter.OnDirectToProductPageOnClickListener{
+public class SellerInventoryFragment extends Fragment implements SellerInventoryListRecyclerAdapter.OnButtonClickListener{
 
     private NavController navController;
     private SearchView searchBar;
@@ -51,8 +51,18 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     private ArrayList<GroupItemEntry> inStockItemsList;
     private ArrayList<GroupItemEntry> preOrderItemsList;
     private ArrayList<String> allCoverImgsList;
+    private String status;
+    SellerInventoryViewPager viewPagerAdapter;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     DatabaseReference reference;
+
+    public SellerInventoryFragment(){
+
+    }
+
+    public SellerInventoryFragment(String status){
+        this.status = status;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,6 +92,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SellerInventoryListRecyclerAdapter(getContext(), this);
         setInventoryDetails();
+        // TODO: View pager
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -110,7 +121,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
 
             }
         });
-
     }
 
     private void setInventoryDetails() {
@@ -192,9 +202,48 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
 
 
     @Override
-    public void onButtonClick(Boolean btnClicked, int position) {
-
+    public void onOpenProductPageButtonClick(Boolean isBtnClicked, int position) {
+        if(isBtnClicked == true){
+            Log.d("Test stock", "onOpenProductPageButtonClick()");
+        }
     }
+
+    @Override
+    public void onStockInClick(Boolean isBtnClicked, int position) {
+        if(isBtnClicked == true){
+            Log.d("Test stock", "onStockInClick()");
+//            reference = FirebaseDatabase.getInstance().getReference("Group");
+//            reference.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                    for (DataSnapshot productSnapshot : snapshot.getChildren()){
+//                        Group group = productSnapshot.getValue(Group.class);
+//                        String sellerId = group.getSellerId();
+//                        String productId = group.getProductId();
+//                        // Check sellerId to only display a seller's groups
+//                        if(sellerId != null && sellerId.equals(auth.getCurrentUser().getUid())){
+//                            GroupItemEntry groupEntry = new GroupItemEntry(group, group.getGroupQtyMap());
+//
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//                    Log.d("Test firebase read", "Error reading data", error.toException());
+//                }
+//            });
+        }
+    }
+
+    @Override
+    public void onStockOutClick(Boolean isBtnClicked, int position) {
+        Log.d("Test stock", "onStockOutClick()");
+    }
+
+
+
 
     public class GroupItemEntry {
         private Group group;

@@ -15,14 +15,14 @@
 
         <TextView
             android:id="@+id/txv_product_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
             android:text="Product name"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/btn_view_product"
+            app:layout_constraintStart_toStartOf="@+id/img_product_img"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
@@ -31,8 +31,8 @@
             android:layout_height="wrap_content"
             android:background="@color/deep_blue"
             android:backgroundTint="@android:color/transparent"
-            android:minWidth="40dp"
-            android:minHeight="40dp"
+
+            android:contentDescription="null"
             android:src="@drawable/baseline_remove_red_eye_24"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="@+id/img_product_img"
@@ -47,118 +47,113 @@
             android:src="@drawable/app_default_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_view_product" />
+            app:layout_constraintTop_toBottomOf="@+id/txv_product_name" />
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
+        <TableLayout
+            android:id="@+id/tableLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/img_product_img"
             app:layout_constraintTop_toBottomOf="@+id/img_product_img">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp">
+            <TableRow>
 
-                <TableLayout
-                    android:id="@+id/tableLayout"
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:stretchColumns="*"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:padding="5dp"
+                    android:text="Products"
+                    android:textSize="13sp" />
 
-                    <TableRow>
+            </TableRow>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="8dp"
-                            android:text="Products"
-                            android:textSize="14sp" />
+            <TableRow>
 
-                    </TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="Ordered"
+                    android:textSize="13sp" />
 
-                    <TableRow>
+            </TableRow>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="8dp"
-                            android:text="Ordered"
-                            android:textSize="14sp" />
+            <TableRow>
 
-                    </TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="In-Stock"
+                    android:textSize="13sp" />
 
-                    <TableRow>
+            </TableRow>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="8dp"
-                            android:text="Allocated"
-                            android:textSize="14sp" />
+            <TableRow>
 
-                    </TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="Allocated"
+                    android:textSize="13sp" />
 
-                    <TableRow>
+            </TableRow>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="8dp"
-                            android:text="In-Stock"
-                            android:textSize="14sp" />
 
-                    </TableRow>
+            <TableRow>
 
-                    <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="To allocated" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="8dp"
-                            android:text="To allocated" />
+            </TableRow>
 
-                    </TableRow>
+            <TableRow>
 
-                    <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="To order"
+                    android:textSize="13sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="8dp"
-                            android:text="To order"
-                            android:textSize="14sp" />
+            </TableRow>
 
-                    </TableRow>
+            <TableRow>
 
-                    <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="110dp"
+                    android:padding="5dp"
+                    android:gravity="center_vertical"
+                    android:text="Actions"
+                    android:textSize="13sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="8dp"
-                            android:text="Actions"
-                            android:textSize="14sp" />
+            </TableRow>
 
-                    </TableRow>
+        </TableLayout>
 
-                </TableLayout>
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="0dp"
+            android:layout_height="282dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/tableLayout"
+            app:layout_constraintEnd_toEndOf="@+id/img_product_img"
+            app:layout_constraintStart_toEndOf="@+id/tableLayout"
+            app:layout_constraintTop_toTopOf="@+id/tableLayout">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView_inventory_info"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="2.5"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/tableLayout"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_inventory_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"/>
 
         </HorizontalScrollView>
 

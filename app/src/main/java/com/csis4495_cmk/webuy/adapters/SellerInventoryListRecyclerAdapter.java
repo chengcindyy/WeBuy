@@ -14,22 +14,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.SellerInventoryFragment;
+import com.csis4495_cmk.webuy.fragments.SellerInventoryFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<SellerInventoryListRecyclerAdapter.ViewHolder> {
+public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<SellerInventoryListRecyclerAdapter.ViewHolder> implements InventoryRecyclerViewAdapter.OnItemClickListener{
 
     private Context context;
-    private OnDirectToProductPageOnClickListener listener;
+    private static OnButtonClickListener listener;
     private ArrayList<SellerInventoryFragment.GroupItemEntry> displayItemsList;
     private List<String> coverImages;
     private InventoryRecyclerViewAdapter adapter;
 
-    public SellerInventoryListRecyclerAdapter(Context context, OnDirectToProductPageOnClickListener listener) {
+    public SellerInventoryListRecyclerAdapter(Context context, OnButtonClickListener listener) {
         this.context = context;
         this.listener = listener;
     }
@@ -50,14 +50,14 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         coverImages = displayItemsList.get(position).getGroup().getGroupImages();
         SellerInventoryFragment.GroupItemEntry groupItemEntry = displayItemsList.get(position);
-        Map<String, Integer> entries = groupItemEntry.getEntries();
-
         holder.txvProductName.setText(groupItemEntry.getGroup().getGroupName());
 
         // Initialize child RecyclerView
+        Map<String, Integer> entries = groupItemEntry.getEntries();
         LinearLayoutManager layoutManager = new LinearLayoutManager(holder.itemView.getContext(), LinearLayoutManager.HORIZONTAL, false);
         holder.recyclerViewInvInfo.setLayoutManager(layoutManager);
-        adapter = new InventoryRecyclerViewAdapter(context, displayItemsList);
+        adapter = new InventoryRecyclerViewAdapter(context, entries);
+        adapter.setOnItemClickListener(this);
         holder.recyclerViewInvInfo.setAdapter(adapter);
 
         if(displayItemsList.get(position).getCoverImgUrl() != null) {
@@ -65,11 +65,23 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
         } else {
             holder.imgProductImage.setImageResource(R.drawable.app_default_image);
         }
+
+        holder.btnViewProduct.setOnClickListener(view -> listener.onOpenProductPageButtonClick(true, position));
     }
 
     @Override
     public int getItemCount() {
         return displayItemsList.size();
+    }
+
+    @Override
+    public void onStockInClick(boolean isBtnClicked, int position) {
+
+    }
+
+    @Override
+    public void onStockOutClick(boolean isBtnClicked, int position) {
+
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -90,8 +102,10 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
         }
     }
 
-    public interface OnDirectToProductPageOnClickListener {
-        void onButtonClick(Boolean btnClicked, int position);
+    public interface OnButtonClickListener {
+        void onOpenProductPageButtonClick(Boolean isBtnClicked, int position);
+        void onStockInClick(Boolean isBtnClicked, int position);
+        void onStockOutClick(Boolean isBtnClicked, int position);
     }
 
 }
