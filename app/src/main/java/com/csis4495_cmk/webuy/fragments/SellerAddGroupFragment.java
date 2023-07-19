@@ -501,12 +501,7 @@ public class SellerAddGroupFragment extends Fragment {
         });
 
         btnPublish.setOnClickListener(v -> {
-            if (isNewGroup) {
-                onSubmitNewGroup();
-            } else {
-                Log.d(TAG, "onSubmit: " + editGroup.getGroupStyles().get(0).getStylePrice());
-            }
-
+            onSubmitNewGroup();
         });
 
 
@@ -658,6 +653,8 @@ public class SellerAddGroupFragment extends Fragment {
                 if (task.isSuccessful()) {
                     editGroup = task.getResult().getValue(Group.class);
                     if (editGroup != null) {
+                        tax = editGroup.getTax();
+                        groupType = editGroup.getGroupType();
                         if (editGroup.getGroupType() == 0) {
                             tgBtnGp_publish.check(tgBtn_in_stock_publish.getId());
                             tgBtn_in_stock_publish.setClickable(false);
@@ -684,35 +681,32 @@ public class SellerAddGroupFragment extends Fragment {
                             }
                             btnEnd.setEnabled(true);
                         }
-                        tax = editGroup.getTax();
                         groupName.setText(editGroup.getGroupName());
                         description.setText(editGroup.getDescription());
                         groupCategory.setText(editGroup.getCategory());
                         groupCategory.setEnabled(false);
-                        if (editGroup.getGroupStyles() != null) {
-                            groupPriceRange.setVisibility(View.VISIBLE);
-                            groupPriceRange.setText(editGroup.getGroupPrice());
-
-                            groupPriceCurrency.setVisibility(View.GONE);
-                            group_no_style_qty.setVisibility(View.GONE);
-                        } else {
-                            groupPriceRange.setVisibility(View.GONE);
-
-                            groupPriceCurrency.setVisibility(View.VISIBLE);
-                            groupPriceCurrency.setText(editGroup.getGroupPrice());
-                            group_no_style_qty.setVisibility(View.VISIBLE);
-                            group_no_style_qty.setText(Integer.toString(editGroup.getGroupQtyMap().get("p_" + productId)));
-                        }
 
                         //Get Group Style data
                         groupQtyMap = editGroup.getGroupQtyMap();
 
                         if (editGroup.getGroupStyles() != null) {
+                            //get group styles data
+                            groupPriceRange.setVisibility(View.VISIBLE);
+                            groupPriceRange.setText(editGroup.getGroupPrice());
+                            groupPriceCurrency.setVisibility(View.GONE);
+                            group_no_style_qty.setVisibility(View.GONE);
                             groupStyles = editGroup.getGroupStyles();
                             stylesAdapter.setStyles(groupStyles);
                             stylesAdapter.setProductId(productId);
                             stylesAdapter.setNewGroup(false);
                             stylesAdapter.setGroupQtyMap(groupQtyMap);
+
+                        } else {
+                            groupPriceRange.setVisibility(View.GONE);
+                            groupPriceCurrency.setVisibility(View.VISIBLE);
+                            groupPriceCurrency.setText(editGroup.getGroupPrice());
+                            group_no_style_qty.setVisibility(View.VISIBLE);
+                            group_no_style_qty.setText(Integer.toString(editGroup.getGroupQtyMap().get("p_" + productId)));
                         }
 
                         DatabaseReference productReference = databaseReference.child("Product").child(productId);
@@ -766,6 +760,7 @@ public class SellerAddGroupFragment extends Fragment {
 
     private void onSubmitNewGroup() {
         Group newGroup = new Group();
+
         boolean isComplete = true;
 
         String gName = groupName.getText().toString();
@@ -773,8 +768,7 @@ public class SellerAddGroupFragment extends Fragment {
         String gCategory = groupCategory.getText().toString();
         groupCategory.setEnabled(false);
 
-//        String gPriceCurrency = groupPriceCurrency.getText().toString().substring(4);
-        String gPriceCurrency = groupPriceCurrency.getText().toString().trim();
+        String gPriceCurrency = groupPriceCurrency.getText().toString();
         String gPriceRange = groupPriceRange.getText().toString();
         String gNoStyleQty = group_no_style_qty.getText().toString().trim();
 
@@ -808,6 +802,12 @@ public class SellerAddGroupFragment extends Fragment {
                         "Please enter the group price.", Toast.LENGTH_SHORT).show();
                 groupPriceCurrency.setError("Group price is required.");
                 groupPriceCurrency.requestFocus();
+            } else if (gPriceCurrency.substring(4).isEmpty()) {
+                isComplete = false;
+                Toast.makeText(getContext(),
+                        "Please enter the group price.", Toast.LENGTH_SHORT).show();
+                groupPriceCurrency.setError("Group price is required.");
+                groupPriceCurrency.requestFocus();
             } else if (Double.parseDouble(gPriceCurrency.substring(4)) <= 0) {
                 isComplete = false;
                 Toast.makeText(getContext(),
@@ -823,14 +823,29 @@ public class SellerAddGroupFragment extends Fragment {
         newGroup.setDescription(gDescription);
         newGroup.setCategory(gCategory);
 
+        if (!isNewGroup) {
+            editGroup.setGroupName(gName);
+            newGroup.setDescription(gDescription);
+        }
+
         if (groupStyles.size() == 0) {
             newGroup.setGroupPrice(gPriceCurrency);
+            if (!isNewGroup) {
+                editGroup.setGroupPrice(gPriceCurrency);
+            }
         } else {
             newGroup.setGroupPrice(gPriceRange);
+            if (!isNewGroup) {
+                editGroup.setGroupPrice(gPriceRange);
+            }
         }
 
         newGroup.setGroupType(groupType);
         newGroup.setGroupImages(imgPaths);
+
+        if (!isNewGroup) {
+            editGroup.setGroupImages(imgPaths);
+        }
 
         newGroup.setTax(tax);
 
@@ -866,9 +881,16 @@ public class SellerAddGroupFragment extends Fragment {
                 newGroup.setStartTimestamp(startTime.getTime());
                 newGroup.setEndTimestamp(endTime.getTime());
                 newGroup.setStatus(groupStatus);
+
                 Log.d("DEBUG", "Current time: " + currentTime);
                 Log.d("DEBUG", "Start time: " + startTime);
                 Log.d("DEBUG", "Group Status: " + groupStatus);
+
+                if (!isNewGroup) {
+                    editGroup.setStartTimestamp(startTime.getTime());
+                    editGroup.setEndTimestamp(endTime.getTime());
+                    editGroup.setStatus(groupStatus);
+                }
             } else if (startTime.compareTo(currentTime) < 0) {
                 //Group started, status = 1
 //                groupStatus = 1;
@@ -876,9 +898,16 @@ public class SellerAddGroupFragment extends Fragment {
                 newGroup.setStartTimestamp(startTime.getTime());
                 newGroup.setEndTimestamp(endTime.getTime());
                 newGroup.setStatus(groupStatus);
+
                 Log.d("DEBUG", "Current time: " + currentTime);
                 Log.d("DEBUG", "Start time: " + startTime);
                 Log.d("DEBUG", "Group Status: " + groupStatus);
+
+                if (!isNewGroup) {
+                    editGroup.setStartTimestamp(startTime.getTime());
+                    editGroup.setEndTimestamp(endTime.getTime());
+                    editGroup.setStatus(groupStatus);
+                }
 
             }
         }
@@ -891,7 +920,7 @@ public class SellerAddGroupFragment extends Fragment {
                 // trigger alert
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("No Quantity");
-                builder.setMessage("Please input the quantity for the style");
+                builder.setMessage("Please input the quantity for the style(s)");
 //                builder.setMessage("Please input the quantity for " + entry.getKey());
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -901,13 +930,13 @@ public class SellerAddGroupFragment extends Fragment {
                 dialog.show();
                 break;
             }
-            if (groupType == 0) {
+            if (groupType == 0 && isNewGroup) {
                 if (entry.getValue() < 1) {
                     isComplete = false;
                     // trigger alert
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("Invalid Quantity");
-                    builder.setMessage("The quantity for in stock item must be at least 1");
+                    builder.setMessage("The quantity for in stock group must be greater than 0");
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                         }
@@ -937,30 +966,26 @@ public class SellerAddGroupFragment extends Fragment {
             }
         }
 
-//        if (groupStyles.size() != groupQtyMap.size()){
-//            Toast.makeText(getContext(), "The style list and the style qty is not matched", Toast.LENGTH_SHORT).show();
-//            Log.d("Test","The style list and the style qty is not matched");
-//        }
-
         if (groupStyles.size() > 0) {
             newGroup.setGroupStyles(groupStyles);
+            if (!isNewGroup) {
+                editGroup.setGroupStyles(groupStyles);
+            }
         }
 
         if (groupStyles.size() == 0) {
             groupQtyMap.clear();
             if (TextUtils.isEmpty(gNoStyleQty)) {
                 isComplete = false;
-//                Toast.makeText(getContext(),
-//                        "Please enter the group quantity.", Toast.LENGTH_SHORT).show();
                 group_no_style_qty.setError("Please input the group quantity");
                 group_no_style_qty.requestFocus();
             }
 
             try {
                 no_qty = Integer.valueOf(gNoStyleQty);
-                if (no_qty == 0) {
+                if (no_qty == 0 && isNewGroup) {
                     isComplete = false;
-                    group_no_style_qty.setError("The quantity cannot be 0,");
+                    group_no_style_qty.setError("The quantity must be greater than 0");
                     group_no_style_qty.setText("");
                     group_no_style_qty.requestFocus();
                 } else if (no_qty < -1) {
@@ -973,38 +998,68 @@ public class SellerAddGroupFragment extends Fragment {
                 if (groupType == 0) {
                     if (no_qty == -1) {
                         isComplete = false;
-                        group_no_style_qty.setError("The quantity for in stock item " + gName + " must be at least 1");
+                        group_no_style_qty.setError("The quantity for in stock group must be greater than 0");
                     }
                 }
                 groupQtyMap.put("p_" + productId, no_qty);
 
             } catch (Exception e) {
-//                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onSubmitNewGroup: error" + e);
             }
         }
 
         if (!groupQtyMap.isEmpty()) {
             newGroup.setGroupQtyMap(groupQtyMap);
+            if (!isNewGroup) {
+                editGroup.setGroupStyles(groupStyles);
+            }
         }
 
-        UploadGroup(newGroup, isComplete);
+        if (isNewGroup) {
+            UploadGroup(newGroup, isComplete);
+        } else {
+            UpdateGroup(editGroup, isComplete, groupId);
+        }
+
+        Log.d(TAG, "onSubmitNewGroup: imgPaths" + imgPaths);
+    }
+
+    private void UpdateGroup(Group group, boolean isComplete, String groupId) {
+        if (isComplete) {
+            groupRef.child(groupId).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("New Group Upload", "Group Upload Successfully");
+                    } else {
+                        Log.d("New Group Upload", "Group Upload Failed");
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT);
+                }
+            });
+
+            Navigation.findNavController(getView()).popBackStack();
+        }
 
     }
 
     private void UploadGroup(Group group, boolean isComplete) {
-        if (groupId == null) { //it is a new product
-            groupId = groupRef.push().getKey(); //Product -> productId -> newProduct
+        if (isNewGroup) { //it is a new group
+            groupId = groupRef.push().getKey(); //Group -> groupId -> newGroup
             Log.d("Test", "new group: " + groupId);
-
         }
         if (isComplete) {
             groupRef.child(groupId).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        Log.d("Test Upload", "Group Upload Successfully");
+                        Log.d("New Group Upload", "Group Upload Successfully");
                     } else {
-                        Log.d("Test Upload", "Grooup Upload Failed");
+                        Log.d("New Group Upload", "Group Upload Failed");
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
