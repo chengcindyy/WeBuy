@@ -159,7 +159,7 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
                         long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
                         millisUntilFinished -= TimeUnit.MINUTES.toMillis(minutes);
 
-                        String timeTillOpen = String.format(Locale.getDefault(), "%d D %d H %d M", days, hours, minutes);
+                        String timeTillOpen = String.format(Locale.getDefault(), "%dD %dH %dM", days, hours, minutes);
 
                         holder.countDown.setText("Opens in " + timeTillOpen);
                     }
@@ -211,7 +211,7 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
                         long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
                         millisUntilFinished -= TimeUnit.MINUTES.toMillis(minutes);
 
-                        String timeRemaining = String.format(Locale.getDefault(), "%d D %d H %d M", days, hours, minutes);
+                        String timeRemaining = String.format(Locale.getDefault(), "%dD %dH %dM", days, hours, minutes);
 
                         holder.countDown.setText("Ends in " + timeRemaining);
                     }
