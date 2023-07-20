@@ -1,72 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.CustomerGroupDetailFragment">
+
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-        <!-- Swipe images and saved button -->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPagerGroupImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <!-- Style images -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"/>
-
-        <!-- Group name -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Group Name"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-        <!--    group price    -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Group Price"
-            android:textSize="14sp" />
-        <!--    type, sold amount, rating    -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <!-- Type -->
+            <!-- Swipe images and saved button -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerGroupImage"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:orientation="horizontal" />
+
+            <!--      save to list      -->
+            <ToggleButton
+                android:id="@+id/btn_detail_save_to_list"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="top|end"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="-40dp"
+                android:alpha="1"
+                android:background="@drawable/baseline_unsave_border_24"
+                android:textOn=""
+                android:textOff=""
+                android:checked="false" />
+
+            <!-- Style images -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_group_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+
+            <!-- Group name -->
             <TextView
+                android:id="@+id/tv_detail_group_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Type"
+                android:text="Group Name"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <!--    group price    -->
+            <TextView
+                android:id="@+id/tv_detail_group_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Group Price"
+                android:textSize="14sp" />
+            <!--    type, sold amount, rating    -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Type -->
+                <TextView
+                    android:id="@+id/tv_detail_group_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Type"
+                    android:textSize="12sp" />
+                <!--        Category        -->
+                <TextView
+                    android:id="@+id/tv_detail_group_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Category"
+                    android:textSize="12sp" />
+                <!-- Sold amount -->
+                <TextView
+                    android:id="@+id/tv_detail_sold_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Sold Amount"
+                    android:textSize="12sp" />
+
+                <!-- Inventory amount  -->
+                <TextView
+                    android:id="@+id/tv_detail_inventory_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Inventory Amount"
+                    android:textSize="12sp" />
+                <!-- Rating -->
+
+            </LinearLayout>
+            <!--    description    -->
+            <TextView
+                android:id="@+id/tv_detail_group_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textSize="12sp" />
+            <!--    start time, end time    -->
+            <TextView
+                android:id="@+id/tv_detail_group_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start time"
                 android:textSize="12sp" />
 
-            <!-- Sold amount -->
             <TextView
+                android:id="@+id/tv_detail_group_end_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sold Amount"
-                android:textSize="12sp"
-                android:layout_marginStart="16dp" />
+                android:text="End time"
+                android:textSize="12sp" />
 
-            <!-- Rating -->
+            <TextView
+                android:id="@+id/tv_detail_group_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="timer"
+                android:textSize="12sp" />
+            <!--    amount, location    -->
+            <!--    seller pic, store name, store rating    -->
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imv_detail_store_pic"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/baseline_person_24"
+                app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+                app:strokeColor="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/tv_detail_seller_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="seller name"
+                android:textSize="12sp" />
+            <!--    fab- add to cart(then pop up, style, amount)    -->
 
         </LinearLayout>
-        <!--    description    -->
-        <!--    start time, end time    -->
-        <!--    amount, location    -->
-        <!--    seller pic, store name, store rating    -->
-        <!--    fab- add to cart(then pop up, style, amount)    -->
 
     </ScrollView>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fab_add_to_cart"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/baseline_add_shopping_cart_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

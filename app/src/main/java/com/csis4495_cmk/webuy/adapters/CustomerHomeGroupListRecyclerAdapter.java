@@ -3,9 +3,9 @@ package com.csis4495_cmk.webuy.adapters;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,14 +21,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.activities.SellerHomePageActivity;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Seller;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,21 +34,19 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<CustomerHomeGroupListRecyclerAdapter.ViewHolder> {
 
     Context context;
 
     public StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
+    private String groupId;
     private String productId;
     private String groupImage;
     private String groupImageUrl;
@@ -67,19 +61,22 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
     private String sellerId;
     //
     private int groupStatus; // notStarted: 0; started: 1; ended: 2
-    private long startTimestamp;
-    private long endTimestamp;
+//    private Long startTimestamp;
+//    private Long endTimestamp;
 
-    private List<Group> groups;
+    private Map<String,Group> groupsMap;
+    private List<Map.Entry<String, Group>> groupsEntryList;
     private onGroupListener mGroupListener;
 
     public CustomerHomeGroupListRecyclerAdapter(){
 
     }
 
-    public CustomerHomeGroupListRecyclerAdapter(Context ct, List<Group> groups){
+    public CustomerHomeGroupListRecyclerAdapter(Context ct, Map<String,Group> groupsMap){
         this.context = ct;
-        this.groups = groups;
+        this.groupsMap = groupsMap;
+        this.groupsEntryList = new ArrayList<>(groupsMap.entrySet());
+        //groupsMap.forEach((key, value) -> Log.d("keyvalue","Key: " + key + ", Value: " + value.getGroupName()));
     }
 
     public void setOnGroupListener(onGroupListener mGroupListener) {
@@ -89,15 +86,17 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.card_customer_home_products, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.card_customer_home_groups, parent, false);
         return new CustomerHomeGroupListRecyclerAdapter.ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        groupId = groupsEntryList.get(position).getKey();
+
         // save or unsave to wish list
-        //pre set the save btn
+        // pre set the save btn
         holder.btnWishList.setOnClickListener(v -> {
             if (holder.btnWishList.isChecked()) {
                 holder.btnWishList.setBackgroundResource(R.drawable.baseline_saved_24);
@@ -109,17 +108,10 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
         });
 
         //image
-        productId = groups.get(position).getProductId();
+        productId = groupsEntryList.get(position).getValue().getProductId();
         //want image url here
-        groupImage = groups.get(position).getGroupImages().get(0);
-//        List<Task<Uri>> tasks = new ArrayList<>();
-//        tasks.add(imgRef.child(productId).child(groupImage).getDownloadUrl());
-//        Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
-//            @Override
-//            public void onSuccess(List<Object> objects) {
-//                groupImageUrl = ((Uri) objects.get(0)).toString();
-//            }
-//        });
+        groupImage = groupsEntryList.get(position).getValue().getGroupImages().get(0);
+
         imgRef.child(productId).child(groupImage).getDownloadUrl()
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -136,10 +128,10 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
                     }
                 });
 
-        groupCategory = groups.get(position).getCategory();
+        groupCategory = groupsEntryList.get(position).getValue().getCategory();
         holder.tvGroupCategory.setText(groupCategory);
 
-        groupType = groups.get(position).getGroupType();
+        groupType = groupsEntryList.get(position).getValue().getGroupType();
         if (groupType == 0) {
             holder.tvGroupType.setText("in-stock");
         } else if (groupType == 1) {
@@ -148,84 +140,144 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
             holder.tvGroupType.setText("no type");
         }
 
-        groupName = groups.get(position).getGroupName();
+        groupName = groupsEntryList.get(position).getValue().getGroupName();
         holder.tvGroupName.setText(groupName);
 
-        groupPrice = groups.get(position).getGroupPrice();
+        groupPrice = groupsEntryList.get(position).getValue().getGroupPrice();
         holder.tvGroupPrice.setText(groupPrice);
 
         ////soldAmount;
 
-        // display the due days if it is preorder
-        if (groupType == 1) {
-            // Convert the timestamp to LocalDateTime
-            LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(groups.get(position).getEndTimestamp()), ZoneOffset.UTC);
-            Log.d("custTest",groupName+ " EndDate: "+ dateTime);
-            // Get the current date
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            Log.d("custTest",groupName+ " CurrentDate: "+ currentDateTime);
-            // Calculate the duration between the two LocalDateTime objects
-            Duration duration = Duration.between(currentDateTime, dateTime);
-
-            // Calculate the number of days and remaining hours
-            long totalHours = duration.toHours();
-            int daysLeft = (int) totalHours / 24;
-            int hoursLeft = (int) totalHours % 24;
-
-            holder.tvTimer.setText("due in " + daysLeft + " d " + hoursLeft + " h");
-        }
-
         //seller name and pic
-        sellerId = groups.get(position).getSellerId();
+        sellerId = groupsEntryList.get(position).getValue().getSellerId();
+        Log.d("TestSellId", sellerId);
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Seller");
-        reference.child(sellerId).addValueEventListener(new ValueEventListener() {  // change to addValueEventListener
+        reference.child(sellerId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Seller seller = snapshot.getValue(Seller.class);
-                sellerName = seller.getStoreInfo().getStoreName();
-                holder.tvSellerName.setText(sellerName);
+                if (snapshot.exists()) {
+                    Seller seller = snapshot.getValue(Seller.class);
+                    sellerName = seller.getStoreInfo().getStoreName();
+                    holder.tvSellerName.setText(sellerName);
 
-                sellerPic = seller.getStoreInfo().getStorePic();
+                    sellerPic = seller.getStoreInfo().getStorePic();
 
-                if (sellerPic != null) {
-                    Log.d("Upload img: imageUrl ", sellerPic);
-                    Glide.with(context)
-                            .load(sellerPic)
-                            .circleCrop()
-                            .into(new CustomTarget<Drawable>() {
-                                @Override
-                                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                                    holder.imvSellerPic.setImageDrawable(resource);
-                                }
+                    if (sellerPic != null) {
+                        Log.d("Upload img: imageUrl ", sellerPic);
+                        Glide.with(context)
+                                .load(sellerPic)
+                                .circleCrop()
+                                .into(new CustomTarget<Drawable>() {
+                                    @Override
+                                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                        holder.imvSellerPic.setImageDrawable(resource);
+                                    }
 
-                                @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {
-                                    holder.imvSellerPic.setImageResource(R.drawable.ic_user_profile);
-                                }
-                            });
+                                    @Override
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                                        holder.imvSellerPic.setImageResource(R.drawable.ic_user_profile);
+                                    }
+                                });
+                    }
+                } else {
+                    // If the sellerId is not found, handle it accordingly
+                    holder.tvSellerName.setText("Seller not found");
+                    holder.imvSellerPic.setImageResource(R.drawable.ic_user_profile);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                holder.tvSellerName.setText("Error fetching seller data");
                 holder.imvSellerPic.setImageResource(R.drawable.ic_user_profile);
             }
         });
 
         //group item Clicked
         holder.view.setOnClickListener(v -> {
-            mGroupListener.onGroupClicked();
+            mGroupListener.onGroupClicked(groupsEntryList.get(position).getKey(),groupsEntryList.get(position).getValue());
         });
 
         //TODO: change the status and can filter the status (default show status 1)
-        groupStatus = groups.get(position).getStatus(); // notStarted: 0; started: 1; ended: 2
-        startTimestamp = groups.get(position).getStartTimestamp();
-        endTimestamp = groups.get(position).getEndTimestamp();
+        // display the due days if it is preorder
+        groupStatus = groupsEntryList.get(position).getValue().getStatus(); // notStarted: 0; started: 1; ended: 2
+        if (groupType == 1) {
+            Long startTimestamp = groupsEntryList.get(position).getValue().getStartTimestamp();
+            Long endTimestamp = groupsEntryList.get(position).getValue().getEndTimestamp();
+
+            long currentTime = System.currentTimeMillis();
+
+            if (startTimestamp != null) {
+                Date startTime = new Date(startTimestamp);
+
+                if (currentTime < startTimestamp) {
+                    long tillOpen = startTimestamp - System.currentTimeMillis();
+                    CountDownTimer timer = new CountDownTimer(tillOpen, 1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            long days = TimeUnit.MILLISECONDS.toDays(millisUntilFinished);
+                            millisUntilFinished -= TimeUnit.DAYS.toMillis(days);
+
+                            long hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
+                            millisUntilFinished -= TimeUnit.HOURS.toMillis(hours);
+
+                            long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
+                            millisUntilFinished -= TimeUnit.MINUTES.toMillis(minutes);
+
+                            String timeTillOpen = String.format(Locale.getDefault(), "%d d %d h %d m", days, hours, minutes);
+
+                            holder.tvTimer.setText("Starts in " + timeTillOpen);
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            //start, change status from 0 to 1
+                            //available to buy
+                        }
+                    }.start();
+                }
+            }
+
+            if (endTimestamp != null) {
+                Date endTime = new Date(endTimestamp);
+
+                if (endTimestamp > currentTime && currentTime > startTimestamp) { //opening
+                    long remainingTime = endTimestamp - currentTime;
+                    CountDownTimer timer = new CountDownTimer(remainingTime, 1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            long days = TimeUnit.MILLISECONDS.toDays(millisUntilFinished);
+                            millisUntilFinished -= TimeUnit.DAYS.toMillis(days);
+
+                            long hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
+                            millisUntilFinished -= TimeUnit.HOURS.toMillis(hours);
+
+                            long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
+                            millisUntilFinished -= TimeUnit.MINUTES.toMillis(minutes);
+
+                            String timeRemaining = String.format(Locale.getDefault(), "%d d %d h %d m", days, hours, minutes);
+
+                            holder.tvTimer.setText("Ends in " + timeRemaining);
+                        }
+                        @Override
+                        public void onFinish() {
+                            //end, change status from 1 to 2
+                            //unavailable to buy
+                        }
+                    }.start();;
+                } else if (currentTime >= endTimestamp) {
+                    holder.tvTimer.setText("Expired");
+                }
+            }
+        } else { //groupType == 0 (in-stock)
+            holder.tvTimer.setText("");
+        }
+
     }
 
     @Override
     public int getItemCount() {
-        return groups.size();
+        return groupsEntryList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -260,6 +312,6 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
     }
 
     public interface onGroupListener{
-        void onGroupClicked();
+        void onGroupClicked(String groupId, Group group);
     }
 }

@@ -12,10 +12,10 @@
 
     <!-- group image -->
     <ImageView
-        android:id="@+id/imv_group_pic"
+        android:id="@+id/imv_add_to_cart_group_pic"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:scaleType="center"
+        android:scaleType="centerCrop"
         android:background="@drawable/custom_imgbtn_shape"
         android:src="@drawable/baseline_add_photo_alternate_50"
         android:layout_marginBottom="20dp"
@@ -27,21 +27,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="group name"
-            android:id="@+id/tv_group_name"
+            android:id="@+id/tv_add_to_cart_group_name"
             android:layout_marginEnd="20dp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
-                android:id="@+id/tv_group_price"
+                android:id="@+id/tv_add_to_cart_group_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="group price"
                 android:layout_marginEnd="20dp" />
             <TextView
-                android:id="@+id/tv_product_amount"
+                android:id="@+id/tv_add_to_cart_inventory_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -60,7 +60,7 @@
             app:boxBackgroundColor="@null">
 
             <AutoCompleteTextView
-                android:id="@+id/text_input_group_style"
+                android:id="@+id/text_input_add_to_cart_group_style"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:cursorVisible="false"
@@ -85,7 +85,7 @@
                 android:layout_weight="1"
                 android:text="-" />
             <EditText
-                android:id="@+id/edit_amount"
+                android:id="@+id/edi_add_to_cart_order_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -101,6 +101,17 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btn_add_to_cart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="add to cart" />
+
+        <Button
+            android:id="@+id/btn_direct_checkout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="direct checkout" />
 
 </LinearLayout>
 

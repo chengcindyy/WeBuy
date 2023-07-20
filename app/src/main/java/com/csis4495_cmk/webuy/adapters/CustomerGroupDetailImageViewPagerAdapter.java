@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +36,10 @@ public class CustomerGroupDetailImageViewPagerAdapter extends RecyclerView.Adapt
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        //Picasso.get().load(url).into(holder.imvSingleImg);
+        String url = images.get(position);
+        Picasso.get().load(url).into(holder.imvSingleImg);
+
+        holder.tvImgCount.setText((position+1) + "/" + getItemCount());
     }
 
     @Override
@@ -46,10 +50,12 @@ public class CustomerGroupDetailImageViewPagerAdapter extends RecyclerView.Adapt
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imvSingleImg;
+        TextView tvImgCount;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imvSingleImg = itemView.findViewById(R.id.imv_group_single_img);
+            tvImgCount = itemView.findViewById(R.id.tv_img_count);
         }
     }
 
