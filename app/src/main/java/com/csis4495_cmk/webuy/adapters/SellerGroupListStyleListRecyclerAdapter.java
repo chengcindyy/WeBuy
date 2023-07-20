@@ -89,7 +89,7 @@ public class SellerGroupListStyleListRecyclerAdapter extends RecyclerView.Adapte
         ProductStyle ps = styles.get(position);
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
-        StorageReference imageReference = storageReference.child(productId+"/"+ps.getStylePic());
+        StorageReference imageReference = storageReference.child(productId+"/"+ps.getStylePicName());
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             // Got the download URL and pass it to Picasso to download, show in ImageView and caching
             Picasso.get().load(uri.toString()).into(holder.styleImg);

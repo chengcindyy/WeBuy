@@ -163,7 +163,6 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
         } else {
             holder.groupStart.setVisibility(View.GONE);
             holder.countDown.setVisibility(View.GONE);
-
         }
 
         if (endTimestamp != null) {

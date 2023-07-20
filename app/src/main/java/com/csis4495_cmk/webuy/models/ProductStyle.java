@@ -17,7 +17,11 @@ public class ProductStyle {
         this.styleId = styleId;
     }
 
-
+    public ProductStyle(String styleName, double stylePrice, String stylePicName) {
+        this.styleName = styleName;
+        this.stylePrice = stylePrice;
+        this.stylePicName = stylePicName;
+    }
     public String getStyleId() {
         return styleId;
     }

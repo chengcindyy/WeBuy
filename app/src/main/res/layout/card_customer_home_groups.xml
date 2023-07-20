@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
-                android:text="10 sold"
+                android:text="0 sold"
                 android:textSize="12dp" />
 
             <TextView
