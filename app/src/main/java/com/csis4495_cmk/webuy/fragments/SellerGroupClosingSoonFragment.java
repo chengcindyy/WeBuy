@@ -1,5 +1,7 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +20,8 @@ import android.widget.TextView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerGroupListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -52,6 +57,8 @@ public class SellerGroupClosingSoonFragment extends Fragment {
     private String sellerId;
 
     private List<Group> closingSoonGroups = new ArrayList<>();
+
+    private List<String> groupIds = new ArrayList<>();
 
     private TextView tv_group_list_no_closing_soon;
 
@@ -94,18 +101,15 @@ public class SellerGroupClosingSoonFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 closingSoonGroups.clear();
+                groupIds.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     Group gp = dataSnapshot.getValue(Group.class);
-                    if(gp.getSellerId().equals(sellerId)){
-                        // Ensure the qtyMap is not null
-                        Map<String, Integer> groupQtyMap = gp.getGroupQtyMap();
-                        if (groupQtyMap == null) {
-                            groupQtyMap = new HashMap<>();
-                            gp.setGroupQtyMap(groupQtyMap);
-                        }
+                    long currentTime = System.currentTimeMillis();
+                    String groupId = dataSnapshot.getKey();
 
-                        if(gp.getGroupType()==1){
-                            long currentTime = System.currentTimeMillis();
+                    //Get seller's not closed groups data and update status
+                    if(gp.getSellerId().equals(sellerId) && gp.getStatus() != 2){
+                        if(gp.getGroupType() == 1){
                             if (currentTime < gp.getStartTimestamp()) {
                                 // Group is not yet opened
                                 gp.setStatus(0);
@@ -115,20 +119,26 @@ public class SellerGroupClosingSoonFragment extends Fragment {
                             } else {
                                 // Group is opening
                                 gp.setStatus(1);
-
-                                long remainingTime = gp.getEndTimestamp() - currentTime;
-                                long remainingInDays = TimeUnit.MILLISECONDS.toDays(remainingTime);
-                                if (remainingInDays < 5 && gp.getStatus() == 1) {
-                                    closingSoonGroups.add(gp);
-                                }
-
                             }
-
-                            String groupId = dataSnapshot.getKey();
                             DatabaseReference currentGp = groupRef.child(groupId);
-                            currentGp.child("status").setValue(gp.getStatus());
+                            currentGp.child("status").setValue(gp.getStatus()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "Group status is updated: " + Integer.toString(gp.getStatus()));
+                                    } else {
+                                        Log.d(TAG, "Group status update error", task.getException());
+                                    }
+                                }
+                            });
                         }
 
+                        long remainingTime = gp.getEndTimestamp() - currentTime;
+                        long remainingInDays = TimeUnit.MILLISECONDS.toDays(remainingTime);
+                        if (remainingInDays < 5 && gp.getStatus() == 1 && gp.getEndTimestamp() !=0 ) {
+                            closingSoonGroups.add(gp);
+                            groupIds.add(groupId);
+                        }
                     }
                 }
 
@@ -141,10 +151,10 @@ public class SellerGroupClosingSoonFragment extends Fragment {
 
                     groupListRecyclerAdapter.setContext(getContext());
                     groupListRecyclerAdapter.setGroups(closingSoonGroups);
+                    groupListRecyclerAdapter.setGroupIds(groupIds);
                     groupListRecyclerAdapter.notifyDataSetChanged();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 

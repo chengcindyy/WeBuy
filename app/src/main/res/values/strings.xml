@@ -57,6 +57,7 @@
     <string name="cash_on_delivery">Cash on delivery</string>
     <string name="pay_in_store">Pay in store</string>
     <string name="debit_or_credit">Debit or Credit</string>
+    <string name="add_range">Add a new range</string>
 
 
 </resources>

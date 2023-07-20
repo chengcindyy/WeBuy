@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="100dp"
-    android:layout_height="wrap_content">
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="0dp">
 
     <TableLayout
         android:id="@+id/tableLayout_inventory_items"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:stretchColumns="*">
+        android:layout_height="wrap_content">
 
         <TableRow>
 
@@ -16,9 +16,12 @@
                 android:id="@+id/txv_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:padding="5dp"
+                android:gravity="center"
                 android:text=""
-                android:textSize="14sp"/>
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="13sp"/>
 
         </TableRow>
 
@@ -28,9 +31,10 @@
                 android:id="@+id/txv_ordered"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:padding="5dp"
+                android:gravity="center"
                 android:text=""
-                android:textSize="14sp"/>
+                android:textSize="13sp"/>
 
         </TableRow>
 
@@ -40,9 +44,10 @@
                 android:id="@+id/txv_in_stock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:padding="5dp"
+                android:gravity="center"
                 android:text=""
-                android:textSize="14sp"/>
+                android:textSize="13sp"/>
 
         </TableRow>
 
@@ -52,9 +57,10 @@
                 android:id="@+id/txv_allocated"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:padding="5dp"
+                android:gravity="center"
                 android:text=""
-                android:textSize="14sp"/>
+                android:textSize="13sp"/>
 
         </TableRow>
 
@@ -64,7 +70,8 @@
                 android:id="@+id/txv_to_allocated"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:padding="5dp"
+                android:gravity="center"
                 android:text="" />
 
         </TableRow>
@@ -75,9 +82,10 @@
                 android:id="@+id/txv_to_order"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:padding="5dp"
+                android:gravity="center"
                 android:text=""
-                android:textSize="14sp"/>
+                android:textSize="13sp"/>
 
         </TableRow>
 
@@ -85,28 +93,46 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="100dp"
+                android:layout_height="130dp"
                 android:gravity="center"
                 android:padding="5dp"
                 android:orientation="vertical">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_stock_in"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:text="Stock-in"
-                    android:backgroundTint="#009688"
-                    android:textSize="12sp"/>
+                    android:layout_width="70dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
 
-                <Button
+                    android:textAllCaps="false"
+                    android:background="@drawable/button_solid_green"
+                    android:text="Stock-in"
+                    android:textSize="12sp"
+                    android:textColor="@color/white" />
+
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_stock_out"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:layout_width="70dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:textAllCaps="false"
+                    android:background="@drawable/button_solid_red"
                     android:text="Stock-out"
-                    android:backgroundTint="@color/delete_red"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/white" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_allocate"
+                    android:layout_width="70dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:textAllCaps="false"
+                    android:background="@drawable/button_solid_blue"
+                    android:text="Allocate"
+                    android:textSize="12sp"
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 

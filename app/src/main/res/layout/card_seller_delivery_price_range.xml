@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- PRICE RANGE  -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_shipping_fee_range_over_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:hint="When over C$"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue"
+            app:layout_constraintTop_toBottomOf="@+id/dropMenu_delivery_city_layout">
+
+            <com.cottacush.android.currencyedittext.CurrencyEditText
+                android:id="@+id/edit_shipping_fee_range_over"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                app:currencySymbol="CA$"
+                app:localeTag="en-CA"
+                app:maxNumberOfDecimalDigits="2"
+                app:useCurrencySymbolAsHint="false" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- PRICE RANGE  -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_shipping_fee_range_fee_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:hint="Fee C$"
+            android:textColorHint="@color/light_grey"
+            app:boxBackgroundColor="@null"
+            app:hintTextColor="@color/deep_blue"
+            app:layout_constraintTop_toBottomOf="@+id/edit_shipping_fee_range_from_layout">
+
+            <com.cottacush.android.currencyedittext.CurrencyEditText
+                android:id="@+id/edit_shipping_fee_range_fee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                app:currencySymbol="CA$"
+                app:localeTag="en-CA"
+                app:maxNumberOfDecimalDigits="2"
+                app:useCurrencySymbolAsHint="false" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/btn_remove_text_Field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/baseline_do_not_disturb_on_24"
+            android:background="@android:color/transparent"
+            android:layout_gravity="center_vertical"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

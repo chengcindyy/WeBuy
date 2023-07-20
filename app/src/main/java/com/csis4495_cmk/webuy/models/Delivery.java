@@ -1,20 +1,28 @@
 package com.csis4495_cmk.webuy.models;
 
+import java.util.Map;
+
 public class Delivery {
     private String deliveredMethod; //pickup, locations(Vancouver, Burnaby...)
-    private String displayName;
-    private Double from;
-    private double fee;
+    private String pickUpLocation;
+    private String deliveryCity;
+    private Map<String, Double> feeMap;
 
     public Delivery() {
     }
 
-    public Delivery(String method, String name, Double from, double fee) {
+    public Delivery(String method, String location, Map<String, Double> feeMap) {
         this.deliveredMethod = method;
-        this.displayName = name;
-        this.from = from;
-        this.fee = fee;
+        this.pickUpLocation = location;
+        this.feeMap = feeMap;
     }
+
+    public Delivery(String method, Map<String, Double> feeMap, String city) {
+        this.deliveredMethod = method;
+        this.feeMap = feeMap;
+        this.deliveryCity = city;
+    }
+
 
     public String getDeliveredMethod() {
         return deliveredMethod;
@@ -24,27 +32,27 @@ public class Delivery {
         this.deliveredMethod = deliveredMethod;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getPickUpLocation() {
+        return pickUpLocation;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setPickUpLocation(String pickUpLocation) {
+        this.pickUpLocation = pickUpLocation;
     }
 
-    public Double getFrom() {
-        return from;
+    public Map<String, Double> getFeeMap() {
+        return feeMap;
     }
 
-    public void setFrom(Double from) {
-        this.from = from;
+    public void setFeeMap(Map<String, Double> feeMap) {
+        this.feeMap = feeMap;
     }
 
-    public double getFee() {
-        return fee;
+    public String getDeliveryCity() {
+        return deliveryCity;
     }
 
-    public void setFee(double fee) {
-        this.fee = fee;
+    public void setDeliveryCity(String deliveryCity) {
+        this.deliveryCity = deliveryCity;
     }
 }

@@ -62,35 +62,6 @@ public class SellerAddGroupImagesAdapter extends RecyclerView.Adapter<SellerAddG
 
     @Override
     public void onBindViewHolder(@NonNull SellerAddGroupImagesAdapter.ViewHolder holder, int position) {
-//        if (position < paths.size()) {
-//            holder.btnDelete.setVisibility(View.VISIBLE);
-//            StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImages");
-//            StorageReference imageReference = storageReference.child(paths.get(position));
-//            imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-//                // Got the download URL and pass it to Picasso to download, show in ImageView and caching
-//                Picasso.with(context).load(uri.toString()).into(holder.imgViewSingleImg);
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    // Handle errors, if image doesn't exist, show a default image
-//                    holder.imgViewSingleImg.setImageResource(R.drawable.baseline_add_photo_alternate_50);
-//                }
-//            });
-//            holder.btnDelete.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (onGroupDeleteImgListener != null){
-//                        onGroupDeleteImgListener.onDeleteClick(position);
-//                    }
-//                }
-//            });
-//
-//        } else {
-//            holder.btnDelete.setVisibility(View.GONE);
-//            holder.tvCoverImg.setVisibility(View.GONE);
-//            holder.imgViewSingleImg.setImageResource(R.drawable.baseline_add_photo_alternate_50);
-//        }
-
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
         StorageReference imageReference = storageReference.child(productId+"/"+paths.get(position));
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
