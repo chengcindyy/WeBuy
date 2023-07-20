@@ -20,7 +20,6 @@ import android.widget.SearchView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.InventoryRecyclerViewAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerInventoryListRecyclerAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerInventoryViewPager;
 import com.csis4495_cmk.webuy.models.Group;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,18 +50,9 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     private ArrayList<GroupItemEntry> inStockItemsList;
     private ArrayList<GroupItemEntry> preOrderItemsList;
     private ArrayList<String> allCoverImgsList;
-    private String status;
-    SellerInventoryViewPager viewPagerAdapter;
+    private Map<String, Integer> qtyMap;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     DatabaseReference reference;
-
-    public SellerInventoryFragment(){
-
-    }
-
-    public SellerInventoryFragment(String status){
-        this.status = status;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,13 +76,11 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         inStockItemsList = new ArrayList<>();
         preOrderItemsList = new ArrayList<>();
         allCoverImgsList = new ArrayList<>();
-        // RecyclerView
+        // RecyclerView - inventory items
         mRecyclerView = view.findViewById(R.id.recyclerView_seller_inventory_list);
-        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SellerInventoryListRecyclerAdapter(getContext(), this);
-        setInventoryDetails();
-        // TODO: View pager
+        findDataFromGroupInformation();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -123,7 +111,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         });
     }
 
-    private void setInventoryDetails() {
+    private void findDataFromGroupInformation() {
         StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
         reference = FirebaseDatabase.getInstance().getReference("Group");
         reference.addValueEventListener(new ValueEventListener() {
@@ -139,12 +127,15 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                     Group group = productSnapshot.getValue(Group.class);
                     String sellerId = group.getSellerId();
                     String productId = group.getProductId();
+
                     // Check sellerId to only display a seller's groups
                     if(sellerId != null && sellerId.equals(auth.getCurrentUser().getUid())){
-
                         GroupItemEntry groupEntry = new GroupItemEntry(group, group.getGroupQtyMap());
+
                         allItemsList.add(groupEntry);
                         adapter.setDisplayItemsList(allItemsList);
+
+                        // Set tabLayout categories
                         if (group.getGroupType() == 0) {
                             inStockItemsList.add(groupEntry);
                         } else {
@@ -202,48 +193,24 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
 
 
     @Override
-    public void onOpenProductPageButtonClick(Boolean isBtnClicked, int position) {
-        if(isBtnClicked == true){
-            Log.d("Test stock", "onOpenProductPageButtonClick()");
-        }
+    public void onOpenProductPageButtonClick( int position) {
+        Log.d("Test stock", "onOpenProductPageButtonClick()");
     }
 
     @Override
-    public void onStockInClick(Boolean isBtnClicked, int position) {
-        if(isBtnClicked == true){
-            Log.d("Test stock", "onStockInClick()");
-//            reference = FirebaseDatabase.getInstance().getReference("Group");
-//            reference.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                    for (DataSnapshot productSnapshot : snapshot.getChildren()){
-//                        Group group = productSnapshot.getValue(Group.class);
-//                        String sellerId = group.getSellerId();
-//                        String productId = group.getProductId();
-//                        // Check sellerId to only display a seller's groups
-//                        if(sellerId != null && sellerId.equals(auth.getCurrentUser().getUid())){
-//                            GroupItemEntry groupEntry = new GroupItemEntry(group, group.getGroupQtyMap());
-//
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//                    Log.d("Test firebase read", "Error reading data", error.toException());
-//                }
-//            });
-        }
+    public void onStockInClick(int position) {
+        Log.d("Test stock", "onStockInClick()");
     }
 
     @Override
-    public void onStockOutClick(Boolean isBtnClicked, int position) {
+    public void onStockOutClick(int position) {
         Log.d("Test stock", "onStockOutClick()");
     }
 
-
-
+    @Override
+    public void onOpenAllocateButtonClick(int position) {
+        Log.d("Test stock", "onAllocateClick()");
+    }
 
     public class GroupItemEntry {
         private Group group;

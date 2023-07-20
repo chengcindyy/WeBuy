@@ -66,7 +66,7 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
             holder.imgProductImage.setImageResource(R.drawable.app_default_image);
         }
 
-        holder.btnViewProduct.setOnClickListener(view -> listener.onOpenProductPageButtonClick(true, position));
+        holder.btnViewProduct.setOnClickListener(view -> listener.onOpenProductPageButtonClick(position));
     }
 
     @Override
@@ -75,13 +75,18 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
     }
 
     @Override
-    public void onStockInClick(boolean isBtnClicked, int position) {
-
+    public void onStockInClick(int position) {
+        listener.onStockInClick(position);
     }
 
     @Override
-    public void onStockOutClick(boolean isBtnClicked, int position) {
+    public void onStockOutClick(int position) {
+        listener.onStockOutClick(position);
+    }
 
+    @Override
+    public void onAllocateClick(int position) {
+        listener.onOpenAllocateButtonClick(position);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -103,9 +108,9 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
     }
 
     public interface OnButtonClickListener {
-        void onOpenProductPageButtonClick(Boolean isBtnClicked, int position);
-        void onStockInClick(Boolean isBtnClicked, int position);
-        void onStockOutClick(Boolean isBtnClicked, int position);
+        void onOpenProductPageButtonClick(int position);
+        void onStockInClick(int position);
+        void onStockOutClick(int position);
+        void onOpenAllocateButtonClick(int position);
     }
-
 }

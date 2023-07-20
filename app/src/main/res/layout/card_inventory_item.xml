@@ -129,7 +129,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="110dp"
+                    android:layout_height="140dp"
                     android:padding="5dp"
                     android:gravity="center_vertical"
                     android:text="Actions"
@@ -141,10 +141,9 @@
 
         <HorizontalScrollView
             android:id="@+id/horizontalScrollView"
-            android:layout_width="0dp"
-            android:layout_height="282dp"
+            android:layout_width="259dp"
+            android:layout_height="309dp"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@+id/tableLayout"
             app:layout_constraintEnd_toEndOf="@+id/img_product_img"
             app:layout_constraintStart_toEndOf="@+id/tableLayout"
             app:layout_constraintTop_toTopOf="@+id/tableLayout">
@@ -153,7 +152,7 @@
                 android:id="@+id/recyclerView_inventory_info"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"/>
+                android:clipToPadding="false" />
 
         </HorizontalScrollView>
 

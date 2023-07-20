@@ -58,9 +58,9 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<Inventory
         holder.txvToAllocate.setText(String.valueOf(_TOALLOCATE));
         holder.txvToOrder.setText(String.valueOf(_TOORDER));
 
-        holder.btnStockIn.setOnClickListener(view -> listener.onStockInClick(true, position));
-        holder.btnStockOut.setOnClickListener(view -> listener.onStockOutClick(true, position));
-
+        holder.btnStockIn.setOnClickListener(view -> listener.onStockInClick(position));
+        holder.btnStockOut.setOnClickListener(view -> listener.onStockOutClick(position));
+        holder.btnAllocate.setOnClickListener(view -> listener.onAllocateClick(position));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<Inventory
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView txvStyleName, txvOrdered, txvAllocated, txvInStock, txvToAllocate, txvToOrder;
-        Button btnStockIn, btnStockOut;
+        Button btnStockIn, btnStockOut, btnAllocate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -83,11 +83,13 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<Inventory
             txvToOrder = itemView.findViewById(R.id.txv_to_order);
             btnStockIn = itemView.findViewById(R.id.btn_stock_in);
             btnStockOut = itemView.findViewById(R.id.btn_stock_out);
+            btnAllocate = itemView.findViewById(R.id.btn_allocate);
         }
     }
 
     public interface OnItemClickListener {
-        void onStockInClick(boolean isBtnClicked, int position);
-        void onStockOutClick(boolean isBtnClicked, int position);
+        void onStockInClick(int position);
+        void onStockOutClick(int position);
+        void onAllocateClick(int position);
     }
 }
