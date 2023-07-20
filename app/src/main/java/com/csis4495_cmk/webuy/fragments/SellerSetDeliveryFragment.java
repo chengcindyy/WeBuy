@@ -7,7 +7,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -23,13 +22,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cottacush.android.currencyedittext.CurrencyEditText;
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.SellerDeliveryRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.SellerDeliveryEditPriceRangeRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.SellerDeliveryItemRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Delivery;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,6 +42,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.skydoves.expandablelayout.ExpandableLayout;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,21 +50,23 @@ import java.util.Map;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class SellerSetDeliveryFragment extends Fragment {
+public class SellerSetDeliveryFragment extends Fragment implements SellerDeliveryEditPriceRangeRecyclerAdapter.OnItemClickListener{
     private ExpandableLayout expDeliveryInfo, expCreateDelivery;
     private TextInputLayout editPickUpLocation;
     private CurrencyEditText editStartingPrice, editShippingFee;
     private AutoCompleteTextView editDeliveryMethods, editCities;
     private TextInputLayout deliveryInputLayout, pickUpInputLayout, fromInputLayout, feeInputLayout;
-    private RecyclerView mRecyclerView;
-    private Button btnCreate;
+    private RecyclerView mRecyclerView, childRecyclerView;
+    private Button btnCreate, btnAddRange;
+    private List<Map.Entry<String, Double>> feeEntries;
     private List<String> keysList;
-    private SellerDeliveryRecyclerAdapter adapter;
+    private SellerDeliveryItemRecyclerAdapter adapter;
+    private SellerDeliveryEditPriceRangeRecyclerAdapter childAdapter;
     private HashMap<String, Delivery> deliveryHashMap;
-    private ConstraintLayout constraintLayout;
     private Map<String, Double> feeMap;
     private String methodId = "";
     private Delivery deliveryInfo;
+    private SellerDeliveryEditPriceRangeRecyclerAdapter.ViewHolder holder;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = auth.getCurrentUser();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -80,8 +84,6 @@ public class SellerSetDeliveryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // References
-        // Layout
-        constraintLayout = view.findViewById(R.id.constraintLayout);
         // ExpandableLayout
         expDeliveryInfo = view.findViewById(R.id.expandableLayout_store_delivery_info);
         expCreateDelivery = view.findViewById(R.id.expandableLayout_seller_add_delivery_method);
@@ -104,27 +106,41 @@ public class SellerSetDeliveryFragment extends Fragment {
         deliveryHashMap = new HashMap<>();
         feeMap = new HashMap<>();
         keysList = new ArrayList<>();
-        // Set RecyclerView
+        feeEntries = new ArrayList<>();
+        // Set parent recyclerView
         mRecyclerView = view.findViewById(R.id.recyclerView_delivery_info);
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new SellerDeliveryRecyclerAdapter(getContext(), deliveryHashMap, keysList);
+        adapter = new SellerDeliveryItemRecyclerAdapter(getContext(), deliveryHashMap, keysList);
         mRecyclerView.setAdapter(adapter);
         expDeliveryInfo.requestLayout();
         showDeliveryInfo();
+        // Set child recyclerView
+        childRecyclerView = view.findViewById(R.id.RecyclerView_price_range);
+        childRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        childAdapter = new SellerDeliveryEditPriceRangeRecyclerAdapter(getContext(), feeEntries, this);
+        childRecyclerView.setAdapter(childAdapter);
         // Button
         btnCreate = view.findViewById(R.id.btn_create_delivery_info);
-        btnCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createOrUpdateNewDeliveryInfoRecyclerView();
-            }
+        btnCreate.setOnClickListener(view1 -> createOrUpdateNewDeliveryInfoRecyclerView());
+        btnAddRange = view.findViewById(R.id.btn_add_range);
+        btnAddRange.setOnClickListener(view12 -> {
+            feeEntries.add(new AbstractMap.SimpleEntry<>("", 0.0));
+            addNewPriceRangeRecyclerView();
+            childAdapter.notifyDataSetChanged();
         });
         // Call swipe helper
         OnRecyclerItemSwipeActionHelper();
     }
 
-
+    private void addNewPriceRangeRecyclerView() {
+        if (childAdapter == null) {
+            childAdapter = new SellerDeliveryEditPriceRangeRecyclerAdapter(getContext(), feeEntries, this);
+            childRecyclerView.setAdapter(childAdapter);
+        } else {
+            childAdapter.notifyDataSetChanged();
+        }
+    }
 
     private void OnRecyclerItemSwipeActionHelper() {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
@@ -192,21 +208,38 @@ public class SellerSetDeliveryFragment extends Fragment {
         deliveryRef.child(methodId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String _METHOD, _NAME, _CITY, _FULLKEY, _FROM = "", _FEE = "";
+                String _METHOD, _NAME, _CITY, _FROM = "", _FEE = "";
 
                 deliveryInfo = snapshot.getValue(Delivery.class);
                 if(deliveryInfo != null){
                     _METHOD = deliveryInfo.getDeliveredMethod();
                     _NAME = deliveryInfo.getPickUpLocation();
                     _CITY = deliveryInfo.getDeliveryCity();
+
+                    feeEntries.clear();
+                    feeMap.clear();
+                    int count = 0;
                     for (DataSnapshot feeSnapshot : snapshot.child("feeMap").getChildren()) {
                         feeMap.put(feeSnapshot.getKey(), feeSnapshot.getValue(Double.class));
-                        _FULLKEY = feeSnapshot.getKey();
-                        String[] parts = _FULLKEY.split("_");
-                        _FROM = parts[1];
-                        _FEE = String.valueOf(feeSnapshot.getValue(Double.class));
+                        if(!feeMap.isEmpty()){
+                            for (Map.Entry<String, Double> entry : feeMap.entrySet()) {
+                                String fullKey = entry.getKey();
+                                String[] parts = fullKey.split("_");
+                                String from = parts[1];
+                                Double fee = entry.getValue();
+                                if (count == 0) {
+                                    _FROM = from;
+                                    _FEE = String.valueOf(fee);
+                                } else {
+                                    Map.Entry<String, Double> newEntry = new AbstractMap.SimpleEntry<>(from, fee);
+                                    feeEntries.add(newEntry);
+                                }
+                                count++;
+                            }
+                        }
+                        feeMap.clear(); // Clear feeMap for the next iteration
                     }
-
+                    childAdapter.notifyDataSetChanged(); // Notify data set changed here
                     editDeliveryMethods.setText(_METHOD);
                     editCities.setText(_CITY);
                     editPickUpLocation.getEditText().setText(_NAME);
@@ -224,8 +257,10 @@ public class SellerSetDeliveryFragment extends Fragment {
                 // Do nothing
             }
         });
-
     }
+
+
+
 
     private void showConfirmToRemoveDialog(String methodId, int position) {
         //Set up alert builder
@@ -282,6 +317,7 @@ public class SellerSetDeliveryFragment extends Fragment {
     }
 
     private void createOrUpdateNewDeliveryInfoRecyclerView() {
+
         feeMap.clear();
 
         // Obtain the entered data
@@ -324,6 +360,12 @@ public class SellerSetDeliveryFragment extends Fragment {
             editShippingFee.requestFocus();
         } else {
             feeMap.put("key_"+_PRICE, _FEE);
+            for (int i = 0; i < childAdapter.getItemCount(); i++) {
+                holder = (SellerDeliveryEditPriceRangeRecyclerAdapter.ViewHolder) childRecyclerView.findViewHolderForAdapterPosition(i);
+                String _OVER = holder.getCostOver();
+                Double _MOREFEE = holder.getShippingFee();
+                feeMap.put("key_"+_OVER, _MOREFEE);
+            }
 
             Delivery newDeliveryInfo = null;
 
@@ -360,6 +402,12 @@ public class SellerSetDeliveryFragment extends Fragment {
                         editCities.setText("");
                         editStartingPrice.setText("");
                         editShippingFee.setText("");
+                        for (int i = 0; i < childAdapter.getItemCount(); i++) {
+                            holder = (SellerDeliveryEditPriceRangeRecyclerAdapter.ViewHolder) childRecyclerView.findViewHolderForAdapterPosition(i);
+                            if (holder != null) {
+                                holder.clearFields();
+                            }
+                        }
 
                         // Change button text back to "CREATE"
                         btnCreate.setText("CREATE");
@@ -440,5 +488,10 @@ public class SellerSetDeliveryFragment extends Fragment {
                 expandableLayout.expand();
             }
         });
+    }
+
+    @Override
+    public void onRemoveItemButtonClick(int position) {
+        childAdapter.removeItem(position);
     }
 }

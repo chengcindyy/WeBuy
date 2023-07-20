@@ -6,20 +6,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.Delivery;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SellerDeliveryRecyclerAdapter extends RecyclerView.Adapter<SellerDeliveryRecyclerAdapter.ViewHolder> {
+public class SellerDeliveryItemRecyclerAdapter extends RecyclerView.Adapter<SellerDeliveryItemRecyclerAdapter.ViewHolder> {
 
     private Context context;
     private HashMap<String, Delivery> deliveryMap;
     private List<String> keys;
 
-    public SellerDeliveryRecyclerAdapter(Context context, HashMap<String, Delivery> deliveryMap, List<String> keys) {
+
+    public SellerDeliveryItemRecyclerAdapter(Context context, HashMap<String, Delivery> deliveryMap, List<String> keys) {
         this.context = context;
         this.deliveryMap = deliveryMap;
         this.keys = keys;
@@ -28,8 +32,8 @@ public class SellerDeliveryRecyclerAdapter extends RecyclerView.Adapter<SellerDe
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.card_list_layout, parent, false);
-        return new SellerDeliveryRecyclerAdapter.ViewHolder(v);
+        View v = LayoutInflater.from(context).inflate(R.layout.card_seller_delivery_list_layout, parent, false);
+        return new SellerDeliveryItemRecyclerAdapter.ViewHolder(v);
     }
 
     @Override
@@ -43,15 +47,13 @@ public class SellerDeliveryRecyclerAdapter extends RecyclerView.Adapter<SellerDe
         }
 
         Map<String, Double> feeMap = delivery.getFeeMap();
+        List<Map.Entry<String, Double>> feeEntries = new ArrayList<>();
         if(feeMap != null){
-            for (Map.Entry<String, Double> feeMapEntry : feeMap.entrySet()) {
-                String _FULLKEY = feeMapEntry.getKey();
-                String[] parts = _FULLKEY.split("_");
-                String _PRICE = parts[1];
-                holder.spendOver.setText(_PRICE);
-                holder.deliveryFee.setText(feeMapEntry.getValue().toString());
-            }
+            feeEntries.addAll(feeMap.entrySet());
         }
+
+        holder.adapter = new SellerDeliveryInfoPriceRangeRecyclerAdapter(context, feeEntries);
+        holder.mRecyclerView.setAdapter(holder.adapter);
     }
 
     @Override
@@ -60,14 +62,18 @@ public class SellerDeliveryRecyclerAdapter extends RecyclerView.Adapter<SellerDe
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView deliveryMethod, location, spendOver, deliveryFee;
+        TextView deliveryMethod, location;
+        RecyclerView mRecyclerView;
+        SellerDeliveryInfoPriceRangeRecyclerAdapter adapter;
 
         public ViewHolder(View itemView) {
             super(itemView);
             deliveryMethod = itemView.findViewById(R.id.txv_method);
             location = itemView.findViewById(R.id.txv_method_location);
-            spendOver = itemView.findViewById(R.id.tvx_from);
-            deliveryFee = itemView.findViewById(R.id.txv_shipping_fee);
+
+            // Set child recyclerView
+            mRecyclerView = itemView.findViewById(R.id.recyclerView_price_range_info);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         }
     }
 
@@ -77,6 +83,4 @@ public class SellerDeliveryRecyclerAdapter extends RecyclerView.Adapter<SellerDe
         deliveryMap.remove(keyToRemove);
         notifyItemRemoved(position);
     }
-
-
 }
