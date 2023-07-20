@@ -288,7 +288,7 @@ public class SellerAddGroupFragment extends Fragment {
             stylesAdapter.setOnImgBtnDeleteStyleListener(new SellerAddGroupStylesAdapter.OnImgBtnDeleteStyleListener() {
                 @Override
                 public void onDeleteClick(int position) {
-                    groupQtyMap.remove("s$" + groupStyles.get(position).getStyleId());
+                    groupQtyMap.remove("s___" + groupStyles.get(position).getStyleId());
                     groupStyles.remove(position);
                     stylesAdapter.updateStyleData2(productId, groupStyles);
                     stylesAdapter.notifyDataSetChanged();
@@ -354,7 +354,7 @@ public class SellerAddGroupFragment extends Fragment {
 //
 //                @Override
 //                public void onStyleChangeQty(int position, ProductStyle style, int qty) {
-//                    groupQtyMap.put("s$"+groupStyles.get(position).getStyleId(), qty);
+//                    groupQtyMap.put("s___"+groupStyles.get(position).getStyleId(), qty);
 //
 //                    groupStyles.set(position, style);
 //
@@ -415,12 +415,12 @@ public class SellerAddGroupFragment extends Fragment {
 //
 //                @Override
 //                public void onStyleChange(int position, ProductStyle style) {
-//                    String oldKey = "s$"+groupStyles.get(position).getStyleId();
+//                    String oldKey = "s___"+groupStyles.get(position).getStyleId();
 //                    Integer qty = groupQtyMap.get(oldKey);
 //
 //                    if (groupQtyMap.containsKey(oldKey)) {
 //                        groupQtyMap.remove(oldKey);
-//                        groupQtyMap.put("s$"+style.getStyleId(), qty);
+//                        groupQtyMap.put("s___"+style.getStyleId(), qty);
 //                    }
 //
 //                    groupStyles.set(position, style);
@@ -508,7 +508,7 @@ public class SellerAddGroupFragment extends Fragment {
         stylesAdapter.setOnStyleChangedListner(new SellerAddGroupStylesAdapter.OnStyleChangedListner() {
             @Override
             public void onStyleChangeQty(int position, ProductStyle style, int qty) {
-                groupQtyMap.put("s$" + groupStyles.get(position).getStyleId(), qty);
+                groupQtyMap.put("s___" + groupStyles.get(position).getStyleId(), qty);
                 groupStyles.set(position, style);
                 Log.d(TAG, "onStyleChangeQty: " + groupQtyMap);
                 if (groupStyles.size() > 0) {
@@ -566,12 +566,12 @@ public class SellerAddGroupFragment extends Fragment {
 
             @Override
             public void onStyleChange(int position, ProductStyle style) {
-                String oldKey = "s$" + groupStyles.get(position).getStyleId();
+                String oldKey = "s___" + groupStyles.get(position).getStyleId();
                 Integer qty = groupQtyMap.get(oldKey);
 
                 if (groupQtyMap.containsKey(oldKey)) {
                     groupQtyMap.remove(oldKey);
-                    groupQtyMap.put("s$" + style.getStyleId(), qty);
+                    groupQtyMap.put("s___" + style.getStyleId(), qty);
                 }
 
                 groupStyles.set(position, style);
@@ -706,7 +706,7 @@ public class SellerAddGroupFragment extends Fragment {
                             groupPriceCurrency.setVisibility(View.VISIBLE);
                             groupPriceCurrency.setText(editGroup.getGroupPrice());
                             group_no_style_qty.setVisibility(View.VISIBLE);
-                            group_no_style_qty.setText(Integer.toString(editGroup.getGroupQtyMap().get("p$" + productId)));
+                            group_no_style_qty.setText(Integer.toString(editGroup.getGroupQtyMap().get("p___" + productId)));
                         }
 
                         DatabaseReference productReference = databaseReference.child("Product").child(productId);
@@ -1001,7 +1001,7 @@ public class SellerAddGroupFragment extends Fragment {
                         group_no_style_qty.setError("The quantity for in stock group must be greater than 0");
                     }
                 }
-                groupQtyMap.put("p$" + productId, no_qty);
+                groupQtyMap.put("p___" + productId, no_qty);
 
             } catch (Exception e) {
                 Log.d(TAG, "onSubmitNewGroup: error" + e);
@@ -1229,7 +1229,7 @@ public class SellerAddGroupFragment extends Fragment {
                     String styleId = snapshot.child("styleId").getValue(String.class);
                     ProductStyle ps = new ProductStyle(name, price, img, styleId);
                     groupStyles.add(ps);
-                    groupQtyMap.put("s$" + ps.getStyleId(), null);
+                    groupQtyMap.put("s___" + ps.getStyleId(), null);
 
 //                    Toast.makeText(getContext(), ps.getStyleName() + "qty: " +  groupQtyMap.get(ps) , Toast.LENGTH_SHORT ).show();
                 }
