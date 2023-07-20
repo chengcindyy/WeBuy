@@ -1,6 +1,7 @@
 package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,14 +50,15 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         coverImages = displayItemsList.get(position).getGroup().getGroupImages();
-        SellerInventoryFragment.GroupItemEntry groupItemEntry = displayItemsList.get(position);
-        holder.txvProductName.setText(groupItemEntry.getGroup().getGroupName());
+        SellerInventoryFragment.GroupItemEntry groupItems = displayItemsList.get(position);
+        holder.txvProductName.setText(groupItems.getGroup().getGroupName());
 
         // Initialize child RecyclerView
-        Map<String, Integer> entries = groupItemEntry.getEntries();
+        Map<String, Integer> entries = groupItems.getEntries();
         LinearLayoutManager layoutManager = new LinearLayoutManager(holder.itemView.getContext(), LinearLayoutManager.HORIZONTAL, false);
         holder.recyclerViewInvInfo.setLayoutManager(layoutManager);
-        adapter = new InventoryRecyclerViewAdapter(context, entries);
+
+        adapter = new InventoryRecyclerViewAdapter(context, entries, groupItems);
         adapter.setOnItemClickListener(this);
         holder.recyclerViewInvInfo.setAdapter(adapter);
 

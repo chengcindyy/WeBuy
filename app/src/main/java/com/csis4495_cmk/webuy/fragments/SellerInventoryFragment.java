@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.InventoryRecyclerViewAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerInventoryListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -69,8 +68,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         navController = NavHostFragment.findNavController(SellerInventoryFragment.this);
         // SearchBar
         searchBar = view.findViewById(R.id.search_product);
-        // TabLayout
-        tabLayout = view.findViewById(R.id.tabLayout_filter);
         // List
         allItemsList = new ArrayList<>();
         inStockItemsList = new ArrayList<>();
@@ -81,7 +78,13 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SellerInventoryListRecyclerAdapter(getContext(), this);
         findDataFromGroupInformation();
+        // TabLayout
+        tabLayout = view.findViewById(R.id.tabLayout_filter);
+        setTabLayout(tabLayout);
 
+    }
+
+    private void setTabLayout(TabLayout tabLayout) {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

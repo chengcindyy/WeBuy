@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.fragments.SellerInventoryFragment;
+import com.csis4495_cmk.webuy.models.ProductStyle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +21,16 @@ import java.util.Map;
 
 public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<InventoryRecyclerViewAdapter.ViewHolder> {
     private Context context;
-    private Map<String, Integer> entries;
+    private List<Map.Entry<String, Integer>> entriesList;
+    private SellerInventoryFragment.GroupItemEntry groupEntry;
     private OnItemClickListener listener;
-    private String _STYLE;
-    private int _QTY, _ORDERED,  _ALLOCATED, _TOALLOCATE, _TOORDER;
+    private String styleId, productId, styleName, productName;
+    private int qty, ordered, allocated, toAllocate, toOrder;
 
-    public InventoryRecyclerViewAdapter(Context context, Map<String, Integer> entries) {
+    public InventoryRecyclerViewAdapter(Context context, Map<String, Integer> entries, SellerInventoryFragment.GroupItemEntry groupEntry) {
         this.context = context;
-        this.entries = entries;
+        this.entriesList = new ArrayList<>(entries.entrySet());
+        this.groupEntry = groupEntry;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -42,21 +46,42 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<Inventory
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(entries.entrySet());
-        Map.Entry<String, Integer> entry = entryList.get(position);
-        Log.d("Text entry", "entries count: "+entryList.size());
-        _STYLE = entry.getKey();
-        _QTY = entry.getValue();
-        // TODO: After customer placed order should change this value
-        _ORDERED = 2;
-        _TOORDER = _QTY - _ORDERED;
+        Map.Entry<String, Integer> entry = entriesList.get(position);
 
-        holder.txvStyleName.setText(_STYLE);
-        holder.txvOrdered.setText(String.valueOf(_ORDERED));
-        holder.txvInStock.setText(String.valueOf(_QTY));
-        holder.txvAllocated.setText(String.valueOf(_ALLOCATED));
-        holder.txvToAllocate.setText(String.valueOf(_TOALLOCATE));
-        holder.txvToOrder.setText(String.valueOf(_TOORDER));
+        // Processing styleId
+        String styleCombinedKey = entry.getKey();
+        String[] keySet = styleCombinedKey.split("___");
+
+        if (keySet[0].equals("s")){
+            styleId = keySet[1];
+            qty = entry.getValue();
+            Log.d("TestKeySet", "styleId:"+styleId+" qty:"+qty);
+            for (ProductStyle style : groupEntry.getGroup().getGroupStyles()) {
+                if (styleId.equals(style.getStyleId())){
+                    styleName = style.getStyleName();
+                    holder.txvStyleName.setText(styleName);
+                    break;
+                }
+            }
+        } else {
+            productId = keySet[1];
+            qty = entry.getValue();
+            Log.d("TestKeySet", "productId:"+productId+" qty:"+qty);
+            if (productId.equals(groupEntry.getGroup().getProductId())){
+                productName = groupEntry.getGroup().getGroupName();
+                holder.txvStyleName.setText(productName);
+            }
+        }
+
+        // TODO: After customer placed order should change this value
+        ordered = 2;
+        toOrder = qty - ordered;
+
+        holder.txvOrdered.setText(String.valueOf(ordered));
+        holder.txvInStock.setText(String.valueOf(qty));
+        holder.txvAllocated.setText(String.valueOf(allocated));
+        holder.txvToAllocate.setText(String.valueOf(toAllocate));
+        holder.txvToOrder.setText(String.valueOf(toOrder));
 
         holder.btnStockIn.setOnClickListener(view -> listener.onStockInClick(position));
         holder.btnStockOut.setOnClickListener(view -> listener.onStockOutClick(position));
@@ -65,7 +90,7 @@ public class InventoryRecyclerViewAdapter extends RecyclerView.Adapter<Inventory
 
     @Override
     public int getItemCount() {
-        return entries.size();
+        return entriesList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
