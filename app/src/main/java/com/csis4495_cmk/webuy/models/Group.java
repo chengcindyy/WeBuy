@@ -7,7 +7,7 @@ import java.util.Map;
 public class Group {
     private String groupName;
 
-    private int groupType;
+    private int groupType; //0: in-stock, 1: pre-order
 
     private String category;
 
@@ -31,7 +31,7 @@ public class Group {
     private long endTimestamp;
 
 
-    private int status;
+    private int status; //0: not opened, 1: opening, 2:closed
 
     private String groupPrice; // product price or might be (minStylePrice, maxStylePrice)
 

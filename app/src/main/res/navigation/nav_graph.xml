@@ -8,7 +8,11 @@
         android:id="@+id/customerHomeFragment"
         android:name="com.csis4495_cmk.webuy.fragments.CustomerHomeFragment"
         android:label="fragment_customer_home"
-        tools:layout="@layout/fragment_customer_home" />
+        tools:layout="@layout/fragment_customer_home" >
+        <action
+            android:id="@+id/action_customerHomeFragment_to_customerGroupDetailFragment"
+            app:destination="@id/customerGroupDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/customerProfileFragment"
         android:name="com.csis4495_cmk.webuy.fragments.CustomerProfileFragment"
@@ -18,6 +22,20 @@
             android:id="@+id/action_to_testPageFragment"
             app:destination="@id/testFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/customerHomeGroupsFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerHomeGroupsFragment"
+        android:label="fragment_customer_home_groups"
+        tools:layout="@layout/fragment_customer_home_groups" />
+
+    <fragment
+        android:id="@+id/customerGroupDetailFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerGroupDetailFragment"
+        android:label="fragment_customer_group_detail"
+        tools:layout="@layout/fragment_customer_group_detail" >
+    </fragment>
+
     <fragment
         android:id="@+id/customerSettingFragment"
         android:name="com.csis4495_cmk.webuy.CustomerSettingFragment"
@@ -138,7 +156,7 @@
         tools:layout="@layout/fragment_seller_store_management" />
     <fragment
         android:id="@+id/sellerInventoryFragment"
-        android:name="com.csis4495_cmk.webuy.SellerInventoryFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerInventoryFragment"
         android:label="fragment_seller_inventory"
         tools:layout="@layout/fragment_seller_inventory" />
     <fragment

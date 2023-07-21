@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,16 +23,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CustomerHomeGroupsFragment extends Fragment implements CustomerHomeGroupListRecyclerAdapter.onGroupListener{
 
+    private NavController navController;
     private FirebaseDatabase firebaseInstance = FirebaseDatabase.getInstance();
     private DatabaseReference allGroupRef = firebaseInstance.getReference("Group");
     private RecyclerView recyclerView;
-    private List<Group> groupList;
+    private Map<String,Group> groupMap;
 
     private ArrayList<String> filter;
 
@@ -45,7 +51,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View rootview = inflater.inflate(R.layout.viewpager_customer_home_groups, container, false);
+        final View rootview = inflater.inflate(R.layout.fragment_customer_home_groups, container, false);
         return rootview;
     }
 
@@ -53,19 +59,23 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        groupList = new ArrayList<>();
+        //set navigation controller
+        navController = NavHostFragment.findNavController(CustomerHomeGroupsFragment.this);
+
+        groupMap = new HashMap<>();
 
         recyclerView = view.findViewById(R.id.rv_cust_home_group);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
-        Log.d("custTest", groupList.size()+"");
+        Log.d("custTest", "size: "+groupMap.size());
 
         allGroupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                groupList.clear();
+                groupMap.clear();
                 for (DataSnapshot groupSnapshot: snapshot.getChildren()) {
+                    String groupId = groupSnapshot.getKey();
                     Group group = groupSnapshot.getValue(Group.class);
-                    Log.d("custTest", group.getGroupName()+"");
+                    Log.d("custTest", groupId + ": " + group.getGroupName());
 
                     //type
 
@@ -75,10 +85,10 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                     Log.d("custTest", "Category: "+category);
                     if(category!= null) {
                         if (group.getCategory().equals(category)) {
-                            groupList.add(group);
+                            groupMap.put(groupId,group);
                         }
                     } else {
-                        groupList.add(group);
+                        groupMap.put(groupId,group);
                     }
 
                     //time
@@ -87,9 +97,9 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
 
                 }
-                Log.d("custTest", groupList.size()+"");
+                Log.d("custTest", "size: "+groupMap.size());
 
-                CustomerHomeGroupListRecyclerAdapter adapter = new CustomerHomeGroupListRecyclerAdapter(getContext(), groupList);
+                CustomerHomeGroupListRecyclerAdapter adapter = new CustomerHomeGroupListRecyclerAdapter(getContext(), groupMap);
                 recyclerView.setAdapter(adapter);
                 adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
             }
@@ -103,7 +113,21 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
     }
 
     @Override
-    public void onGroupClicked() {
+    public void onGroupClicked(String groupId, Group group) {
+        Log.d("setTest",groupId+ ": "+ group.getGroupName());
+        //pass the groupId to pop up GroupDetailPage
+        Bundle bundle = new Bundle();
 
+        bundle.putString("groupId", groupId);
+
+        Gson gson = new Gson();
+        String groupJson = gson.toJson(group);
+        bundle.putString("group", groupJson);
+
+        CustomerGroupDetailFragment customerGroupDetailFragment = new CustomerGroupDetailFragment();
+        customerGroupDetailFragment.setArguments(bundle);
+
+        Log.d("Test view", getView().getRootView().toString());
+        navController.navigate(R.id.action_customerHomeFragment_to_customerGroupDetailFragment, bundle);
     }
 }
