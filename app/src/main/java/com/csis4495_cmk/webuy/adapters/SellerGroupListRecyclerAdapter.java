@@ -50,6 +50,12 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
 
     private Map<ViewHolder, CountDownTimer> countDowns = new HashMap<>();
 
+    private OnItemClickListener onItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
     public SellerGroupListRecyclerAdapter() {
     }
 
@@ -175,17 +181,13 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
 
                                 }else{
                                     Log.d(TAG, "Group status update error", task.getException());
-
                                 }
                             }
                         });
-
                     }
 
                 }.start();;
-
                 countDowns.put(holder,timer);
-
             }
         } else {
             holder.groupStart.setVisibility(View.GONE);
@@ -233,11 +235,8 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
 
                     }
                 }.start();;
-
                 countDowns.put(holder,timer);
-
             }
-
         } else {
             holder.groupEnd.setVisibility(View.GONE);
             holder.countDown.setVisibility(View.GONE);
@@ -248,6 +247,14 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
             holder.countDown.setText("Group Closed");
         }
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(onItemClickListener != null){
+                    onItemClickListener.onItemClick(position);
+                }
+            }
+        });
     }
 
     @Override
@@ -278,4 +285,9 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
             countDown = itemView.findViewById(R.id.tv_group_count_down);
         }
     }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
 }

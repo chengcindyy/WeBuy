@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerGroupListRecyclerAdapter;
@@ -100,6 +101,31 @@ public class SellerGroupClosedFragment extends Fragment {
         mRecyclerView.setAdapter(groupListRecyclerAdapter);
 
         getGroupsData();
+
+        groupListRecyclerAdapter.setOnItemClickListener(new SellerGroupListRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Toast.makeText(getContext(), "productId: "+closedGroups.get(position).getProductId(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        groupListRecyclerAdapter.setOnItemClickListener(new SellerGroupListRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Group gp = closedGroups.get(position);
+                String productId = gp.getProductId();
+                Toast.makeText(getContext(), "productId: "+productId, Toast.LENGTH_SHORT).show();
+                Bundle bundle = new Bundle();
+                bundle.putString("new_group_productId", productId);
+
+                SellerGroupDetailFragment sellerGroupDetailFragment = new SellerGroupDetailFragment();
+                sellerGroupDetailFragment.setArguments(bundle);
+
+                Navigation.findNavController(view).navigate(R.id.action_sellerGroupList_to_sellerAddGroupFragment, bundle);
+
+            }
+        });
+
 
         return view;
 

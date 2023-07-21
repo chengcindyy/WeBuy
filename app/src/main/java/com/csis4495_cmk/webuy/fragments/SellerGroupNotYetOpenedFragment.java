@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerGroupListRecyclerAdapter;
@@ -109,6 +110,30 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
         getGroupsData();
 
         OnRecyclerItemSwipeActionHelper();
+
+        groupListRecyclerAdapter.setOnItemClickListener(new SellerGroupListRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Toast.makeText(getContext(), "groupId: "+groupIds.get(position), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        groupListRecyclerAdapter.setOnItemClickListener(new SellerGroupListRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                String groupId = groupIds.get(position);
+                Group gp = notYetOpenedGroups.get(position);
+                Toast.makeText(getContext(), "groupId: "+groupId, Toast.LENGTH_SHORT).show();
+                Bundle bundle = new Bundle();
+                bundle.putString("detail_groupId", groupId);
+
+                SellerGroupDetailFragment sellerGroupDetailFragment = new SellerGroupDetailFragment();
+                sellerGroupDetailFragment.setArguments(bundle);
+
+                Navigation.findNavController(view).navigate(R.id.action_sellerGroupList_to_sellerGroupDetailFragment, bundle);
+
+            }
+        });
 
         return view;
     }
@@ -237,7 +262,6 @@ public class SellerGroupNotYetOpenedFragment extends Fragment {
                 }
 
             }
-
 
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
