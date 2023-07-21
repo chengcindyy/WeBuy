@@ -1,11 +1,16 @@
 package com.csis4495_cmk.webuy.models;
 
 public class Inventory {
+    private String sellerId;
     private String productId;
     private String styleId;
+    private String inventoryName;
     private int inStock;
     private int allocated;
     private int toAllocated;
+    private String productStyleKey;
+    private String productImageUrl;
+    private String inventoryTitle;
 
     public Inventory() {
     }
@@ -16,6 +21,24 @@ public class Inventory {
         this.inStock = inStock;
         this.allocated = allocated;
         this.toAllocated = toAllocated;
+    }
+
+    public Inventory(String sellerId, String productId, String styleId, int inStock, String inventoryName, String productStyleKey, String inventoryTitle) {
+        this.sellerId = sellerId;
+        this.productId = productId;
+        this.styleId = styleId;
+        this.inStock = inStock;
+        this.productStyleKey = productStyleKey;
+        this.inventoryName = inventoryName;
+        this.inventoryTitle = inventoryTitle;
+    }
+
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
     }
 
     public String getProductId() {
@@ -32,6 +55,22 @@ public class Inventory {
 
     public void setStyleId(String styleId) {
         this.styleId = styleId;
+    }
+
+    public String getInventoryName() {
+        return inventoryName;
+    }
+
+    public void setInventoryName(String inventoryName) {
+        this.inventoryName = inventoryName;
+    }
+
+    public String getInventoryTitle() {
+        return inventoryTitle;
+    }
+
+    public void setInventoryTitle(String inventoryTitle) {
+        this.inventoryTitle = inventoryTitle;
     }
 
     public int getInStock() {
@@ -56,5 +95,21 @@ public class Inventory {
 
     public void setToAllocated(int toAllocated) {
         this.toAllocated = toAllocated;
+    }
+
+    public String getProductImageUrl() {
+        return productImageUrl;
+    }
+
+    public void setProductImageUrl(String productImageUrl) {
+        this.productImageUrl = productImageUrl;
+    }
+
+    public String getProductStyleKey() {
+        return productStyleKey;
+    }
+
+    public void setProductStyleKey(String productStyleKey) {
+        this.productStyleKey = productStyleKey;
     }
 }

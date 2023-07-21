@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.fragments.SellerInventoryFragment;
+import com.csis4495_cmk.webuy.models.Inventory;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
 
     private Context context;
     private static OnButtonClickListener listener;
-    private ArrayList<SellerInventoryFragment.GroupItemEntry> displayItemsList;
+    private List<List<Inventory>> displayItemsList;
     private List<String> coverImages;
     private InventoryRecyclerViewAdapter adapter;
 
@@ -35,7 +36,7 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
         this.listener = listener;
     }
 
-    public void setDisplayItemsList(ArrayList<SellerInventoryFragment.GroupItemEntry> displayItemsList) {
+    public void setDisplayItemsList(List<List<Inventory>> displayItemsList) {
         this.displayItemsList = displayItemsList;
         notifyDataSetChanged();
     }
@@ -49,24 +50,30 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        coverImages = displayItemsList.get(position).getGroup().getGroupImages();
-        SellerInventoryFragment.GroupItemEntry groupItems = displayItemsList.get(position);
-        holder.txvProductName.setText(groupItems.getGroup().getGroupName());
-
-        // Initialize child RecyclerView
-        Map<String, Integer> entries = groupItems.getEntries();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(holder.itemView.getContext(), LinearLayoutManager.HORIZONTAL, false);
-        holder.recyclerViewInvInfo.setLayoutManager(layoutManager);
-
-        adapter = new InventoryRecyclerViewAdapter(context, entries, groupItems);
-        adapter.setOnItemClickListener(this);
-        holder.recyclerViewInvInfo.setAdapter(adapter);
-
-        if(displayItemsList.get(position).getCoverImgUrl() != null) {
-            Picasso.get().load(displayItemsList.get(position).getCoverImgUrl()).into(holder.imgProductImage);
+//        coverImages = displayItemsList.get(position).getGroup().getGroupImages();
+        List<Inventory> inventoryItems = displayItemsList.get(position);
+        if (!inventoryItems.isEmpty()) {
+            Inventory firstInventory = inventoryItems.get(0);
+            holder.txvProductName.setText(firstInventory.getInventoryTitle());
         } else {
-            holder.imgProductImage.setImageResource(R.drawable.app_default_image);
+            // 沒有 Inventory 對象可顯示
+            holder.txvProductName.setText("No inventory");
         }
+
+//        // Initialize child RecyclerView
+//        Map<String, Integer> entries = groupItems.getEntries();
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(holder.itemView.getContext(), LinearLayoutManager.HORIZONTAL, false);
+//        holder.recyclerViewInvInfo.setLayoutManager(layoutManager);
+
+//        adapter = new InventoryRecyclerViewAdapter(context, entries, groupItems);
+//        adapter.setOnItemClickListener(this);
+//        holder.recyclerViewInvInfo.setAdapter(adapter);
+
+//        if(displayItemsList.get(position).getCoverImgUrl() != null) {
+//            Picasso.get().load(displayItemsList.get(position).getCoverImgUrl()).into(holder.imgProductImage);
+//        } else {
+//            holder.imgProductImage.setImageResource(R.drawable.app_default_image);
+//        }
 
         holder.btnViewProduct.setOnClickListener(view -> listener.onOpenProductPageButtonClick(position));
     }
