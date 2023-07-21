@@ -107,7 +107,6 @@ public class SellerGroupListStyleListRecyclerAdapter extends RecyclerView.Adapte
         if(sQty != null) {
             holder.styleQty.setText("Qty: "+ String.valueOf(sQty));
         }
-
     }
 
     @Override

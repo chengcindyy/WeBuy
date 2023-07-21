@@ -106,9 +106,9 @@ public class SellerGroupOpeningFragment extends Fragment {
 
         mRecyclerView.setAdapter(groupListRecyclerAdapter);
 
-        OnRecyclerItemSwipeActionHelper();
-
         getGroupsData();
+
+        OnRecyclerItemSwipeActionHelper();
 
         return view;
     }
