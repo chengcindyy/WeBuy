@@ -167,6 +167,9 @@
         <action
             android:id="@+id/action_sellerGroupList_to_sellerAddGroupFragment"
             app:destination="@id/sellerAddGroupFragment" />
+        <action
+            android:id="@+id/action_sellerGroupList_to_sellerGroupDetailFragment"
+            app:destination="@id/sellerGroupDetailFragment" />
     </fragment>
     <!--    <fragment-->
     <fragment
@@ -179,6 +182,11 @@
         android:name="com.csis4495_cmk.webuy.fragments.SellerSetPaymentFragment"
         android:label="fragment_seller_payment_setting2"
         tools:layout="@layout/fragment_seller_payment_setting" />
+    <fragment
+        android:id="@+id/sellerGroupDetailFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerGroupDetailFragment"
+        android:label="fragment_seller_group_detail"
+        tools:layout="@layout/fragment_seller_group_detail" />
     <!--    <fragment-->
 <!--        android:id="@+id/sellerEditProductDialog"-->
 <!--        android:name="com.csis4495_cmk.webuy.dialog.SellerEditProductDialog"-->
