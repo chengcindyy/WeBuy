@@ -158,7 +158,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                 }
             });
 
-            String mapKey = "s_" + style.getStyleId();
+            String mapKey = "s___" + style.getStyleId();
             if (getGroupQtyMap().containsKey(mapKey)) {
                 Integer qty = getGroupQtyMap().get(mapKey);
                 holder.styleQty.setText(Integer.toString(qty));
