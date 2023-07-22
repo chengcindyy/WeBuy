@@ -119,12 +119,22 @@ public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adap
         TextView stylePrice;
         TextView styleQty;
 
+        TextView ordered;
+
+        TextView allocated;
+
+        TextView toAllocate;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             styleImg = itemView.findViewById(R.id.img_group_style);
             styleName = itemView.findViewById(R.id.tv_group_style_name);
             stylePrice = itemView.findViewById(R.id.tv_group_style_price);
             styleQty = itemView.findViewById(R.id.tv_group_style_qty);
+            ordered = itemView.findViewById(R.id.tv_group_style_ordered);
+            allocated = itemView.findViewById(R.id.tv_group_style_allocated);
+            toAllocate = itemView.findViewById(R.id.tv_group_style_toAllocated);
+
         }
     }
 }
