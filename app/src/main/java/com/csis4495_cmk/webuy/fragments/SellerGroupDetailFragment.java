@@ -11,6 +11,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -21,11 +22,13 @@ import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerGroupDetailImageRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.SellerGroupDetailOrderListViewPagerAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerGroupDetailStyleListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -43,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SellerGroupDetailFragment extends Fragment {
 
-   private TextView gName, gDes, gPrice, gStart, gEnd, gCountdown, gQty;
+   private TextView gName, gDes, gPrice, gStart, gEnd, gCountdown, gQty, gOrdered, gAllocated, gToAllocate;
    private RecyclerView imgRecyclerView, styleRecyclerView;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -64,6 +67,11 @@ public class SellerGroupDetailFragment extends Fragment {
     private String groupId;
 
     private String productId;
+
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
+
+    private SellerGroupDetailOrderListViewPagerAdapter viewPagerAdapter;
 
 
     SimpleDateFormat simpleDateFormat;
@@ -99,10 +107,45 @@ public class SellerGroupDetailFragment extends Fragment {
         gEnd = view.findViewById(R.id.group_detail_end);
         gCountdown = view.findViewById(R.id.group_detail_countdown);
         gQty = view.findViewById(R.id.group_detail_qty);
+        gOrdered = view.findViewById(R.id.group_detail_ordered);
+        gAllocated = view.findViewById(R.id.group_detail_allocated);
+        gToAllocate = view.findViewById(R.id.group_detail_toAllocate);
 
         imgRecyclerView = view.findViewById(R.id.rv_group_detail_img);
 
         styleRecyclerView = view.findViewById(R.id.rv_group_detail_style);
+
+        tabLayout = view.findViewById(R.id.group_detail_order_tab_layout);
+        viewPager = view.findViewById(R.id.group_detail_order_view_pager);
+
+        viewPagerAdapter = new SellerGroupDetailOrderListViewPagerAdapter(getChildFragmentManager(), getLifecycle());
+        viewPager.setAdapter(viewPagerAdapter);
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                tabLayout.getTabAt(position).select();
+            }
+        });
+
 
         getGroupDetail();
 
@@ -249,11 +292,20 @@ public class SellerGroupDetailFragment extends Fragment {
                     styleAdapter.notifyDataSetChanged();
                     styleRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                     styleRecyclerView.setAdapter(styleAdapter);
+
                     gQty.setVisibility(View.GONE);
+                    gOrdered.setVisibility(View.GONE);
+                    gAllocated.setVisibility(View.GONE);
+                    gToAllocate.setVisibility(View.GONE);
                 }else{
                     Integer qty = qtyMap.get("p___"+gp.getProductId());
-                    gQty.setText("Quantity: " + Integer.toString(qty));
                     gQty.setVisibility(View.VISIBLE);
+                    gOrdered.setVisibility(View.VISIBLE);
+                    gAllocated.setVisibility(View.VISIBLE);
+                    gToAllocate.setVisibility(View.VISIBLE);
+
+                    gQty.setText("Quantity: " + Integer.toString(qty));
+
                     styleRecyclerView.setVisibility(View.GONE);
                 }
 
