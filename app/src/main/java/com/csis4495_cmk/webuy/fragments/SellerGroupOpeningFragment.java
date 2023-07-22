@@ -114,7 +114,6 @@ public class SellerGroupOpeningFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 String groupId = groupIds.get(position);
-                Group gp = openingGroups.get(position);
                 Toast.makeText(getContext(), "groupId: "+groupId, Toast.LENGTH_SHORT).show();
                 Bundle bundle = new Bundle();
                 bundle.putString("detail_groupId", groupId);

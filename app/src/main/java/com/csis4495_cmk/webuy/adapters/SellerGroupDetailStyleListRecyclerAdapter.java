@@ -22,23 +22,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SellerGroupListStyleListRecyclerAdapter extends RecyclerView.Adapter<SellerGroupListStyleListRecyclerAdapter.ViewHolder> {
+public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adapter<SellerGroupDetailStyleListRecyclerAdapter.ViewHolder> {
     private Context context;
     private List<ProductStyle> styles = new ArrayList<>();
     private Map<String, Integer> qtyMap = new HashMap<>();
     private String productId;
 
-    public SellerGroupListStyleListRecyclerAdapter() {
+    public SellerGroupDetailStyleListRecyclerAdapter() {
     }
 
-    public SellerGroupListStyleListRecyclerAdapter(Context context, List<ProductStyle> styles, Map<String, Integer> qtyMap, String productId) {
+    public SellerGroupDetailStyleListRecyclerAdapter(Context context, List<ProductStyle> styles, Map<String, Integer> qtyMap, String productId) {
         this.context = context;
         this.styles = styles;
         this.qtyMap = qtyMap;
         this.productId = productId;
     }
 
-    public SellerGroupListStyleListRecyclerAdapter(List<ProductStyle> styles, Map<String, Integer> qtyMap, String productId) {
+    public SellerGroupDetailStyleListRecyclerAdapter(List<ProductStyle> styles, Map<String, Integer> qtyMap, String productId) {
         this.styles = styles;
         this.qtyMap = qtyMap;
         this.productId = productId;
@@ -78,16 +78,15 @@ public class SellerGroupListStyleListRecyclerAdapter extends RecyclerView.Adapte
 
     @NonNull
     @Override
-    public SellerGroupListStyleListRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SellerGroupDetailStyleListRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_seller_group_detail_style,parent,false);
-        SellerGroupListStyleListRecyclerAdapter.ViewHolder viewHolder = new SellerGroupListStyleListRecyclerAdapter.ViewHolder(itemView);
+        SellerGroupDetailStyleListRecyclerAdapter.ViewHolder viewHolder = new SellerGroupDetailStyleListRecyclerAdapter.ViewHolder(itemView);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SellerGroupListStyleListRecyclerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SellerGroupDetailStyleListRecyclerAdapter.ViewHolder holder, int position) {
         ProductStyle ps = styles.get(position);
-
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
         StorageReference imageReference = storageReference.child(productId+"/"+ps.getStylePicName());
         imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -103,9 +102,9 @@ public class SellerGroupListStyleListRecyclerAdapter extends RecyclerView.Adapte
         holder.styleName.setText(ps.getStyleName());
         Double sPrice = ps.getStylePrice();
         holder.stylePrice.setText("CA$ " + Double.valueOf(sPrice));
-        Integer sQty = qtyMap.get(ps.getStyleName());
+        Integer sQty = qtyMap.get("s___"+ps.getStyleId());
         if(sQty != null) {
-            holder.styleQty.setText("Qty: "+ String.valueOf(sQty));
+            holder.styleQty.setText("Quantity: "+ String.valueOf(sQty));
         }
     }
 

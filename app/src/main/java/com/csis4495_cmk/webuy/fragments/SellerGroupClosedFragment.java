@@ -102,26 +102,21 @@ public class SellerGroupClosedFragment extends Fragment {
 
         getGroupsData();
 
-        groupListRecyclerAdapter.setOnItemClickListener(new SellerGroupListRecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                Toast.makeText(getContext(), "productId: "+closedGroups.get(position).getProductId(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        OnRecyclerItemSwipeActionHelper();
 
         groupListRecyclerAdapter.setOnItemClickListener(new SellerGroupListRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Group gp = closedGroups.get(position);
-                String productId = gp.getProductId();
-                Toast.makeText(getContext(), "productId: "+productId, Toast.LENGTH_SHORT).show();
+                String groupId = groupIds.get(position);
+                Toast.makeText(getContext(), "groupId: "+groupId, Toast.LENGTH_SHORT).show();
                 Bundle bundle = new Bundle();
-                bundle.putString("new_group_productId", productId);
+                bundle.putString("detail_groupId", groupId);
 
                 SellerGroupDetailFragment sellerGroupDetailFragment = new SellerGroupDetailFragment();
                 sellerGroupDetailFragment.setArguments(bundle);
 
-                Navigation.findNavController(view).navigate(R.id.action_sellerGroupList_to_sellerAddGroupFragment, bundle);
+                Navigation.findNavController(view).navigate(R.id.action_sellerGroupList_to_sellerGroupDetailFragment, bundle);
+
 
             }
         });
@@ -130,6 +125,56 @@ public class SellerGroupClosedFragment extends Fragment {
         return view;
 
     }
+
+    private void OnRecyclerItemSwipeActionHelper() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                String productId = "";
+                position = viewHolder.getLayoutPosition();
+                // Swiped item left: close the group (set status to 2)
+                if (direction == ItemTouchHelper.RIGHT) {
+                    Group selectedGroup = closedGroups.get(position);
+                    productId = selectedGroup.getProductId();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("new_group_productId", productId);
+
+                    SellerAddGroupFragment sellerAddGroupFragment = new SellerAddGroupFragment();
+                    sellerAddGroupFragment.setArguments(bundle);
+                    Navigation.findNavController(viewHolder.itemView).navigate(R.id.action_sellerGroupList_to_sellerAddGroupFragment, bundle);
+                    groupListRecyclerAdapter.setGroups(closedGroups);
+                    groupListRecyclerAdapter.setGroupIds(groupIds);
+                    groupListRecyclerAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+//                        .addSwipeLeftBackgroundColor(ContextCompat.getColor(getContext(), R.color.delete_red))
+//                        .addSwipeLeftActionIcon(R.drawable.baseline_close_48)
+                        .addSwipeRightBackgroundColor(ContextCompat.getColor(getContext(), R.color.android_green))
+                        .addSwipeRightActionIcon(R.drawable.baseline_autorenew_448)
+                        .create()
+                        .decorate();
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
 
     private void getGroupsData(){
         groupRef.addValueEventListener(new ValueEventListener() {
