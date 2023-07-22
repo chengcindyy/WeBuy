@@ -225,7 +225,8 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){
                                     Log.d(TAG, "Group status is updated: 2");
-                                    holder.countDown.setVisibility(View.GONE);
+                                    holder.countDown.setVisibility(View.VISIBLE);
+                                    holder.countDown.setText("Group Closed");
                                 }else{
                                     Log.d(TAG, "Group status update error", task.getException());
 
