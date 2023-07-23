@@ -1,5 +1,7 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import static androidx.navigation.Navigation.findNavController;
+
 import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.net.Uri;
@@ -120,7 +122,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         // Open add product page
         btnAddProduct = view.findViewById(R.id.fab_add_new_product);
         btnAddProduct.setOnClickListener(view1 ->
-                Navigation.findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
+                findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
     }
 
 
@@ -290,7 +292,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
                     bundle.putString("productId", productId);
                     SellerAddProductFragment sellerAddProductFragment = new SellerAddProductFragment();
                     sellerAddProductFragment.setArguments(bundle);
-                    Navigation.findNavController(viewHolder.itemView).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment, bundle);
+                    findNavController(viewHolder.itemView).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment, bundle);
                 }
             }
 

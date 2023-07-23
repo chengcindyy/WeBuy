@@ -158,7 +158,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                 }
             });
 
-            String mapKey = "s_" + style.getStyleId();
+            String mapKey = "s___" + style.getStyleId();
             if (getGroupQtyMap().containsKey(mapKey)) {
                 Integer qty = getGroupQtyMap().get(mapKey);
                 holder.styleQty.setText(Integer.toString(qty));
@@ -252,7 +252,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                             int qty = Integer.parseInt(s.toString());
                             if (qty < -1) {
 //                                Toast.makeText(context, "The minimum quantity is -1 for unlimited quantity order", Toast.LENGTH_SHORT).show();
-                                styleQty.setError("The minimum quantity is -1 for unlimited quantity order");
+                                styleQty.setError("The minimum quantity is -1 for unlimited preorder group");
                                 styleQty.setText("");
                                 styleQty.requestFocus();
                             } else if (qty == 0 && isNewGroup) {

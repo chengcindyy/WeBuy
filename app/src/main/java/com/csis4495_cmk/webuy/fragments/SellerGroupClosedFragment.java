@@ -2,13 +2,19 @@ package com.csis4495_cmk.webuy.fragments;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.DialogInterface;
+import android.graphics.Canvas;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerGroupListRecyclerAdapter;
@@ -35,6 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class SellerGroupClosedFragment extends Fragment {
 
@@ -62,6 +71,7 @@ public class SellerGroupClosedFragment extends Fragment {
 
     private TextView tv_group_list_no_closed;
 
+    private int position;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,9 +102,79 @@ public class SellerGroupClosedFragment extends Fragment {
 
         getGroupsData();
 
+        OnRecyclerItemSwipeActionHelper();
+
+        groupListRecyclerAdapter.setOnItemClickListener(new SellerGroupListRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                String groupId = groupIds.get(position);
+                Toast.makeText(getContext(), "groupId: "+groupId, Toast.LENGTH_SHORT).show();
+                Bundle bundle = new Bundle();
+                bundle.putString("detail_groupId", groupId);
+
+                SellerGroupDetailFragment sellerGroupDetailFragment = new SellerGroupDetailFragment();
+                sellerGroupDetailFragment.setArguments(bundle);
+
+                Navigation.findNavController(view).navigate(R.id.action_sellerGroupList_to_sellerGroupDetailFragment, bundle);
+
+
+            }
+        });
+
+
         return view;
 
     }
+
+    private void OnRecyclerItemSwipeActionHelper() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                String productId = "";
+                position = viewHolder.getLayoutPosition();
+                // Swiped item left: close the group (set status to 2)
+                if (direction == ItemTouchHelper.RIGHT) {
+                    Group selectedGroup = closedGroups.get(position);
+                    productId = selectedGroup.getProductId();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("new_group_productId", productId);
+
+                    SellerAddGroupFragment sellerAddGroupFragment = new SellerAddGroupFragment();
+                    sellerAddGroupFragment.setArguments(bundle);
+                    Navigation.findNavController(viewHolder.itemView).navigate(R.id.action_sellerGroupList_to_sellerAddGroupFragment, bundle);
+                    groupListRecyclerAdapter.setGroups(closedGroups);
+                    groupListRecyclerAdapter.setGroupIds(groupIds);
+                    groupListRecyclerAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+//                        .addSwipeLeftBackgroundColor(ContextCompat.getColor(getContext(), R.color.delete_red))
+//                        .addSwipeLeftActionIcon(R.drawable.baseline_close_48)
+                        .addSwipeRightBackgroundColor(ContextCompat.getColor(getContext(), R.color.android_green))
+                        .addSwipeRightActionIcon(R.drawable.baseline_autorenew_448)
+                        .create()
+                        .decorate();
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
 
     private void getGroupsData(){
         groupRef.addValueEventListener(new ValueEventListener() {
@@ -157,9 +237,8 @@ public class SellerGroupClosedFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
-
     }
+
 }

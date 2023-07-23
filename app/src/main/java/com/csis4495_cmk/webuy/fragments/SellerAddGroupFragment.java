@@ -990,7 +990,7 @@ public class SellerAddGroupFragment extends Fragment {
                     group_no_style_qty.requestFocus();
                 } else if (no_qty < -1) {
                     isComplete = false;
-                    group_no_style_qty.setError("The minimum quantity is -1 for unlimited quantity order");
+                    group_no_style_qty.setError("The minimum quantity is -1 for unlimited preorder group");
                     group_no_style_qty.setText("");
                     group_no_style_qty.requestFocus();
                 }
