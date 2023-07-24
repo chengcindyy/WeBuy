@@ -1,7 +1,6 @@
 package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,30 +13,36 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.fragments.SellerInventoryFragment;
 import com.csis4495_cmk.webuy.models.Inventory;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<SellerInventoryListRecyclerAdapter.ViewHolder> implements InventoryRecyclerViewAdapter.OnItemClickListener{
+public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<SellerInventoryListRecyclerAdapter.ViewHolder> implements SellerInventoryInfoRecyclerViewAdapter.OnAllocateClickListener{
 
     private Context context;
-    private static OnButtonClickListener listener;
-    private List<List<Inventory>> displayItemsList;
-    private List<String> coverImages;
-    private InventoryRecyclerViewAdapter adapter;
+    private static OnButtonClickListener onButtonClickListener;
+    private Map<String, List<Inventory>> displayItemsMap;
+    private List<String> productIds;
+    private List<String> allCoverImgsList;
+    private SellerInventoryInfoRecyclerViewAdapter adapter;
+    private SellerInventoryFragment sellerInventoryFragment;
 
-    public SellerInventoryListRecyclerAdapter(Context context, OnButtonClickListener listener) {
+    public SellerInventoryListRecyclerAdapter(Context context, OnButtonClickListener listener, SellerInventoryFragment sellerInventoryFragment) {
         this.context = context;
-        this.listener = listener;
+        this.onButtonClickListener = listener;
+        this.sellerInventoryFragment = sellerInventoryFragment;
     }
 
-    public void setDisplayItemsList(List<List<Inventory>> displayItemsList) {
-        this.displayItemsList = displayItemsList;
+    public void setDisplayItemsList(HashMap<String, List<Inventory>> inventoryMap, List<String> allCoverImgsList) {
+        this.displayItemsMap = inventoryMap;
+        this.allCoverImgsList = allCoverImgsList;
+        this.productIds = new ArrayList<>(displayItemsMap.keySet());
         notifyDataSetChanged();
     }
 
@@ -50,52 +55,38 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-//        coverImages = displayItemsList.get(position).getGroup().getGroupImages();
-        List<Inventory> inventoryItems = displayItemsList.get(position);
-        if (!inventoryItems.isEmpty()) {
-            Inventory firstInventory = inventoryItems.get(0);
-            holder.txvProductName.setText(firstInventory.getInventoryTitle());
-        } else {
-            // 沒有 Inventory 對象可顯示
-            holder.txvProductName.setText("No inventory");
-        }
+        String productId = productIds.get(position);
+        List<Inventory> inventoryItems = displayItemsMap.get(productId);
 
-//        // Initialize child RecyclerView
-//        Map<String, Integer> entries = groupItems.getEntries();
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(holder.itemView.getContext(), LinearLayoutManager.HORIZONTAL, false);
-//        holder.recyclerViewInvInfo.setLayoutManager(layoutManager);
+        // Set product name (title)
+        Inventory firstInventory = inventoryItems.get(0);
+        holder.txvProductName.setText(firstInventory.getInventoryTitle());
 
-//        adapter = new InventoryRecyclerViewAdapter(context, entries, groupItems);
-//        adapter.setOnItemClickListener(this);
-//        holder.recyclerViewInvInfo.setAdapter(adapter);
+        // Initialize child RecyclerView
+        LinearLayoutManager layoutManager = new LinearLayoutManager(holder.itemView.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        holder.recyclerViewInvInfo.setLayoutManager(layoutManager);
+        adapter = new SellerInventoryInfoRecyclerViewAdapter(context, inventoryItems, sellerInventoryFragment);
 
-//        if(displayItemsList.get(position).getCoverImgUrl() != null) {
-//            Picasso.get().load(displayItemsList.get(position).getCoverImgUrl()).into(holder.imgProductImage);
-//        } else {
-//            holder.imgProductImage.setImageResource(R.drawable.app_default_image);
-//        }
+        adapter.setOnItemClickListener(this);
+        adapter.setOnStockButtonClickListener(sellerInventoryFragment);
+        holder.recyclerViewInvInfo.setAdapter(adapter);
 
-        holder.btnViewProduct.setOnClickListener(view -> listener.onOpenProductPageButtonClick(position));
+        // Set images
+        String imageUrl = firstInventory.getImageUrl();
+        Glide.with(holder.imgProductImage.getContext()).load(imageUrl).into(holder.imgProductImage);
+
+        // Set product image button
+        holder.btnViewProduct.setOnClickListener(view -> onButtonClickListener.onOpenProductPageButtonClick(position));
     }
 
     @Override
     public int getItemCount() {
-        return displayItemsList.size();
-    }
-
-    @Override
-    public void onStockInClick(int position) {
-        listener.onStockInClick(position);
-    }
-
-    @Override
-    public void onStockOutClick(int position) {
-        listener.onStockOutClick(position);
+        return displayItemsMap.size();
     }
 
     @Override
     public void onAllocateClick(int position) {
-        listener.onOpenAllocateButtonClick(position);
+        onButtonClickListener.onOpenAllocateButtonClick(position);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -118,8 +109,6 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
 
     public interface OnButtonClickListener {
         void onOpenProductPageButtonClick(int position);
-        void onStockInClick(int position);
-        void onStockOutClick(int position);
         void onOpenAllocateButtonClick(int position);
     }
 }

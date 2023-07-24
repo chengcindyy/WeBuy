@@ -8,9 +8,12 @@ public class Inventory {
     private int inStock;
     private int allocated;
     private int toAllocated;
+    private int ordered = 15;
+    private int toOrder;
     private String productStyleKey;
-    private String productImageUrl;
+    private String imageUrl;
     private String inventoryTitle;
+    private String inventoryId;
 
     public Inventory() {
     }
@@ -24,6 +27,7 @@ public class Inventory {
     }
 
     public Inventory(String sellerId, String productId, String styleId, int inStock, String inventoryName, String productStyleKey, String inventoryTitle) {
+        this.inventoryId = inventoryId;
         this.sellerId = sellerId;
         this.productId = productId;
         this.styleId = styleId;
@@ -31,6 +35,36 @@ public class Inventory {
         this.productStyleKey = productStyleKey;
         this.inventoryName = inventoryName;
         this.inventoryTitle = inventoryTitle;
+    }
+
+    public String getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(String inventoryId) {
+        this.inventoryId = inventoryId;
+    }
+
+    public int getOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(int ordered) {
+        this.ordered = ordered;
+    }
+
+    public int getToOrder() {
+        int num = inStock - ordered;
+        if (num >= 0)
+            toOrder = 0;
+        else {
+            toOrder = Math.abs(num);
+        }
+        return toOrder;
+    }
+
+    public void setToOrder(int toOrder) {
+        this.toOrder = toOrder;
     }
 
     public String getSellerId() {
@@ -97,12 +131,12 @@ public class Inventory {
         this.toAllocated = toAllocated;
     }
 
-    public String getProductImageUrl() {
-        return productImageUrl;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setProductImageUrl(String productImageUrl) {
-        this.productImageUrl = productImageUrl;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getProductStyleKey() {
