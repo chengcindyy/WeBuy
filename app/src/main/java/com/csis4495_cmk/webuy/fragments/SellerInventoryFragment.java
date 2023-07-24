@@ -5,10 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,9 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
+
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.SellerInventoryInfoRecyclerViewAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerInventoryListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
@@ -44,20 +40,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class SellerInventoryFragment extends Fragment implements SellerInventoryListRecyclerAdapter.OnButtonClickListener,
                                                                  SellerInventoryStockManagementFragment.onStockButtonClickListener{
 
     private NavController navController;
-    private SearchView searchBar;
+    private androidx.appcompat.widget.SearchView searchView;
     private TabLayout tabLayout;
     private RecyclerView mRecyclerView;
     private SellerInventoryListRecyclerAdapter adapter;
     private List<String> allCoverImgsList;
-    private HashMap<String, List<Inventory>> inventoryMap;
-    private HashMap<String, List<Inventory>> inStockItemsMap;
-    private HashMap<String, List<Inventory>> preOrderItemsMap;
+    private Map<String, List<Inventory>> inventoryMap;
+    private Map<String, List<Inventory>> inStockItemsMap;
+    private Map<String, List<Inventory>> preOrderItemsMap;
     private Map<String, Integer> groupTypeMap;
     private Map<String, String> allImagesMap;
     private String styleId, productId, sellerId, name, inventoryTitle;
@@ -79,7 +76,24 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         // References
         navController = NavHostFragment.findNavController(SellerInventoryFragment.this);
         // SearchBar
-        searchBar = view.findViewById(R.id.search_product);
+        searchView = view.findViewById(R.id.search_product);
+        if (searchView != null) {
+            searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    search(s);
+                    Log.d("Test search", "onQueryTextSubmit");
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    search(s);
+                    Log.d("Test search", "onQueryTextChange");
+                    return false;
+                }
+            });
+        }
         // List
         allCoverImgsList = new ArrayList<>();
         groupTypeMap = new HashMap<>();
@@ -96,6 +110,32 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         tabLayout = view.findViewById(R.id.tabLayout_filter);
         setTabLayout(tabLayout);
     }
+
+    private void search(String str) {
+        Map<String, List<Inventory>> mInventoryMap = inventoryMap.entrySet()
+                .stream()
+                .filter(map -> {
+                    for (Inventory inventory : map.getValue()) {
+                        if (inventory.getInventoryName().toLowerCase().contains(str.toLowerCase()) ||
+                            inventory.getInventoryTitle().toLowerCase().contains(str.toLowerCase())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }).collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
+
+        // Update inventoryMap
+        UpdateRecyclerView(mInventoryMap);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void UpdateRecyclerView(Map<String, List<Inventory>> inventoryMap) {
+        Log.d("Test UpdateRecyclerView", inventoryMap + "");
+        adapter.setDisplayItemsList(inventoryMap, allCoverImgsList);
+        adapter.notifyDataSetChanged();
+        mRecyclerView.setAdapter(adapter);
+    }
+
 
     private void setInventoryRecyclerViewList() {
         DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");

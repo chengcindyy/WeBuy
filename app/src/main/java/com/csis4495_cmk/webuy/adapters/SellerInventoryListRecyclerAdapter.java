@@ -39,7 +39,7 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
         this.sellerInventoryFragment = sellerInventoryFragment;
     }
 
-    public void setDisplayItemsList(HashMap<String, List<Inventory>> inventoryMap, List<String> allCoverImgsList) {
+    public void setDisplayItemsList(Map<String, List<Inventory>> inventoryMap, List<String> allCoverImgsList) {
         this.displayItemsMap = inventoryMap;
         this.allCoverImgsList = allCoverImgsList;
         this.productIds = new ArrayList<>(displayItemsMap.keySet());
