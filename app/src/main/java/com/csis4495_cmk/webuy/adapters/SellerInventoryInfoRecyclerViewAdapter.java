@@ -33,6 +33,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
         this.context = context;
         this.inventoryList = inventoryList;
         this.fragment = fragment;
+        notifyDataSetChanged();
     }
 
     public void setOnItemClickListener(OnAllocateClickListener listener) {

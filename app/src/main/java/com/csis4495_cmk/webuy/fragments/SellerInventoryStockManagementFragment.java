@@ -118,47 +118,40 @@ public class SellerInventoryStockManagementFragment extends BottomSheetDialogFra
         inventoryRequired.setText(String.valueOf(ordered));
         inventoryNeeded.setText(String.valueOf(toOrder));
 
-        btnStockIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String _NUM = etStockInValue.getEditText().getText().toString();
+        // Se Button Click listener
+        btnStockIn.setOnClickListener(view1 -> {
+            String _NUM = etStockInValue.getEditText().getText().toString();
 
-                if(TextUtils.isEmpty(_NUM)){
-                    Toast.makeText(getContext(),
-                            "Please enter a value", Toast.LENGTH_SHORT).show();
-                    etStockInValue.setError("a number is required");
-                    etStockInValue.requestFocus();
-                } else {
-                    int stockInAmount = Integer.parseInt(_NUM);
-                    stockListener.onStockInButtonClicked(stockInAmount);
-                    Toast.makeText(getContext(), "Inventory updated", Toast.LENGTH_SHORT).show();
-                }
+            if(TextUtils.isEmpty(_NUM)){
+                Toast.makeText(getContext(),
+                        "Please enter a value", Toast.LENGTH_SHORT).show();
+                etStockInValue.setError("a number is required");
+                etStockInValue.requestFocus();
+            } else {
+                int stockInAmount = Integer.parseInt(_NUM);
+                stockListener.onStockInButtonClicked(inventoryId, stockInAmount);
+                Toast.makeText(getContext(), "Inventory updated", Toast.LENGTH_SHORT).show();
             }
         });
 
-        btnStockOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String _NUM = etStockOutValue.getEditText().getText().toString();
+        btnStockOut.setOnClickListener(view12 -> {
+            String _NUM = etStockOutValue.getEditText().getText().toString();
 
-                if(TextUtils.isEmpty(_NUM)){
-                    Toast.makeText(getContext(),
-                            "Please enter a value", Toast.LENGTH_SHORT).show();
-                    etStockOutValue.setError("a number is required");
-                    etStockOutValue.requestFocus();
-                } else {
-                    int stockOutAmount = Integer.parseInt(_NUM);
-                    stockListener.onStockOutButtonClicked(stockOutAmount);
-                    Toast.makeText(getContext(), "Inventory updated", Toast.LENGTH_SHORT).show();
-                }
+            if(TextUtils.isEmpty(_NUM)){
+                Toast.makeText(getContext(),
+                        "Please enter a value", Toast.LENGTH_SHORT).show();
+                etStockOutValue.setError("a number is required");
+                etStockOutValue.requestFocus();
+            } else {
+                int stockOutAmount = Integer.parseInt(_NUM);
+                stockListener.onStockOutButtonClicked(inventoryId, stockOutAmount);
+                Toast.makeText(getContext(), "Inventory updated", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     public interface onStockButtonClickListener{
-        void onStockInButtonClicked(int stockIn);
-        void onStockOutButtonClicked(int stockOut);
-        void onUpdateCompleted();
-        void onError(Exception e);
+        void onStockInButtonClicked(String inventoryId, int stockIn);
+        void onStockOutButtonClicked(String inventoryId, int stockOut);
     }
 }

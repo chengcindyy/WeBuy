@@ -66,7 +66,6 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
         LinearLayoutManager layoutManager = new LinearLayoutManager(holder.itemView.getContext(), LinearLayoutManager.HORIZONTAL, false);
         holder.recyclerViewInvInfo.setLayoutManager(layoutManager);
         adapter = new SellerInventoryInfoRecyclerViewAdapter(context, inventoryItems, sellerInventoryFragment);
-
         adapter.setOnItemClickListener(this);
         adapter.setOnStockButtonClickListener(sellerInventoryFragment);
         holder.recyclerViewInvInfo.setAdapter(adapter);

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -61,8 +62,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     private Map<String, String> allImagesMap;
     private String styleId, productId, sellerId, name, inventoryTitle;
     private int qty, ordered, allocated, toAllocate, toOrder;
-    private SellerInventoryStockManagementFragment.onStockButtonClickListener stockListener;
-    private SellerInventoryInfoRecyclerViewAdapter infoFragment;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     DatabaseReference reference;
 
@@ -339,61 +338,67 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     }
 
     @Override
-    public void onStockInButtonClicked(int stockIn) {
+    public void onStockInButtonClicked(String inventoryId, int stockIn) {
         Log.d("Test stock", "onStockInButtonClicked()");
+        String inventoryKey = inventoryId;
+        DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory").child(inventoryKey);
+        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int currentInStock = snapshot.child("inStock").getValue(Integer.class);
+                int newInStock = currentInStock + stockIn;
+                Log.d("Test in stock", "passed amount:"+ stockIn+ " current in-stock:"+ currentInStock + " new in-stock:"+newInStock);
+                inventoryRef.child("inStock").setValue(newInStock);
 
-//        SellerInventoryStockManagementFragment inventoryFragment = SellerInventoryStockManagementFragment.newInstance("inAmount", "outAmount");
-//        // Get the fragmentManager
-//        FragmentManager fragmentManager = getParentFragmentManager();
-//        // Show the inventoryFragment
-//        inventoryFragment.show(fragmentManager, "Inventory Management Frag show");
-//        // set interface listener(inventoryFragment -> currentFragment)
-//        inventoryFragment.setSellerButtonClickListener(new SellerInventoryStockManagementFragment.onStockButtonClickListener() {
-//            @Override
-//            public void onStockInButtonClicked(int stockIn) {
-//                int inAmount = stockIn;
-//
-//                DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
-//                inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        for (DataSnapshot productSnapshot : snapshot.getChildren()){
-//                            Inventory inventory = productSnapshot.getValue(Inventory.class);
-//
-//                            int newInStock = inventory.getInStock() + inAmount;
-//                            Log.d("Test in stock", "passed amount:"+ inAmount);
-//                            Log.d("Test in stock", "current in-stock:"+inventory.getInStock());
-//                            Log.d("Test in stock", "new in-stock:"+newInStock);
-//
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                        // Handle error here
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onStockOutButtonClicked(int stockOut) {
-//                // 做一些處理，例如更新界面或數據
-//            }
-//        });
+                // Update inventoryMap
+                for (List<Inventory> list : inventoryMap.values()) {
+                    for (Inventory inventory : list) {
+                        if (inventory.getInventoryId().equals(inventoryId)) {
+                            inventory.setInStock(newInStock);
+                            break;
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error here
+            }
+        });
     }
 
     @Override
-    public void onStockOutButtonClicked(int stockOut) {
+    public void onStockOutButtonClicked(String inventoryId, int stockOut) {
         Log.d("Test stock", "onStockOutButtonClicked()");
-    }
+        String inventoryKey = inventoryId;
+        DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory").child(inventoryKey);
+        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int currentInStock = snapshot.child("inStock").getValue(Integer.class);
+                int newInStock = currentInStock - stockOut;
+                Log.d("Test in stock", "passed amount:"+ stockOut+ " current in-stock:"+ currentInStock + " new in-stock:"+newInStock);
+                inventoryRef.child("inStock").setValue(newInStock);
 
-    @Override
-    public void onUpdateCompleted() {
+                // Update inventoryMap
+                for (List<Inventory> list : inventoryMap.values()) {
+                    for (Inventory inventory : list) {
+                        if (inventory.getInventoryId().equals(inventoryId)) {
+                            inventory.setInStock(newInStock);
+                            break;
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
 
-    }
-
-    @Override
-    public void onError(Exception e) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error here
+            }
+        });
 
     }
 
@@ -406,8 +411,4 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             this.productId = productId;
         }
     }
-
-
-
-
 }
