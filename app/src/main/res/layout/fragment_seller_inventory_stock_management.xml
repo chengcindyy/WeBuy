@@ -60,26 +60,7 @@
 
             </TableRow>
 
-            <TableRow>
 
-                <TextView
-                    android:id="@+id/txv_qty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Current Quantity"/>
-
-                <TextView
-                    android:id="@+id/txv_qty_value"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="0" />
-
-            </TableRow>
 
             <TableRow>
 
@@ -93,6 +74,27 @@
 
                 <TextView
                     android:id="@+id/txv_to_order_value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="0" />
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/txv_qty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Current Quantity"/>
+
+                <TextView
+                    android:id="@+id/txv_qty_value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

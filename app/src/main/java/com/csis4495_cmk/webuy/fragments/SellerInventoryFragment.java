@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerInventoryListRecyclerAdapter;
@@ -40,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class SellerInventoryFragment extends Fragment implements SellerInventoryListRecyclerAdapter.OnButtonClickListener,
@@ -58,7 +58,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     private Map<String, Integer> groupTypeMap;
     private Map<String, String> allImagesMap;
     private String styleId, productId, sellerId, name, inventoryTitle;
-    private int qty, ordered, allocated, toAllocate, toOrder;
+    private int inStock, toSell, status, ordered, allocated, toAllocate, toOrder;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     DatabaseReference reference;
 
@@ -136,7 +136,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         mRecyclerView.setAdapter(adapter);
     }
 
-
     private void setInventoryRecyclerViewList() {
         DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
         inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -201,56 +200,58 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         });
     }
 
-    private void createNewInventory() {
-        // Set a key to check if this inventory exist
-        String productStyleKey;
+    private void createNewInventory(int status) {
+        if(status == 1){
+            // Set a key to check if this inventory exist
+            String productStyleKey;
 
-        if (styleId != null && !styleId.isEmpty()) {
-            productStyleKey = productId + "_" + styleId;
-        } else {
-            productStyleKey = productId;
-        }
+            if (styleId != null && !styleId.isEmpty()) {
+                productStyleKey = productId + "_" + styleId;
+            } else {
+                productStyleKey = productId;
+            }
 
-        Inventory inventory = new Inventory(sellerId, productId, styleId, qty, name, productStyleKey, inventoryTitle);
+            Inventory inventory = new Inventory(sellerId, productId, styleId, toSell, inStock, name, productStyleKey, inventoryTitle);
 
-        DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
-        Query query = inventoryRef.orderByChild("productStyleKey").equalTo(inventory.getProductStyleKey());
+            DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
+            Query query = inventoryRef.orderByChild("productStyleKey").equalTo(inventory.getProductStyleKey());
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()) {
-                    // Generate a new child location using a unique key
-                    String inventoryKey = inventoryRef.push().getKey();
-                    if (inventoryKey != null) {
-                        inventoryRef.child(inventoryKey).setValue(inventory).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d("Inventory", "Inventory created successfully.");
-                                } else {
-                                    Log.d("Inventory", "Failed to create inventory.", task.getException());
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (!snapshot.exists()) {
+                        // Generate a new child location using a unique key
+                        String inventoryKey = inventoryRef.push().getKey();
+                        if (inventoryKey != null) {
+                            inventoryRef.child(inventoryKey).setValue(inventory).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d("Inventory", "Inventory created successfully.");
+                                    } else {
+                                        Log.d("Inventory", "Failed to create inventory.", task.getException());
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
+                    } else {
+                        Log.d("Inventory", "Inventory already exists, no need to create it.");
                     }
-                } else {
-                    Log.d("Inventory", "Inventory already exists, no need to create it.");
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("Inventory", "Failed to check if inventory exists.", error.toException());
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.d("Inventory", "Failed to check if inventory exists.", error.toException());
+                }
+            });
+        }
     }
 
     private void findDataFromGroupInformation() {
         groupTypeMap.clear();
         StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
         reference = FirebaseDatabase.getInstance().getReference("Group");
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 allCoverImgsList.clear();
@@ -267,16 +268,16 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                         Map<String, Integer> groupQtyMap = group.getGroupQtyMap();
                         Set<String> keys = groupQtyMap.keySet();
 
-                        for (String key : keys) {
-                            String[] parts = key.split("___");
+                        for (String qty : keys) {
+                            String[] parts = qty.split("___");
                             Log.d("TestKeySet", "type:" + parts[0] + " id:" + parts[1]);
 
                             // Get StyleId or ProductId
                             if (parts[0].equals("s")) {
                                 styleId = parts[1];
                                 productId = group.getProductId();  // Add this line to set productId
-                                qty = groupQtyMap.get(key);
-                                Log.d("TestKeySet", "styleId:" + styleId + " qty:" + qty);
+                                toSell = groupQtyMap.get(qty);
+                                Log.d("TestKeySet", "styleId:" + styleId + " toSell:" + toSell);
 
                                 for (ProductStyle style : group.getGroupStyles()) {
                                     if (styleId.equals(style.getStyleId())) {
@@ -287,16 +288,16 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                             } else {
                                 styleId = null;
                                 productId = parts[1];
-                                qty = groupQtyMap.get(key);
-                                Log.d("TestKeySet", "productId:" + productId + " qty:" + qty);
+                                toSell = groupQtyMap.get(qty);
+                                Log.d("TestKeySet", "productId:" + productId + " toSell:" + toSell);
 
                                 if (productId.equals(group.getProductId())) {
                                     name = group.getGroupName();
                                 }
                             }
                             inventoryTitle = group.getGroupName();
-
-                            createNewInventory();
+                            status = group.getStatus();
+                            createNewInventory(status);
                         }
 
                         // Check group status for filter
@@ -335,6 +336,39 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             }
         });
     }
+    private void addInStockToProductDb(String productId, int newInStock) {
+        Log.d("Test product inStock","addInStockToProductDb()");
+        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product").child(productId);
+        productRef.child("inStock").setValue(newInStock).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(getContext(),"InStock Updated", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void addInStockToStyleDb(String productId, String styleId, int newInStock) {
+        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product").child(productId).child("productStyles");
+        productRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot styleSnapshot : dataSnapshot.getChildren()) {
+                    int styleIndex = Integer.parseInt(styleSnapshot.getKey());
+                    String matchingStyleId = styleSnapshot.child("styleId").getValue(String.class);
+
+                    if (matchingStyleId.equals(styleId)) {
+                        productRef.child(String.valueOf(styleIndex)).child("inStock").setValue(newInStock);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle possible errors.
+                Log.d("Product", "Failed to read product styles.", databaseError.toException());
+            }
+        });
+    }
 
     private void setTabLayout(TabLayout tabLayout) {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -365,7 +399,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             }
         });
     }
-
 
     @Override
     public void onOpenProductPageButtonClick( int position) {
@@ -399,6 +432,15 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                         }
                     }
                 }
+
+                String productId = snapshot.child("productId").getValue(String.class);
+                String styleId = snapshot.child("styleId").getValue(String.class);
+                Log.d("Test in stock", "productId: "+ productId+ " current styleId: "+ styleId);
+                if(styleId != null){
+                    addInStockToStyleDb(productId, styleId, newInStock);
+                } else {
+                    addInStockToProductDb(productId, newInStock);
+                }
                 adapter.notifyDataSetChanged();
             }
 
@@ -430,6 +472,14 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                             break;
                         }
                     }
+                }
+                String productId = snapshot.child("productId").getValue(String.class);
+                String styleId = snapshot.child("styleId").getValue(String.class);
+                Log.d("Test in stock", "productId: "+ productId+ " current styleId: "+ styleId);
+                if(styleId != null){
+                    addInStockToStyleDb(productId, styleId, newInStock);
+                } else {
+                    addInStockToProductDb(productId, newInStock);
                 }
                 adapter.notifyDataSetChanged();
             }

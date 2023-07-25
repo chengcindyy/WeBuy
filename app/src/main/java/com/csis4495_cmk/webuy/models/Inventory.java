@@ -5,6 +5,7 @@ public class Inventory {
     private String productId;
     private String styleId;
     private String inventoryName;
+    private int toSell;
     private int inStock;
     private int allocated;
     private int toAllocated;
@@ -18,23 +19,24 @@ public class Inventory {
     public Inventory() {
     }
 
-    public Inventory(String productId, String styleId, int inStock, int allocated, int toAllocated) {
-        this.productId = productId;
-        this.styleId = styleId;
-        this.inStock = inStock;
-        this.allocated = allocated;
-        this.toAllocated = toAllocated;
-    }
-
-    public Inventory(String sellerId, String productId, String styleId, int inStock, String inventoryName, String productStyleKey, String inventoryTitle) {
+    public Inventory(String sellerId, String productId, String styleId, int toSell, int inStock, String inventoryName, String productStyleKey, String inventoryTitle) {
         this.inventoryId = inventoryId;
         this.sellerId = sellerId;
+        this.toSell = toSell;
         this.productId = productId;
         this.styleId = styleId;
         this.inStock = inStock;
         this.productStyleKey = productStyleKey;
         this.inventoryName = inventoryName;
         this.inventoryTitle = inventoryTitle;
+    }
+
+    public int getToSell() {
+        return toSell;
+    }
+
+    public void setToSell(int toSell) {
+        this.toSell = toSell;
     }
 
     public String getInventoryId() {

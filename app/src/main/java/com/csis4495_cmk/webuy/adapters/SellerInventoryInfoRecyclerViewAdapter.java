@@ -56,6 +56,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
         Inventory inventory = inventoryList.get(position);
 
         holder.txvStyleName.setText(inventory.getInventoryName());
+        holder.txvToSell.setText(String.valueOf(inventory.getToSell()));
         holder.txvOrdered.setText(String.valueOf(inventory.getOrdered()));
         holder.txvInStock.setText(String.valueOf(inventory.getInStock()));
         holder.txvAllocated.setText(String.valueOf(inventory.getAllocated()));
@@ -85,13 +86,14 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView txvStyleName, txvOrdered, txvAllocated, txvInStock, txvToAllocate, txvToOrder;
+        TextView txvStyleName, txvToSell, txvOrdered, txvAllocated, txvInStock, txvToAllocate, txvToOrder;
         Button btnStockMgmt, btnAllocate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             // TextView
             txvStyleName = itemView.findViewById(R.id.txv_style);
+            txvToSell = itemView.findViewById(R.id.txv_to_sell);
             txvOrdered = itemView.findViewById(R.id.txv_ordered);
             txvAllocated = itemView.findViewById(R.id.txv_allocated);
             txvInStock = itemView.findViewById(R.id.txv_in_stock);

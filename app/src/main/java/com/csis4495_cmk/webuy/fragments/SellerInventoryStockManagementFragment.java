@@ -131,6 +131,7 @@ public class SellerInventoryStockManagementFragment extends BottomSheetDialogFra
                 int stockInAmount = Integer.parseInt(_NUM);
                 stockListener.onStockInButtonClicked(inventoryId, stockInAmount);
                 Toast.makeText(getContext(), "Inventory updated", Toast.LENGTH_SHORT).show();
+                dismiss();
             }
         });
 
@@ -146,6 +147,7 @@ public class SellerInventoryStockManagementFragment extends BottomSheetDialogFra
                 int stockOutAmount = Integer.parseInt(_NUM);
                 stockListener.onStockOutButtonClicked(inventoryId, stockOutAmount);
                 Toast.makeText(getContext(), "Inventory updated", Toast.LENGTH_SHORT).show();
+                dismiss();
             }
         });
     }
