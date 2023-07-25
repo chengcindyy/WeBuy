@@ -158,7 +158,11 @@
         android:id="@+id/sellerInventoryFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerInventoryFragment"
         android:label="fragment_seller_inventory"
-        tools:layout="@layout/fragment_seller_inventory" />
+        tools:layout="@layout/fragment_seller_inventory" >
+        <action
+            android:id="@+id/action_sellerInventoryFragment_to_sellerInventoryStockInFragment"
+            app:destination="@id/sellerInventoryStockInFragment" />
+    </fragment>
     <fragment
         android:id="@+id/sellerGroupList"
         android:name="com.csis4495_cmk.webuy.fragments.SellerGroupListFragment"
@@ -182,6 +186,11 @@
         android:name="com.csis4495_cmk.webuy.fragments.SellerSetPaymentFragment"
         android:label="fragment_seller_payment_setting2"
         tools:layout="@layout/fragment_seller_payment_setting" />
+    <fragment
+        android:id="@+id/sellerInventoryStockInFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerInventoryStockManagementFragment"
+        android:label="fragment_seller_inventory_stock_in"
+        tools:layout="@layout/fragment_seller_inventory_stock_management" />
     <fragment
         android:id="@+id/sellerGroupDetailFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerGroupDetailFragment"
