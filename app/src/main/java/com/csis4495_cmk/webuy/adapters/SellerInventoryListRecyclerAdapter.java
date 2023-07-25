@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.fragments.SellerInventoryFragment;
 import com.csis4495_cmk.webuy.models.Inventory;
+import com.skydoves.expandablelayout.ExpandableLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,13 +71,17 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
         adapter.setOnStockButtonClickListener(sellerInventoryFragment);
         holder.recyclerViewInvInfo.setAdapter(adapter);
 
+
         // Set images
         String imageUrl = firstInventory.getImageUrl();
         Glide.with(holder.imgProductImage.getContext()).load(imageUrl).into(holder.imgProductImage);
 
         // Set product image button
         holder.btnViewProduct.setOnClickListener(view -> onButtonClickListener.onOpenProductPageButtonClick(position));
+
+        holder.bind(position);
     }
+
 
     @Override
     public int getItemCount() {
@@ -88,8 +93,9 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
         onButtonClickListener.onOpenAllocateButtonClick(position);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
+        ExpandableLayout exp_inventory_card;
         TextView txvProductName;
         ImageButton btnViewProduct;
         ImageView imgProductImage;
@@ -103,8 +109,20 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
             imgProductImage = itemView.findViewById(R.id.img_product_img);
             btnViewProduct = itemView.findViewById(R.id.btn_view_product);
             recyclerViewInvInfo = itemView.findViewById(R.id.recyclerView_inventory_info);
+            exp_inventory_card = itemView.findViewById(R.id.expandableLayout_inventory_card);
+        }
+
+        public void bind(int position) {
+            itemView.setOnClickListener(v -> {
+                if (exp_inventory_card.isExpanded()) {
+                    exp_inventory_card.collapse();
+                } else {
+                    exp_inventory_card.expand();
+                }
+            });
         }
     }
+
 
     public interface OnButtonClickListener {
         void onOpenProductPageButtonClick(int position);
