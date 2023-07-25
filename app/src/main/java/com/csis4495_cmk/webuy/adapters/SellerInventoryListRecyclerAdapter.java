@@ -77,9 +77,14 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
         Glide.with(holder.imgProductImage.getContext()).load(imageUrl).into(holder.imgProductImage);
 
         // Set product image button
-        holder.btnViewProduct.setOnClickListener(view -> onButtonClickListener.onOpenProductPageButtonClick(position));
+        holder.btnViewProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onButtonClickListener.onOpenProductPageButtonClick(productId);
+            }
+        });
 
-        holder.bind(position);
+//        holder.bind(position);
     }
 
 
@@ -109,23 +114,23 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
             imgProductImage = itemView.findViewById(R.id.img_product_img);
             btnViewProduct = itemView.findViewById(R.id.btn_view_product);
             recyclerViewInvInfo = itemView.findViewById(R.id.recyclerView_inventory_info);
-            exp_inventory_card = itemView.findViewById(R.id.expandableLayout_inventory_card);
+//            exp_inventory_card = itemView.findViewById(R.id.expandableLayout_inventory_card);
         }
 
-        public void bind(int position) {
-            itemView.setOnClickListener(v -> {
-                if (exp_inventory_card.isExpanded()) {
-                    exp_inventory_card.collapse();
-                } else {
-                    exp_inventory_card.expand();
-                }
-            });
-        }
+//        public void bind(int position) {
+//            itemView.setOnClickListener(v -> {
+//                if (exp_inventory_card.isExpanded()) {
+//                    exp_inventory_card.collapse();
+//                } else {
+//                    exp_inventory_card.expand();
+//                }
+//            });
+//        }
     }
 
 
     public interface OnButtonClickListener {
-        void onOpenProductPageButtonClick(int position);
+        void onOpenProductPageButtonClick(String productId);
         void onOpenAllocateButtonClick(int position);
     }
 }

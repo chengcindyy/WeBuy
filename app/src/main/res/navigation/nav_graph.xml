@@ -162,6 +162,9 @@
         <action
             android:id="@+id/action_sellerInventoryFragment_to_sellerInventoryStockInFragment"
             app:destination="@id/sellerInventoryStockInFragment" />
+        <action
+            android:id="@+id/action_sellerInventoryFragment_to_sellerGroupDetailFragment"
+            app:destination="@id/sellerGroupDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/sellerGroupList"
