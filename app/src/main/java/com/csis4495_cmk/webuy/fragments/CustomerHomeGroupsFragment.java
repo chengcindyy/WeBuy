@@ -22,7 +22,6 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CustomerHomeGroupListRecyclerAdapter;
 import com.csis4495_cmk.webuy.adapters.SharedViewModel;
 import com.csis4495_cmk.webuy.models.Group;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,7 +30,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,6 +49,8 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
     private SharedViewModel model;
     private CustomerHomeGroupListRecyclerAdapter adapter;
     Map<String, Group> mGroupMap = new LinkedHashMap<>();
+    final DatabaseReference sellersRef = FirebaseDatabase.getInstance().getReference("Seller");
+    final DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
 
     private String category;
     public CustomerHomeGroupsFragment() {
@@ -166,7 +166,6 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
             @Override
             public void onChanged(String location) {
                 Log.d("Test search location", "search keyword: "+ location);
-                DatabaseReference sellersRef = FirebaseDatabase.getInstance().getReference("Seller");
                 sellersRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -182,7 +181,6 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                             }
                         }
 
-                        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
                         groupRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -212,13 +210,12 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
         });
 
         // sorting by price
-        model.getSelectedCondition().observe(getViewLifecycleOwner(), new Observer<String>() {
+        model.getSelectedPriceRange().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String condition) {
                 Log.d("Test search price", "search keyword: "+ condition);
                 mGroupMap.clear();  // Clear the map at the beginning of each new data read
-                DatabaseReference groupsRef = FirebaseDatabase.getInstance().getReference("Group");
-                groupsRef.orderByChild("minPrice").addListenerForSingleValueEvent(new ValueEventListener() {
+                groupRef.orderByChild("minPrice").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -250,12 +247,33 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
             }
         });
 
+        // filter by store status
+        model.getSelectedStatus().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer status) {
+                Log.d("Test store status end", "Store status: "+ status);
+                mGroupMap.clear();
+                mGroupMap = groupMap.entrySet()
+                        .stream()
+                        .filter(map -> map.getValue().getStatus() == status)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                UpdateRecyclerView(mGroupMap);
+            }
+        });
 
-
-    }
-
-    private void doSortingByPrice() {
-
+        // filter by group types
+        model.getGroupType().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer groupType) {
+                Log.d("Test GroupType", "GroupType: "+ groupType);
+                mGroupMap.clear();
+                mGroupMap = groupMap.entrySet()
+                        .stream()
+                        .filter(map -> map.getValue().getGroupType() == groupType)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                UpdateRecyclerView(mGroupMap);
+            }
+        });
     }
 
     private void UpdateRecyclerView(Map<String, Group> gMap) {

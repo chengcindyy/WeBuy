@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel;
 public class SharedViewModel extends ViewModel {
     private final MutableLiveData<String> keywords = new MutableLiveData<String>();
     private final MutableLiveData<String> selectedLocation = new MutableLiveData<String>();
-    private final MutableLiveData<String> selectedCondition = new MutableLiveData<String>();
+    private final MutableLiveData<String> selectedPriceRange = new MutableLiveData<String>();
+    private final MutableLiveData<Integer> selectedStatus = new MutableLiveData<Integer>();
+    private final MutableLiveData<Integer> selectedGroupType = new MutableLiveData<Integer>();
 
     public void enterKeywords(String str) {
         keywords.setValue(str);
@@ -25,11 +27,27 @@ public class SharedViewModel extends ViewModel {
         return selectedLocation;
     }
 
-    public void selectCondition(String str) {
-        selectedCondition.setValue(str);
+    public void selectPriceRange(String str) {
+        selectedPriceRange.setValue(str);
     }
 
-    public LiveData<String> getSelectedCondition() {
-        return selectedCondition;
+    public LiveData<String> getSelectedPriceRange() {
+        return selectedPriceRange;
+    }
+
+    public void selectedStatus(int status) {
+        selectedStatus.setValue(status);
+    }
+
+    public LiveData<Integer> getSelectedStatus() {
+        return selectedStatus;
+    }
+
+    public void selectedGroupType(int groupType) {
+        selectedGroupType.setValue(groupType);
+    }
+
+    public LiveData<Integer> getGroupType() {
+        return selectedGroupType;
     }
 }

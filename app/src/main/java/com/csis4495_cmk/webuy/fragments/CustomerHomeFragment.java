@@ -1,5 +1,6 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,34 +12,50 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.PopupWindow;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CustomerHomeViewPagerAdapter;
 import com.csis4495_cmk.webuy.adapters.SharedViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.List;
+
 public class CustomerHomeFragment extends Fragment {
+    private static final int STORE_STATUS_NOT_YET_OPEN = 0;
+    private static final int STORE_STATUS_OPENING = 1;
+    private static final int GROUP_TYPE_IN_STOCK = 0;
+    private static final int GROUP_TYPE_PRE_ORDER = 1;
     private final String[] locations = new String[]{"All", "Vancouver", "W. Vancouver", "N. Vancouver",
             "Burnaby", "Richmond", "New West", "Coquitlam", "Surrey", "Langley", "Delta",
             "Port Moody", "White Rock", "Maple Ridge"};
     private final String[] sort = new String[]{"Sort by price low to high", "Sort by price high to low"};
     private androidx.appcompat.widget.SearchView searchView;
     private SharedViewModel model;
-    TabLayout tabLayout;
-    ViewPager2 viewPager2;
-    CustomerHomeViewPagerAdapter viewPagerAdapter;
-    BottomNavigationView bottomNavigationView;
-    AutoCompleteTextView input_location, input_sort;
-    TextInputLayout layout_location;
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager2;
+    private CustomerHomeViewPagerAdapter viewPagerAdapter;
+    private BottomNavigationView bottomNavigationView;
+    private AutoCompleteTextView inputLocation, inputSort, inputTag;
+    private TextInputLayout layoutLocation;
     private NavController navController;
+    private int storeStatus = -1;
+    private int groupTypes = -1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,37 +82,106 @@ public class CustomerHomeFragment extends Fragment {
         doSearchByKeyWords(searchView);
         //filter
         //location filter
-        input_location = view.findViewById(R.id.input_location);
-        layout_location = view.findViewById(R.id.text_input_layout_location);
+        inputLocation = view.findViewById(R.id.input_location);
+        layoutLocation = view.findViewById(R.id.text_input_layout_location);
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_filter, locations);
-        input_location.setAdapter(locationAdapter);
-        input_location.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        inputLocation.setAdapter(locationAdapter);
+        inputLocation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
                 String selectedLocation = parent.getItemAtPosition(position).toString();
-                layout_location.setHint(parent.getItemAtPosition(position).toString());
-                input_location.setText(null);
+                layoutLocation.setHint(parent.getItemAtPosition(position).toString());
+                inputLocation.setText(null);
                 doFilterByLocation(selectedLocation);
             }
         });
         //sorting filter
-        input_sort = view.findViewById(R.id.input_sort_price);
+        inputSort = view.findViewById(R.id.input_sort_price);
         ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_filter, sort);
-        input_sort.setAdapter(sortAdapter);
-        input_sort.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        inputSort.setAdapter(sortAdapter);
+        inputSort.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedCondition = adapterView.getItemAtPosition(i).toString();
-                input_sort.setHint(adapterView.getItemAtPosition(i).toString());
-                input_sort.setText(null);
+                inputSort.setHint(adapterView.getItemAtPosition(i).toString());
+                inputSort.setText(null);
                 doSortingByPrice(selectedCondition);
             }
         });
 
+        //popup window
+        createPopupMenu();
+        // Get screen width
+        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics metrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+        int screenWidth = metrics.widthPixels;
 
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        View popupView = inflater.inflate(R.layout.customer_tag_filter_popup_window, null);
+
+        PopupWindow popupWindow = new PopupWindow(popupView, screenWidth, WindowManager.LayoutParams.WRAP_CONTENT, true);
+
+        // Store status
+        Chip chipNotOpened = popupView.findViewById(R.id.chip_group_not_opened);
+        Chip chipOpening = popupView.findViewById(R.id.chip_group_opening);
+
+        chipNotOpened.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                chipOpening.setChecked(false);
+                storeStatus = STORE_STATUS_NOT_YET_OPEN;
+            }
+        });
+        chipOpening.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                chipNotOpened.setChecked(false);
+                storeStatus = STORE_STATUS_OPENING;
+            }
+        });
+
+        // Group types
+        Chip chipInStock = popupView.findViewById(R.id.chip_group_in_stock);
+        Chip chipPreOrder = popupView.findViewById(R.id.chip_group_pre_order);
+
+        chipInStock.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                chipPreOrder.setChecked(false);
+                groupTypes = GROUP_TYPE_IN_STOCK;
+            }
+        });
+        chipPreOrder.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                chipInStock.setChecked(false);
+                groupTypes = GROUP_TYPE_PRE_ORDER;
+            }
+        });
+
+        // chip confirm button
+        Button confirm = popupView.findViewById(R.id.btn_confirm);
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(storeStatus != -1){
+                    Log.d("Test store status", "store status from: "+storeStatus);
+                    model.selectedStatus(storeStatus);
+                } else if (groupTypes != -1) {
+                    Log.d("Test groupTypes", "store groupTypes: "+groupTypes);
+                    model.selectedGroupType(groupTypes);
+                }
+                popupWindow.dismiss();
+            }
+        });
+        Button btnClear = view.findViewById(R.id.btn_clear);
 
         //tag filter
-
+        inputTag = view.findViewById(R.id.input_tag);
+        inputTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.showAsDropDown(v);
+            }
+        });
 
         //tab and view pager
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -124,9 +210,13 @@ public class CustomerHomeFragment extends Fragment {
         });
     }
 
+    private void createPopupMenu() {
+
+    }
+
     private void doSortingByPrice(String selectedCondition) {
         if(selectedCondition != ""){
-            model.selectCondition(selectedCondition);
+            model.selectPriceRange(selectedCondition);
         }
     }
 
