@@ -6,6 +6,7 @@ public class ProductStyle {
     double stylePrice;
     String stylePicName;
     String styleId;
+    private int inStock;
 
 
     public ProductStyle() {}
@@ -20,6 +21,14 @@ public class ProductStyle {
         this.styleName = styleName;
         this.stylePrice = stylePrice;
         this.stylePicName = stylePicName;
+    }
+
+    public int getInStock() {
+        return inStock;
+    }
+
+    public void setInStock(int inStock) {
+        this.inStock = inStock;
     }
 
     public String getStyleId() {
