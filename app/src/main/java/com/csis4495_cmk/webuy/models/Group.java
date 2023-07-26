@@ -30,13 +30,16 @@ public class Group {
 
     private long endTimestamp;
 
-
     private int status; //0: not opened, 1: opening, 2:closed
 
     private String groupPrice; // product price or might be (minStylePrice, maxStylePrice)
 
     private String productId;
     private String coverImgUrl;
+
+    private Double minPrice;
+
+    private Double maxPrice;
 
     public Group() {
     }
@@ -54,6 +57,23 @@ public class Group {
         this.endTime = endTime;
         this.status = status;
         this.groupPrice = groupPrice;
+
+    }
+
+    public Double getMinPrice() {
+        return minPrice;
+    }
+
+    public void setMinPrice(Double minPrice) {
+        this.minPrice = minPrice;
+    }
+
+    public Double getMaxPrice() {
+        return maxPrice;
+    }
+
+    public void setMaxPrice(Double maxPrice) {
+        this.maxPrice = maxPrice;
     }
 
     public Long getStartTimestamp() {

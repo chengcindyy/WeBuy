@@ -109,7 +109,7 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
             imgProductImage = itemView.findViewById(R.id.img_product_img);
             btnViewProduct = itemView.findViewById(R.id.btn_view_product);
             recyclerViewInvInfo = itemView.findViewById(R.id.recyclerView_inventory_info);
-            exp_inventory_card = itemView.findViewById(R.id.expandableLayout_inventory_card);
+//            exp_inventory_card = itemView.findViewById(R.id.expandableLayout_inventory_card);
         }
 
         public void bind(int position) {
