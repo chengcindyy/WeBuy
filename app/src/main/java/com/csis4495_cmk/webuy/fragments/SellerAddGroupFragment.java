@@ -1179,7 +1179,6 @@ public class SellerAddGroupFragment extends Fragment {
                     ProductStyle ps = new ProductStyle(name, price, img, styleId);
                     groupStyles.add(ps);
                     groupQtyMap.put("s___" + ps.getStyleId(), null);
-
 //                    Toast.makeText(getContext(), ps.getStyleName() + "qty: " +  groupQtyMap.get(ps) , Toast.LENGTH_SHORT ).show();
                 }
 
