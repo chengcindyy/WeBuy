@@ -3,10 +3,23 @@ package com.csis4495_cmk.webuy.models;
 public class CartItem {
     private String groupId;
     private String productId;
-    private String styleName;
+    private String styleId;
     private int amount;
 
     public CartItem() {
+    }
+
+    public CartItem(String groupId, String productId, String styleId, int amount) {
+        this.groupId = groupId;
+        this.productId = productId;
+        this.styleId = styleId;
+        this.amount = amount;
+    }
+
+    public CartItem(String groupId, String productId, int amount) {
+        this.groupId = groupId;
+        this.productId = productId;
+        this.amount = amount;
     }
 
     public String getGroupId() {
@@ -17,8 +30,8 @@ public class CartItem {
         return productId;
     }
 
-    public String getStyleName() {
-        return styleName;
+    public String getStyleId() {
+        return styleId;
     }
 
     public int getAmount() {

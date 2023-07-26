@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -25,8 +26,9 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CustomerGroupDetailImageViewPagerAdapter;
-import com.csis4495_cmk.webuy.adapters.CustomerHomeViewPagerAdapter;
+import com.csis4495_cmk.webuy.adapters.CustomerGroupStyleAdapter;
 import com.csis4495_cmk.webuy.models.Group;
+import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.csis4495_cmk.webuy.models.Seller;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -48,23 +50,34 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 
-public class CustomerGroupDetailFragment extends Fragment {
+public class CustomerGroupDetailFragment extends Fragment
+                                        implements CustomerGroupStyleAdapter.onStyleItemListener {
 
     ViewPager2 viewPagerGroupImg;
     CustomerGroupDetailImageViewPagerAdapter viewPagerAdapter;
     String groupId;
     Group group;
     String groupJson;
-    List<String> groupImgUrls;
+    ProductStyle selectedStyle;
+
+    List<ProductStyle> groupStyles;
+    ArrayList<String> groupImgUrls;
+
+    ArrayList<String> groupAndStylesImgUrls;
     StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
+    DatabaseReference groupsRef  = FirebaseDatabase.getInstance().getReference("Group");
     RecyclerView rvGroupStyle;
     TextView tvGroupName, tvGroupPrice, tvCategory, tvType,
             tvSoldAmount, tvInventoryAmount,
             tvGroupDescription, tvGroupStartTime, tvGroupEndTime, tvTimer,
-            tvSellerName;
+            tvSellerName, tvGroupStyle;
     ImageView imvSellerPic;
     FloatingActionButton fabAddToCart;
     ToggleButton btnSaveToList;
+
+    CustomerGroupStyleAdapter styleAdapter;
+
+    int selectedStylePosition = -1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,6 +91,7 @@ public class CustomerGroupDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewPagerGroupImg = view.findViewById(R.id.viewPagerGroupImage);
+        tvGroupStyle = view.findViewById(R.id.tv_group_detail_group_style);
         rvGroupStyle = view.findViewById(R.id.rv_group_style);
         tvGroupName = view.findViewById(R.id.tv_detail_group_name);
         tvGroupPrice = view.findViewById(R.id.tv_detail_group_price);
@@ -106,6 +120,20 @@ public class CustomerGroupDetailFragment extends Fragment {
 
         }
 
+        //set recycler view for group style
+        groupStyles = group.getGroupStyles();
+        if (groupStyles != null && groupStyles.size() != 0) {
+            tvGroupStyle.setVisibility(View.VISIBLE);
+            styleAdapter = new CustomerGroupStyleAdapter(getContext(), group.getProductId(), groupStyles);
+            rvGroupStyle.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+            rvGroupStyle.setAdapter(styleAdapter);
+            styleAdapter.setmOnStyleItemListener(CustomerGroupDetailFragment.this);
+
+        } else {
+            tvGroupStyle.setVisibility(View.GONE);
+        }
+
+        //set images
         List<Task<Uri>> tasks = new ArrayList<>();
         for(String groupImage: group.getGroupImages()) {
             tasks.add(imgRef.child(group.getProductId()).child(groupImage).getDownloadUrl());
@@ -118,18 +146,52 @@ public class CustomerGroupDetailFragment extends Fragment {
                     Log.d("Test url", object.toString());
                     groupImgUrls.add(object.toString());
                 }
-                //set group images
-                viewPagerAdapter = new CustomerGroupDetailImageViewPagerAdapter(getContext(),groupImgUrls);
-                viewPagerGroupImg.setAdapter(viewPagerAdapter);
+
+                if(groupStyles != null && groupStyles.size() != 0) {
+                    //set images with style pic
+                    StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
+
+                    List<Task<Uri>> stylePicsTasks = new ArrayList<>();
+                    for (ProductStyle style: groupStyles) {
+                        stylePicsTasks.add(imgRef.child(group.getProductId()).child(style.getStylePicName()).getDownloadUrl());
+                    }
+                    Tasks.whenAllSuccess(stylePicsTasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                        @Override
+                        public void onSuccess(List<Object> objects) {
+                            groupAndStylesImgUrls = new ArrayList<>(groupImgUrls);
+                            for (Object object: objects) {
+                                Log.d("Test url style", object.toString());
+                                groupAndStylesImgUrls.add(object.toString());
+                            }
+                            viewPagerGroupImg.setAdapter(
+                                    new CustomerGroupDetailImageViewPagerAdapter(getContext(), groupAndStylesImgUrls));
+                        }
+                    });
+
+                } else {
+                    //set group images
+                    groupAndStylesImgUrls = new ArrayList<>(groupImgUrls);
+                    viewPagerAdapter = new CustomerGroupDetailImageViewPagerAdapter(getContext(),groupAndStylesImgUrls);
+                    viewPagerGroupImg.setAdapter(viewPagerAdapter);
+                }
+
             }
         });
 
-        //save to list
+        // save or unsave to wish list
+        // pre set the save btn
+        btnSaveToList.setOnClickListener(v -> {
+            if (btnSaveToList.isChecked()) {
+                btnSaveToList.setBackgroundResource(R.drawable.baseline_saved_24);
+                Toast.makeText(getContext(),"Item added to Wish List",Toast.LENGTH_SHORT).show();
+            } else {
+                btnSaveToList.setBackgroundResource(R.drawable.baseline_unsave_border_24);
+                Toast.makeText(getContext(),"Item removed from Wish List",Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        //set recycler view for group style
-
-        //sold amount
-        //inventory amount
+        //TODO:sold amount (ordered)
+        //TODO:amount left (toSell - ordered)
 
         //set other data
         tvGroupName.setText(group.getGroupName());
@@ -172,7 +234,10 @@ public class CustomerGroupDetailFragment extends Fragment {
                         @Override
                         public void onFinish() {
                             //change status from 0 to 1
-                            //available to buy
+                            if(group.getStatus() == 0) {
+                                groupsRef.child(groupId).child("status").setValue(1);
+                                //available to buy
+                            }
                         }
                     }.start();;
 
@@ -208,6 +273,10 @@ public class CustomerGroupDetailFragment extends Fragment {
                         @Override
                         public void onFinish() {
                             //change status from 1 to 2
+                            if(group.getStatus() == 1) {
+                                groupsRef.child(groupId).child("status").setValue(2);
+                                //unavailable to buy
+                            }
                             //unavailable to buy
                         }
                     }.start();;
@@ -277,13 +346,32 @@ public class CustomerGroupDetailFragment extends Fragment {
             } else if (group.getStatus() == 2 ) {
                 Toast.makeText(getContext(), "The group is expired", Toast.LENGTH_SHORT).show();
             } else { //group.getStatus() == 1
-                CustomerAddToCartFragment customerAddToCartFragment = CustomerAddToCartFragment.newInstance(groupId, groupJson);
-                // Get the fragmentManager
-                FragmentManager fragmentManager = getParentFragmentManager();
-                // Show the addStyleFragment
-                customerAddToCartFragment.show(fragmentManager, "AddToCart Frag show");
+                //if (selectedStyle != null) {
+                    //pass style to AddToCart
+                    CustomerAddToCartFragment customerAddToCartFragment = CustomerAddToCartFragment.newInstance(groupId, groupJson, selectedStylePosition, groupAndStylesImgUrls);
+                    // Get the fragmentManager
+                    FragmentManager fragmentManager = getParentFragmentManager();
+                    // Show the addStyleFragment
+                    customerAddToCartFragment.show(fragmentManager, "AddToCart Frag show");
+//                } else {
+//                    CustomerAddToCartFragment customerAddToCartFragment = CustomerAddToCartFragment.newInstance(groupId, groupJson, -1, groupAndStylesImgUrls);
+//                    // Get the fragmentManager
+//                    FragmentManager fragmentManager = getParentFragmentManager();
+//                    // Show the addStyleFragment
+//                    customerAddToCartFragment.show(fragmentManager, "AddToCart Frag show");
+//                }
             }
         });
 
+    }
+
+    @Override
+    public void onStyleClicked(int stylePosition, ProductStyle style) {
+        Toast.makeText(getContext(),"styleId: "+ style.getStyleId(), Toast.LENGTH_SHORT).show();
+        tvGroupPrice.setText("CA$ "+ style.getStylePrice());
+        selectedStyle = style;
+        selectedStylePosition = stylePosition;
+        //set img
+        viewPagerGroupImg.setCurrentItem(groupImgUrls.size()+stylePosition,true);
     }
 }

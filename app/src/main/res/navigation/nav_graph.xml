@@ -43,7 +43,7 @@
         tools:layout="@layout/fragment_customer_setting" />
     <fragment
         android:id="@+id/customerCartFragment"
-        android:name="com.csis4495_cmk.webuy.CustomerCartFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerCartFragment"
         android:label="fragment_customer_cart"
         tools:layout="@layout/fragment_customer_cart" />
     <fragment

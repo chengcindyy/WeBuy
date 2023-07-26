@@ -21,7 +21,6 @@ public class ProductStyle {
         this.styleName = styleName;
         this.stylePrice = stylePrice;
         this.stylePicName = stylePicName;
-
     }
 
     public int getInStock() {

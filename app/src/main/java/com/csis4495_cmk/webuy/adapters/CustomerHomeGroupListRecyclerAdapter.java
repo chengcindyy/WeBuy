@@ -208,7 +208,7 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
             long currentTime = System.currentTimeMillis();
 
             if (startTimestamp != null) {
-                Date startTime = new Date(startTimestamp);
+                //Date startTime = new Date(startTimestamp);
 
                 if (currentTime < startTimestamp) {
                     long tillOpen = startTimestamp - System.currentTimeMillis();
@@ -239,7 +239,7 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
             }
 
             if (endTimestamp != null) {
-                Date endTime = new Date(endTimestamp);
+                //Date endTime = new Date(endTimestamp);
 
                 if (endTimestamp > currentTime && currentTime > startTimestamp) { //opening
                     long remainingTime = endTimestamp - currentTime;

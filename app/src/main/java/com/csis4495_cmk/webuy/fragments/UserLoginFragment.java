@@ -512,14 +512,17 @@ public class UserLoginFragment extends Fragment {
                             String role = user.getRole();
                             if (role.equals("customer")) {
                                 if (!(getActivity() instanceof CustomerHomePageActivity)) {
+                                    Log.d(TAG, "customer");
                                     startActivity(new Intent(getActivity(), CustomerHomePageActivity.class));
                                     if (getActivity() != null) {
                                         getActivity().finish();
                                     }
                                 }
+                                Log.d(TAG, "is customer");
+                                navController.navigate(R.id.customerHomeFragment);
 
                             } else {
-                                if (!(getActivity() instanceof CustomerHomePageActivity)) {
+                                if (!(getActivity() instanceof SellerHomePageActivity)) {
                                     startActivity(new Intent(getActivity(), SellerHomePageActivity.class));
                                     if (getActivity() != null) {
                                         getActivity().finish();

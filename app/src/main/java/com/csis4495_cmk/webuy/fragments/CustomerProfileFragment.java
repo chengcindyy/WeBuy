@@ -37,7 +37,6 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.activities.MainActivity;
 import com.csis4495_cmk.webuy.dialog.CustomerOrderStatusDialog;
 import com.csis4495_cmk.webuy.models.Customer;
-import com.csis4495_cmk.webuy.models.Seller;
 import com.csis4495_cmk.webuy.models.User;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -57,7 +56,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.skydoves.expandablelayout.ExpandableLayout;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -193,7 +191,7 @@ public class CustomerProfileFragment extends Fragment {
 //        _FAVORITE = customer.getWatchList();
         _DOB = editBirthday.getText().toString();
 
-        Customer customer = new Customer(_NAME,_PHONE,_ADDRESS,_CITY,_PROVINCE,_POSTCODE,_FAVORITE,_DOB);
+        Customer customer = new Customer(_NAME,_PHONE,_ADDRESS,_CITY,_PROVINCE,_POSTCODE,_DOB,_FAVORITE);
 
         String userId = firebaseUser.getUid();
         reference = FirebaseDatabase.getInstance().getReference("Customer");
@@ -350,7 +348,7 @@ public class CustomerProfileFragment extends Fragment {
                     _POSTCODE = customer.getPostalCode();
                     _PIC = customer.getProfilePic();
                     // TODO: set watchlist recycler view
-                    _FAVORITE = customer.getWatchList();
+                    _FAVORITE = customer.getSaveList();
                     _DOB = customer.getBirth();
                     _EMAIL = firebaseUser.getDisplayName();
 
