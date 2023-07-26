@@ -35,7 +35,9 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -279,6 +281,28 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
     public int getItemCount() {
         return groupsEntryList.size();
     }
+
+    public void updateData(Map<String, Group> newGroupMap) {
+        this.groupsMap.putAll(newGroupMap);
+        this.groupsEntryList.clear();
+        this.groupsEntryList.addAll(newGroupMap.entrySet());
+    }
+
+    public void reverseData(Map<String, Group> newGroupMap) {
+        List<String> groupIds = new ArrayList<>(newGroupMap.keySet());
+        List<Group> groupList = new ArrayList<>(newGroupMap.values());
+        Collections.reverse(groupIds);
+        Collections.reverse(groupList);
+        Map<String, Group> reversedMap = new LinkedHashMap<>();
+        for (int i = 0; i < groupIds.size(); i++) {
+            reversedMap.put(groupIds.get(i), groupList.get(i));
+        }
+        this.groupsMap.putAll(reversedMap);
+        this.groupsEntryList.clear();
+        this.groupsEntryList.addAll(reversedMap.entrySet());
+
+    }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 

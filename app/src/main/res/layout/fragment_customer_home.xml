@@ -18,6 +18,12 @@
         <!--            android:layout_height="wrap_content"-->
         <!--            android:text="Search" />-->
 
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_group"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <com.google.android.material.tabs.TabLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +67,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
                 android:id="@+id/text_input_layout_location"
                 android:layout_width="0dp"
-                android:layout_height="36dp"
+                android:layout_height="35dp"
                 android:layout_weight="1"
                 android:hint="Location"
                 app:startIconDrawable="@drawable/baseline_location_on_24"
@@ -73,8 +79,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     android:cursorVisible="false"
-                    android:inputType="none"
-                    />
+                    android:inputType="none" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,12 +88,12 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
-                android:layout_weight="0.7"
+                android:layout_weight="0.9"
                 android:hint="Sort"
-
                 app:boxBackgroundColor="@null">
 
                 <AutoCompleteTextView
+                    android:id="@+id/input_sort_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
@@ -101,11 +106,12 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
-                android:layout_weight="0.7"
+                android:layout_weight="0.6"
                 android:hint="Tag"
                 app:boxBackgroundColor="@null">
 
                 <AutoCompleteTextView
+                    android:id="@+id/input_sort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
