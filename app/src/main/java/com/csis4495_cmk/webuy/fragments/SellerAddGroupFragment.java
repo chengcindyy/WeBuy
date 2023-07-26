@@ -109,6 +109,10 @@ public class SellerAddGroupFragment extends Fragment {
     private Group editGroup;
     private SimpleDateFormat simpleDateFormat;
 
+    private Button btnCheckInventory, btnEditNewStyle;
+
+    private Map<String, Integer> inventoryMap;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,6 +170,8 @@ public class SellerAddGroupFragment extends Fragment {
         imgPaths = new ArrayList<>();
         groupQtyMap = new HashMap<>();
 
+        inventoryMap = new HashMap<>();
+
         if (isNewGroup) {
             getProductData();
             getProductStyle();
@@ -209,6 +215,10 @@ public class SellerAddGroupFragment extends Fragment {
         btnCancel = view.findViewById(R.id.btn_cancel_publish);
 
         btnPublish = view.findViewById(R.id.btn_publish_publish);
+
+        btnCheckInventory = view.findViewById(R.id.btn_check_inventory_publish);
+
+        btnEditNewStyle = view.findViewById(R.id.btn_group_edit_new_group_style);
 
         if (isNewGroup) {
             //Set default group type as in stock
@@ -262,6 +272,7 @@ public class SellerAddGroupFragment extends Fragment {
                         btnEnd.setEnabled(false);
                         tgBtn_group_buy_publish.setClickable(true);
                 }
+//
             });
 
 //            //Set group startTime and endTime
@@ -347,8 +358,11 @@ public class SellerAddGroupFragment extends Fragment {
                         group_no_style_qty.findFocus();
                     }
                 }
+
+
             });
 
+            btnEditNewStyle.setVisibility(View.GONE);
             //Set edit style price and quantity listener
 //            stylesAdapter.setOnStyleChangedListner(new SellerAddGroupStylesAdapter.OnStyleChangedListner() {
 //
@@ -482,7 +496,59 @@ public class SellerAddGroupFragment extends Fragment {
 //
 //                }
 //            });
+
         }
+
+        btnCheckInventory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inventoryMap.clear();
+                DatabaseReference productReference = databaseReference.child("Product").child(productId);
+                productReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        DataSnapshot dataSnapshot = task.getResult();
+                        if (dataSnapshot.exists()) {
+                            if (dataSnapshot.child("inStock").exists()) {
+                                try {
+                                    Integer inStock = dataSnapshot.child("inStock").getValue(Integer.class);
+                                    Log.d(TAG, "loading product inventory: " + inStock);
+                                    if (inStock != 0) {
+                                        inventoryMap.put("p___" + productId, inStock);
+                                        Log.d(TAG, "inventoryMap: " + inventoryMap);
+
+                                    }
+                                } catch (Exception e) {
+                                    Log.d(TAG, "loading product inventory error: " + e);
+                                }
+                            }
+                            if (dataSnapshot.child("productStyles").exists()) {
+                                Log.d(TAG, "styles exists" );
+
+                                for (DataSnapshot ds : dataSnapshot.child("productStyles").getChildren()) {
+                                    String styleId = ds.child("styleId").getValue(String.class);
+                                    try {
+                                        Integer inStock = ds.child("inStock").getValue(Integer.class);
+                                        Log.d(TAG, "loading style inventory: " + inStock);
+                                        if (inStock != 0) {
+                                            inventoryMap.put("s___" + styleId, inStock);
+                                            Log.d(TAG, "inventoryMap: " + inventoryMap);
+                                        }
+                                    } catch (Exception e) {
+                                        Log.d(TAG, "loading style inventory error: " + e);
+                                    }
+                                }
+                            }
+                        }
+
+                        if(inventoryMap.isEmpty() || inventoryMap == null){
+                            Toast.makeText(getContext(), "There is no inventory", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+            }
+        });
 
         //Set group startTime and endTime
         btnStart.setOnClickListener(v -> {
@@ -639,6 +705,7 @@ public class SellerAddGroupFragment extends Fragment {
             //go back to the fragment you came from
             Navigation.findNavController(v).popBackStack();
         });
+
 
     }
 
@@ -1230,7 +1297,6 @@ public class SellerAddGroupFragment extends Fragment {
                     ProductStyle ps = new ProductStyle(name, price, img, styleId);
                     groupStyles.add(ps);
                     groupQtyMap.put("s___" + ps.getStyleId(), null);
-
 //                    Toast.makeText(getContext(), ps.getStyleName() + "qty: " +  groupQtyMap.get(ps) , Toast.LENGTH_SHORT ).show();
                 }
 

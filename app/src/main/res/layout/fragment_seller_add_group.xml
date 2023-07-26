@@ -193,6 +193,39 @@
                     android:visibility="gone"/>
             </com.google.android.material.textfield.TextInputLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <!--  Button to check inventory          -->
+                <Button
+                    android:id="@+id/btn_check_inventory_publish"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:drawableLeft="@drawable/baseline_archive_24"
+                    android:drawableTint="#ffffff"
+                    android:layout_weight="1"
+                    android:text="Check Inventory" />
+
+                <!--  Button to edit new group style   -->
+                <Button
+                    android:id="@+id/btn_group_edit_new_group_style"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:drawableLeft="@drawable/baseline_add_24"
+                    android:drawableTint="#ffffff"
+                    android:layout_weight="1"
+                    android:text="Add Group Style" />
+            </LinearLayout>
 
             <!--   RecyclerView to select product styles         -->
             <androidx.recyclerview.widget.RecyclerView
@@ -200,7 +233,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <!-- other imgs  -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

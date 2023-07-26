@@ -19,6 +19,16 @@ public class Product {
 
     private String coverImgUrl;
 
+    private int inStock;
+
+    public int getInStock() {
+        return inStock;
+    }
+
+    public void setInStock(int inStock) {
+        this.inStock = inStock;
+    }
+
     public Product() {
     }
 
