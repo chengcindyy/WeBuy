@@ -8,6 +8,7 @@ public class Product {
     private String category;
     private String description;
     private int tax; // 0: no tax  1: GST  2: GST+PST
+    private int inStock;
 
     private List<String> productImages;
     private String sellerId;
@@ -57,6 +58,18 @@ public class Product {
         this.productStyles = productStyles;
         this.productPrice = productPrice;
         this.tags = categories;
+    }
+
+    public Product(int inStock) {
+        this.inStock = inStock;
+    }
+
+    public int getInStock() {
+        return inStock;
+    }
+
+    public void setInStock(int inStock) {
+        this.inStock = inStock;
     }
 
     public String getProductName() {

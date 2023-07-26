@@ -2,20 +2,12 @@ package com.csis4495_cmk.webuy.models;
 
 public class ProductStyle {
 
-    private String styleName;
-    private double stylePrice;
-    private String stylePicName;
-    private String styleId;
-
+    String styleName;
+    double stylePrice;
+    String stylePicName;
+    String styleId;
     private int inStock;
 
-    public int getInStock() {
-        return inStock;
-    }
-
-    public void setInStock(int inStock) {
-        this.inStock = inStock;
-    }
 
     public ProductStyle() {}
 
@@ -30,6 +22,14 @@ public class ProductStyle {
         this.stylePrice = stylePrice;
         this.stylePicName = stylePicName;
 
+    }
+
+    public int getInStock() {
+        return inStock;
+    }
+
+    public void setInStock(int inStock) {
+        this.inStock = inStock;
     }
 
     public String getStyleId() {
