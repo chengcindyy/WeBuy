@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
     private FirebaseDatabase firebaseInstance = FirebaseDatabase.getInstance();
     private DatabaseReference allGroupRef = firebaseInstance.getReference("Group");
     private RecyclerView recyclerView;
+    private TextView tvNotFound;
     private Map<String,Group> groupMap;
 
     private ArrayList<String> filter;
@@ -61,12 +63,13 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
         //set navigation controller
         navController = NavHostFragment.findNavController(CustomerHomeGroupsFragment.this);
+        tvNotFound = view.findViewById(R.id.tv_not_found);
 
         groupMap = new HashMap<>();
 
         recyclerView = view.findViewById(R.id.rv_cust_home_group);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
-        Log.d("custTest", "size: "+groupMap.size());
+        Log.d("custTest", "size: " + groupMap.size());
 
         allGroupRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -79,25 +82,46 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
                     //type
 
-                    //status
-
-                    //category
-                    Log.d("custTest", "Category: "+category);
-                    if(category!= null) {
-                        if (group.getCategory().equals(category)) {
+                    //status - show group not expired
+                    int groupStatus = group.getStatus();
+                    if (groupStatus != 2 ) { //not expired
+                        //category
+                        Log.d("custTest", "Category: "+category);
+                        if(category!= null) {
+                            if (group.getCategory().equals(category)) {
+                                groupMap.put(groupId,group);
+                            }
+                        } else {
                             groupMap.put(groupId,group);
                         }
-                    } else {
-                        groupMap.put(groupId,group);
+
                     }
 
-                    //time
+                    //time - change group status
+                    if (group.getGroupType() == 1) { // pre-order
+                        Long startTimestamp = group.getStartTimestamp();
+                        Long endTimestamp = group.getEndTimestamp();
+                        long currentTime = System.currentTimeMillis();
+
+                        if (groupStatus == 1 && currentTime > endTimestamp) { // ongoing to expire: 1->2
+                            allGroupRef.child(groupId).child("status").setValue(2);
+                        } else if (groupStatus == 0 && currentTime > startTimestamp) { // not started to ongoing: 0->1
+                            allGroupRef.child(groupId).child("status").setValue(1);
+                        }
+                    }
 
                     //soldAmount
 
-
                 }
+
                 Log.d("custTest", "size: "+groupMap.size());
+                if (groupMap.size() == 0) {
+                    tvNotFound.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    tvNotFound.setVisibility(View.GONE);
+                }
 
                 CustomerHomeGroupListRecyclerAdapter adapter = new CustomerHomeGroupListRecyclerAdapter(getContext(), groupMap);
                 recyclerView.setAdapter(adapter);

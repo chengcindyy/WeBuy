@@ -1,9 +1,11 @@
 package com.csis4495_cmk.webuy.models;
 
+import java.util.ArrayList;
+
 public class Order {
     private String customerId;
-//    private String orderList[];
-
+    private ArrayList<String> productId_styleIdList;
+    private ArrayList<Integer> amountList;
     private double totalPrice;
     //= itemsTotal + gstTotal + pstTotal + deliveryFee
 
@@ -22,7 +24,7 @@ public class Order {
     private String city;
     private String postalCode;
     private String paymentType;
-    private int status;
+    private int orderStatus;
 
     public Order() {
     }
@@ -31,9 +33,6 @@ public class Order {
         return customerId;
     }
 
-//    public String[] getOrderList() {
-//        return orderList;
-//    }
 
     public double getTotalPrice() {
         return totalPrice;
@@ -71,7 +70,7 @@ public class Order {
         return paymentType;
     }
 
-    public int getStatus() {
-        return status;
+    public int getOrderStatus() {
+        return orderStatus;
     }
 }

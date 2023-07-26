@@ -1,8 +1,9 @@
 package com.csis4495_cmk.webuy.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Customer {
+public class Customer implements Serializable {
     private String uid;
     private String name;
     private String phone;
@@ -12,12 +13,18 @@ public class Customer {
     private String city;
     private String postalCode;
     private String profilePic;
-    private String cartId;
-    private ArrayList<String> watchList;
+    private ArrayList<String> saveList;
+
+    private ArrayList<CartItem> cart;
+
     private String birth;
 
     public Customer() {
         
+    }
+
+    public Customer(ArrayList<CartItem> cart) {
+        this.cart = cart;
     }
 
     public Customer(String uid) {
@@ -25,15 +32,15 @@ public class Customer {
     }
 
     public Customer(String name, String phone, String address, String city, String province,
-                    String postcode, ArrayList<String> favorite, String dob) {
+                    String postcode, String dob, ArrayList<String> favorite) {
         this.name = name;
         this.phone = phone;
         this.address = address;
         this.city = city;
         this.province = province;
         this.postalCode = postcode;
-
         this.birth = dob;
+        this.saveList = favorite;
     }
 
     public String getUid() {
@@ -72,20 +79,16 @@ public class Customer {
         return profilePic;
     }
 
-    public String getCartId() {
-        return cartId;
-    }
-
-    public ArrayList<String> getWatchList() {
-        return watchList;
-    }
-
-    public void setWatchList(ArrayList<String> watchList) {
-        this.watchList = watchList;
+    public ArrayList<String> getSaveList() {
+        return saveList;
     }
 
     public String getBirth() {
         return birth;
+    }
+
+    public ArrayList<CartItem> getCart() {
+        return cart;
     }
 
 }
