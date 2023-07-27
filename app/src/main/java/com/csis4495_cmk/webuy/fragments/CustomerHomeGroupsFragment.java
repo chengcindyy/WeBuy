@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CustomerHomeGroupListRecyclerAdapter;
-import com.csis4495_cmk.webuy.adapters.SharedViewModel;
+import com.csis4495_cmk.webuy.viewmodels.CustomerHomeFilterViewModel;
 import com.csis4495_cmk.webuy.models.Group;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,7 +46,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
     private Map<String,Group> groupMap;
 
     private ArrayList<String> filter;
-    private SharedViewModel model;
+    private CustomerHomeFilterViewModel model;
     private CustomerHomeGroupListRecyclerAdapter adapter;
     Map<String, Group> mGroupMap = new LinkedHashMap<>();
     final DatabaseReference sellersRef = FirebaseDatabase.getInstance().getReference("Seller");
@@ -147,7 +147,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
         });
 
         // Search by keywords
-        model = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        model = new ViewModelProvider(requireActivity()).get(CustomerHomeFilterViewModel.class);
         model.getKeywords().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String str) {
@@ -214,7 +214,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
             @Override
             public void onChanged(String condition) {
                 Log.d("Test search price", "search keyword: "+ condition);
-                mGroupMap.clear();  // Clear the map at the beginning of each new data read
+                mGroupMap.clear();
                 groupRef.orderByChild("minPrice").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -226,11 +226,11 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
                         // Update RecyclerView after all data have been read
                         switch (condition){
-                            case "Sort by price low to high":
+                            case "Price low to high":
                                 UpdateRecyclerView(mGroupMap);
                                 Log.d("Test sort", "mGroupMap: "+mGroupMap.keySet());
                                 break;
-                            case "Sort by price high to low":
+                            case "Price high to low":
                                 adapter.reverseData(mGroupMap);
                                 adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
                                 adapter.notifyDataSetChanged();
@@ -245,6 +245,54 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                     }
                 });
             }
+        });
+
+        // sorting by time
+        model.getSelectedTimeRange().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String timeRange) {
+                Log.d("Test timeRange", "TimeRange: "+ timeRange);
+                mGroupMap.clear();
+                groupRef.orderByChild("startTimestamp").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            String groupId = snapshot.getKey();
+                            Group group = snapshot.getValue(Group.class);
+                            Log.d("Test timeRange", "Key: "+snapshot.getKey()+" Value: "+group.getStartTimestamp());
+                            mGroupMap.put(groupId, group);
+                        }
+
+                        // Update RecyclerView after all data have been read
+                        switch (timeRange){
+                            case "Time nearest to furthest":
+                                UpdateRecyclerView(mGroupMap);
+                                Log.d("Test timeRange", "mGroupMap: "+mGroupMap.keySet());
+                                break;
+                            case "Time furthest to nearest":
+                                adapter.reverseData(mGroupMap);
+                                adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
+                                adapter.notifyDataSetChanged();
+                                recyclerView.setAdapter(adapter);
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+                switch (timeRange){
+                    case "Time nearest to furthest":
+
+                        break;
+                    case "Time furthest to nearest":
+                        break;
+                }
+            }
+
         });
 
         // filter by store status
