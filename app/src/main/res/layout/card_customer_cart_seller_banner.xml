@@ -37,7 +37,7 @@
             app:strokeColor="@android:color/darker_gray" />
 
         <TextView
-            android:id="@+id/tv_cart_seller_banner__seller_name"
+            android:id="@+id/tv_cart_seller_banner_seller_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

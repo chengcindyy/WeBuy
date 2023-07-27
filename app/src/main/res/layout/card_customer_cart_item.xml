@@ -18,7 +18,7 @@
         android:padding="5dp">
 
         <CheckBox
-            android:id="@+id/checkbox"
+            android:id="@+id/checkbox_single_group"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
@@ -32,7 +32,7 @@
             android:layout_marginVertical="10dp"
             android:scaleType="centerCrop"
             android:src="@drawable/app_logo"
-            android:layout_toEndOf="@+id/checkbox"
+            android:layout_toEndOf="@+id/checkbox_single_group"
             />
 
         <TextView
@@ -77,5 +77,36 @@
             android:textColor="#E5B59E"
             android:textSize="16dp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_cart_item_decrease_amount"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tv_cart_item_group_name"
+            android:layout_alignParentTop="true"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="118dp"
+            android:layout_toEndOf="@id/imv_cart_item_group_pic"
+            android:gravity="center"
+            android:text="-" />
+        <EditText
+            android:id="@+id/et_cart_item_order_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_alignBaseline="@id/btn_cart_item_decrease_amount"
+            android:layout_toEndOf="@id/btn_cart_item_decrease_amount"
+            android:text=""
+            android:inputType="numberDecimal" />
+        <Button
+            android:id="@+id/btn_cart_item_increase_amount"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="118dp"
+            android:layout_toEndOf="@id/et_cart_item_order_amount"
+            android:gravity="center"
+            android:text="+" />
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>
