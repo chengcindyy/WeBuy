@@ -3,25 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.CustomerHomeGroupsFragment"
+    tools:context=".fragments.CustomerCartItemsFragment"
     android:orientation="vertical"
     android:gravity="center_horizontal">
 
-
     <!--    Recycler Groups-->
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_cust_home_group"
+        android:id="@+id/rv_cust_seller_with_cart_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dp" />
+
     <TextView
-        android:id="@+id/tv_not_found"
+        android:id="@+id/tv_no_items"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textAlignment="center"
         android:gravity="center"
-        android:text="There is no group under selected category."
+        android:text="There is no items in the cart."
         android:visibility="gone" />
 
 </LinearLayout>
+
