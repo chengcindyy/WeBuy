@@ -8,7 +8,7 @@ public class Product {
     private String category;
     private String description;
     private int tax; // 0: no tax  1: GST  2: GST+PST
-    private int inStock;
+    private int inStock = 11;
 
     private List<String> productImages;
     private String sellerId;

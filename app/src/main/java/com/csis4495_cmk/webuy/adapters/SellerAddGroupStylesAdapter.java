@@ -159,6 +159,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             });
 
             String mapKey = "s___" + style.getStyleId();
+
             if (getGroupQtyMap().containsKey(mapKey)) {
                 Integer qty = getGroupQtyMap().get(mapKey);
                 holder.styleQty.setText(Integer.toString(qty));
@@ -166,6 +167,19 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             }
         }
 
+        if(groupQtyMap != null){
+            String mapKey = "s___" + style.getStyleId();
+            if(groupQtyMap.containsKey(mapKey) && groupQtyMap.get(mapKey) != null ){
+                Integer qty = groupQtyMap.get(mapKey);
+                holder.styleQty.setText(Integer.toString(qty));
+            }
+        }
+    }
+
+    public void updateStyleQty(Map<String, Integer>groupQtyMap){
+        this.groupQtyMap = groupQtyMap;
+        Log.d(TAG, "updateStyleQty: " + groupQtyMap);
+        notifyDataSetChanged();
     }
 
     public void updateStyleData2(String productId, List<ProductStyle> ps) {
@@ -174,6 +188,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
         styles.addAll(ps);
         notifyDataSetChanged();
     }
+
 
     @Override
     public int getItemCount() {
@@ -276,6 +291,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             });
         }
 
+
         public boolean isAnyFieldEmpty() {
             return styleQty.getText().toString().trim().isEmpty()
                     || stylePrice.getText().toString().trim().isEmpty();
@@ -286,6 +302,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             stylePrice.setText(Double.toString(s.getStylePrice()));
             styleQty.setText("");
         }
+
     }
 
     public interface OnImgBtnDeleteStyleListener {

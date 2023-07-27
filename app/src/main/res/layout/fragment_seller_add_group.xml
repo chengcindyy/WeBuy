@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SellerAddGroupFragment">
+    tools:context=".fragments.SellerAddGroupFragment"
+    android:id="@+id/seller_add_group_container">
 
     <!-- TODO: Update blank fragment layout -->
     <ScrollView
