@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -37,6 +38,7 @@ import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.models.SharedViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -120,6 +122,38 @@ public class SellerAddGroupFragment extends Fragment {
 
     private Map<String, String> inventoryNameMap;
 
+    private SharedViewModel model;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        model = new ViewModelProvider(getActivity()).get(SharedViewModel.class);
+        model.getselectedInventory().observe(this, item -> {
+            Log.d(TAG, "Get selected Inventory from child fragment: " + item);
+            if(item != null){
+                for(String key: item.keySet()){
+                    if(item.get(key) == true){
+                        Integer toAdd = inventoryMap.get(key);
+                        if(groupQtyMap.get(key) != null){
+                            Integer oldQty = groupQtyMap.get(key);
+                            Integer newQty = oldQty+toAdd;
+                            groupQtyMap.put(key, newQty);
+                        }else{
+                            groupQtyMap.put(key, toAdd);
+                        }
+
+                        if(key.startsWith("p___")){
+                            group_no_style_qty.setText(Integer.toString(groupQtyMap.get(key)));
+                        }
+                    }
+                }
+
+                Log.d(TAG, "Adding inventory: " + groupQtyMap);
+                stylesAdapter.updateStyleQty(groupQtyMap);
+            }
+        });
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,6 +170,7 @@ public class SellerAddGroupFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         firebaseUser = auth.getCurrentUser();
         groupRef = firebaseDatabase.getReference("Group");
+
 
         publishTitle = view.findViewById(R.id.tv_group_publish_title);
         //Get passed bundle

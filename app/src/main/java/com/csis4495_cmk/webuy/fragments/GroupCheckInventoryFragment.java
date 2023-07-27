@@ -3,10 +3,17 @@ package com.csis4495_cmk.webuy.fragments;
 import static android.content.ContentValues.TAG;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,10 +21,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CheckInventoryRecyclerAdapter;
+import com.csis4495_cmk.webuy.models.SharedViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -43,22 +52,25 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
     private CheckInventoryRecyclerAdapter adapter;
 
     private Map<String, Integer> inventoryMap;
-    
+
     private Map<String, String> inventoryNameMap;
+
+    private Map<String, Boolean> selectedMap;
+
+    private Button btnCancel, btnAdd;
+
+    private SharedViewModel model;
 
     public GroupCheckInventoryFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment InventoryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        model = new ViewModelProvider(getActivity()).get(SharedViewModel.class);
+    }
+
     public static GroupCheckInventoryFragment newInstance(String param1, String param2) {
         GroupCheckInventoryFragment fragment = new GroupCheckInventoryFragment();
         Bundle args = new Bundle();
@@ -85,6 +97,11 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
         return fragment;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,6 +137,28 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
         recyclerView.setAdapter(adapter);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        btnCancel = view.findViewById(R.id.btn_check_inventory_cancel);
+
+        btnAdd = view.findViewById(R.id.btn_check_inventory_add);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               dismiss();
+            }
+        });
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Boolean> myData = adapter.getToAddMap();
+                Log.d(TAG, "onClick: getToAddMap" + myData);
+                model.select(myData);
+                dismiss();
+            }
+        });
+
 
         return  view;
     }
