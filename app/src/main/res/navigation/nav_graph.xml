@@ -133,7 +133,11 @@
         android:id="@+id/sellerAddGroupFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerAddGroupFragment"
         android:label="fragment_seller_add_group"
-        tools:layout="@layout/fragment_seller_add_group" />
+        tools:layout="@layout/fragment_seller_add_group" >
+        <action
+            android:id="@+id/action_sellerAddGroupFragment_to_groupCheckInventoryFragment"
+            app:destination="@id/groupCheckInventoryFragment" />
+    </fragment>
     <fragment
         android:id="@+id/sellerProfileFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerSetProfileFragment"
@@ -203,4 +207,10 @@
 <!--        android:id="@+id/sellerEditProductDialog"-->
 <!--        android:name="com.csis4495_cmk.webuy.dialog.SellerEditProductDialog"-->
 <!--        android:label="SellerEditProductDialog" />-->
+    <fragment
+        android:id="@+id/groupCheckInventoryFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.GroupCheckInventoryFragment"
+        android:label="fragment_group_check_inventory"
+        tools:layout="@layout/fragment_inventory" />
+
 </navigation>
