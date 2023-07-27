@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -401,11 +402,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     }
 
     @Override
-    public void onOpenProductPageButtonClick( int position) {
-        Log.d("Test stock", "onOpenProductPageButtonClick()");
-    }
-
-    @Override
     public void onOpenAllocateButtonClick(int position) {
         Log.d("Test stock", "onOpenAllocateButtonClick()");
     }
@@ -490,6 +486,37 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             }
         });
 
+    }
+    @Override
+    public void onOpenProductPageButtonClick(String productId) {
+        Log.d("Test stock", "onOpenProductPageButtonClick()");
+
+        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
+        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot groupSnapshot : dataSnapshot.getChildren()) {
+                    String currentGroupId = groupSnapshot.getKey();
+                    String matchingProductId = groupSnapshot.child("productId").getValue(String.class);
+
+                    if (matchingProductId.equals(productId)) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("detail_groupId", currentGroupId);
+                        SellerGroupDetailFragment sellerGroupDetailFragment = new SellerGroupDetailFragment();
+                        sellerGroupDetailFragment.setArguments(bundle);
+
+                        Navigation.findNavController(getView()).navigate(R.id.action_sellerInventoryFragment_to_sellerGroupDetailFragment, bundle);
+                    }
+                }
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle possible errors.
+                Log.d("Product", "Failed to read product styles.", databaseError.toException());
+            }
+        });
     }
 
     class DownloadTaskWithId {

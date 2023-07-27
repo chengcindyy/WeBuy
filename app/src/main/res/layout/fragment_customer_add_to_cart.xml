@@ -50,23 +50,19 @@
         </LinearLayout>
 
         <!--    style    -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        <TextView
+            android:id="@+id/tv_add_to_cart_group_style"
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Group Style" />
+        <!-- Style images -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_add_to_cart_group_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginHorizontal="10dp"
-            android:hint="Style"
-            app:boxBackgroundColor="@null">
+            android:orientation="horizontal" />
 
-            <AutoCompleteTextView
-                android:id="@+id/text_input_add_to_cart_group_style"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:cursorVisible="false"
-                android:inputType="none" />
-
-        </com.google.android.material.textfield.TextInputLayout>
         <!--    amount, add and deduct    -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -101,17 +97,22 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_add_to_cart"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="add to cart" />
+            android:gravity="center">
+            <Button
+                android:id="@+id/btn_add_to_cart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="add to cart" />
 
-        <Button
-            android:id="@+id/btn_direct_checkout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="direct checkout" />
+            <Button
+                android:id="@+id/btn_direct_checkout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="direct checkout" />
+        </LinearLayout>
 
 </LinearLayout>
 
