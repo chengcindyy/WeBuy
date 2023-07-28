@@ -1,87 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="120dp">
+
+  <androidx.cardview.widget.CardView
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    android:clickable="true"
-    android:foreground="?selectableItemBackground"
+    android:layout_height="match_parent"
+    android:layout_margin="4dp"
+    android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="3dp"
-    app:contentPadding="4dp">
+    app:cardCornerRadius="6dp">
 
-    <!-- create the container  -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp">
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="horizontal">
 
-        <!-- Imageview for product default image-->
-        <ImageView
-            android:id="@+id/imv_product_img"
-            android:layout_width="100dp"
-            android:layout_height="80dp"
-            android:background="@color/cancel_grey"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+      <!-- Imageview for product default image-->
+      <ImageView
+          android:id="@+id/img_product_img"
+          android:layout_width="120dp"
+          android:layout_height="match_parent"
+          android:scaleType="fitXY"
+          android:src="@drawable/app_default_image"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Textview for Product title-->
-        <TextView
-            android:id="@+id/tv_product_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="3dp"
-            android:singleLine="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imv_product_img"
-            app:layout_constraintTop_toTopOf="@+id/imv_product_img"
-            android:ellipsize="end"/>
+      <!-- Textview for Product title-->
+      <TextView
+          android:id="@+id/tv_product_name"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          android:layout_marginStart="8dp"
+          android:layout_marginTop="8dp"
+          android:layout_marginEnd="8dp"
+          android:layout_marginBottom="8dp"
+          android:ellipsize="end"
+          android:hint="Product name"
+          app:layout_constraintBottom_toTopOf="@+id/tv_product_category"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toEndOf="@+id/img_product_img"
+          app:layout_constraintTop_toTopOf="parent" />
 
+      <TextView
+          android:id="@+id/tv_product_price"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="8dp"
+          android:layout_marginEnd="8dp"
+          android:layout_marginBottom="8dp"
+          android:textStyle="bold"
+          android:hint="Product price"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toStartOf="@+id/btn_product_post"
+          app:layout_constraintStart_toEndOf="@+id/img_product_img" />
 
-        <TextView
-            android:id="@+id/tv_product_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/btn_product_post"
-            app:layout_constraintStart_toEndOf="@+id/imv_product_img"
-            app:layout_constraintTop_toBottomOf="@+id/tv_product_category" />
+      <TextView
+          android:id="@+id/tv_product_category"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="8dp"
+          android:layout_marginEnd="8dp"
+          android:layout_marginBottom="5dp"
+          android:hint="Product category"
+          app:layout_constraintBottom_toTopOf="@+id/tv_product_price"
+          app:layout_constraintEnd_toStartOf="@+id/btn_product_post"
+          app:layout_constraintStart_toEndOf="@+id/img_product_img" />
 
-        <TextView
-            android:id="@+id/tv_product_category"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/btn_product_post"
-            app:layout_constraintStart_toEndOf="@+id/imv_product_img"
-            app:layout_constraintTop_toBottomOf="@+id/tv_product_name" />
-
-        <!-- Image button for posting product-->
-        <ImageButton
-            android:id="@+id/btn_product_post"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:contentDescription="To post the product"
-            android:background="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="@+id/imv_product_img"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/baseline_add_business_24"
-            app:tint="@color/add_business_orange" />
-
-        <!-- Image button for editing prodcut-->
-
-        <!-- Image button for deleting prodcut-->
+      <!-- Image button for posting product-->
+      <ImageButton
+          android:id="@+id/btn_product_post"
+          android:layout_width="40dp"
+          android:layout_height="40dp"
+          android:layout_marginBottom="8dp"
+          android:background="@android:color/transparent"
+          android:contentDescription="To post the product"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="@+id/tv_product_name"
+          app:layout_constraintTop_toTopOf="@+id/tv_product_category"
+          app:srcCompat="@drawable/baseline_add_business_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</androidx.cardview.widget.CardView>
+  </androidx.cardview.widget.CardView>
+</RelativeLayout>

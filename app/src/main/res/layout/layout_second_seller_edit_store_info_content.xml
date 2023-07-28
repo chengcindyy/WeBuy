@@ -210,7 +210,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <Button
             android:id="@+id/btn_update_store_profile"
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -218,6 +218,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/button_solid"
             android:text="@string/update"
+            android:textAllCaps="true"
             android:textColor="@color/white" />
 
         <androidx.appcompat.widget.AppCompatButton

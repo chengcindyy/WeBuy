@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy.models;
+package com.csis4495_cmk.webuy.viewmodels;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;

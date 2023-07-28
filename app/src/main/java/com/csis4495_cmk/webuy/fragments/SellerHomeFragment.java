@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import androidx.navigation.NavController;
@@ -27,7 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SellerHomeFragment extends Fragment {
 
-    private Button btnProducts, btnPostings, btnInventory, btnStoreMgmt, btnSupport, btnProfile, btnLogout, btnTestPage;
+    private CardView btnProducts, btnPostings, btnInventory, btnStoreMgmt, btnSupport, btnProfile, btnLogout, btnTestPage;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     private NavController navController;
 
@@ -49,43 +50,27 @@ public class SellerHomeFragment extends Fragment {
         btnProducts = view.findViewById(R.id.btn_seller_products);
         setOpenNewFragmentOnClickListener(btnProducts,R.id.action_sellerHomeFragment_to_sellerProductListFragment);
 
-        // TODO: Add Posting page
         btnPostings = view.findViewById(R.id.btn_seller_postings);
-        btnPostings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navController.navigate(R.id.action_sellerHomeFragment_to_sellerGroupList2);
-            }
-        });
+        btnPostings.setOnClickListener(v -> navController.navigate(R.id.action_sellerHomeFragment_to_sellerGroupList2));
 
-        // TODO: Add Inventory page
         btnInventory = view.findViewById(R.id.btn_seller_inventory);
         setOpenNewFragmentOnClickListener(btnInventory,R.id.action_sellerHomeFragment_to_sellerInventoryFragment);
 
-        // TODO: Add Store management page
-        btnStoreMgmt = view.findViewById(R.id.btn_seller_store_mgmt);
         // TODO: Add Support page
         btnSupport = view.findViewById(R.id.btn_seller_support);
 
-
-        btnLogout = view.findViewById(R.id.btn_seller_logout);
-        btnLogout.setOnClickListener(view1 -> {
-            auth.signOut();
-            LoginManager.getInstance().logOut();
-            Toast.makeText(requireActivity(),"Logged Out", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(requireActivity(), MainActivity.class);
-            startActivity(intent);
-            requireActivity().finish();
-        });
-
-        btnTestPage = view.findViewById(R.id.btn_open_test_page);
-        setOpenNewFragmentOnClickListener(btnTestPage,R.id.action_sellerHomeFragment_to_testFragment);
-
+//        btnLogout = view.findViewById(R.id.btn_seller_logout);
+//        btnLogout.setOnClickListener(view1 -> {
+//            auth.signOut();
+//            LoginManager.getInstance().logOut();
+//            Toast.makeText(requireActivity(),"Logged Out", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(requireActivity(), MainActivity.class);
+//            startActivity(intent);
+//            requireActivity().finish();
+//        });
     }
 
-    private void setOpenNewFragmentOnClickListener(Button btnTestPage, int action) {
+    private void setOpenNewFragmentOnClickListener(CardView btnTestPage, int action) {
         btnTestPage.setOnClickListener(view -> navController.navigate(action));
     }
-
-
 }

@@ -283,16 +283,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
                     }
                 });
-
-                switch (timeRange){
-                    case "Time nearest to furthest":
-
-                        break;
-                    case "Time furthest to nearest":
-                        break;
-                }
             }
-
         });
 
         // filter by store status

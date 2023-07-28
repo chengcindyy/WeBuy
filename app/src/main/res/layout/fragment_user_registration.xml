@@ -113,6 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_solid"
+                android:textAllCaps="true"
                 android:layout_marginTop="30dp"
                 android:text="Create an Account"/>
 
@@ -195,14 +196,15 @@
                 <com.facebook.login.widget.LoginButton
                     android:id="@+id/btn_register_facebook"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"/>
 
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/ic_facebook"
                     android:id="@+id/fb"
-                    android:textAllCaps="false"
+                    android:textAllCaps="true"
                     android:background="@drawable/button_solid"
                     android:gravity="left|center_vertical"
                     android:paddingLeft="70dp"

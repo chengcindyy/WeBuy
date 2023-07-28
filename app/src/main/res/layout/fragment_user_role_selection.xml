@@ -6,7 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.UserRoleSelectionFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Welcome!"
+            android:textStyle="bold"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="25sp"/>
 
@@ -52,7 +52,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@color/white"
                     android:padding="16dp">
 
                     <ImageView
@@ -86,7 +85,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@color/white"
                     android:padding="16dp">
 
                     <ImageView
@@ -113,6 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
             android:background="@drawable/button_solid"
+            android:textAllCaps="true"
             android:text="@string/next"
             android:layout_gravity="end" />
 

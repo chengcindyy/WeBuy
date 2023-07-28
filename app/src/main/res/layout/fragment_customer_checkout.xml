@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/cancel_grey"
+    tools:context=".fragments.CustomerCheckoutFragment">
+
+    <TextView
+        android:id="@+id/label_order_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Order details"
+        android:background="@color/white"
+        android:paddingVertical="5dp"
+        android:textSize="18sp"
+        android:gravity="center" />
+
+    <View
+        android:id="@+id/divider5"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@+id/label_order_detail"/>
+
+    <TextView
+        android:id="@+id/txv_store_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:hint="Store name"
+        android:background="@color/white"
+        android:paddingHorizontal="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:textStyle="bold"
+        android:layout_below="@+id/divider5"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_shopping_info"
+        android:background="@color/white"
+        android:paddingTop="5dp"
+        android:paddingHorizontal="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txv_store_name"/>
+
+    <TextView
+        android:id="@+id/label_shipment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:textSize="18sp"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:drawablePadding="5dp"
+        android:drawableLeft="@drawable/outline_local_shipping_24"
+        android:layout_below="@id/recyclerView_shopping_info"
+        android:text="Shipment"/>
+
+    <TextView
+        android:id="@+id/txv_shipment_method"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="0dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="25dp"
+        android:textSize="18sp"
+        android:background="@color/white"
+        android:layout_below="@id/recyclerView_shopping_info"
+        android:layout_toRightOf="@id/label_shipment"
+        android:gravity="end"
+        android:hint="Select a shipment" />
+
+    <TextView
+        android:id="@+id/txv_shipment_method_name_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="25dp"
+        android:hint="receiver and phone"
+        android:background="@color/white"
+        android:textSize="18dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/txv_shipment_method"
+        android:gravity="end" />
+
+    <TextView
+        android:id="@+id/txv_shipment_method_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
+        android:hint="shipping address"
+        android:textSize="18dp"
+        android:paddingBottom="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/txv_shipment_method_name_phone"
+        android:gravity="end"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@android:color/white"/>
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@+id/txv_shipment_method_address"/>
+
+    <TextView
+        android:id="@+id/label_notes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/divider3"
+        android:paddingStart="10dp"
+        android:drawablePadding="5dp"
+        android:drawableLeft="@drawable/baseline_edit_note_purple"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@color/white"
+        android:textSize="18sp"
+        android:text="Notes"/>
+
+    <EditText
+        android:id="@+id/edt_customer_notes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_below="@+id/divider3"
+        android:paddingEnd="10dp"
+        android:layout_toRightOf="@+id/label_notes"
+        android:layout_alignParentRight="true"
+        android:hint="Buzzer / time etc"
+        android:background="@color/white"/>
+
+    <TextView
+        android:id="@+id/label_payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment"
+        android:drawablePadding="5dp"
+        android:layout_marginVertical="5dp"
+        android:paddingHorizontal="10dp"
+        android:textSize="18sp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@color/white"
+        android:drawableLeft="@drawable/outline_monetization_on_24"
+        android:layout_below="@+id/label_notes"/>
+
+    <TextView
+        android:id="@+id/txv_payment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_toRightOf="@+id/label_payment"
+        android:layout_alignParentRight="true"
+        android:hint="Select a payment type"
+        android:gravity="end"
+        android:layout_marginVertical="5dp"
+        android:background="@color/white"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
+        android:layout_below="@+id/edt_customer_notes"/>
+
+    <TextView
+        android:id="@+id/label_payment_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Payment details"
+        android:drawablePadding="5dp"
+        android:paddingHorizontal="10dp"
+        android:textSize="18sp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:background="@color/white"
+        android:drawableLeft="@drawable/outline_event_available_24"
+        android:layout_below="@+id/label_payment"/>
+
+    <TextView
+        android:id="@+id/label_total_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total amount:"
+        android:layout_below="@id/label_payment_detail"
+        android:textSize="15sp"
+        android:paddingHorizontal="15dp"
+        android:background="@color/white"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"/>
+
+    <TextView
+        android:id="@+id/txv_checkout_total_amount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_payment_detail"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/label_total_amount"
+        android:paddingHorizontal="15dp"
+        android:hint="CA$"
+        android:gravity="end"
+        android:textSize="15sp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:background="@color/white"/>
+
+    <TextView
+        android:id="@+id/label_shipment_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shipment amount:"
+        android:layout_below="@id/label_total_amount"
+        android:textSize="15sp"
+        android:paddingHorizontal="15dp"
+        android:background="@color/white"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"/>
+
+    <TextView
+        android:id="@+id/txv_checkout_shipment_amount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txv_checkout_total_amount"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/label_shipment_amount"
+        android:paddingHorizontal="15dp"
+        android:hint="CA$"
+        android:gravity="end"
+        android:textSize="15sp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:background="@color/white"/>
+
+    <TextView
+        android:id="@+id/label_gst_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GST / HST:"
+        android:layout_below="@id/label_shipment_amount"
+        android:textSize="15sp"
+        android:paddingHorizontal="15dp"
+        android:background="@color/white"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"/>
+
+    <TextView
+        android:id="@+id/txv_checkout_gst_amount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txv_checkout_shipment_amount"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/label_gst_amount"
+        android:paddingHorizontal="15dp"
+        android:hint="CA$"
+        android:gravity="end"
+        android:textSize="15sp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:background="@color/white"/>
+
+    <TextView
+        android:id="@+id/label_pst_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PST / QST:"
+        android:layout_below="@id/label_gst_amount"
+        android:textSize="15sp"
+        android:paddingHorizontal="15dp"
+        android:background="@color/white"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"/>
+
+    <TextView
+        android:id="@+id/txv_checkout_pst_amount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txv_checkout_gst_amount"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/label_pst_amount"
+        android:paddingHorizontal="15dp"
+        android:hint="CA$"
+        android:gravity="end"
+        android:textSize="15sp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:background="@color/white"/>
+
+    <TextView
+        android:id="@+id/label_order_total_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Order total price:"
+        android:textStyle="bold"
+        android:layout_below="@id/label_pst_amount"
+        android:textSize="15sp"
+        android:paddingHorizontal="15dp"
+        android:background="@color/white"
+        android:paddingTop="3dp"
+        android:paddingBottom="10dp"/>
+
+    <TextView
+        android:id="@+id/txv_checkout_order_total_amount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txv_checkout_pst_amount"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/label_order_total_amount"
+        android:paddingHorizontal="18dp"
+        android:textStyle="bold"
+        android:hint="CA$"
+        android:textColor="#D3A588"
+        android:gravity="end"
+        android:textSize="15sp"
+        android:paddingTop="3dp"
+        android:paddingBottom="10dp"
+
+        android:background="@color/white"/>
+
+
+
+
+
+
+
+
+
+</RelativeLayout>
