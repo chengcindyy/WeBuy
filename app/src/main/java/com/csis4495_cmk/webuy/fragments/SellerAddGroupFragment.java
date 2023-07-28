@@ -156,29 +156,32 @@ public class SellerAddGroupFragment extends Fragment {
                 }
 
                 Log.d(TAG, "Adding inventory: " + groupQtyMap);
+                stylesAdapter.setProductId(productId);
                 stylesAdapter.updateStyleQty(groupQtyMap);
             }
         });
 
-        styleViewModel = new ViewModelProvider(getActivity()).get(SharedEditStyleViewModel.class);
-        styleViewModel.getSelectedStyle().observe(this, item -> {
-            Log.d(TAG, "Get selected new style from child fragment: " + item);
-            if (item != null) {
-                for (String key : item.keySet()) {
-                    groupQtyMap.put(key, null);
-                    String id = key.substring(4);
-                    for (ProductStyle allStyle : newEditGroupStyles){
-                        if (allStyle.getStyleId().equals(id)){
-                            groupStyles.add(allStyle);
-                            groupQtyMap.put("s___"+allStyle.getStyleId(), null);
+        if(!isNewGroup){
+            styleViewModel = new ViewModelProvider(getActivity()).get(SharedEditStyleViewModel.class);
+            styleViewModel.getSelectedStyle().observe(this, item -> {
+                Log.d(TAG, "Get selected new style from child fragment: " + item);
+                if (item != null) {
+                    for (String key : item.keySet()) {
+                        groupQtyMap.put(key, null);
+                        String id = key.substring(4);
+                        for (ProductStyle allStyle : newEditGroupStyles){
+                            if (allStyle.getStyleId().equals(id)){
+                                groupStyles.add(allStyle);
+                                groupQtyMap.put("s___"+allStyle.getStyleId(), null);
+                            }
                         }
+                        stylesAdapter.setStyles(groupStyles);
+                        stylesAdapter.setGroupQtyMap(groupQtyMap);
+                        stylesAdapter.notifyDataSetChanged();
                     }
-                    stylesAdapter.setStyles(groupStyles);
-                    stylesAdapter.setGroupQtyMap(groupQtyMap);
-                    stylesAdapter.notifyDataSetChanged();
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -662,7 +665,7 @@ public class SellerAddGroupFragment extends Fragment {
 
                                 if(p.getProductStyles() != null ){
                                     if(edGroupStyles == null){
-                                        btnEditNewStyle.setVisibility(View.VISIBLE);
+                                        btnEditNewStyle.setVisibility(View.GONE);
                                     }
                                     if (edGroupStyles != null && p.getProductStyles().size() == edGroupStyles.size()){
                                         btnEditNewStyle.setVisibility(View.GONE);
