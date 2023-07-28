@@ -89,10 +89,8 @@ public class CheckInventoryRecyclerAdapter extends RecyclerView.Adapter<CheckInv
             public void onClick(View v) {
                 if(holder.cb.isChecked()){
                     toAddMap.put(keys.get(position),true);
-//                    callback.onItemSelected(position);callback.onItemSelected(position);
                     Log.d(TAG, "Checkbox onClick: " + toAddMap);
                 }else{
-//                    callback.onItemDeselected(position);
                     toAddMap.remove(keys.get(position));
                     Log.d(TAG, "Checkbox onClick: " + toAddMap);
                 }
