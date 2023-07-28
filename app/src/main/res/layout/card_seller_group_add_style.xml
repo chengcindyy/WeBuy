@@ -15,29 +15,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tv_group_check_inventory_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:text="Product Name" />
+       <ImageView
+           android:id="@+id/img_group_add_style"
+           android:layout_width="60dp"
+           android:layout_height="match_parent"
+           android:layout_weight="1"
+           android:background="@color/cancel_grey"
+           android:src="@mipmap/ic_launcher"/>
 
         <TextView
-            android:id="@+id/tv_group_check_inventory_inventory"
+            android:id="@+id/tv_group_add_style_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:text="Product Inventory" />
+            android:text="Style Name"
+            />
 
         <CheckBox
-            android:id="@+id/tv_group_check_inventory_cb"
+            android:id="@+id/cb_group_add_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:layout_weight="1" />
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

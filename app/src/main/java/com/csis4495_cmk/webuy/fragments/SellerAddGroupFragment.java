@@ -25,8 +25,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +36,7 @@ import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
-import com.csis4495_cmk.webuy.models.SharedViewModel;
+import com.csis4495_cmk.webuy.models.SharedInventoryViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -54,7 +52,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,7 +62,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 
 public class SellerAddGroupFragment extends Fragment {
@@ -122,28 +118,37 @@ public class SellerAddGroupFragment extends Fragment {
 
     private Map<String, String> inventoryNameMap;
 
-    private SharedViewModel model;
+    private SharedInventoryViewModel model;
+
+    private List<ProductStyle> newEditGroupStyles;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        model = new ViewModelProvider(getActivity()).get(SharedViewModel.class);
+        model = new ViewModelProvider(getActivity()).get(SharedInventoryViewModel.class);
         model.getselectedInventory().observe(this, item -> {
             Log.d(TAG, "Get selected Inventory from child fragment: " + item);
-            if(item != null){
-                for(String key: item.keySet()){
-                    if(item.get(key) == true){
+            if (item != null) {
+                for (String key : item.keySet()) {
+                    if (item.get(key) == true) {
                         Integer toAdd = inventoryMap.get(key);
-                        if(groupQtyMap.get(key) != null){
-                            Integer oldQty = groupQtyMap.get(key);
-                            Integer newQty = oldQty+toAdd;
-                            groupQtyMap.put(key, newQty);
-                        }else{
-                            groupQtyMap.put(key, toAdd);
-                        }
+                        if (toAdd != null) {  // Add null check here
+                            if (groupQtyMap.get(key) != null) {
+                                Integer oldQty = groupQtyMap.get(key);
+                                if (oldQty != null) {  // Add null check here
+                                    Integer newQty = oldQty + toAdd;
+                                    groupQtyMap.put(key, newQty);
+                                }
+                            } else {
+                                groupQtyMap.put(key, toAdd);
+                            }
 
-                        if(key.startsWith("p___")){
-                            group_no_style_qty.setText(Integer.toString(groupQtyMap.get(key)));
+                            if (key.startsWith("p___")) {
+                                Integer groupQty = groupQtyMap.get(key);
+                                if (groupQty != null) {  // Add null check here
+                                    group_no_style_qty.setText(Integer.toString(groupQty));
+                                }
+                            }
                         }
                     }
                 }
@@ -214,6 +219,8 @@ public class SellerAddGroupFragment extends Fragment {
 
         inventoryNameMap = new HashMap<>();
         inventoryMap = new HashMap<>();
+
+        newEditGroupStyles = new ArrayList<>();
 
         if (isNewGroup) {
             getProductData();
@@ -337,17 +344,22 @@ public class SellerAddGroupFragment extends Fragment {
 
                 DatabaseReference productReference = databaseReference.child("Product").child(productId);
                 productReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    Integer pInStock;
+                    String pName;
+
                     @Override
                     public void onComplete(@NonNull Task<DataSnapshot> task) {
                         DataSnapshot dataSnapshot = task.getResult();
+                        Product p = new Product();
                         if (dataSnapshot.exists()) {
+                            p = dataSnapshot.getValue(Product.class);
                             if (dataSnapshot.child("inStock").exists()) {
                                 try {
-                                    Integer inStock = dataSnapshot.child("inStock").getValue(Integer.class);
-                                    String productName = dataSnapshot.child("productName").getValue(String.class);
-                                    if (inStock != 0) {
-                                        inventoryMap.put("p___" + productId, inStock);
-                                        inventoryNameMap.put("p___" + productId, productName);
+                                    pInStock = dataSnapshot.child("inStock").getValue(Integer.class);
+                                    pName = dataSnapshot.child("productName").getValue(String.class);
+                                    if (pInStock != 0) {
+                                        inventoryMap.put("p___" + productId, pInStock);
+                                        inventoryNameMap.put("p___" + productId, pName);
                                     }
                                 } catch (Exception e) {
                                     Log.d(TAG, "loading product inventory error: " + e);
@@ -372,27 +384,31 @@ public class SellerAddGroupFragment extends Fragment {
                                 }
                             }
                         }
-
-                        Log.d(TAG, "check inventoryMap: " + inventoryMap);
                         Log.d(TAG, "check inventoryNameMap: " + inventoryNameMap);
-                        Log.d(TAG, "check 2 qtyMap: " + groupQtyMap);
+                        Log.d(TAG, "onClick: inventory" + inventoryMap);
+                        Log.d(TAG, "onClick: qty" + groupQtyMap);
 
-                        if (inventoryMap.isEmpty() || inventoryMap == null) {
-                            Toast.makeText(getContext(), "There is no inventory", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.d(TAG, "onClick: inventory" + inventoryMap);
-                            Log.d(TAG, "onClick: qty" + groupQtyMap);
-
-                            //match inventory and name with current group product/style offers
+                        //match inventory and name with current group product/style offers
+                        if (p.getProductStyles() != null && groupQtyMap.size() > 0) {
                             Set<String> qtyKey = new HashSet<>(groupQtyMap.keySet());
                             inventoryMap.keySet().retainAll(qtyKey);
                             inventoryNameMap.keySet().retainAll(qtyKey);
-                            Log.d(TAG, "TESTING" + inventoryMap);
-                            Log.d(TAG, "TESTING" + inventoryNameMap);
+                        } else if (p.getProductStyles() != null && groupQtyMap.size() == 0) {
+                            inventoryMap.clear();
+                            inventoryNameMap.clear();
 
+                            if (pInStock != 0) {
+                                inventoryMap.put("p___" + productId, pInStock);
+                                inventoryNameMap.put("p___" + productId, pName);
+                            }
+                        }
+                        if (inventoryMap.isEmpty() || inventoryMap == null) {
+                            Toast.makeText(getContext(), "There is no inventory", Toast.LENGTH_SHORT).show();
+                        } else {
                             GroupCheckInventoryFragment fragment = GroupCheckInventoryFragment.newInstance(inventoryMap, inventoryNameMap);
                             fragment.show(getActivity().getSupportFragmentManager(), "tag");
                         }
+
                     }
                 });
             }
@@ -401,11 +417,27 @@ public class SellerAddGroupFragment extends Fragment {
         btnEditNewStyle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "check inventoryMap: " + inventoryMap);
-                Log.d(TAG, "check inventoryNameMap: " + inventoryNameMap);
+                newEditGroupStyles.clear();
+                DatabaseReference productReference = databaseReference.child("Product").child(productId);
+                productReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        DataSnapshot dataSnapshot = task.getResult();
+                        Product p = new Product();
+                        if (dataSnapshot.exists()) {
+                            p = dataSnapshot.getValue(Product.class);
+                            newEditGroupStyles = p.getProductStyles();
+                            newEditGroupStyles.removeAll(groupStyles);
+                            Log.d(TAG, "existing style" + groupStyles);
+                            Log.d(TAG, "style can be added" + newEditGroupStyles);
+                            GroupAddNewStyleFragment fragment = GroupAddNewStyleFragment.newInstance(productId, newEditGroupStyles);
+                            fragment.show(getActivity().getSupportFragmentManager(), "tag");
+                        }
+                    }
+                });
+
             }
         });
-
 
 
         //Set group startTime and endTime
@@ -537,6 +569,7 @@ public class SellerAddGroupFragment extends Fragment {
                         groupType = editGroup.getGroupType();
                         minPrice = editGroup.getMinPrice();
                         maxPrice = editGroup.getMaxPrice();
+                        List<ProductStyle> edGroupStyles = editGroup.getGroupStyles();
                         Log.d(TAG, "Get edit group data: minPrice " + minPrice + " maxPrice: " + maxPrice);
                         if (editGroup.getGroupType() == 0) {
                             tgBtnGp_publish.check(tgBtn_in_stock_publish.getId());
@@ -588,12 +621,26 @@ public class SellerAddGroupFragment extends Fragment {
                             groupPriceCurrency.setText(editGroup.getGroupPrice());
                             group_no_style_qty.setVisibility(View.VISIBLE);
                             group_no_style_qty.setText(Integer.toString(editGroup.getGroupQtyMap().get("p___" + productId)));
+
+                            btnEditNewStyle.setVisibility(View.GONE);
                         }
 
                         DatabaseReference productReference = databaseReference.child("Product").child(productId);
                         productReference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Product p = snapshot.getValue(Product.class);
+
+                                if(p.getProductStyles() != null ){
+                                    if(edGroupStyles == null){
+                                        btnEditNewStyle.setVisibility(View.VISIBLE);
+                                    }
+                                    if (edGroupStyles != null && p.getProductStyles().size() == edGroupStyles.size()){
+                                        btnEditNewStyle.setVisibility(View.GONE);
+                                    }
+                                }else{
+                                    btnEditNewStyle.setVisibility(View.GONE);
+                                }
                                 GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {
                                 };
                                 List<String> loadedProductImages = snapshot.child("productImages").getValue(t);
@@ -604,6 +651,7 @@ public class SellerAddGroupFragment extends Fragment {
                                     Log.d(TAG, "Group images path: " + imgPaths);
                                     imagesAdapter.updateGroupImgPaths2(productId, imgPaths);
                                 }
+
 
                                 //Set delete group image button listener
                                 if (imgPaths.size() > 1) {
@@ -1112,7 +1160,7 @@ public class SellerAddGroupFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 groupQtyMap.clear();
-                if (!dataSnapshot.exists()){
+                if (!dataSnapshot.exists()) {
                     Log.d(TAG, "There are no product styles");
                     groupQtyMap.put("p___" + productId, null);
                     Log.d(TAG, "qtyMap: " + groupQtyMap);

@@ -1,13 +1,12 @@
 package com.csis4495_cmk.webuy.models;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.Map;
 
-public class SharedViewModel extends ViewModel {
+public class SharedInventoryViewModel extends ViewModel {
 
     private final MutableLiveData<Map<String, Boolean>> selectedInventory = new MutableLiveData<>();
 
