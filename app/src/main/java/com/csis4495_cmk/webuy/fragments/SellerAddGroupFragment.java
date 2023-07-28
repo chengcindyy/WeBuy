@@ -36,6 +36,7 @@ import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.models.SharedEditStyleViewModel;
 import com.csis4495_cmk.webuy.models.SharedInventoryViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -118,15 +119,16 @@ public class SellerAddGroupFragment extends Fragment {
 
     private Map<String, String> inventoryNameMap;
 
-    private SharedInventoryViewModel model;
-
+    private SharedInventoryViewModel inventoryViewModel;
     private List<ProductStyle> newEditGroupStyles;
+
+    private SharedEditStyleViewModel styleViewModel;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        model = new ViewModelProvider(getActivity()).get(SharedInventoryViewModel.class);
-        model.getselectedInventory().observe(this, item -> {
+        inventoryViewModel = new ViewModelProvider(getActivity()).get(SharedInventoryViewModel.class);
+        inventoryViewModel.getselectedInventory().observe(this, item -> {
             Log.d(TAG, "Get selected Inventory from child fragment: " + item);
             if (item != null) {
                 for (String key : item.keySet()) {
@@ -155,6 +157,26 @@ public class SellerAddGroupFragment extends Fragment {
 
                 Log.d(TAG, "Adding inventory: " + groupQtyMap);
                 stylesAdapter.updateStyleQty(groupQtyMap);
+            }
+        });
+
+        styleViewModel = new ViewModelProvider(getActivity()).get(SharedEditStyleViewModel.class);
+        styleViewModel.getSelectedStyle().observe(this, item -> {
+            Log.d(TAG, "Get selected new style from child fragment: " + item);
+            if (item != null) {
+                for (String key : item.keySet()) {
+                    groupQtyMap.put(key, null);
+                    String id = key.substring(4);
+                    for (ProductStyle allStyle : newEditGroupStyles){
+                        if (allStyle.getStyleId().equals(id)){
+                            groupStyles.add(allStyle);
+                            groupQtyMap.put("s___"+allStyle.getStyleId(), null);
+                        }
+                    }
+                    stylesAdapter.setStyles(groupStyles);
+                    stylesAdapter.setGroupQtyMap(groupQtyMap);
+                    stylesAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
@@ -191,7 +213,6 @@ public class SellerAddGroupFragment extends Fragment {
                 groupId = bundle.getString("edit_group_groupId");
                 publishTitle.setText("Edit a group");
             }
-
         }
 
         if (firebaseUser != null) {
@@ -427,7 +448,16 @@ public class SellerAddGroupFragment extends Fragment {
                         if (dataSnapshot.exists()) {
                             p = dataSnapshot.getValue(Product.class);
                             newEditGroupStyles = p.getProductStyles();
-                            newEditGroupStyles.removeAll(groupStyles);
+                            List<ProductStyle> duplicates = new ArrayList<>();
+                            for (ProductStyle allStyle : newEditGroupStyles){
+                                String allId = allStyle.getStyleId();
+                                for(ProductStyle existing : groupStyles){
+                                    if(allId.equals(existing.getStyleId())){
+                                        duplicates.add(allStyle);
+                                    }
+                                }
+                            }
+                            newEditGroupStyles.removeAll(duplicates);
                             Log.d(TAG, "existing style" + groupStyles);
                             Log.d(TAG, "style can be added" + newEditGroupStyles);
                             GroupAddNewStyleFragment fragment = GroupAddNewStyleFragment.newInstance(productId, newEditGroupStyles);
@@ -435,7 +465,6 @@ public class SellerAddGroupFragment extends Fragment {
                         }
                     }
                 });
-
             }
         });
 

@@ -3,6 +3,7 @@ package com.csis4495_cmk.webuy.fragments;
 import static android.content.ContentValues.TAG;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 
@@ -10,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import androidx.lifecycle.ViewModelProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,6 +74,8 @@ public class GroupAddNewStyleFragment extends BottomSheetDialogFragment {
         // Required empty public constructor
     }
 
+
+
     // TODO: Rename and change types and number of parameters
     public static GroupAddNewStyleFragment newInstance(String param1, String param2) {
         GroupAddNewStyleFragment fragment = new GroupAddNewStyleFragment();
@@ -94,6 +97,12 @@ public class GroupAddNewStyleFragment extends BottomSheetDialogFragment {
 
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        model = new ViewModelProvider(getActivity()).get(SharedEditStyleViewModel.class);
     }
 
     @Override
@@ -138,7 +147,7 @@ public class GroupAddNewStyleFragment extends BottomSheetDialogFragment {
                 dismiss();
             }
         });
-//        getProductStyle();
+        getProductStyle();
         return view;
     }
 
