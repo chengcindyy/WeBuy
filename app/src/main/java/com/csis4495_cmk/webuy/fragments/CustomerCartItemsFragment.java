@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CustomerCartItemsAdapter;
@@ -33,6 +35,8 @@ import java.util.Set;
 public class CustomerCartItemsFragment extends Fragment {
 
     RecyclerView recyclerView;
+    TextView tvNoItems, tvCartItemsTotal, tvCartItemsCheckoutAmount;
+    CheckBox cbxSelectAll;
     CustomerCartItemsAdapter customerCartItemsAdapter;
     String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference("Customer").child(customerId);
@@ -68,46 +72,50 @@ public class CustomerCartItemsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        tvNoItems = view.findViewById(R.id.tv_no_items);
+        tvCartItemsTotal = view.findViewById(R.id.tv_cart_items_total);
+        tvCartItemsCheckoutAmount = view.findViewById(R.id.tv_cart_items_checkout_amount);
+        cbxSelectAll = view.findViewById(R.id.checkbox_select_all);
         recyclerView = view.findViewById(R.id.rv_cust_seller_with_cart_items);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-//        Set<String> sellerIds = new HashSet<>();
-//        ArrayList<CartItem> cartItems = new ArrayList<>();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         Map<String, ArrayList<CartItem>> sellerItemsMap = new HashMap<>();
         customerRef.child("Cart").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 sellerItemsMap.clear();
-                //all cartItems
-                for (DataSnapshot cartItemSnapshot : snapshot.getChildren()) {
 
-                    CartItem cartItem = cartItemSnapshot.getValue(CartItem.class);
-
-                    String sellerId = cartItem.getSellerId();
-
-                    ArrayList<CartItem> sellerItems;
-                    if (!sellerItemsMap.containsKey(sellerId)) {
-                        sellerItems = new ArrayList<>();
-                    } else { //existed key
-                        sellerItems = sellerItemsMap.get(sellerId);
+                for (DataSnapshot sellerSnapshot: snapshot.getChildren()) {
+                    String sellerId = sellerSnapshot.getKey();
+                    ArrayList<CartItem> sellerItems = new ArrayList<>();
+                    for (DataSnapshot cartItemSnapshot: sellerSnapshot.getChildren()) {
+                        CartItem cartItem = cartItemSnapshot.getValue(CartItem.class);
+                        sellerItems.add(cartItem);
                     }
-                    sellerItems.add(cartItem);
                     sellerItemsMap.put(sellerId, sellerItems);
                 }
 
                 Log.d("TestSet", sellerItemsMap.size()+" maps");
-                Log.d("TestSet", sellerItemsMap.get("XBJefGNuxLMUDLuc2qMMabNGuLA3").size()+" items");
 
                 // get sellerId , name , pic
-                customerCartItemsAdapter = new CustomerCartItemsAdapter(getContext(), sellerItemsMap);
-                recyclerView.setAdapter(customerCartItemsAdapter);
+                if (sellerItemsMap.size() != 0) {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    tvNoItems.setVisibility(View.GONE);
+                    customerCartItemsAdapter = new CustomerCartItemsAdapter(getContext(), sellerItemsMap);
+                    recyclerView.setAdapter(customerCartItemsAdapter);
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                    tvNoItems.setVisibility(View.VISIBLE);
+                }
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
+
 
 
     }

@@ -78,7 +78,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
         holder.rvCartItemsWithSameSeller.setLayoutManager(new LinearLayoutManager(context));
 
         CustomerCartItemsWithSameSellerAdapter customerCartItemsWithSameSellerAdapter =
-                new CustomerCartItemsWithSameSellerAdapter(context, sellerItemsMap.get(sellerId));
+                new CustomerCartItemsWithSameSellerAdapter(context, sellerId, sellerItemsMap.get(sellerId));
         holder.rvCartItemsWithSameSeller.setAdapter(customerCartItemsWithSameSellerAdapter);
     }
 
