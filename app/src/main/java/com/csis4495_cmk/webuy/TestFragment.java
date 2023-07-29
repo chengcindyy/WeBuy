@@ -20,7 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class TestFragment extends Fragment {
 
     private NavController navController;
-    private Button btnProductList;
+    private Button btnCheckout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,13 +36,13 @@ public class TestFragment extends Fragment {
         // Set navigation controller, and if you want to navigate to other fragment can call this to navigate
         navController = NavHostFragment.findNavController(TestFragment.this);
 
-//        btnProductList = view.findViewById(R.id.btn_product_list_test);
-//        btnProductList.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                navController.navigate(R.id.action_testFragment_to_sellerProductListFragment);
-//            }
-//        });
+        btnCheckout = view.findViewById(R.id.btn_checkout);
+        btnCheckout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate(R.id.action_testFragment_to_customerCheckoutFragment);
+            }
+        });
 
 
     }

@@ -50,7 +50,11 @@
         android:id="@+id/testFragment"
         android:name="com.csis4495_cmk.webuy.TestFragment"
         android:label="fragment_test"
-        tools:layout="@layout/fragment_test" />
+        tools:layout="@layout/fragment_test" >
+        <action
+            android:id="@+id/action_testFragment_to_customerCheckoutFragment"
+            app:destination="@id/customerCheckoutFragment" />
+    </fragment>
     <fragment
         android:id="@+id/forgotPasswordFragment"
         android:name="com.csis4495_cmk.webuy.fragments.UserForgotPasswordFragment"
@@ -212,5 +216,19 @@
         android:name="com.csis4495_cmk.webuy.fragments.GroupCheckInventoryFragment"
         android:label="fragment_group_check_inventory"
         tools:layout="@layout/fragment_inventory" />
+    <fragment
+        android:id="@+id/customerCheckoutFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerCheckoutFragment"
+        android:label="fragment_customer_checkout"
+        tools:layout="@layout/fragment_customer_checkout" >
+        <action
+            android:id="@+id/action_customerCheckoutFragment_to_customerPaymentSelectorFragment"
+            app:destination="@id/customerPaymentSelectorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerPaymentSelectorFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerCheckoutPaymentSelectorFragment"
+        android:label="fragment_customer_payment_selector"
+        tools:layout="@layout/fragment_customer_payment_selector" />
 
 </navigation>

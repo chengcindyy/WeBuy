@@ -10,17 +10,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.Product;
-import com.google.android.gms.tasks.OnFailureListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,7 +125,7 @@ public class SellerProductListRecyclerAdapter extends RecyclerView.Adapter<Selle
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            productImage = itemView.findViewById(R.id.imv_product_img);
+            productImage = itemView.findViewById(R.id.img_product_img);
             productTitle = itemView.findViewById(R.id.tv_product_name);
             productCategory = itemView.findViewById(R.id.tv_product_category);
             productPrice = itemView.findViewById(R.id.tv_product_price);

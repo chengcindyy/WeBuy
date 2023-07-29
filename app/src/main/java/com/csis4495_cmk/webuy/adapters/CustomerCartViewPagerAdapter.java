@@ -25,10 +25,11 @@ public class CustomerCartViewPagerAdapter extends FragmentStateAdapter {
         switch (position) {
             case 0:
                 //return CustomerCartItemsFragment.newInstance();
+                return new CustomerCartItemsFragment();
             case 1:
                 //return CustomerCartItemsFragment.newInstance();
             default:
-                return new CustomerHomeGroupsFragment();
+                return new CustomerCartItemsFragment();
         }
     }
 

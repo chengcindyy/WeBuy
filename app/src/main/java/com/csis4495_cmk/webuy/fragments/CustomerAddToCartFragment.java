@@ -237,15 +237,18 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                     if (selectedStyle == null) {
                         Toast.makeText(getContext(), "Please select a style", Toast.LENGTH_SHORT).show();
                     } else {
-                        CartItem item = new CartItem(groupId, group.getProductId(), selectedStyle.getStyleId(), orderAmount);
-                        //upload to customerRef
+                        CartItem item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
+                        //upload item with style to customerRef
                         uploadNewCartItem(item);
                     }
                 } else {
-                    CartItem item = new CartItem(groupId, group.getProductId(), orderAmount);
-                    //upload to customerRef
+                    CartItem item = new CartItem(groupId, group.getSellerId(), group.getProductId(), orderAmount);
+                    //upload item without style to customerRef
                     uploadNewCartItem(item);
                 }
+
+                //show item added and pop back to the previous page
+                //cart small badges added
             }
 
         });

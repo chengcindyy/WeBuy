@@ -22,9 +22,10 @@
             android:text="Customer"/>
 
         <Button
+            android:id="@+id/btn_checkout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open Customer Product Detail"/>
+            android:text="Open Customer checkout"/>
 
         <TextView
             android:layout_width="match_parent"

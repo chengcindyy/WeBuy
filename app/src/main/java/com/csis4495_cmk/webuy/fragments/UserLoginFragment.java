@@ -41,6 +41,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -251,9 +252,13 @@ public class UserLoginFragment extends Fragment {
                     loginUser(firebaseUser);
 
                 } else {
-                    // Handle authentication failure
-                    Toast.makeText(getContext(), "Login Failed, please try again!", Toast.LENGTH_SHORT).show();
-
+                    if(task.getException() instanceof FirebaseAuthInvalidUserException) {
+                        Toast.makeText(getContext(), "The email address is not registered. Please check and try again!", Toast.LENGTH_SHORT).show();
+                    } else if(task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                        Toast.makeText(getContext(), "Incorrect password. Please check and try again!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Login Failed, please try again!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });

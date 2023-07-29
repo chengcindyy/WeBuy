@@ -34,8 +34,8 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupImagesAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
 import com.csis4495_cmk.webuy.models.Group;
-import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+
 import com.csis4495_cmk.webuy.models.SharedEditStyleViewModel;
 import com.csis4495_cmk.webuy.models.SharedInventoryViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
