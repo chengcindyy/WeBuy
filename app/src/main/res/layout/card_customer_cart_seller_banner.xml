@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="6dp"
     android:gravity="center_vertical"
-    android:layout_marginTop="2dp"
-    android:orientation="vertical">
+    android:layout_marginBottom="5dp"
+    android:background="@color/white">
 
     <LinearLayout
+        android:id="@+id/linearLayout_card_seller_banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
         android:gravity="center_vertical"
-        android:layout_marginTop="2dp"
         android:orientation="horizontal">
 
         <CheckBox
@@ -32,7 +29,7 @@
             android:layout_marginVertical="10dp"
             android:layout_marginHorizontal="10dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/app_logo"
+            android:src="@drawable/app_default_image"
             app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
             app:strokeColor="@android:color/darker_gray" />
 
@@ -45,14 +42,24 @@
             android:layout_weight="1"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
             android:text="Seller Name" />
+
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider6"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@+id/linearLayout_card_seller_banner"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_cust_cart_items_same_seller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginVertical="10dp"/>
+        android:layout_below="@+id/divider6"/>
 
-</LinearLayout>
+</RelativeLayout>

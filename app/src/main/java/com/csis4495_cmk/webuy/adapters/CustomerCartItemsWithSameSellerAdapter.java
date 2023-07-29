@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -113,8 +114,8 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
         TextView tvGroupStyle;
         TextView tvPrice;
         EditText etOrderAmount;
-        Button btnDecreaseAmount;
-        Button btnIncreaseAmount;
+        ImageButton btnDecreaseAmount;
+        ImageButton btnIncreaseAmount;
 
         View view;
 
