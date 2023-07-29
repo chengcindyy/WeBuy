@@ -80,7 +80,6 @@ public class CustomerCheckoutFragment extends Fragment {
                 sellersRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        HashMap<String, Delivery> deliveryInfoList = new HashMap<>();
 
                         // TODO: get sellerId from cart recyclerView position
                         String selectedProductSellerId = "WWQyDcHPuuOjoMwRCbY1EBWChSX2";
@@ -89,7 +88,15 @@ public class CustomerCheckoutFragment extends Fragment {
                             String sellerId = childSnapshot.getKey();
                             if (selectedProductSellerId.equals(sellerId)) {
                                 DataSnapshot storeInfoSnapshot = childSnapshot.child("storeInfo");
-                                HashMap<String, Delivery> deliveryInfoListMap = (HashMap<String, Delivery>) storeInfoSnapshot.child("deliveryInfoList").getValue();
+                                DataSnapshot deliveryInfoListSnapshot = storeInfoSnapshot.child("deliveryInfoList");
+
+                                HashMap<String, Delivery> deliveryInfoListMap = new HashMap<>();
+                                for (DataSnapshot deliverySnapshot : deliveryInfoListSnapshot.getChildren()) {
+                                    String key = deliverySnapshot.getKey();
+                                    Delivery delivery = deliverySnapshot.getValue(Delivery.class);
+                                    deliveryInfoListMap.put(key, delivery);
+                                }
+
                                 Log.d("Test deliveryHashMap", "In Sheet's Size: "+deliveryInfoListMap.size());
                                 model.deliveryMethods(deliveryInfoListMap);
                                 break;
@@ -98,7 +105,7 @@ public class CustomerCheckoutFragment extends Fragment {
 
 
                         // Create BottomSheet
-                        CustomerCheckoutPaymentSelectorFragment bottomSheetDialog = new CustomerCheckoutPaymentSelectorFragment();
+                        CustomerCheckoutDeliveryMethodFragment bottomSheetDialog = new CustomerCheckoutDeliveryMethodFragment();
                         bottomSheetDialog.show(getParentFragmentManager(), "Delivery BottomSheet Show");
 
 

@@ -13,7 +13,6 @@ public class CustomerCheckoutDataViewModel extends ViewModel {
     private final MutableLiveData<String> selectedPayment = new MutableLiveData<>();
     private final MutableLiveData<HashMap<String ,Delivery>> deliveryInfoList = new MutableLiveData<>();
 
-
     public void deliveryMethods(HashMap<String, Delivery> deliveryInfoListMap) {
         deliveryInfoList.setValue(deliveryInfoListMap);
     }
