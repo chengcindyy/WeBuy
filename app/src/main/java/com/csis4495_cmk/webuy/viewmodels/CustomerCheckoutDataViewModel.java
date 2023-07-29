@@ -19,10 +19,10 @@ public class CustomerCheckoutDataViewModel extends ViewModel {
     public MutableLiveData<HashMap<String, Delivery>> getSelectedDeliveryMethods() {
         return deliveryInfoList;
     }
+
     public void payment(String payment) {
         selectedPayment.setValue(payment);
     }
-
     public MutableLiveData<String> getSelectedPayment() {
         return selectedPayment;
     }
@@ -30,7 +30,6 @@ public class CustomerCheckoutDataViewModel extends ViewModel {
     public void payments(ArrayList<String> items) {
         acceptedPaymentList.setValue(items);
     }
-
     public MutableLiveData<ArrayList<String>> getPayments() {
         return acceptedPaymentList;
     }

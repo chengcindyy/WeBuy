@@ -11,20 +11,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.Delivery;
-import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCheckoutDataViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
