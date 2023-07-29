@@ -22,12 +22,16 @@ import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CheckInventoryRecyclerAdapter;
-import com.csis4495_cmk.webuy.viewmodels.SharedViewModel;
+
+import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.models.SharedInventoryViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
@@ -41,7 +45,7 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
     private String mParam1;
     private String mParam2;
 
-    private TextView testTV;
+    private TextView title;
 
     private RecyclerView recyclerView;
 
@@ -55,16 +59,17 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
 
     private Button btnCancel, btnAdd;
 
-    private SharedViewModel model;
+    private SharedInventoryViewModel model;
 
     public GroupCheckInventoryFragment() {
         // Required empty public constructor
     }
 
+    //share data to parent fragment
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        model = new ViewModelProvider(getActivity()).get(SharedViewModel.class);
+        model = new ViewModelProvider(getActivity()).get(SharedInventoryViewModel.class);
     }
 
     public static GroupCheckInventoryFragment newInstance(String param1, String param2) {
@@ -124,7 +129,7 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_inventory, container, false);
 
-        testTV = view.findViewById(R.id.tv_inventory_frag);
+        title = view.findViewById(R.id.tv_inventory_frag);
 
         recyclerView = view.findViewById(R.id.rv_check_inventory);
 
@@ -154,8 +159,6 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
                 dismiss();
             }
         });
-
-
         return  view;
     }
 
