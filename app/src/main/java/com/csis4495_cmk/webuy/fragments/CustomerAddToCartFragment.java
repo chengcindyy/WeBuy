@@ -54,9 +54,13 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
     private ProductStyle selectedStyle;
     private ArrayList<String> imgUrls;
 
-    TextView tvGroupPrice;
+    TextView tvGroupPrice, tvInventoryAmount;
+    EditText etOrderAmount;
     ImageView imvGroupPic;
+    Button btnDecrease, btnIncrease;
 
+    int inventoryAmount;
+    int orderAmount;
 
     public CustomerAddToCartFragment() {
         // Required empty public constructor
@@ -116,16 +120,17 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         imvGroupPic = view.findViewById(R.id.imv_add_to_cart_group_pic);
         TextView tvGroupName = view.findViewById(R.id.tv_add_to_cart_group_name);
         tvGroupPrice = view.findViewById(R.id.tv_add_to_cart_group_price);
-        TextView tvInventoryAmount = view.findViewById(R.id.tv_add_to_cart_inventory_amount);
+        tvInventoryAmount = view.findViewById(R.id.tv_add_to_cart_inventory_amount);
         RecyclerView rvGroupStyle = view.findViewById(R.id.rv_add_to_cart_group_style);
         TextView tvGroupStyle = view.findViewById(R.id.tv_add_to_cart_group_style);
-        Button btnDecrease = view.findViewById(R.id.btn_decrease_amount);
-        Button btnIncrease = view.findViewById(R.id.btn_increase_amount);
-        EditText etOrderAmount = view.findViewById(R.id.edi_add_to_cart_order_amount);
+        btnDecrease = view.findViewById(R.id.btn_decrease_amount);
+        btnIncrease = view.findViewById(R.id.btn_increase_amount);
+        etOrderAmount = view.findViewById(R.id.edi_add_to_cart_order_amount);
         Button btnAddToCart = view.findViewById(R.id.btn_add_to_cart);
         Button btnDirectCheckout = view.findViewById(R.id.btn_direct_checkout);
 
         //set the group
+        orderAmount =Integer.parseInt(etOrderAmount.getText().toString());
 
         //set styles
         if (group.getGroupStyles() != null) {
@@ -134,8 +139,31 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
             rvGroupStyle.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
             rvGroupStyle.setAdapter(styleAdapter);
             styleAdapter.setmOnStyleItemListener(CustomerAddToCartFragment.this);
-        } else {
+
+            //TODO: get product inventory amount (amount left(toSell - ordered))
+            if(preSelectedStylePosition != -1) { //preselected
+            inventoryAmount = group.getGroupQtyMap().get("s___" + selectedStyle.getStyleId());
+            if (inventoryAmount == -1) {
+                tvInventoryAmount.setText("unlimited amount");
+            } else {
+                tvInventoryAmount.setText(inventoryAmount + " left");
+            }
+
+            } else {
+                tvInventoryAmount.setText("");
+                inventoryAmount = -1;
+            }
+
+        } else { //no style
             tvGroupStyle.setVisibility(View.GONE);
+            //TODO: get product inventory amount (amount left(toSell - ordered))
+            inventoryAmount = group.getGroupQtyMap().get("p___"+group.getProductId());
+            if (inventoryAmount == -1) {
+                tvInventoryAmount.setText("unlimited amount");
+            } else {
+                tvInventoryAmount.setText(inventoryAmount + " left");
+            }
+
         }
 
         //imageView changed according to the style, set shape of the img
@@ -149,35 +177,38 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
 
         tvGroupName.setText(group.getGroupName());
 
-        //TODO: get product inventory amount (amount left(toSell - ordered))
-        int inventoryAmount = 5;
-        tvInventoryAmount.setText(inventoryAmount + " left");
-
         //amount adjustment
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
-
             @Override
             public void afterTextChanged(Editable s) {
                 String inputText = s.toString().trim();
                 if (!inputText.isEmpty()) {
                     try {
                         int amount = Integer.parseInt(inputText);
-                        if (amount <= 0 || amount > inventoryAmount) {
-                            // Show an error or notify the user that the amount is invalid
-                            etOrderAmount.setError("Amount must be greater than 0 and less than "+inventoryAmount);
+                        if (inventoryAmount == -1) {
+                            if(amount <= 0) {
+                                etOrderAmount.setError("Amount must be greater than 0");
+                            } else {
+                                etOrderAmount.setError(null);
+                            }
                         } else {
-                            // The amount is valid, do something with it
-                            etOrderAmount.setError(null);
+                            if (amount <= 0 || amount > inventoryAmount) {
+                                // Show an error or notify the user that the amount is invalid
+                                etOrderAmount.setError("Amount must be greater than 0 and less than "+inventoryAmount);
+                            } else {
+                                // The amount is valid, do something with it
+                                etOrderAmount.setError(null);
+                            }
                         }
+
                     } catch (NumberFormatException e) {
                         // Handle the case when the input cannot be parsed as an integer
                         etOrderAmount.setError("Invalid input");
@@ -191,15 +222,13 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         etOrderAmount.addTextChangedListener(watcher);
 
         btnDecrease.setOnClickListener(v -> {
-            int orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
+            orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
             Log.d("testAmount", orderAmount +"");
             if(orderAmount > 1) {
                 orderAmount--;
-                if (orderAmount < inventoryAmount) {
+                if (orderAmount < inventoryAmount || inventoryAmount == -1) {
                     btnIncrease.setEnabled(true);
-                    //etOrderAmount.setError(null);
                 }
-//                orderAmount--;
 
                 Log.d("testAmount", orderAmount +"--");
                 etOrderAmount.setText(String.valueOf(orderAmount));
@@ -211,54 +240,90 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         });
 
         btnIncrease.setOnClickListener(v -> {
-            int orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
-            if(orderAmount >= inventoryAmount) {
-                btnIncrease.setEnabled(false);
-            } else {
-                if (orderAmount == inventoryAmount-1) {
-                    btnIncrease.setEnabled(false);
-                }
+            orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
+            if(inventoryAmount == -1) {
+                btnIncrease.setEnabled(true);
                 orderAmount++;
                 etOrderAmount.setText(String.valueOf(orderAmount));
-                btnDecrease.setEnabled(true);
+            } else {
+                if(orderAmount >= inventoryAmount) {
+                    btnIncrease.setEnabled(false);
+                } else {
+                    if (orderAmount == inventoryAmount-1) {
+                        btnIncrease.setEnabled(false);
+                    }
+                    orderAmount++;
+                    etOrderAmount.setText(String.valueOf(orderAmount));
+                    btnDecrease.setEnabled(true);
+                }
             }
+
         });
 
-        //direct checkout
+        //TODO: direct checkout
+
         //add to cart
         btnAddToCart.setOnClickListener(v -> {
-            int orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
-            //check amount
-            if (orderAmount < 0 || orderAmount > inventoryAmount) {
-                etOrderAmount.setError("Amount must be greater than 0 and less than " + inventoryAmount);
-            } else {
-                //check if style selected if having styles
-                if (group.getGroupStyles() != null) {
-                    if (selectedStyle == null) {
-                        Toast.makeText(getContext(), "Please select a style", Toast.LENGTH_SHORT).show();
-                    } else {
-                        CartItem item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
-                        //upload item with style to customerRef
-                        uploadNewCartItem(item);
-                    }
+            orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
+            //check style
+            if (group.getGroupStyles() != null) {
+                if (selectedStyle == null) {
+                    Toast.makeText(getContext(), "Please select a style", Toast.LENGTH_SHORT).show();
                 } else {
-                    CartItem item = new CartItem(groupId, group.getSellerId(), group.getProductId(), orderAmount);
-                    //upload item without style to customerRef
-                    uploadNewCartItem(item);
+                    checkAmountValidity(inventoryAmount);
                 }
-
-                //show item added and pop back to the previous page
-                //cart small badges added
+            } else {
+                checkAmountValidity(inventoryAmount);
             }
 
         });
 
     }
 
+    private void checkAmountValidity(int inventoryAmount) {
+        //check amount
+        if (inventoryAmount == -1) { //unlimited
+            if (orderAmount <= 0) {
+                etOrderAmount.setError("Amount must be greater than 0");
+            } else {
+                //upload
+                CartItem item;
+                if (selectedStyle == null) {
+                    item = new CartItem(groupId, group.getSellerId(), group.getProductId(), orderAmount);
+                } else {
+                    item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
+                }
+                //upload item with style to customerRef
+                uploadNewCartItem(item);
+                //show item added and pop back to the previous page
+                onDismiss(getDialog());
+                Toast.makeText(getContext(),"Item Added to the Cart!", Toast.LENGTH_SHORT).show();
+                //TODO:cart small badges added
+            }
+        } else {
+            if (orderAmount <= 0 || orderAmount > inventoryAmount) {
+                etOrderAmount.setError("Amount must be greater than 0 and less than? " + inventoryAmount);
+            } else {
+                //upload
+                CartItem item;
+                if (selectedStyle == null) {
+                    item = new CartItem(groupId, group.getSellerId(), group.getProductId(), orderAmount);
+                } else {
+                    item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
+                }
+                //upload item with style to customerRef
+                uploadNewCartItem(item);
+                //show item added and pop back to the previous page
+                onDismiss(getDialog());
+                Toast.makeText(getContext(),"Item Added to the Cart!", Toast.LENGTH_SHORT).show();
+                //TODO:cart small badges added
+            }
+        }
+    }
     private void uploadNewCartItem(CartItem item) {
         String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference("Customer").child(customerId);
-        customerRef.child("Cart").push().setValue(item);
+        customerRef.child("Cart").child(item.getSellerId()).push().setValue(item);
     }
 
     @Override
@@ -266,8 +331,35 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         //Toast.makeText(getContext(),"styleId: "+ style.getStyleId(), Toast.LENGTH_SHORT).show();
         tvGroupPrice.setText("CA$ "+ style.getStylePrice());
         selectedStyle = style;
+
         //set img
         int imgPosition = group.getGroupImages().size() + stylePosition;
         Picasso.get().load(imgUrls.get(imgPosition)).into(imvGroupPic);
+
+        //set inventory amount
+        inventoryAmount = group.getGroupQtyMap().get("s___" + selectedStyle.getStyleId());
+        if (inventoryAmount == -1) {
+            tvInventoryAmount.setText("unlimited amount");
+        } else {
+            tvInventoryAmount.setText(inventoryAmount + " left");
+        }
+
+        Log.d("TestCom", orderAmount + " " +inventoryAmount);
+        if(inventoryAmount == -1) {
+            btnIncrease.setEnabled(true);
+            etOrderAmount.setError(null);
+        } else {
+            if (orderAmount < inventoryAmount) {
+                btnIncrease.setEnabled(true);
+                etOrderAmount.setError(null);
+            } else if (orderAmount == inventoryAmount) {
+                btnIncrease.setEnabled(false);
+                etOrderAmount.setError(null);
+            } else {
+                btnIncrease.setEnabled(false);
+                etOrderAmount.setError("Amount must be greater than 0 and less than "+inventoryAmount);
+            }
+        }
+
     }
 }

@@ -6,6 +6,7 @@ public class CartItem {
     private String productId;
     private String styleId;
     private int amount;
+    private boolean checked = false;
 
     public CartItem() {
     }
@@ -43,5 +44,17 @@ public class CartItem {
 
     public int getAmount() {
         return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public boolean getChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }
