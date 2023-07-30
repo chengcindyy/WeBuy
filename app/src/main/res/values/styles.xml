@@ -2,6 +2,12 @@
 <resources>
     <style name="TextViewStyle">
         <item name="fontFamily">@font/font_family</item>
-        <!-- Add other style properties here -->
+    </style>
+
+    <style name="DeliveryCheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layoutDirection">rtl</item>
+        <item name="android:drawablePadding">10dp</item>
     </style>
 </resources>

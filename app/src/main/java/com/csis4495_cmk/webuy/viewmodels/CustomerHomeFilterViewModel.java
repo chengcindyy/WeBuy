@@ -1,15 +1,16 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.viewmodels;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class SharedViewModel extends ViewModel {
+public class CustomerHomeFilterViewModel extends ViewModel {
     private final MutableLiveData<String> keywords = new MutableLiveData<String>();
     private final MutableLiveData<String> selectedLocation = new MutableLiveData<String>();
     private final MutableLiveData<String> selectedPriceRange = new MutableLiveData<String>();
     private final MutableLiveData<Integer> selectedStatus = new MutableLiveData<Integer>();
     private final MutableLiveData<Integer> selectedGroupType = new MutableLiveData<Integer>();
+    private final MutableLiveData<String> selectedTimeRange = new MutableLiveData<String>();
 
     public void enterKeywords(String str) {
         keywords.setValue(str);
@@ -49,5 +50,13 @@ public class SharedViewModel extends ViewModel {
 
     public LiveData<Integer> getGroupType() {
         return selectedGroupType;
+    }
+
+    public void selectedTimeRange(String timeRange) {
+        selectedTimeRange.setValue(timeRange);
+    }
+
+    public LiveData<String> getSelectedTimeRange() {
+        return selectedTimeRange;
     }
 }

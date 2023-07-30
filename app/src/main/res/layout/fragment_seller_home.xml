@@ -1,81 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.SellerHomeFragment">
+    android:layout_height="match_parent">
 
-    <ScrollView
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:columnCount="2"
+        android:padding="16dp">
 
+        <!-- Button 1 -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:layout_editor_absoluteX="1dp"
-            android:layout_margin="20dp"
-            android:layout_weight="1">
+            android:layout_margin="8dp"
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
 
-            <Button
+            <androidx.cardview.widget.CardView
                 android:id="@+id/btn_seller_products"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
-                android:layout_height="75dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                app:cardBackgroundColor="#D3A588"
+                app:cardCornerRadius="100dp">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/baseline_dashboard_customize_24" />
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="Products"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/btn_seller_postings"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
-                android:layout_height="74dp"
-                android:text="Groups"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/btn_seller_inventory"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
-                android:layout_height="74dp"
-                android:text="Inventory"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/btn_seller_store_mgmt"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
-                android:layout_height="74dp"
-                android:text="Store Management"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/btn_seller_support"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
-                android:layout_height="74dp"
-                android:text="Support"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/btn_seller_logout"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
-                android:layout_height="75dp"
-                android:text="Logout"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/btn_open_test_page"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="match_parent"
-                android:layout_height="75dp"
-                android:text="Test page"
-                android:textSize="20sp" />
+                android:textSize="20dp"/>
         </LinearLayout>
 
-    </ScrollView>
-</FrameLayout>
+        <!-- Button 2 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btn_seller_postings"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                app:cardBackgroundColor="#D3A588"
+                app:cardCornerRadius="100dp">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/baseline_storage_24" />
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Groups"
+                android:textSize="20dp"/>
+        </LinearLayout>
+
+        <!-- Button 3 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btn_seller_inventory"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                app:cardBackgroundColor="#D3A588"
+                app:cardCornerRadius="100dp">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/baseline_inventory_24" />
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Inventory"
+                android:textSize="20dp"/>
+        </LinearLayout>
+
+        <!-- Button 4 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btn_seller_support"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                app:cardBackgroundColor="#D3A588"
+                app:cardCornerRadius="100dp">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/baseline_support_agent_24" />
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Support"
+                android:textSize="20dp"/>
+        </LinearLayout>
+
+    </GridLayout>
+
+
+</RelativeLayout>

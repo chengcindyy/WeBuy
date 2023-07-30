@@ -37,7 +37,9 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
     private Map<String, Integer> groupQtyMap;
 
+
     String productId;
+
 
     public Map<String, Integer> getGroupQtyMap() {
         return groupQtyMap;
@@ -120,52 +122,66 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 
     @Override
     public void onBindViewHolder(@NonNull SellerAddGroupStylesAdapter.ViewHolder holder, int position) {
-        ProductStyle style = styles.get(position);
-        holder.bindStyles(style);
-        String styleImg = style.getStylePicName();
-        //load style image
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
-//        StorageReference imageReference = storageReference.child(styles.get(position).getStylePic());
-        StorageReference imageReference = storageReference.child(productId + "/" + styleImg);
-        imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-            // Got the download URL and pass it to Picasso to download, show in ImageView and caching
-            Picasso.get().load(uri.toString()).into(holder.styleImg);
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle errors, if image doesn't exist, show a default image
-                holder.styleImg.setImageResource(R.drawable.default_image);
-                Log.d(TAG, "load style image error " + productId + "/" + styleImg);
 
-            }
-        });
-
-        holder.deleteStyle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onImgBtnDeleteStyleListener != null) {
-                    onImgBtnDeleteStyleListener.onDeleteClick(position);
-                }
-            }
-        });
-
-        if (!isNewGroup) {
-            holder.deleteStyle.setVisibility(View.GONE);
-            holder.deleteStyle.setOnClickListener(new View.OnClickListener() {
+            ProductStyle style = styles.get(position);
+            holder.bindStyles(style);
+            String styleImg = style.getStylePicName();
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProductImage");
+            StorageReference imageReference = storageReference.child(productId + "/" + styleImg);
+            imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                // Got the download URL and pass it to Picasso to download, show in ImageView and caching
+                Picasso.get().load(uri.toString()).into(holder.styleImg);
+            }).addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void onClick(View v) {
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle errors, if image doesn't exist, show a default image
+                    holder.styleImg.setImageResource(R.drawable.default_image);
+                    Log.d(TAG, "load style image error " + productId + "/" + styleImg);
 
                 }
             });
 
-            String mapKey = "s___" + style.getStyleId();
-            if (getGroupQtyMap().containsKey(mapKey)) {
-                Integer qty = getGroupQtyMap().get(mapKey);
-                holder.styleQty.setText(Integer.toString(qty));
+            holder.deleteStyle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onImgBtnDeleteStyleListener != null) {
+                        onImgBtnDeleteStyleListener.onDeleteClick(position);
+                    }
+                }
+            });
 
+            if (!isNewGroup) {
+                holder.deleteStyle.setVisibility(View.GONE);
+                holder.deleteStyle.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+
+//                String mapKey = "s___" + style.getStyleId();
+//
+//                if (getGroupQtyMap().containsKey(mapKey)) {
+//                    Integer qty = getGroupQtyMap().get(mapKey);
+//                    holder.styleQty.setText(Integer.toString(qty));
+//
+//                }
             }
-        }
 
+            if (groupQtyMap != null) {
+                String mapKey = "s___" + style.getStyleId();
+                if (groupQtyMap.containsKey(mapKey) && groupQtyMap.get(mapKey) != null) {
+                    Integer qty = groupQtyMap.get(mapKey);
+                    holder.styleQty.setText(Integer.toString(qty));
+                }
+            }
+
+    }
+
+    public void updateStyleQty(Map<String, Integer> groupQtyMap) {
+        this.groupQtyMap = groupQtyMap;
+        Log.d(TAG, "updateStyleQty: " + groupQtyMap);
+        notifyDataSetChanged();
     }
 
     public void updateStyleData2(String productId, List<ProductStyle> ps) {
@@ -175,9 +191,10 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
         notifyDataSetChanged();
     }
 
+
     @Override
     public int getItemCount() {
-        return styles.size();
+            return styles.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -198,9 +215,11 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
+
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                 }
+
                 @Override
                 public void afterTextChanged(Editable s) {
                     ProductStyle currentStyle = styles.get(getAdapterPosition());
@@ -212,12 +231,12 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
 //                                newInfo = newInfo.substring(4);
                             double newPrice = Double.parseDouble(newInfo.trim().replace("CA$", ""));
                             Log.d("TextWatcher", "new price = " + newPrice);
-                            if (newPrice <0) {
+                            if (newPrice < 0) {
                                 stylePrice.setError("The price must be greater than 0");
                                 Log.d("TextWatcher", "new price <= 0");
                                 stylePrice.setText("CA$ ");
                                 stylePrice.requestFocus();
-                               
+
                             } else if (newPrice == 0 && !newInfo.trim().endsWith(".")) {
                                 stylePrice.setError("The price must be greater than 0");
                                 Log.d("TextWatcher", "new price <= 0");
@@ -240,9 +259,11 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
+
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                 }
+
                 @Override
                 public void afterTextChanged(Editable s) {
                     ProductStyle currentStyle = styles.get(getAdapterPosition());
@@ -260,7 +281,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
                                 styleQty.setError("The quantity cannot be 0 for a new group");
                                 styleQty.setText("");
                                 styleQty.requestFocus();
-                            } else if (newInfo.length()>1 && newInfo.startsWith("0")) {
+                            } else if (newInfo.length() > 1 && newInfo.startsWith("0")) {
                                 styleQty.setError("The quantity cannot start with 0");
                                 styleQty.setText("");
                                 styleQty.requestFocus();
@@ -276,6 +297,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             });
         }
 
+
         public boolean isAnyFieldEmpty() {
             return styleQty.getText().toString().trim().isEmpty()
                     || stylePrice.getText().toString().trim().isEmpty();
@@ -286,6 +308,7 @@ public class SellerAddGroupStylesAdapter extends RecyclerView.Adapter<SellerAddG
             stylePrice.setText(Double.toString(s.getStylePrice()));
             styleQty.setText("");
         }
+
     }
 
     public interface OnImgBtnDeleteStyleListener {

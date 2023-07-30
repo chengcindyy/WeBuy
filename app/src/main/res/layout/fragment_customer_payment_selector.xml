@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    tools:context=".fragments.CustomerCheckoutPaymentSelectorFragment">
+
+    <LinearLayout
+        android:id="@+id/checkbox_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/checkbox_child_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:drawableLeft="@drawable/outline_foundation_24"
+            android:visibility="gone"
+            android:drawablePadding="10dp"
+            android:text="@string/eTransfer"/>
+
+        <CheckBox
+            android:id="@+id/checkbox_child_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:drawableLeft="@drawable/outline_monetization_on_24"
+            android:visibility="gone"
+            android:drawablePadding="10dp"
+            android:text="@string/cash_on_delivery"/>
+
+        <CheckBox
+            android:id="@+id/checkbox_child_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:drawableLeft="@drawable/outline_fire_truck_24"
+            android:visibility="gone"
+            android:drawablePadding="10dp"
+            android:text="@string/pay_in_store"/>
+
+        <CheckBox
+            android:id="@+id/checkbox_child_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/baseline_payment_yellow"
+            android:drawablePadding="10dp"
+            android:visibility="gone"
+            android:layoutDirection="rtl"
+            android:text="@string/debit_or_credit"/>
+
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btn_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/checkbox_container"
+        android:layout_alignStart="@+id/checkbox_container"
+        android:layout_alignEnd="@+id/checkbox_container"
+        android:layout_marginVertical="10dp"
+        android:background="@drawable/button_solid"
+        android:text="@string/confirm"
+        android:textAllCaps="true" />
+
+</RelativeLayout>
