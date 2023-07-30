@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,7 +18,10 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.activities.CustomerHomePageActivity;
+import com.csis4495_cmk.webuy.adapters.CartItemsViewModel;
 import com.csis4495_cmk.webuy.adapters.CustomerCartItemsAdapter;
+import com.csis4495_cmk.webuy.adapters.CustomerCartItemsWithSameSellerAdapter;
 import com.csis4495_cmk.webuy.models.CartItem;
 import com.csis4495_cmk.webuy.models.Product;
 import com.google.firebase.auth.FirebaseAuth;
@@ -102,7 +107,17 @@ public class CustomerCartItemsFragment extends Fragment {
                 if (sellerItemsMap.size() != 0) {
                     recyclerView.setVisibility(View.VISIBLE);
                     tvNoItems.setVisibility(View.GONE);
-                    customerCartItemsAdapter = new CustomerCartItemsAdapter(getContext(), sellerItemsMap);
+
+                    CartItemsViewModel viewModel = new ViewModelProvider(CustomerCartItemsFragment.this).get(CartItemsViewModel.class);
+                    viewModel.setSellerItemsMap(sellerItemsMap);
+                    Map<String, Boolean> sellerAllItemsCheckedMap = new HashMap<>();
+                    for (String sellerId : sellerItemsMap.keySet()) {
+                        sellerAllItemsCheckedMap.put(sellerId, false);
+                    }
+                    viewModel.setSellerAllItemsCheckedMap(sellerAllItemsCheckedMap);
+                    customerCartItemsAdapter = new CustomerCartItemsAdapter(getContext(), viewModel, getViewLifecycleOwner());
+
+                    //customerCartItemsAdapter = new CustomerCartItemsAdapter(getContext(), sellerItemsMap);
                     recyclerView.setAdapter(customerCartItemsAdapter);
                 } else {
                     recyclerView.setVisibility(View.GONE);

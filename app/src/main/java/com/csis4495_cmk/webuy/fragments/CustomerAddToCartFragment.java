@@ -282,12 +282,17 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
 
     private void checkAmountValidity(int inventoryAmount) {
         //check amount
-        if (inventoryAmount == -1) {
+        if (inventoryAmount == -1) { //unlimited
             if (orderAmount <= 0) {
                 etOrderAmount.setError("Amount must be greater than 0");
             } else {
                 //upload
-                CartItem item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
+                CartItem item;
+                if (selectedStyle == null) {
+                    item = new CartItem(groupId, group.getSellerId(), group.getProductId(), orderAmount);
+                } else {
+                    item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
+                }
                 //upload item with style to customerRef
                 uploadNewCartItem(item);
                 //show item added and pop back to the previous page
@@ -300,7 +305,12 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                 etOrderAmount.setError("Amount must be greater than 0 and less than? " + inventoryAmount);
             } else {
                 //upload
-                CartItem item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
+                CartItem item;
+                if (selectedStyle == null) {
+                    item = new CartItem(groupId, group.getSellerId(), group.getProductId(), orderAmount);
+                } else {
+                    item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
+                }
                 //upload item with style to customerRef
                 uploadNewCartItem(item);
                 //show item added and pop back to the previous page

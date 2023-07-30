@@ -280,10 +280,12 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
     private void UpdateRecyclerView(Map<String, Group> gMap) {
         Log.d("Test UpdateRecyclerView", gMap + "");
-        adapter.updateData(gMap);
-        adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
-        adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
+        if (adapter != null) {
+            adapter.updateData(gMap);
+            adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
+            adapter.notifyDataSetChanged();
+            recyclerView.setAdapter(adapter);
+        }
     }
 
     @Override
