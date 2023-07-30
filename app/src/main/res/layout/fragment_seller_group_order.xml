@@ -3,12 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SellerGroupOrderFragment">
+    tools:context=".fragments.SellerGroupPendingOrderFragment">
 
     <!-- TODO: Update blank fragment layout -->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
     <TextView
+        android:id="@+id/tv_group_pending"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="All Orders" />
+        android:layout_height="wrap_content"
+        android:text="There are no pending order"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_group_pending"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
 
 </FrameLayout>

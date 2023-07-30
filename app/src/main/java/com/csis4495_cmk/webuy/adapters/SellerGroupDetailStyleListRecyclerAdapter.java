@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -27,6 +28,17 @@ public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adap
     private List<ProductStyle> styles = new ArrayList<>();
     private Map<String, Integer> qtyMap = new HashMap<>();
     private String productId;
+
+    private List<Inventory> inventoryList;
+
+
+    public List<Inventory> getInventoryList() {
+        return inventoryList;
+    }
+
+    public void setInventoryList(List<Inventory> inventoryList) {
+        this.inventoryList = inventoryList;
+    }
 
     public SellerGroupDetailStyleListRecyclerAdapter() {
     }
@@ -105,6 +117,24 @@ public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adap
         Integer sQty = qtyMap.get("s___"+ps.getStyleId());
         if(sQty != null) {
             holder.styleQty.setText("Quantity: "+ String.valueOf(sQty));
+        }
+
+        for(Inventory i : inventoryList){
+            String styleId = i.getProductStyleKey().split("_")[1];
+            if (styleId.equals(ps.getStyleId())){
+                Integer allocated = i.getAllocated();
+                Integer ordered = i.getOrdered();
+                Integer toAllocate = i.getToAllocated();
+                if(allocated != null){
+                    holder.allocated.setText(Integer.toString(allocated));
+                }
+                if(ordered != null){
+                    holder.ordered.setText(Integer.toString(ordered));
+                }
+                if(toAllocate != null){
+                    holder.toAllocate.setText(Integer.toString(toAllocate));
+                }
+            }
         }
     }
 

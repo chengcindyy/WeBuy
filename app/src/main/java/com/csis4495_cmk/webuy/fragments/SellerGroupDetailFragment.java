@@ -25,6 +25,7 @@ import com.csis4495_cmk.webuy.adapters.SellerGroupDetailImageRecyclerAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerGroupDetailOrderListViewPagerAdapter;
 import com.csis4495_cmk.webuy.adapters.SellerGroupDetailStyleListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
+import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,6 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -59,6 +61,8 @@ public class SellerGroupDetailFragment extends Fragment {
 
     private DatabaseReference groupRef;
 
+    private DatabaseReference inventoryRef;
+
     private NavController navController;
 
     private SellerGroupDetailImageRecyclerAdapter imgAdapter;
@@ -71,8 +75,9 @@ public class SellerGroupDetailFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
 
-    private SellerGroupDetailOrderListViewPagerAdapter viewPagerAdapter;
+    private List<Inventory> inventoryList;
 
+    private SellerGroupDetailOrderListViewPagerAdapter viewPagerAdapter;
 
     SimpleDateFormat simpleDateFormat;
     @Override
@@ -92,6 +97,8 @@ public class SellerGroupDetailFragment extends Fragment {
             groupId = bundle.getString("detail_groupId");
             }
 
+        inventoryList = new ArrayList<>();
+
         simpleDateFormat = new SimpleDateFormat("HH:mm yyyy-MM-dd");
 
         navController = NavHostFragment.findNavController(SellerGroupDetailFragment.this);
@@ -99,6 +106,7 @@ public class SellerGroupDetailFragment extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
         dBRef = firebaseDatabase.getReference();
         groupRef = dBRef.child("Group");
+        inventoryRef = dBRef.child("Inventory");
 
         gName = view.findViewById(R.id.group_detail_name);
         gDes = view.findViewById(R.id.group_detail_des);
@@ -120,6 +128,8 @@ public class SellerGroupDetailFragment extends Fragment {
 
         viewPagerAdapter = new SellerGroupDetailOrderListViewPagerAdapter(getChildFragmentManager(), getLifecycle());
         viewPager.setAdapter(viewPagerAdapter);
+
+        getInventoryData();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -319,6 +329,35 @@ public class SellerGroupDetailFragment extends Fragment {
 
             }
         });
+    }
+
+    private void getInventoryData(){
+        inventoryRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Inventory i = dataSnapshot.getValue(Inventory.class);
+                    if(i.getProductId().equals(productId)){
+                        inventoryList.add(i);
+                    }
+                }
+                if(inventoryList.size()==1 && inventoryList.get(0).getStyleId() == null){
+                    gOrdered.setText("Ordered: " + Integer.toString(inventoryList.get(0).getOrdered()));
+                    gAllocated.setText("Allocated: " + Integer.toString(inventoryList.get(0).getAllocated()));
+                    gToAllocate.setText("To Allocate: "+ Integer.toString(inventoryList.get(0).getToAllocated()));
+                }else{
+                    styleAdapter.setInventoryList(inventoryList);
+                    styleAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
 

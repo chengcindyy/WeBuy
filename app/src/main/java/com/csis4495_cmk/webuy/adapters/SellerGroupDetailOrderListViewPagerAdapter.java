@@ -6,13 +6,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.csis4495_cmk.webuy.fragments.SellerGroupClosedFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupClosingSoonFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupFulfilledFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupNotFulfilledFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupNotYetOpenedFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupOpeningFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupOrderFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupAllocatedOrderFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupCanceledOrderFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupProcessedFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupPendingOrderFragment;
 
 public class SellerGroupDetailOrderListViewPagerAdapter extends FragmentStateAdapter {
 
@@ -30,22 +27,25 @@ public class SellerGroupDetailOrderListViewPagerAdapter extends FragmentStateAda
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new SellerGroupOrderFragment();
+                return new SellerGroupPendingOrderFragment();
 
             case 1:
-                return new SellerGroupFulfilledFragment();
+                return new SellerGroupAllocatedOrderFragment();
 
             case 2:
-                return new SellerGroupNotFulfilledFragment();
+                return new SellerGroupProcessedFragment();
+
+            case 3:
+                return new SellerGroupCanceledOrderFragment();
 
             default:
-                return new SellerGroupOrderFragment();
+                return new SellerGroupPendingOrderFragment();
 
         }
     }
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 4;
     }
 }
