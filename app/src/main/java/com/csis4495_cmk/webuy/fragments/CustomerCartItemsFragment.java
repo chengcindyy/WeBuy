@@ -37,7 +37,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class CustomerCartItemsFragment extends Fragment {
+public class CustomerCartItemsFragment extends Fragment
+                    implements CustomerCartItemsAdapter.onCartSellerBannerListener{
 
     RecyclerView recyclerView;
     TextView tvNoItems, tvCartItemsTotal, tvCartItemsCheckoutAmount;
@@ -45,6 +46,8 @@ public class CustomerCartItemsFragment extends Fragment {
     CustomerCartItemsAdapter customerCartItemsAdapter;
     String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference("Customer").child(customerId);
+
+    CartItemsViewModel viewModel;
 
     public CustomerCartItemsFragment() {
         // Required empty public constructor
@@ -85,6 +88,7 @@ public class CustomerCartItemsFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         Map<String, ArrayList<CartItem>> sellerItemsMap = new HashMap<>();
+        Map<String, Boolean> sellerAllItemsCheckedMap = new HashMap<>();
         customerRef.child("Cart").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -108,9 +112,11 @@ public class CustomerCartItemsFragment extends Fragment {
                     recyclerView.setVisibility(View.VISIBLE);
                     tvNoItems.setVisibility(View.GONE);
 
-                    CartItemsViewModel viewModel = new ViewModelProvider(CustomerCartItemsFragment.this).get(CartItemsViewModel.class);
+                    viewModel = new ViewModelProvider(CustomerCartItemsFragment.this).get(CartItemsViewModel.class);
                     viewModel.setSellerItemsMap(sellerItemsMap);
-                    Map<String, Boolean> sellerAllItemsCheckedMap = new HashMap<>();
+                    //Map<String, Boolean> sellerAllItemsCheckedMap = new HashMap<>();
+                    sellerAllItemsCheckedMap.clear();
+
                     for (String sellerId : sellerItemsMap.keySet()) {
                         sellerAllItemsCheckedMap.put(sellerId, false);
                     }
@@ -119,6 +125,7 @@ public class CustomerCartItemsFragment extends Fragment {
 
                     //customerCartItemsAdapter = new CustomerCartItemsAdapter(getContext(), sellerItemsMap);
                     recyclerView.setAdapter(customerCartItemsAdapter);
+                    customerCartItemsAdapter.setOnCartSellerBannerListener(CustomerCartItemsFragment.this);
                 } else {
                     recyclerView.setVisibility(View.GONE);
                     tvNoItems.setVisibility(View.VISIBLE);
@@ -131,8 +138,48 @@ public class CustomerCartItemsFragment extends Fragment {
             }
         });
 
+        boolean allGroupChecked = true;
+        Log.d("TestSelectAll", sellerAllItemsCheckedMap.size()+"");
+        if (sellerAllItemsCheckedMap.size() != 0) {
+            for (String sellerId : sellerAllItemsCheckedMap.keySet()) {
+                boolean allChecked = sellerAllItemsCheckedMap.get(sellerId);
+                Log.d("TestSelectAll", allChecked+"");
+                if (!allChecked) {
+                    allGroupChecked = false;
+                }
+            }
+            cbxSelectAll.setChecked(allGroupChecked);
+        }
 
+        //set cbx
+        cbxSelectAll.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            for (String sellerId : sellerAllItemsCheckedMap.keySet()) {
+                sellerAllItemsCheckedMap.put(sellerId, isChecked);
+            }
+            for (String sellerId: sellerItemsMap.keySet()) {
+                for (CartItem sellerCartItem: sellerItemsMap.get(sellerId)) {
+                    sellerCartItem.setChecked(isChecked);
+                }
+            }
+            viewModel.setSellerAllItemsCheckedMap(sellerAllItemsCheckedMap);
+            recyclerView.setAdapter(customerCartItemsAdapter);
+            customerCartItemsAdapter.setOnCartSellerBannerListener(this);
+        });
 
     }
 
+    @Override
+    public void onSellerBannerChecked(Map<String,Boolean> sellerAllItemsCheckedMap) {
+        boolean allGroupChecked = true;
+        for (String sellerId : sellerAllItemsCheckedMap.keySet()) {
+            boolean allChecked = sellerAllItemsCheckedMap.get(sellerId);
+            Log.d("TestSelectAll", allChecked+"");
+            if (!allChecked) {
+                allGroupChecked = false;
+            }
+        }
+        cbxSelectAll.setOnCheckedChangeListener(null);
+        cbxSelectAll.setChecked(allGroupChecked);
+    }
 }

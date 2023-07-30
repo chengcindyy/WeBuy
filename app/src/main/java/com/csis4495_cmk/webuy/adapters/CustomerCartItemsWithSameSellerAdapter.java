@@ -101,7 +101,7 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
 
         int orderAmount = cartItems.get(position).getAmount();
         holder.etOrderAmount.setText(String.valueOf(orderAmount));
-        //TODO: if qty = -1
+        // TODO: if qty = -1
         final int[] inventoryAmount = {9999};
 
         groupRef.child(groupId).addValueEventListener(new ValueEventListener() {
@@ -221,6 +221,7 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             }
         };
         holder.etOrderAmount.addTextChangedListener(watcher);
+
         //increase and decrease the amount
         holder.btnDecreaseAmount.setOnClickListener(v -> {
             int editAmount = Integer.parseInt(String.valueOf(holder.etOrderAmount.getText()));
@@ -254,7 +255,6 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
             cartRef.child(sellerId).setValue(cartItems);
         });
-
 
         //delete cart item
         holder.btnDeleteCartItem.setOnClickListener(v->{
