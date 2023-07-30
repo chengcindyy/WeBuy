@@ -9,10 +9,19 @@
         android:name="com.csis4495_cmk.webuy.fragments.CustomerHomeFragment"
         android:label="fragment_customer_home"
         tools:layout="@layout/fragment_customer_home" >
-        <action
-            android:id="@+id/action_customerHomeFragment_to_customerGroupDetailFragment"
-            app:destination="@id/customerGroupDetailFragment" />
+
     </fragment>
+    <action
+        android:id="@+id/action_customerHomeFragment_to_customerGroupDetailFragment"
+        app:destination="@id/customerGroupDetailFragment" />
+
+    <!-- Define actions with popUpTo and popUpToInclusive -->
+    <action
+        android:id="@+id/action_customerGroupDetailFragment_to_customerHomeFragment"
+        app:destination="@id/customerHomeFragment"
+        app:popUpTo="@id/customerHomeFragment"
+        app:popUpToInclusive="true" />
+
     <fragment
         android:id="@+id/customerProfileFragment"
         android:name="com.csis4495_cmk.webuy.fragments.CustomerProfileFragment"

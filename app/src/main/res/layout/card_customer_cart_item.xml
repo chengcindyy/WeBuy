@@ -31,7 +31,7 @@
             android:adjustViewBounds="true"
             android:layout_marginVertical="10dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/app_logo"
+            android:src="@drawable/app_default_image"
             android:layout_toEndOf="@+id/checkbox_single_group"
             />
 
@@ -108,5 +108,17 @@
             android:layout_toEndOf="@id/et_cart_item_order_amount"
             android:gravity="center"
             android:text="+" />
+
+        <ImageButton
+            android:id="@+id/imvbtn_delete_cart_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="125dp"
+            android:layout_toEndOf="@+id/btn_cart_item_increase_amount"
+            android:background="@color/delete_red"
+            android:src="@drawable/baseline_delete_24" />
+
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>
