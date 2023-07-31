@@ -66,36 +66,37 @@ public class TestFragment extends Fragment {
                 DatabaseReference orderRef = reference.push();
 
 
-                String customerId = "UElcwADSG6ddV4jveqWDR98PIAC3";
+//                String customerId = "UElcwADSG6ddV4jveqWDR98PIAC3";  //Karl
+                String customerId ="0sO8iW7NRfSMOWB6TXIs0fEYOR33";  //Cindy
                 Map<String, Map<String, Integer>> groupsAndItemsMap = new HashMap<>();
                 Map<String, Integer> innerStyleMap = new HashMap<>();
                 int orderStatus = 0;
-                double itemsTotal = 60.00;
-                double gstTotal = 3.00;
-                double pstTotal = 4.20;
-                double totalPrice = 67.2;
+                double itemsTotal = 120.00;
+                double gstTotal = 6.00;
+                double pstTotal = 8.40;
+                double totalPrice = 134.4;
                 double deliveryFee = 10.00;
 
-                String orderDate = "29/07/2023";
+                String orderDate = "30/07/2023";
 
-                String address = "700 Royal Ave";
+                String address = "1000 Rich Road";
                 String country = "CA";
                 String province = "British Columbia";
-                String city = "New Westminster";
-                String postalCode = "V3M 5Z5";
+                String city = "Richmond";
+                String postalCode = "V8A 6E1";
                 String paymentType = "E-transfer";
 
-                String groupId = "-NaPuzAcUgGzauUZYDrF";
+                String GROUPID = "-NadxHxDbWJEhGyfTk-R";
                 String productId = "NaPq7lbRgjlIUOr4GeQ";
                 String style_Pink = "777e8183-95ef-4221-b07b-7f1f4ba71cc2";
                 String style_Yellow = "205f73e9-300a-43e5-bbf7-b7a7c61d2f71";
 
-                String key1 = "p___" + productId + "s___" + style_Pink;
-                String key2 = "p___" + productId + "s___" + style_Yellow;
+                String keyPink = "p___" + productId + "s___" + style_Pink;
+                String keyYellow = "p___" + productId + "s___" + style_Yellow;
 
-                innerStyleMap.put(key1, 1);
-                innerStyleMap.put(key2, 2);
-                groupsAndItemsMap.put(groupId, innerStyleMap);
+//                innerStyleMap.put(keyPink, 4);
+                innerStyleMap.put(keyYellow, 6);
+                groupsAndItemsMap.put(GROUPID, innerStyleMap);
 
                 Order order = new Order(customerId, groupsAndItemsMap, totalPrice, itemsTotal, gstTotal, pstTotal, orderDate, deliveryFee,
                         address, country, province, city, postalCode, paymentType, orderStatus);

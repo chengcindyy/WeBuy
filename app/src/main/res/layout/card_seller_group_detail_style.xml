@@ -61,21 +61,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:text="Ordered"/>
+            android:text="Ordered: "/>
 
         <TextView
             android:id="@+id/tv_group_style_allocated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:text="Allocated"/>
+            android:text="Allocated: "/>
 
         <TextView
             android:id="@+id/tv_group_style_toAllocated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:text="To allocate"/>
+            android:text="To allocate: "/>
 
     </LinearLayout>
 

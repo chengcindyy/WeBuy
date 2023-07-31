@@ -103,6 +103,9 @@ public class SellerGroupDetailFragment extends Fragment {
 
         navController = NavHostFragment.findNavController(SellerGroupDetailFragment.this);
 
+        styleAdapter = new SellerGroupDetailStyleListRecyclerAdapter();
+        imgAdapter = new SellerGroupDetailImageRecyclerAdapter();
+
         firebaseDatabase = FirebaseDatabase.getInstance();
         dBRef = firebaseDatabase.getReference();
         groupRef = dBRef.child("Group");
@@ -128,8 +131,6 @@ public class SellerGroupDetailFragment extends Fragment {
 
         viewPagerAdapter = new SellerGroupDetailOrderListViewPagerAdapter(getChildFragmentManager(), getLifecycle());
         viewPager.setAdapter(viewPagerAdapter);
-
-        getInventoryData();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -158,6 +159,8 @@ public class SellerGroupDetailFragment extends Fragment {
 
 
         getGroupDetail();
+
+        getInventoryData();
 
         return view;
     }
@@ -280,9 +283,6 @@ public class SellerGroupDetailFragment extends Fragment {
                     }
                 }
 
-                styleAdapter = new SellerGroupDetailStyleListRecyclerAdapter();
-                imgAdapter = new SellerGroupDetailImageRecyclerAdapter();
-
                 List<String> imageUrls = gp.getGroupImages();
                 imgAdapter.setImgUrls(imageUrls);
                 imgAdapter.setProductId(productId);
@@ -313,25 +313,18 @@ public class SellerGroupDetailFragment extends Fragment {
                     gOrdered.setVisibility(View.VISIBLE);
                     gAllocated.setVisibility(View.VISIBLE);
                     gToAllocate.setVisibility(View.VISIBLE);
-
                     gQty.setText("Quantity: " + Integer.toString(qty));
-
                     styleRecyclerView.setVisibility(View.GONE);
                 }
-
-
-
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
     private void getInventoryData(){
+        inventoryList.clear();
         inventoryRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -341,15 +334,18 @@ public class SellerGroupDetailFragment extends Fragment {
                         inventoryList.add(i);
                     }
                 }
-                if(inventoryList.size()==1 && inventoryList.get(0).getStyleId() == null){
-                    gOrdered.setText("Ordered: " + Integer.toString(inventoryList.get(0).getOrdered()));
-                    gAllocated.setText("Allocated: " + Integer.toString(inventoryList.get(0).getAllocated()));
-                    gToAllocate.setText("To Allocate: "+ Integer.toString(inventoryList.get(0).getToAllocated()));
-                }else{
-                    styleAdapter.setInventoryList(inventoryList);
-                    styleAdapter.notifyDataSetChanged();
+                if(inventoryList != null){
+                    Log.d(TAG, "Inventory list" + inventoryList);
+                    if(inventoryList.size() == 1 && inventoryList.get(0).getProductStyleKey().equals(productId)){
+                        gOrdered.setText("Ordered: " + Integer.toString(inventoryList.get(0).getOrdered()));
+                        gAllocated.setText("Allocated: " + Integer.toString(inventoryList.get(0).getAllocated()));
+                        gToAllocate.setText("To Allocate: "+ Integer.toString(inventoryList.get(0).getToAllocated()));
+                    }
+                    else{
+                        styleAdapter.setInventoryList(inventoryList);
+                        styleAdapter.notifyDataSetChanged();
+                    }
                 }
-
             }
 
             @Override
