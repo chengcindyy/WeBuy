@@ -63,11 +63,6 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
             }
         });
     }
-//    public CustomerCartItemsAdapter(Context context, Map<String, ArrayList<CartItem>> sellerItemsMap) {
-//        this.context = context;
-//        this.sellerItemsMap = sellerItemsMap;
-//        this.sellerIds = new ArrayList<>(sellerItemsMap.keySet());
-//    }
 
     public void setOnCartSellerBannerListener(onCartSellerBannerListener mCartSellerBannerListener) {
         this.mCartSellerBannerListener = mCartSellerBannerListener;
@@ -83,6 +78,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        //set seller
         String sellerId = sellerIds.get(position);
         sellerRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -104,21 +100,24 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
             }
         });
 
+        //set inner rv
         holder.rvCartItemsWithSameSeller.setLayoutManager(new LinearLayoutManager(context));
-
         CustomerCartItemsWithSameSellerAdapter customerCartItemsWithSameSellerAdapter =
                 new CustomerCartItemsWithSameSellerAdapter(context, sellerId, viewModel, lifecycleOwner);
-//        CustomerCartItemsWithSameSellerAdapter customerCartItemsWithSameSellerAdapter =
-//                new CustomerCartItemsWithSameSellerAdapter(context, sellerId, sellerItemsMap.get(sellerId));
         holder.rvCartItemsWithSameSeller.setAdapter(customerCartItemsWithSameSellerAdapter);
         customerCartItemsWithSameSellerAdapter.setOnSingleCartItemListener(this);
 
-        //set cbx from inner recycler view
+        //set cbx linked data with inner
         Log.d("TestAllCheck", "sellers :: " + sellerAllItemsCheckedMap.size());
         Log.d("TestAllCheck", sellerId+ " all checked:: "+ sellerAllItemsCheckedMap.get(sellerId));
-        holder.cbxAllGroups.setChecked(sellerAllItemsCheckedMap.get(sellerId));
-//        holder.cbxAllGroups.setChecked(false);
-        //check box
+
+        // Remove the listener before setting the state
+        holder.cbxAllGroups.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            mCartSellerBannerListener.onSellerBannerChecked(sellerAllItemsCheckedMap,sellerItemsMap);
+        });
+        boolean allChecked = sellerAllItemsCheckedMap.get(sellerId);
+        holder.cbxAllGroups.setChecked(allChecked);
+        // Add the listener back after setting the state
         holder.cbxAllGroups.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -132,6 +131,8 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
                 viewModel.setSellerAllItemsCheckedMap(sellerAllItemsCheckedMap);
                 holder.rvCartItemsWithSameSeller.setAdapter(customerCartItemsWithSameSellerAdapter);
 
+                mCartSellerBannerListener.onSellerBannerChecked(sellerAllItemsCheckedMap,sellerItemsMap);
+
             }
         });
     }
@@ -143,9 +144,8 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
 
     @Override
     public void onAllItemsChecked(Boolean isAllChecked) {
-        //currentHolder.cbxAllGroups.setChecked(isAllChecked);
         notifyDataSetChanged();
-        Log.d("TestAllCheck", "onAllItemsChecked() set");
+        Log.d("TestAllCheck", "onAllItemsChecked() "+ isAllChecked);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -167,7 +167,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
     }
 
     public interface onCartSellerBannerListener {
-        void onSellerBannerChecked(String sellerId);
+        void onSellerBannerChecked(Map<String,Boolean> sellerAllItemsCheckedMap,Map<String, ArrayList<CartItem>> sellerItemsMap);
     }
 
 }

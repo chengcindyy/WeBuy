@@ -16,8 +16,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.CartItem;
 import com.csis4495_cmk.webuy.models.Group;
+import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,11 +55,16 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
     Map<String, ArrayList<CartItem>> sellerItemsMap;
     ArrayList<CartItem> cartItems;
     Map<String, Boolean> sellerAllItemsCheckedMap;
-    DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
+    Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemsInfoMap;
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    DatabaseReference groupRef = firebaseDatabase.getReference("Group");
     String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    DatabaseReference cartRef = FirebaseDatabase.getInstance().getReference("Customer").child(customerId).child("Cart");
+    DatabaseReference cartRef = firebaseDatabase.getReference("Customer").child(customerId).child("Cart");
+    DatabaseReference productRef = firebaseDatabase.getReference("Product");
 
     private final int IN_STOCK = 0;
+    private final int PRE_ORDER = 1;
+    private final int OPENING = 1;
 
     public CustomerCartItemsWithSameSellerAdapter(Context context, String sellerId, CartItemsViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.context = context;
@@ -78,7 +86,15 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             }
         });
 
+        viewModel.getCartItemsInfoMap().observe(lifecycleOwner, new Observer<Map<CartItem, CartItemsViewModel.CartItemInfo>>() {
+            @Override
+            public void onChanged(Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
+                cartItemsInfoMap = cartItemCartItemInfoMap;
+            }
+        });
+
         Log.d("TestMap", cartItems.size()+"");
+        Log.d("GGG", cartItemsInfoMap.size()+"");
     }
 
     public void setOnSingleCartItemListener(onSingleCartItemListener onSingleCartItemListener) {
@@ -101,7 +117,8 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
 
         int orderAmount = cartItems.get(position).getAmount();
         holder.etOrderAmount.setText(String.valueOf(orderAmount));
-        //TODO: if qty = -1
+
+        // TODO: if qty = -1
         final int[] inventoryAmount = {9999};
 
         groupRef.child(groupId).addValueEventListener(new ValueEventListener() {
@@ -109,25 +126,48 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 String groupPicName = null;
+                final String[] groupImgUrl = {null};
                 String groupPrice = "CA$ N/A";
                 String styleName = "Style N/A";
                 String groupName = "Group N/A";
+                final String[] productName = {"Product N/A"};
+                final int[] tax = {-1};
+                int groupType = -1;
+                //final int[] inventoryAmount = {-2};
 
 
                 Group group = snapshot.getValue(Group.class);
-                if (group == null) {
+                if (group == null) { //group is deleted in firebase
                     Log.d("TestGroup",groupId+" is null");
+                    holder.view.setAlpha(0.5f);
+                    holder.view.setOnClickListener(v->{
+                        Toast.makeText(context, "The group is no longer available", Toast.LENGTH_SHORT).show();
+                    });
+                    holder.cbxSingleItem.setChecked(false);
+                    holder.cbxSingleItem.setEnabled(false);
+                    holder.btnIncreaseAmount.setEnabled(false);
+                    holder.btnDecreaseAmount.setEnabled(false);
+                    holder.tvGroupName.setTextColor(ContextCompat.getColor(context,R.color.light_grey));
+                    holder.tvPrice.setTextColor(ContextCompat.getColor(context,R.color.light_grey));
+                    holder.tvGroupStyle.setTextColor(ContextCompat.getColor(context,R.color.light_grey));
+
                 } else {
                     Log.d("TestGroup", groupId+ " is not null");
+                    holder.view.setOnClickListener(v->{
+                        // TODO: open the group detail
+                    });
                     groupName = group.getGroupName();
+                    groupType = group.getGroupType();
                     if (styleId == null) {
+                        styleName = null;
                         groupPicName = group.getGroupImages().get(0);
                         groupPrice = group.getGroupPrice();
                         holder.tvGroupStyle.setVisibility(View.GONE);
                         Log.d("TestGroup","no style");
-                        if (group.getGroupType() == IN_STOCK) {
-                            inventoryAmount[0] = group.getGroupQtyMap().get("p___"+productId);
-                        }
+                        inventoryAmount[0] = group.getGroupQtyMap().get("p___"+productId);
+//                        if (groupType == IN_STOCK) {
+//                            inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
+//                        }
 
                     } else { // with style
                         holder.tvGroupStyle.setVisibility(View.VISIBLE);
@@ -137,17 +177,20 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                                 groupPrice = "CA$ " + styleShot.child("stylePrice").getValue(Double.class);
                                 styleName = styleShot.child("styleName").getValue(String.class);
 
-                                if (group.getGroupType() == IN_STOCK) {
-                                    inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
-                                }
+                                inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
+//                                if (groupType == IN_STOCK) {
+//                                    inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
+//                                }
                             }
                         }
+
                     }
                     StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage").child(productId);
                     imgRef.child(groupPicName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             String imgUrl = uri.toString();
+                            groupImgUrl[0] = imgUrl;
                             Picasso.get().load(imgUrl).into(holder.imvGroupPic);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -159,11 +202,52 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
 
                     holder.tvGroupStyle.setText(styleName);
                     Log.d("TestGroup", groupPrice);
+
+                    //product
+                    String productId = group.getProductId();
+                    productRef.child(productId).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Product product = snapshot.getValue(Product.class);
+                            productName[0] = product.getProductName();
+                            tax[0] = product.getTax();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                    //pre-order group expired or group not opening
+                    if ((groupType == PRE_ORDER && group.getEndTimestamp() < System.currentTimeMillis())
+                            || group.getStatus() != OPENING) {
+
+                        holder.view.setAlpha(0.5f);
+                        holder.view.setOnClickListener(v->{
+                            Toast.makeText(context, "The group is no longer available", Toast.LENGTH_SHORT).show();
+                        });
+                        holder.cbxSingleItem.setChecked(false);
+                        holder.cbxSingleItem.setEnabled(false);
+                        holder.btnIncreaseAmount.setEnabled(false);
+                        holder.btnDecreaseAmount.setEnabled(false);
+                        holder.tvGroupName.setTextColor(ContextCompat.getColor(context,R.color.light_grey));
+                        holder.tvPrice.setTextColor(ContextCompat.getColor(context,R.color.light_grey));
+                        holder.tvGroupStyle.setTextColor(ContextCompat.getColor(context,R.color.light_grey));
+                    }
                 }
 
                 holder.tvGroupName.setText(groupName);
                 holder.tvPrice.setText(groupPrice);
 
+                //set CartItemsInfoMap in ViewModel
+                CartItemsViewModel.CartItemInfo cartItemInfo = new CartItemsViewModel.CartItemInfo(
+                        groupImgUrl[0],groupPrice,groupName,styleName,productName[0],tax[0],
+                        groupType, inventoryAmount[0]);
+
+                //TODO: should not place here, if viewholder is not bound then no value
+                cartItemsInfoMap.put(cartItems.get(holder.getBindingAdapterPosition()), cartItemInfo);
+                viewModel.setCartItemsInfoMap(cartItemsInfoMap);
             }
 
             @Override
@@ -221,6 +305,7 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             }
         };
         holder.etOrderAmount.addTextChangedListener(watcher);
+
         //increase and decrease the amount
         holder.btnDecreaseAmount.setOnClickListener(v -> {
             int editAmount = Integer.parseInt(String.valueOf(holder.etOrderAmount.getText()));
@@ -254,7 +339,6 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
             cartRef.child(sellerId).setValue(cartItems);
         });
-
 
         //delete cart item
         holder.btnDeleteCartItem.setOnClickListener(v->{
@@ -337,7 +421,6 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             cbxSingleItem = itemView.findViewById(R.id.checkbox_single_group);
             imvGroupPic = itemView.findViewById(R.id.imv_cart_item_group_pic);
             tvGroupName = itemView.findViewById(R.id.tv_cart_item_group_name);
