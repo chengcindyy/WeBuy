@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
 
 import java.util.ArrayList;
@@ -14,6 +15,16 @@ public class SharedGroupInventoryListViewModel extends ViewModel {
     private final MutableLiveData<List<Inventory>> inventoryList = new MutableLiveData<>();
 
     private final MutableLiveData<String> groupId = new MutableLiveData<>();
+
+    private final MutableLiveData<Group> group = new MutableLiveData<>();
+
+    public void setGroup(Group g) {
+        group.setValue(g);
+    }
+
+    public LiveData<Group> getGroup() {
+        return group;
+    }
 
     public void setGroupId(String value) {
         groupId.setValue(value); // This will work, since myString is MutableLiveData

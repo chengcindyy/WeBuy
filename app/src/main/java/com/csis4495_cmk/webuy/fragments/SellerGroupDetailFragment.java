@@ -82,6 +82,8 @@ public class SellerGroupDetailFragment extends Fragment {
     private SellerGroupDetailOrderListViewPagerAdapter viewPagerAdapter;
 
     SimpleDateFormat simpleDateFormat;
+
+    private Group group;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,8 +175,8 @@ public class SellerGroupDetailFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Group gp = snapshot.getValue(Group.class);
-
                 if(gp != null){
+                    group = gp;
                     productId = gp.getProductId();
                     gName.setText(gp.getGroupName());
                     gDes.setText(gp.getDescription());
@@ -354,6 +356,7 @@ public class SellerGroupDetailFragment extends Fragment {
                     SharedGroupInventoryListViewModel listViewModel = new ViewModelProvider(requireActivity()).get(SharedGroupInventoryListViewModel.class);
                     listViewModel.setInventoryList(inventoryList);
                     listViewModel.setGroupId(groupId);
+                    listViewModel.setGroup(group);
                 }
             }
             @Override

@@ -151,9 +151,6 @@ public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adap
                     }
                 }
             }
-
-            SharedGroupInventoryListViewModel viewModel = new SharedGroupInventoryListViewModel();
-
         } else {
             holder.allocated.setText("Allocated: 0");
             holder.ordered.setText("Ordered: 0");
