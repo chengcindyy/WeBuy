@@ -66,37 +66,58 @@ public class TestFragment extends Fragment {
                 DatabaseReference orderRef = reference.push();
 
 
-//                String customerId = "UElcwADSG6ddV4jveqWDR98PIAC3";  //Karl
-                String customerId ="0sO8iW7NRfSMOWB6TXIs0fEYOR33";  //Cindy
-                Map<String, Map<String, Integer>> groupsAndItemsMap = new HashMap<>();
-                Map<String, Integer> innerStyleMap = new HashMap<>();
+                String customerId = "UElcwADSG6ddV4jveqWDR98PIAC3";  //Karl
+//                String customerId2 ="0sO8iW7NRfSMOWB6TXIs0fEYOR33";  //Cindy
+
                 int orderStatus = 0;
-                double itemsTotal = 120.00;
-                double gstTotal = 6.00;
-                double pstTotal = 8.40;
-                double totalPrice = 134.4;
+                double itemsTotal = 200.00;
+                double gstTotal = 10.00;
+                double pstTotal = 14;
+                double totalPrice = 224;
                 double deliveryFee = 10.00;
 
-                String orderDate = "30/07/2023";
+                long orderDate = System.currentTimeMillis();
 
-                String address = "1000 Rich Road";
+//                String address = "1000 Rich Road";
+                String address = "700 Royal Ave";
+
                 String country = "CA";
                 String province = "British Columbia";
-                String city = "Richmond";
-                String postalCode = "V8A 6E1";
+
+//                String city = "Richmond";
+                String city = "New Westminster";
+
+//                String postalCode = "V8A 6E1";
+                String postalCode = "V3M 5Z5";
+
                 String paymentType = "E-transfer";
 
-                String GROUPID = "-NadxHxDbWJEhGyfTk-R";
-                String productId = "NaPq7lbRgjlIUOr4GeQ";
+                Map<String, Map<String, Order.OrderItemInfo>> groupsAndItemsMap = new HashMap<>();
+
+
+                String umbrella_GROUPID = "-NadxHxDbWJEhGyfTk-R";
+                String um_productid = "NaPq7lbRgjlIUOr4GeQ";
                 String style_Pink = "777e8183-95ef-4221-b07b-7f1f4ba71cc2";
                 String style_Yellow = "205f73e9-300a-43e5-bbf7-b7a7c61d2f71";
+                String keyPink = "p___" + um_productid + "s___" + style_Pink;
+                String keyYellow = "p___" + um_productid + "s___" + style_Yellow;
 
-                String keyPink = "p___" + productId + "s___" + style_Pink;
-                String keyYellow = "p___" + productId + "s___" + style_Yellow;
+                String pocky_GROUPID = "-Na_dpAoELZvya8Zy0wK";
+                String pok_productId = "-NaF-8JthlvpiliPw4_F";
+                String pok_key = "p___-NaF-8JthlvpiliPw4_F";
 
-//                innerStyleMap.put(keyPink, 4);
-                innerStyleMap.put(keyYellow, 6);
-                groupsAndItemsMap.put(GROUPID, innerStyleMap);
+                Order.OrderItemInfo yellowOrder = new Order.OrderItemInfo(3, false);
+                Order.OrderItemInfo pokOrder = new Order.OrderItemInfo(5, false);
+
+                Map<String, Order.OrderItemInfo> um_map = new HashMap<>();
+                um_map.put(keyYellow, yellowOrder);
+
+                Map<String, Order.OrderItemInfo> pok_map = new HashMap<>();
+                pok_map.put(pok_key, pokOrder);
+
+                groupsAndItemsMap.put(umbrella_GROUPID, um_map);
+                groupsAndItemsMap.put(pocky_GROUPID, pok_map);
+
 
                 Order order = new Order(customerId, groupsAndItemsMap, totalPrice, itemsTotal, gstTotal, pstTotal, orderDate, deliveryFee,
                         address, country, province, city, postalCode, paymentType, orderStatus);

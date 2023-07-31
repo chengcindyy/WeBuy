@@ -120,6 +120,10 @@ public class Order {
     }
 
     public static class OrderItemInfo {
+        public OrderItemInfo(){
+
+        };
+
         int orderAmount;
         boolean isAllocated; //true: if the item is allocated by seller
 

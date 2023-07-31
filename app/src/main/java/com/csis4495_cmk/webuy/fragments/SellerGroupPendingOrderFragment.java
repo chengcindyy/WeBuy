@@ -1,5 +1,7 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +11,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +30,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class SellerGroupPendingOrderFragment extends Fragment {
@@ -49,6 +55,8 @@ public class SellerGroupPendingOrderFragment extends Fragment {
 
     private List<Order> orders;
 
+    private Map<String, Map<String, Order.OrderItemInfo>> customerIdandItemsMap;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +65,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
         orderRef = firebaseDatabase.getReference("Order");
         orders = new ArrayList<>();
         inventoryList = new ArrayList<>();
+        customerIdandItemsMap = new HashMap<>();
 
     }
 
@@ -92,12 +101,34 @@ public class SellerGroupPendingOrderFragment extends Fragment {
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int count =0;
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Order o = dataSnapshot.getValue(Order.class);
-                    if(o != null){
+                    if (dataSnapshot != null) {
+                        Order o = dataSnapshot.getValue(Order.class);
+                        if(o.getOrderStatus() == 0 || o.getOrderStatus() == 1){
+                            Set<String> groupIds = o.getGroupsAndItemsMap().keySet();
+                            for (String key : groupIds) {
+                                if (key.equals(groupId)) {
+//                                orders.add(o);
+//                                break;
 
+//
+                                    Map<String, Order.OrderItemInfo> orderItemList = o.getGroupsAndItemsMap().get(key);
+                                    Map<String, Order.OrderItemInfo> notAllocatedItems = new HashMap<>();
+                                    for (Map.Entry<String, Order.OrderItemInfo> entry : orderItemList.entrySet()){
+                                        if(!entry.getValue().isAllocated()){
+                                            notAllocatedItems.put(entry.getKey(), entry.getValue());
+                                        }
+                                    }
+                                    count += orderItemList.size();
+                                    customerIdandItemsMap.put(o.getCustomerId(),notAllocatedItems);
+                                }
+                            }
+                        }
                     }
                 }
+
+                Log.d(TAG, "get Order item" + count + " "+  customerIdandItemsMap.keySet());
             }
 
             @Override
