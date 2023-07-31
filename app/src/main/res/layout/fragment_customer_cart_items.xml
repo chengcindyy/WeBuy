@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
     tools:context=".fragments.CustomerCartItemsFragment"
     android:orientation="vertical"
     android:gravity="center_horizontal">
@@ -11,7 +12,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_cust_seller_with_cart_items"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:padding="5dp" />
 
     <TextView
@@ -22,6 +24,46 @@
         android:gravity="center"
         android:text="There is no items in the cart."
         android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cancel_grey"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+        <CheckBox
+            android:id="@+id/checkbox_select_all"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Select All" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Total(tax excluded)" />
+        <TextView
+            android:id="@+id/tv_cart_items_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/add_business_orange"
+            android:text="CA$ 100" />
+
+        <TextView
+            android:id="@+id/tv_cart_items_checkout_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/add_business_orange"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:text="Checkout(0)" />
+    </LinearLayout>
 
 </LinearLayout>
 

@@ -191,7 +191,24 @@ public class CustomerGroupDetailFragment extends Fragment
         });
 
         //TODO:sold amount (ordered)
+        int soldAmount = 0;
+        tvSoldAmount.setText(soldAmount + " sold");
+
         //TODO:amount left (toSell - ordered)
+        int inventoryAmount;
+        if (group.getGroupStyles() == null) {
+            inventoryAmount = group.getGroupQtyMap().get("p___" + group.getProductId());
+            if (inventoryAmount == -1) {
+                tvInventoryAmount.setText("unlimited amount");
+            } else {
+                tvInventoryAmount.setText(inventoryAmount + " left");
+            }
+
+        } else {
+            //not selected
+            tvInventoryAmount.setText("");
+        }
+
 
         //set other data
         tvGroupName.setText(group.getGroupName());
@@ -373,5 +390,12 @@ public class CustomerGroupDetailFragment extends Fragment
         selectedStylePosition = stylePosition;
         //set img
         viewPagerGroupImg.setCurrentItem(groupImgUrls.size()+stylePosition,true);
+        //set inventory amount
+        int inventoryAmount = group.getGroupQtyMap().get("s___"+style.getStyleId());
+        if (inventoryAmount == -1) {
+            tvInventoryAmount.setText("unlimited amount");
+        } else {
+            tvInventoryAmount.setText(inventoryAmount + " left");
+        }
     }
 }

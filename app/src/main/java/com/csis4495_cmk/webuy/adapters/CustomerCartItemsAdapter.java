@@ -1,18 +1,24 @@
 package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.fragments.CustomerCartItemsFragment;
 import com.csis4495_cmk.webuy.models.CartItem;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,23 +28,46 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
-public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartItemsAdapter.ViewHolder> {
+public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartItemsAdapter.ViewHolder>
+                                    implements CustomerCartItemsWithSameSellerAdapter.onSingleCartItemListener{
 
     Context context;
+    CartItemsViewModel viewModel;
+    LifecycleOwner lifecycleOwner;
     Map<String, ArrayList<CartItem>> sellerItemsMap;
+    Map<String, Boolean> sellerAllItemsCheckedMap;
     ArrayList<String> sellerIds;
 
     onCartSellerBannerListener mCartSellerBannerListener;
 
     DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference("Seller");
 
-    public CustomerCartItemsAdapter(Context context, Map<String, ArrayList<CartItem>> sellerItemsMap) {
+    public CustomerCartItemsAdapter(Context context, CartItemsViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.context = context;
-        this.sellerItemsMap = sellerItemsMap;
-        this.sellerIds = new ArrayList<>(sellerItemsMap.keySet());
+        this.viewModel = viewModel;
+        this.lifecycleOwner = lifecycleOwner;
+        viewModel.getSellerItemsMap().observe(lifecycleOwner, new Observer<Map<String, ArrayList<CartItem>>>() {
+            @Override
+            public void onChanged(Map<String, ArrayList<CartItem>> stringArrayListMap) {
+                sellerItemsMap = stringArrayListMap;
+                sellerIds = new ArrayList<>(stringArrayListMap.keySet());
+            }
+        });
+        viewModel.getSellerAllItemsCheckedMap().observe(lifecycleOwner, new Observer<Map<String, Boolean>>() {
+            @Override
+            public void onChanged(Map<String, Boolean> stringBooleanMap) {
+                sellerAllItemsCheckedMap = stringBooleanMap;
+            }
+        });
     }
+//    public CustomerCartItemsAdapter(Context context, Map<String, ArrayList<CartItem>> sellerItemsMap) {
+//        this.context = context;
+//        this.sellerItemsMap = sellerItemsMap;
+//        this.sellerIds = new ArrayList<>(sellerItemsMap.keySet());
+//    }
 
     public void setOnCartSellerBannerListener(onCartSellerBannerListener mCartSellerBannerListener) {
         this.mCartSellerBannerListener = mCartSellerBannerListener;
@@ -78,8 +107,33 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
         holder.rvCartItemsWithSameSeller.setLayoutManager(new LinearLayoutManager(context));
 
         CustomerCartItemsWithSameSellerAdapter customerCartItemsWithSameSellerAdapter =
-                new CustomerCartItemsWithSameSellerAdapter(context, sellerItemsMap.get(sellerId));
+                new CustomerCartItemsWithSameSellerAdapter(context, sellerId, viewModel, lifecycleOwner);
+//        CustomerCartItemsWithSameSellerAdapter customerCartItemsWithSameSellerAdapter =
+//                new CustomerCartItemsWithSameSellerAdapter(context, sellerId, sellerItemsMap.get(sellerId));
         holder.rvCartItemsWithSameSeller.setAdapter(customerCartItemsWithSameSellerAdapter);
+        customerCartItemsWithSameSellerAdapter.setOnSingleCartItemListener(this);
+
+        //set cbx from inner recycler view
+        Log.d("TestAllCheck", "sellers :: " + sellerAllItemsCheckedMap.size());
+        Log.d("TestAllCheck", sellerId+ " all checked:: "+ sellerAllItemsCheckedMap.get(sellerId));
+        holder.cbxAllGroups.setChecked(sellerAllItemsCheckedMap.get(sellerId));
+//        holder.cbxAllGroups.setChecked(false);
+        //check box
+        holder.cbxAllGroups.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                for(CartItem cartItem: sellerItemsMap.get(sellerId)){
+                    cartItem.setChecked(isChecked);
+                }
+                viewModel.setSellerItemsMap(sellerItemsMap);
+                sellerAllItemsCheckedMap.put(sellerId, isChecked);
+                Log.d("TestAllCheck", sellerId +" OuterClicked "+ isChecked);
+                viewModel.setSellerAllItemsCheckedMap(sellerAllItemsCheckedMap);
+                holder.rvCartItemsWithSameSeller.setAdapter(customerCartItemsWithSameSellerAdapter);
+
+            }
+        });
     }
 
     @Override
@@ -87,9 +141,16 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
         return sellerIds.size();
     }
 
+    @Override
+    public void onAllItemsChecked(Boolean isAllChecked) {
+        //currentHolder.cbxAllGroups.setChecked(isAllChecked);
+        notifyDataSetChanged();
+        Log.d("TestAllCheck", "onAllItemsChecked() set");
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        CheckBox checkBoxAllGroups;
+        CheckBox cbxAllGroups;
         ImageView imvSellerPic;
         TextView tvSellerName;
         RecyclerView rvCartItemsWithSameSeller;
@@ -97,7 +158,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            checkBoxAllGroups = itemView.findViewById(R.id.checkbox_all_groups);
+            cbxAllGroups = itemView.findViewById(R.id.checkbox_all_groups);
             imvSellerPic = itemView.findViewById(R.id.imv_cart_seller_banner_seller_picture);
             tvSellerName = itemView.findViewById(R.id.tv_cart_seller_banner_seller_name);
             rvCartItemsWithSameSeller = itemView.findViewById(R.id.rv_cust_cart_items_same_seller);

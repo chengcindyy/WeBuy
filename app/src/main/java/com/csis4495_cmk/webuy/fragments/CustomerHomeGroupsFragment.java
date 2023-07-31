@@ -11,6 +11,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -317,10 +319,12 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
     private void UpdateRecyclerView(Map<String, Group> gMap) {
         Log.d("Test UpdateRecyclerView", gMap + "");
-        adapter.updateData(gMap);
-        adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
-        adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
+        if (adapter != null) {
+            adapter.updateData(gMap);
+            adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
+            adapter.notifyDataSetChanged();
+            recyclerView.setAdapter(adapter);
+        }
     }
 
     @Override
@@ -340,5 +344,6 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
         Log.d("Test view", getView().getRootView().toString());
         navController.navigate(R.id.action_customerHomeFragment_to_customerGroupDetailFragment, bundle);
+
     }
 }

@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Order {
     private String customerId;
-    private Map<String, Map<String, Integer>> groupsAndItemsMap; //groupId, p___ + productId + s___ + styleId
+    private Map<String, Map<String, OrderItemInfo>> groupsAndItemsMap; //groupId, p___ + productId + s___ + styleId, orderItemInfo
 //    String styleId = key.split("s___")[1];
 //    String productId = key.split("s___")[0].split("p___")[1];
 //    p___thisIsAProductIds___thisIsAStyleId
@@ -15,7 +15,7 @@ public class Order {
     //= {style price * qty}
     private double gstTotal;
     private double pstTotal;
-    private String orderedDate;
+    private long orderedTimestamp;
     private double deliveryFee;
     private String address;
     private String country;
@@ -24,86 +24,36 @@ public class Order {
     private String postalCode;
     private String paymentType;
     private int orderStatus;
-
-    public Order(String customerId, Map<String, Map<String, Integer>> groupsAndItemsMap, double totalPrice, double itemsTotal, double gstTotal, double pstTotal, String orderedDate,
-                 double deliveryFee, String address, String country, String province, String city, String postalCode, String paymentType, int orderStatus) {
-        this.customerId = customerId;
-        this.groupsAndItemsMap = groupsAndItemsMap;
-        this.totalPrice = totalPrice;
-        this.itemsTotal = itemsTotal;
-        this.gstTotal = gstTotal;
-        this.pstTotal = pstTotal;
-        this.orderedDate = orderedDate;
-        this.deliveryFee = deliveryFee;
-        this.address = address;
-        this.country = country;
-        this.province = province;
-        this.city = city;
-        this.postalCode = postalCode;
-        this.paymentType = paymentType;
-        this.orderStatus = orderStatus;
-    }
+    /*
+    -1: canceled
+    0: pending (when customer make a order)
+    1: paid (when seller confirm the payment
+    2: allocated (when seller all items in the order are allocated
+    3: processing (when seller sent the package
+    4: received (when customer received the package
+     */
 
     public Order() {
     }
 
-    public void setCustomerId(String customerId) {
+    public Order(String customerId, Map<String, Map<String, OrderItemInfo>> groupsAndItemsMap,
+                 double totalPrice, double itemsTotal, double gstTotal, double pstTotal,
+                 long orderedTimestamp, double deliveryFee, String address, String country,
+                 String province, String city, String postalCode, String paymentType, int orderStatus) {
         this.customerId = customerId;
-    }
-
-    public void setGroupsAndItemsMap(Map<String, Map<String, Integer>> groupsAndItemsMap) {
         this.groupsAndItemsMap = groupsAndItemsMap;
-    }
-
-    public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
-    }
-
-    public void setItemsTotal(double itemsTotal) {
         this.itemsTotal = itemsTotal;
-    }
-
-    public void setGstTotal(double gstTotal) {
         this.gstTotal = gstTotal;
-    }
-
-    public void setPstTotal(double pstTotal) {
         this.pstTotal = pstTotal;
-    }
-
-    public void setOrderedDate(String orderedDate) {
-        this.orderedDate = orderedDate;
-    }
-
-    public void setDeliveryFee(double deliveryFee) {
+        this.orderedTimestamp = orderedTimestamp;
         this.deliveryFee = deliveryFee;
-    }
-
-    public void setAddress(String address) {
         this.address = address;
-    }
-
-    public void setCountry(String country) {
         this.country = country;
-    }
-
-    public void setProvince(String province) {
         this.province = province;
-    }
-
-    public void setCity(String city) {
         this.city = city;
-    }
-
-    public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
-    }
-
-    public void setPaymentType(String paymentType) {
         this.paymentType = paymentType;
-    }
-
-    public void setOrderStatus(int orderStatus) {
         this.orderStatus = orderStatus;
     }
 
@@ -116,9 +66,6 @@ public class Order {
         return totalPrice;
     }
 
-    public String getOrderedDate() {
-        return orderedDate;
-    }
 
     public double getDeliveryFee() {
         return deliveryFee;
@@ -144,6 +91,10 @@ public class Order {
         return postalCode;
     }
 
+    public long getOrderedTimestamp() {
+        return orderedTimestamp;
+    }
+
     public String getPaymentType() {
         return paymentType;
     }
@@ -152,7 +103,7 @@ public class Order {
         return orderStatus;
     }
 
-    public Map<String, Map<String, Integer>> getGroupsAndItemsMap() {
+    public Map<String, Map<String, OrderItemInfo>> getGroupsAndItemsMap() {
         return groupsAndItemsMap;
     }
 
@@ -166,5 +117,23 @@ public class Order {
 
     public double getPstTotal() {
         return pstTotal;
+    }
+
+    public static class OrderItemInfo {
+        int orderAmount;
+        boolean isAllocated; //true: if the item is allocated by seller
+
+        public OrderItemInfo(int orderAmount, boolean isAllocated) {
+            this.orderAmount = orderAmount;
+            this.isAllocated = isAllocated;
+        }
+
+        public int getOrderAmount() {
+            return orderAmount;
+        }
+
+        public boolean isAllocated() {
+            return isAllocated;
+        }
     }
 }
