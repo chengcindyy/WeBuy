@@ -42,7 +42,8 @@
             android:layout_weight="1"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
+            android:paddingEnd="5dp"
+            android:drawableRight="@drawable/baseline_keyboard_arrow_down_24"
             android:text="Seller Name" />
 
     </LinearLayout>

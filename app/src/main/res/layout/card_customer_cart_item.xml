@@ -100,12 +100,12 @@
         android:layout_marginBottom="15dp"/>
 
     <ImageButton
-        android:id="@+id/imvbtn_delete_cart_item"
+        android:id="@+id/imvbtn_more_cart_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/baseline_delete_24"
+        android:src="@drawable/baseline_more_horiz_24"
         android:padding="1dp"
-        android:background="#D3A588"
+        android:background="@android:color/transparent"
         android:layout_marginTop="5dp"
         android:layout_below="@+id/tv_cart_item_group_price"
         android:layout_marginEnd="10dp"

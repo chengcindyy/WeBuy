@@ -1,7 +1,6 @@
 package com.csis4495_cmk.webuy.adapters;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -19,17 +18,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Wishlist;
+import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
 public class CustomerWishlistItemsAdapter extends RecyclerView.Adapter<CustomerWishlistItemsAdapter.ViewHolder> {
     Context context;
     List<Wishlist> wishlistList;
+    CustomerWishlistViewModel wishListViewModel;
+    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-    public CustomerWishlistItemsAdapter(Context context, List<Wishlist> wishlistList) {
+    public CustomerWishlistItemsAdapter(Context context, CustomerWishlistViewModel wishListViewModel, List<Wishlist> wishlistList) {
         this.context = context;
+        this.wishListViewModel = wishListViewModel;
         this.wishlistList = wishlistList;
     }
 
@@ -67,7 +71,9 @@ public class CustomerWishlistItemsAdapter extends RecyclerView.Adapter<CustomerW
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        Toast.makeText(context,"You Clicked : " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+
+                        wishListViewModel.removeFromWishlist(wishlist, firebaseUser.getUid());
+                        Toast.makeText(context,"Item removed from Wish List",Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });

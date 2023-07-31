@@ -57,14 +57,15 @@ public class CustomerAddToWishListItemsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Get data from viewModel
+        wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
+
         wishlistDisplayList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerView_wishlist);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        customerWishlistItemsAdapter = new CustomerWishlistItemsAdapter(getContext(), wishlistDisplayList);
+        customerWishlistItemsAdapter = new CustomerWishlistItemsAdapter(getContext(), wishListViewModel, wishlistDisplayList);
         recyclerView.setAdapter(customerWishlistItemsAdapter);
 
-        // Get data from viewModel
-        wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
         wishListViewModel.getWishlistObject().observe(getViewLifecycleOwner(), new Observer<ArrayList<Wishlist>>() {
             @Override
             public void onChanged(ArrayList<Wishlist> wishlists) {
