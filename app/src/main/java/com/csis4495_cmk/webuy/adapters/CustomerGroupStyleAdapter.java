@@ -97,6 +97,8 @@ public class CustomerGroupStyleAdapter extends RecyclerView.Adapter<CustomerGrou
 
     }
 
+
+
     @Override
     public int getItemCount() {
         return styles.size();
@@ -115,6 +117,7 @@ public class CustomerGroupStyleAdapter extends RecyclerView.Adapter<CustomerGrou
             view = itemView;
         }
     }
+
     public interface onStyleItemListener {
         void onStyleClicked(int stylePosition, ProductStyle style);
     }

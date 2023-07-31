@@ -14,8 +14,8 @@ public class Customer implements Serializable {
     private String postalCode;
     private String profilePic;
     private ArrayList<String> saveList;
-
     private ArrayList<CartItem> cart;
+    private ArrayList<Wishlist> wishlist;
 
     private String birth;
 
@@ -91,4 +91,11 @@ public class Customer implements Serializable {
         return cart;
     }
 
+    public ArrayList<Wishlist> getWishlist() {
+        return wishlist;
+    }
+
+    public void setWishlist(ArrayList<Wishlist> wishlist) {
+        this.wishlist = wishlist;
+    }
 }

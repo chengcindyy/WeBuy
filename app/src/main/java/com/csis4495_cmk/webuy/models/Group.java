@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Group {
+    private String key;
     private String groupName;
 
     private int groupType; //0: in-stock, 1: pre-order
@@ -211,5 +212,13 @@ public class Group {
 
     public void setCoverImgUrl(String coverImgUrl) {
         this.coverImgUrl = coverImgUrl;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

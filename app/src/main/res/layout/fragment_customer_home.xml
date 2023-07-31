@@ -20,7 +20,7 @@
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_group"
-            android:background="@color/white"
+            android:background="#D3A588"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

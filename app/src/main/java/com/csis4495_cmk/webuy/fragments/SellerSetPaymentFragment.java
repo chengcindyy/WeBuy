@@ -84,7 +84,7 @@ public class SellerSetPaymentFragment extends Fragment {
     }
 
     private void showBackData() {
-        DatabaseReference storeRef = reference.child(firebaseUser.getUid()).child("storeInfo").child("backInfo");
+        DatabaseReference storeRef = reference.child(firebaseUser.getUid()).child("storeInfo").child("bankInfo");
         storeRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -111,10 +111,10 @@ public class SellerSetPaymentFragment extends Fragment {
             _ACCOUNT = edtAccount.getEditText().getText().toString();
             _HOLDER = edtAccountHolder.getEditText().getText().toString();
 
-            DatabaseReference storeRef = reference.child(firebaseUser.getUid()).child("storeInfo").child("backInfo");
-            Store newBackInfo = new Store(_ACCOUNT, _HOLDER);
+            DatabaseReference storeRef = reference.child(firebaseUser.getUid()).child("storeInfo").child("bankInfo");
+            Store newBankInfo = new Store(_ACCOUNT, _HOLDER);
 
-            storeRef.setValue(newBackInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+            storeRef.setValue(newBankInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
