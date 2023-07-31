@@ -37,8 +37,8 @@ import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 
-import com.csis4495_cmk.webuy.models.SharedEditStyleViewModel;
-import com.csis4495_cmk.webuy.models.SharedInventoryViewModel;
+import com.csis4495_cmk.webuy.viewmodels.SharedEditStyleViewModel;
+import com.csis4495_cmk.webuy.viewmodels.SharedICheckInventoryViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -120,7 +120,7 @@ public class SellerAddGroupFragment extends Fragment {
 
     private Map<String, String> inventoryNameMap;
 
-    private SharedInventoryViewModel inventoryViewModel;
+    private SharedICheckInventoryViewModel inventoryViewModel;
     private List<ProductStyle> newEditGroupStyles;
 
     private SharedEditStyleViewModel styleViewModel;
@@ -128,7 +128,7 @@ public class SellerAddGroupFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        inventoryViewModel = new ViewModelProvider(getActivity()).get(SharedInventoryViewModel.class);
+        inventoryViewModel = new ViewModelProvider(getActivity()).get(SharedICheckInventoryViewModel.class);
         inventoryViewModel.getselectedInventory().observe(this, item -> {
             Log.d(TAG, "Get selected Inventory from child fragment: " + item);
             if (item != null) {

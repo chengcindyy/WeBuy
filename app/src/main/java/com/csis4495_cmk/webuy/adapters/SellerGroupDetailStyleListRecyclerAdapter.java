@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.viewmodels.SharedGroupInventoryListViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -123,15 +124,21 @@ public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adap
                 if (i != null) {
                     String styleId = i.getProductStyleKey().split("_")[1];
                     if (styleId.equals(ps.getStyleId())) {
+                        Integer inventory = i.getInStock();
                         Integer allocated = i.getAllocated();
                         Integer ordered = i.getOrdered();
                         Integer toAllocate = i.getToAllocated();
+                        if (inventory != null && inventory > 0) {
+                            holder.inventory.setText("Inventory: " + Integer.toString(inventory));
+                        } else {
+                            holder.inventory.setText("Inventory: 0");
+                        }
                         if (allocated != null && allocated > 0) {
                             holder.allocated.setText("Allocated: " + Integer.toString(allocated));
                         } else {
                             holder.allocated.setText("Allocated: 0");
                         }
-                        if (ordered != null && allocated > 0) {
+                        if (ordered != null && ordered > 0) {
                             holder.ordered.setText("Ordered: " + Integer.toString(ordered));
                         } else {
                             holder.ordered.setText("Ordered: 0");
@@ -144,6 +151,9 @@ public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adap
                     }
                 }
             }
+
+            SharedGroupInventoryListViewModel viewModel = new SharedGroupInventoryListViewModel();
+
         } else {
             holder.allocated.setText("Allocated: 0");
             holder.ordered.setText("Ordered: 0");
@@ -163,6 +173,8 @@ public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adap
         TextView stylePrice;
         TextView styleQty;
 
+        TextView inventory;
+
         TextView ordered;
 
         TextView allocated;
@@ -175,6 +187,7 @@ public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adap
             styleName = itemView.findViewById(R.id.tv_group_style_name);
             stylePrice = itemView.findViewById(R.id.tv_group_style_price);
             styleQty = itemView.findViewById(R.id.tv_group_style_qty);
+            inventory = itemView.findViewById(R.id.tv_group_style_stock);
             ordered = itemView.findViewById(R.id.tv_group_style_ordered);
             allocated = itemView.findViewById(R.id.tv_group_style_allocated);
             toAllocate = itemView.findViewById(R.id.tv_group_style_toAllocated);

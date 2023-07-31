@@ -87,11 +87,25 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="In Stock: "
-                app:layout_constraintBottom_toTopOf="@+id/group_detail_ordered"
+                android:text="Quantity: "
+                app:layout_constraintBottom_toTopOf="@+id/group_detail_inventory"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/group_detail_price" />
+
+            <TextView
+                android:id="@+id/group_detail_inventory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Inventory: "
+                app:layout_constraintBottom_toTopOf="@+id/group_detail_ordered"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/group_detail_qty" />
 
             <TextView
                 android:id="@+id/group_detail_ordered"
@@ -105,7 +119,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/group_detail_allocated"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/group_detail_qty" />
+                app:layout_constraintTop_toBottomOf="@+id/group_detail_inventory" />
 
             <TextView
                 android:id="@+id/group_detail_allocated"
@@ -135,7 +149,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/group_detail_allocated" />
-
 
             <TextView
                 android:id="@+id/group_detail_start"
