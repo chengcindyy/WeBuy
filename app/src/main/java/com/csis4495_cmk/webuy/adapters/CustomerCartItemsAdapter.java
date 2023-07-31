@@ -113,7 +113,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
 
         // Remove the listener before setting the state
         holder.cbxAllGroups.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            mCartSellerBannerListener.onSellerBannerChecked(sellerAllItemsCheckedMap);
+            mCartSellerBannerListener.onSellerBannerChecked(sellerAllItemsCheckedMap,sellerItemsMap);
         });
         boolean allChecked = sellerAllItemsCheckedMap.get(sellerId);
         holder.cbxAllGroups.setChecked(allChecked);
@@ -131,7 +131,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
                 viewModel.setSellerAllItemsCheckedMap(sellerAllItemsCheckedMap);
                 holder.rvCartItemsWithSameSeller.setAdapter(customerCartItemsWithSameSellerAdapter);
 
-                mCartSellerBannerListener.onSellerBannerChecked(sellerAllItemsCheckedMap);
+                mCartSellerBannerListener.onSellerBannerChecked(sellerAllItemsCheckedMap,sellerItemsMap);
 
             }
         });
@@ -167,7 +167,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
     }
 
     public interface onCartSellerBannerListener {
-        void onSellerBannerChecked(Map<String,Boolean> sellerAllItemsCheckedMap);
+        void onSellerBannerChecked(Map<String,Boolean> sellerAllItemsCheckedMap,Map<String, ArrayList<CartItem>> sellerItemsMap);
     }
 
 }
