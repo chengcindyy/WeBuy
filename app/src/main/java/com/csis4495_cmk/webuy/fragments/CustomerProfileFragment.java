@@ -38,6 +38,7 @@ import com.csis4495_cmk.webuy.activities.MainActivity;
 import com.csis4495_cmk.webuy.dialog.CustomerOrderStatusDialog;
 import com.csis4495_cmk.webuy.models.Customer;
 import com.csis4495_cmk.webuy.models.User;
+import com.csis4495_cmk.webuy.models.Wishlist;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -59,7 +60,9 @@ import com.skydoves.expandablelayout.ExpandableLayout;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomerProfileFragment extends Fragment {
 
@@ -73,7 +76,7 @@ public class CustomerProfileFragment extends Fragment {
     private EditText editBirthday;
     private AutoCompleteTextView editProvince;
     private AlertDialog alertDialog;
-    ArrayList<String> _FAVORITE;
+    Map<String, Wishlist> _FAVORITE;
     String _USERNAME, _NAME, _EMAIL, _PHONE, _ADDRESS, _CITY, _PROVINCE, _POSTCODE, _PIC, _DOB;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -191,7 +194,7 @@ public class CustomerProfileFragment extends Fragment {
 //        _FAVORITE = customer.getWatchList();
         _DOB = editBirthday.getText().toString();
 
-        Customer customer = new Customer(_NAME,_PHONE,_ADDRESS,_CITY,_PROVINCE,_POSTCODE,_DOB,_FAVORITE);
+        Customer customer = new Customer(_NAME,_PHONE,_ADDRESS,_CITY,_PROVINCE,_POSTCODE,_DOB);
 
         String userId = firebaseUser.getUid();
         reference = FirebaseDatabase.getInstance().getReference("Customer");
@@ -347,8 +350,6 @@ public class CustomerProfileFragment extends Fragment {
                     _PROVINCE = customer.getProvince();
                     _POSTCODE = customer.getPostalCode();
                     _PIC = customer.getProfilePic();
-                    // TODO: set watchlist recycler view
-                    _FAVORITE = customer.getSaveList();
                     _DOB = customer.getBirth();
                     _EMAIL = firebaseUser.getDisplayName();
 
@@ -361,6 +362,8 @@ public class CustomerProfileFragment extends Fragment {
                     editPostalCode.getEditText().setText(_POSTCODE);
                     editBirthday.setText(_DOB);
 
+                    Map<String, Wishlist> wishlistMap = customer.getWishlistMap();
+                    _FAVORITE = wishlistMap;
                 }else{
                     Toast.makeText(requireActivity(), "something went wrong! " +
                             "Show profile was canceled", Toast.LENGTH_LONG).show();

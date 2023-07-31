@@ -1,18 +1,26 @@
 package com.csis4495_cmk.webuy.viewmodels;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Wishlist;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -47,21 +55,49 @@ public class CustomerWishlistViewModel extends ViewModel {
     }
 
     public void addToWishlist(Wishlist wishlist, String userId) {
-        ArrayList<Wishlist> currentWishlist = wishlistObject.getValue();
-        if (currentWishlist == null) {
-            currentWishlist = new ArrayList<>();
-        }
-        currentWishlist.add(wishlist);
-        wishlistObject.setValue(currentWishlist);
-        Log.d("Test viewModel", "wishlist size: "+ currentWishlist.size());
+        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group").child(wishlist.getGroupId());
+        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Group group = dataSnapshot.getValue(Group.class);
+                if (group != null ) {
+                    wishlist.setGroupName(group.getGroupName());
+                    wishlist.setGroupPrice(group.getGroupPrice());
+                    wishlist.setGroupStatus(group.getStatus());
+                    wishlist.setGroupType(group.getGroupType());
 
-        // Update Firebase
-        DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference("Customer");
-        DatabaseReference wishlistRef = customerRef.child(userId).child("wishlist");
-        wishlistRef.child(wishlist.getGroupId()).setValue(wishlist)
-                .addOnCompleteListener(task -> Log.d("Test wishlist", "Saved to firebase"))
-                .addOnFailureListener(e -> Log.d("Test wishlist", "Cannot save to firebase because " + e.getMessage()));
+                    String groupImage = group.getGroupImages().get(0);
+                    StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
+                    imgRef.child(wishlist.getProductId()).child(groupImage).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    wishlist.setGroupImage(uri.toString());
+
+                                    // Now that all fields of the wishlist object are set, update Firebase
+                                    DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference("Customer");
+                                    DatabaseReference wishlistRef = customerRef.child(userId).child("wishlist");
+                                    wishlistRef.child(wishlist.getGroupId()).setValue(wishlist)
+                                            .addOnCompleteListener(task -> Log.d("Test wishlist", "Saved to firebase"))
+                                            .addOnFailureListener(e -> Log.d("Test wishlist", "Cannot save to firebase because " + e.getMessage()));
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle any errors that occur while getting the download URL
+                                    e.printStackTrace();
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadGroup:onCancelled", databaseError.toException());
+            }
+        });
     }
+
 
     public void removeFromWishlist(Wishlist wishlist, String userId) {
         ArrayList<Wishlist> currentWishlist = wishlistObject.getValue();
