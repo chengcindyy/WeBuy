@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,6 +44,7 @@ import java.util.Set;
 public class CustomerCartItemsFragment extends Fragment
                     implements CustomerCartItemsAdapter.onCartSellerBannerListener{
 
+    private NavController navController;
     RecyclerView recyclerView;
     TextView tvNoItems, tvCartItemsTotal, tvCartItemsCheckoutAmount;
     CheckBox cbxSelectAll;
@@ -66,9 +69,6 @@ public class CustomerCartItemsFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-//            tabSelection = getArguments().getInt(ARG_POSITION);
-        }
         viewModel = new ViewModelProvider(CustomerCartItemsFragment.this).get(CartItemsViewModel.class);
     }
 
@@ -83,6 +83,7 @@ public class CustomerCartItemsFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        navController = NavHostFragment.findNavController(CustomerCartItemsFragment.this);
         tvNoItems = view.findViewById(R.id.tv_no_items);
         tvCartItemsTotal = view.findViewById(R.id.tv_cart_items_total);
         tvCartItemsCheckoutAmount = view.findViewById(R.id.tv_cart_items_checkout_amount);
@@ -122,7 +123,6 @@ public class CustomerCartItemsFragment extends Fragment
                     tvNoItems.setVisibility(View.GONE);
 
                     //new ViewModel
-                    //viewModel = new ViewModelProvider(CustomerCartItemsFragment.this).get(CartItemsViewModel.class);
                     viewModel.setSellerItemsMap(sellerItemsMap);
 
                     sellerAllItemsCheckedMap.clear();
@@ -183,23 +183,26 @@ public class CustomerCartItemsFragment extends Fragment
 
         });
 
-        //TODO: set total (need to change when to put the map)
+        //TODO: set total (need to change when put to the map)
         viewModel.getCartItemsInfoMap().observe(getViewLifecycleOwner(), new Observer<Map<CartItem, CartItemsViewModel.CartItemInfo>>() {
             @Override
             public void onChanged(Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
                 double total = 0;
                 for(CartItem cartItem: cartItemCartItemInfoMap.keySet()) {
                     if (cartItem.getChecked()){
-                        String strPrice = cartItemCartItemInfoMap.get(cartItem).getGroupPrice();
-                        if (strPrice != null) {
-                            double price;
-                            try {
-                                price = Double.parseDouble(strPrice.split("CA\\$ ")[1]);
-                            } catch (Exception e) {
-                                price = 0;
+                        if (cartItemCartItemInfoMap.get(cartItem) != null) {
+                            String strPrice = cartItemCartItemInfoMap.get(cartItem).getGroupPrice();
+                            if (strPrice != null) {
+                                double price;
+                                try {
+                                    price = Double.parseDouble(strPrice.split("CA\\$ ")[1]);
+                                } catch (Exception e) {
+                                    price = 0;
+                                }
+                                total += price * cartItem.getAmount();
                             }
-                            total += price * cartItem.getAmount();
                         }
+
                     }
                 }
                 tvCartItemsTotal.setText("CA$ " + total);
@@ -213,7 +216,6 @@ public class CustomerCartItemsFragment extends Fragment
                 for (String sellerId: stringArrayListMap.keySet()) {
                     for (CartItem sellerCartItem: stringArrayListMap.get(sellerId)) {
                         if (sellerCartItem.getChecked()) {
-                            //total += sellerCartItem.getAmount() * sellerCartItem.getPrice();
                             checkoutAmount++;
                         }
                     }
@@ -223,18 +225,11 @@ public class CustomerCartItemsFragment extends Fragment
             }
         });
 
-        //set checkout onClickedListener
-//        tvCartItemsCheckoutAmount.setOnClickListener(v -> {
-//            tvCartItemsCheckoutAmount.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white));
-//            tvCartItemsCheckoutAmount.setTextColor(ContextCompat.getColor(getContext(), R.color.add_business_orange));
-//
-//            CustomerGroupDetailFragment customerGroupDetailFragment = new CustomerGroupDetailFragment();
-//            customerGroupDetailFragment.setArguments(bundle);
-//
-//            Log.d("Test view", getView().getRootView().toString());
-//            navController.navigate(R.id.action_customerHomeFragment_to_customerGroupDetailFragment, bundle);
-//        });
-
+        //checkout clicked
+        tvCartItemsCheckoutAmount.setOnClickListener(v -> {
+            CustomerCheckoutFragment.newInstance(viewModel);
+            navController.navigate(R.id.customerCheckoutFragment);
+        });
     }
 
     @Override

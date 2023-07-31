@@ -165,11 +165,9 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                         holder.tvGroupStyle.setVisibility(View.GONE);
                         Log.d("TestGroup","no style");
                         inventoryAmount[0] = group.getGroupQtyMap().get("p___"+productId);
-//                        if (groupType == IN_STOCK) {
-//                            inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
-//                        }
+                     }
 
-                    } else { // with style
+                    else { // with style
                         holder.tvGroupStyle.setVisibility(View.VISIBLE);
                         for(DataSnapshot styleShot: snapshot.child("groupStyles").getChildren()){
                             if (styleShot.child("styleId").getValue(String.class).equals(styleId)) {
@@ -178,9 +176,6 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                                 styleName = styleShot.child("styleName").getValue(String.class);
 
                                 inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
-//                                if (groupType == IN_STOCK) {
-//                                    inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
-//                                }
                             }
                         }
 
@@ -200,7 +195,7 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                         }
                     });
 
-                    holder.tvGroupStyle.setText(styleName);
+                    //holder.tvGroupStyle.setText(styleName);
                     Log.d("TestGroup", groupPrice);
 
                     //product
@@ -239,15 +234,17 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
 
                 holder.tvGroupName.setText(groupName);
                 holder.tvPrice.setText(groupPrice);
+                holder.tvGroupStyle.setText(styleName);
 
                 //set CartItemsInfoMap in ViewModel
                 CartItemsViewModel.CartItemInfo cartItemInfo = new CartItemsViewModel.CartItemInfo(
                         groupImgUrl[0],groupPrice,groupName,styleName,productName[0],tax[0],
                         groupType, inventoryAmount[0]);
 
-                //TODO: should not place here, if viewholder is not bound then no value
+                //TODO: should not place here, if ViewHolder is not bound then no value
                 cartItemsInfoMap.put(cartItems.get(holder.getBindingAdapterPosition()), cartItemInfo);
                 viewModel.setCartItemsInfoMap(cartItemsInfoMap);
+                Log.d("GGG", cartItemsInfoMap.size() +" after set");
             }
 
             @Override
