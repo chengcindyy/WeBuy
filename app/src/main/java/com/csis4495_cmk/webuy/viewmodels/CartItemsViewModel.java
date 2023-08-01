@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -25,6 +26,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CartItemsViewModel extends ViewModel {
     private MutableLiveData<Map<String, ArrayList<CartItem>>> sellerItemsMapLiveData = new MutableLiveData<>();
@@ -56,161 +58,177 @@ public class CartItemsViewModel extends ViewModel {
 
                     for (DataSnapshot cartItemSnapshot: sellerSnapshot.getChildren()) {
                         CartItem cartItem = cartItemSnapshot.getValue(CartItem.class);
-                        if(cartItem == null) {
-                            Log.d("vm", "null");
-                        }
-                        sellerItems.add(cartItem);
-                        Log.d("vm!!!!", cartItemSnapshot.getKey());
-                        Log.d("vm!!!!", cartItem.getAmount()+" amount");
+                        if(cartItem != null) {
+                            sellerItems.add(cartItem);
+                            Log.d("vm!!!!", cartItemSnapshot.getKey());
+                            Log.d("vm!!!!", cartItem.getAmount()+" amount");
 
-                        //get cart info
-                        String groupId = cartItem.getGroupId();
-                        String productId = cartItem.getProductId();
-                        String styleId = cartItem.getStyleId();
-                        final CartItemInfo[] cartItemInfo = new CartItemInfo[1];
-                        groupRef.child(groupId).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                String groupPicName = null;
-                                final String[] groupImgUrl = {null};
-                                String groupPrice = "CA$ N/A";
-                                String styleName = "Style N/A";
-                                String groupName = "Group N/A";
-                                final int[] inventoryAmount = {9999};
-                                final String[] productName = {"Product N/A"};
-                                final int[] tax = {-1};
-                                int groupType = -1;
+                            //get cart info
+                            String groupId = cartItem.getGroupId();
+                            String productId = cartItem.getProductId();
+                            String styleId = cartItem.getStyleId();
+                            final CartItemInfo[] cartItemInfo = new CartItemInfo[1];
+                            groupRef.child(groupId).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    String groupPicName = null;
+                                    final String[] groupImgUrl = {null};
+                                    String groupPrice = "CA$ N/A";
+                                    String styleName = "Style N/A";
+                                    String groupName = "Group N/A";
+                                    final int[] inventoryAmount = {9999};
+                                    final String[] productName = {"Product N/A"};
+                                    final int[] tax = {-1};
+                                    int groupType = -1;
 
-                                Group group = snapshot.getValue(Group.class);
-                                Long groupEndTimestamp;
-                                try {
-                                    groupEndTimestamp = group.getEndTimestamp();
-                                } catch (Exception e) {
-                                    groupEndTimestamp = null;
-                                }
-
-                                Integer groupStatus = null;
-
-                                if (group != null) {
-                                    groupStatus = group.getStatus();
-                                    groupName = group.getGroupName();
-                                    groupType = group.getGroupType();
-                                    if (styleId == null) {
-                                        styleName = null;
-                                        groupPicName = group.getGroupImages().get(0);
-                                        groupPrice = group.getGroupPrice();
-                                        inventoryAmount[0] = group.getGroupQtyMap().get("p___"+productId);
-                                    } else {
-                                        for(DataSnapshot styleShot: snapshot.child("groupStyles").getChildren()){
-                                            if (styleShot.child("styleId").getValue(String.class).equals(styleId)) {
-                                                groupPicName = styleShot.child("stylePicName").getValue(String.class);
-                                                groupPrice = "CA$ " + styleShot.child("stylePrice").getValue(Double.class);
-                                                styleName = styleShot.child("styleName").getValue(String.class);
-                                                inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
-                                            }
-                                        }
+                                    Group group = snapshot.getValue(Group.class);
+                                    Long groupEndTimestamp;
+                                    try {
+                                        groupEndTimestamp = group.getEndTimestamp();
+                                    } catch (Exception e) {
+                                        groupEndTimestamp = null;
                                     }
-                                    //product
-                                    productRef.child(productId).addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            Product product = snapshot.getValue(Product.class);
-                                            if (product != null) {
-                                                productName[0] = product.getProductName();
-                                                tax[0] = product.getTax();
+
+                                    Integer groupStatus = null;
+
+                                    if (group != null) {
+                                        groupStatus = group.getStatus();
+                                        groupName = group.getGroupName();
+                                        groupType = group.getGroupType();
+                                        if (styleId == null) {
+                                            styleName = null;
+                                            groupPicName = group.getGroupImages().get(0);
+                                            groupPrice = group.getGroupPrice();
+                                            inventoryAmount[0] = group.getGroupQtyMap().get("p___"+productId);
+                                        } else {
+                                            for(DataSnapshot styleShot: snapshot.child("groupStyles").getChildren()){
+                                                if (styleShot.child("styleId").getValue(String.class).equals(styleId)) {
+                                                    groupPicName = styleShot.child("stylePicName").getValue(String.class);
+                                                    groupPrice = "CA$ " + styleShot.child("stylePrice").getValue(Double.class);
+                                                    styleName = styleShot.child("styleName").getValue(String.class);
+                                                    inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
+                                                }
                                             }
                                         }
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-                                    //imgUrl
-                                    StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage").child(productId);
-                                    int finalGroupType = groupType;
-                                    String finalStyleName = styleName;
-                                    String finalGroupPrice = groupPrice;
-                                    String finalGroupName = groupName;
-                                    Integer finalGroupStatus = groupStatus;
-                                    Long finalGroupEndTimestamp = groupEndTimestamp;
-                                    imgRef.child(groupPicName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            groupImgUrl[0] = uri.toString();
-                                            if (finalGroupType == 0) { //instock
-                                                cartItemInfo[0] = new CartItemInfo(groupImgUrl[0], finalGroupPrice, finalGroupName,
-                                                        finalStyleName, productName[0], tax[0],
-                                                        finalGroupType, inventoryAmount[0], finalGroupStatus);/////
-                                            } else if (finalGroupType ==1) { //preorder
-                                                cartItemInfo[0] = new CartItemInfo(groupImgUrl[0], finalGroupPrice, finalGroupName,
-                                                        finalStyleName, productName[0], tax[0],
-                                                        finalGroupType, inventoryAmount[0], finalGroupEndTimestamp, finalGroupStatus);
+                                        //product
+                                        productRef.child(productId).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                Product product = snapshot.getValue(Product.class);
+                                                if (product != null) {
+                                                    productName[0] = product.getProductName();
+                                                    tax[0] = product.getTax();
+                                                }
                                             }
-                                            cartItemsInfoMap.put(cartItem, cartItemInfo[0]);
-                                            Log.d("vm", "map size: "+ cartItemsInfoMap.size());
-                                            callbacksCompleted[0]++;
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
 
-                                            // Check if all callbacks are completed
-                                            if (callbacksCompleted[0] == totalCallbacks) {
-                                                // Execute the code after all callbacks are done
-                                                //from here
-                                                if (!cartItem.getChecked()) {
+                                            }
+                                        });
+                                        //imgUrl
+                                        StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage").child(productId);
+                                        int finalGroupType = groupType;
+                                        String finalStyleName = styleName;
+                                        String finalGroupPrice = groupPrice;
+                                        String finalGroupName = groupName;
+                                        Integer finalGroupStatus = groupStatus;
+                                        Long finalGroupEndTimestamp = groupEndTimestamp;
+                                        imgRef.child(groupPicName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                groupImgUrl[0] = uri.toString();
+                                                if (finalGroupType == 0) { //instock
+                                                    cartItemInfo[0] = new CartItemInfo(groupImgUrl[0], finalGroupPrice, finalGroupName,
+                                                            finalStyleName, productName[0], tax[0],
+                                                            finalGroupType, inventoryAmount[0], finalGroupStatus);/////
+                                                } else if (finalGroupType ==1) { //preorder
+                                                    cartItemInfo[0] = new CartItemInfo(groupImgUrl[0], finalGroupPrice, finalGroupName,
+                                                            finalStyleName, productName[0], tax[0],
+                                                            finalGroupType, inventoryAmount[0], finalGroupEndTimestamp, finalGroupStatus);
+                                                }
+                                                cartItemsInfoMap.put(cartItem, cartItemInfo[0]);
+                                                Log.d("vm", "map size: "+ cartItemsInfoMap.size());
+                                                callbacksCompleted[0]++;
+
+                                                // Check if all callbacks are completed
+                                                if (callbacksCompleted[0] == totalCallbacks) {
+                                                    // Execute the code after all callbacks are done
+                                                    for (CartItem c: sellerItems) {
+                                                        if(!c.getChecked()){
+                                                            allChecked[0] = false;
+                                                        }
+                                                    }
+                                                    sellerAllItemsCheckedMap.put(sellerId, allChecked[0]);
+                                                    sellerItemsMap.put(sellerId, sellerItems);
+
+                                                    setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
+                                                    setSellerItemsMapLiveData(sellerItemsMap);
+                                                    setCartItemsInfoMapLiveData(cartItemsInfoMap);
+
+                                                    Log.d("vm", "All callbacks completed!");
+                                                }
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                // Image download failed
+                                                callbacksCompleted[0]++;
+
+                                                // Check if all callbacks are completed
+                                                if (callbacksCompleted[0] == totalCallbacks) {
+                                                    // Execute the code after all callbacks are done
+                                                    for (CartItem c: sellerItems) {
+                                                        if(!c.getChecked()){
+                                                            allChecked[0] = false;
+                                                        }
+                                                    }
+                                                    sellerAllItemsCheckedMap.put(sellerId, allChecked[0]);
+                                                    sellerItemsMap.put(sellerId, sellerItems);
+
+                                                    setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
+                                                    setSellerItemsMapLiveData(sellerItemsMap);
+                                                    setCartItemsInfoMapLiveData(cartItemsInfoMap);
+
+                                                    Log.d("vm", "All callbacks completed!");
+                                                }
+                                            }
+                                        });
+
+                                    } else { //group is not available
+                                        cartItemInfo[0] = new CartItemInfo(groupImgUrl[0], groupPrice, groupName,
+                                                styleName, productName[0], tax[0],
+                                                groupType, inventoryAmount[0], groupEndTimestamp, groupStatus);
+
+                                        cartItemsInfoMap.put(cartItem, cartItemInfo[0]);
+
+                                        callbacksCompleted[0]++;
+                                        // Check if all callbacks are completed
+                                        if (callbacksCompleted[0] == totalCallbacks) {
+                                            // Execute the code after all callbacks are done
+                                            for (CartItem c: sellerItems) {
+                                                if(!c.getChecked()){
                                                     allChecked[0] = false;
                                                 }
-                                                sellerAllItemsCheckedMap.put(sellerId, allChecked[0]);
-                                                sellerItemsMap.put(sellerId, sellerItems);
-
-                                                setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
-                                                setSellerItemsMapLiveData(sellerItemsMap);
-                                                setCartItemsInfoMapLiveData(cartItemsInfoMap);
-
-                                                Log.d("vm", "All callbacks completed!");
                                             }
+                                            sellerAllItemsCheckedMap.put(sellerId, allChecked[0]);
+                                            sellerItemsMap.put(sellerId, sellerItems);
+
+                                            setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
+                                            setSellerItemsMapLiveData(sellerItemsMap);
+                                            setCartItemsInfoMapLiveData(cartItemsInfoMap);
+
+                                            Log.d("vm", "All callbacks completed!");
                                         }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            // Image download failed
-                                            callbacksCompleted[0]++;
 
-                                            // Check if all callbacks are completed
-                                            if (callbacksCompleted[0] == totalCallbacks) {
-                                                // Execute the code after all callbacks are done
-                                                //from here
-                                                if (!cartItem.getChecked()) {
-                                                    allChecked[0] = false;
-                                                }
-                                                sellerAllItemsCheckedMap.put(sellerId, allChecked[0]);
-                                                sellerItemsMap.put(sellerId, sellerItems);
-
-                                                setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
-                                                setSellerItemsMapLiveData(sellerItemsMap);
-                                                setCartItemsInfoMapLiveData(cartItemsInfoMap);
-
-                                                Log.d("vm", "All callbacks completed!");
-                                            }
-                                        }
-                                    });
-
+                                        Log.d("vm", "map size: "+ cartItemsInfoMap.size());
+                                    }
                                 }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {}
-                        });
-
-                        //from here
-//                        if (!cartItem.getChecked()) {
-//                            allChecked[0] = false;
-//                        }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {}
+                            });
+                        }
                     }
-//                    sellerAllItemsCheckedMap.put(sellerId, allChecked[0]);
-//                    sellerItemsMap.put(sellerId, sellerItems);
                 }
-
-//                setSellerAllItemsCheckedMap(sellerAllItemsCheckedMap);
-//                setSellerItemsMapLiveData(sellerItemsMap);
-//                setCartItemsInfoMapLiveData(cartItemsInfoMap);
-
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -218,11 +236,11 @@ public class CartItemsViewModel extends ViewModel {
             }
         });
         Log.d("vm", "vm finished constructor: "+ sellerItemsMap.size());
-
+        Log.d("vm", "get data from firebase...");
     }
 
-    public void setSellerItemsMapLiveData(Map<String, ArrayList<CartItem>> mMap) {
-        sellerItemsMapLiveData.setValue(mMap);
+    public void setSellerItemsMapLiveData(Map<String, ArrayList<CartItem>> sellerItemsMap) {
+        sellerItemsMapLiveData.setValue(sellerItemsMap);
     }
     public void setSellerAllItemsCheckedMapLiveData(Map<String, Boolean> sellerAllItemsChecked) {
         this.sellerAllItemsCheckedMapLiveData.setValue(sellerAllItemsChecked);
@@ -255,16 +273,18 @@ public class CartItemsViewModel extends ViewModel {
         private int productTax; //0 no tax 1 GST 2 GST+PST
         private int groupType; //0 instock 1 preorder
         private int inventoryAmount;
-        private long groupEndTimestamp;
-        private int groupStatus; // 0 not open 1 opening 2 closed
+        //private long groupEndTimestamp;
+        private Long groupEndTimestamp;
+        //private int groupStatus; // 0 not open 1 opening 2 closed
+        private Integer groupStatus; // 0 not open 1 opening 2 closed
         public CartItemInfo() {
         }
 
         //with style, preorder
         public CartItemInfo(String groupPicUrl, String groupPrice, String groupName,
                             String styleName, String productName, int productTax,
-                            int groupType, int inventoryAmount, long groupEndTimestamp,
-                            int groupStatus) {
+                            int groupType, int inventoryAmount, Long groupEndTimestamp,
+                            Integer groupStatus) {
             this.groupPicUrl = groupPicUrl;
             this.groupPrice = groupPrice;
             this.groupName = groupName;
@@ -280,7 +300,7 @@ public class CartItemsViewModel extends ViewModel {
         public CartItemInfo(String groupPicUrl, String groupPrice, String groupName,
                             String styleName, String productName, int productTax,
                             int groupType, int inventoryAmount,
-                            int groupStatus) {
+                            Integer groupStatus) {
             this.groupPicUrl = groupPicUrl;
             this.groupPrice = groupPrice;
             this.groupName = groupName;
@@ -324,11 +344,11 @@ public class CartItemsViewModel extends ViewModel {
             return inventoryAmount;
         }
 
-        public long getGroupEndTimestamp() {
+        public Long getGroupEndTimestamp() {
             return groupEndTimestamp;
         }
 
-        public int getGroupStatus() {
+        public Integer getGroupStatus() {
             return groupStatus;
         }
 

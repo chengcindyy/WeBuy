@@ -24,7 +24,12 @@ public class Order {
     private String postalCode;
     private String paymentType;
     private int orderStatus;
-    /*
+    private String note;
+
+    public String getNote() {
+        return note;
+    }
+/*
     -1: canceled
     0: pending (when customer make a order)
     1: paid (when seller confirm the payment
@@ -39,7 +44,8 @@ public class Order {
     public Order(String customerId, Map<String, Map<String, OrderItemInfo>> groupsAndItemsMap,
                  double totalPrice, double itemsTotal, double gstTotal, double pstTotal,
                  long orderedTimestamp, double deliveryFee, String address, String country,
-                 String province, String city, String postalCode, String paymentType, int orderStatus) {
+                 String province, String city, String postalCode, String paymentType, int orderStatus,
+                 String note) {
         this.customerId = customerId;
         this.groupsAndItemsMap = groupsAndItemsMap;
         this.totalPrice = totalPrice;
@@ -55,6 +61,7 @@ public class Order {
         this.postalCode = postalCode;
         this.paymentType = paymentType;
         this.orderStatus = orderStatus;
+        this.note = note;
     }
 
     public String getCustomerId() {

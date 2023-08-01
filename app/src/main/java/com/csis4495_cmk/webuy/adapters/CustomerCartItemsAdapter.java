@@ -106,14 +106,19 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
         customerCartItemsWithSameSellerAdapter.setOnSingleCartItemListener(this);
 
         //set cbx linked data with inner
-        Log.d("TestAllCheck", "sellers :: " + sellerAllItemsCheckedMap.size());
-        Log.d("TestAllCheck", sellerId+ " all checked:: "+ sellerAllItemsCheckedMap.get(sellerId));
+        Log.d("HHH", "sellers :: " + sellerAllItemsCheckedMap.size());
+        Log.d("HHH", sellerId+ " all checked:: "+ sellerAllItemsCheckedMap.get(sellerId));
 
         // Remove the listener before setting the state
         holder.cbxAllGroups.setOnCheckedChangeListener((buttonView, isChecked) -> {
             mCartSellerBannerListener.onSellerBannerChecked(sellerAllItemsCheckedMap,sellerItemsMap);
         });
-        boolean allChecked = sellerAllItemsCheckedMap.get(sellerId);
+
+        //setting the check state
+        boolean allChecked = false;
+        if (sellerAllItemsCheckedMap.get(sellerId) != null) {
+            allChecked = sellerAllItemsCheckedMap.get(sellerId);
+        }
         holder.cbxAllGroups.setChecked(allChecked);
         // Add the listener back after setting the state
         holder.cbxAllGroups.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -132,6 +137,10 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
 
             }
         });
+
+        //no items
+        Log.d("HHH", "no items:::"+sellerItemsMap.get(sellerId).size());
+
     }
 
     @Override

@@ -44,11 +44,6 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
     ArrayList<CartItem> cartItems;
     Map<String, Boolean> sellerAllItemsCheckedMap;
     Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemsInfoMap;
-//    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-//    DatabaseReference groupRef = firebaseDatabase.getReference("Group");
-//    String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//    DatabaseReference cartRef = firebaseDatabase.getReference("Customer").child(customerId).child("Cart");
-//    DatabaseReference productRef = firebaseDatabase.getReference("Product");
 
     private final int IN_STOCK = 0;
     private final int PRE_ORDER = 1;
@@ -100,9 +95,6 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         CartItem cartItem = cartItems.get(position);
-        int orderAmount = cartItem.getAmount();
-        holder.etOrderAmount.setText(String.valueOf(orderAmount));
-
         //set CartItemsInfoMap in ViewModel
         CartItemsViewModel.CartItemInfo cartItemInfo = cartItemsInfoMap.get(cartItem);
         Log.d("GGG", cartItemsInfoMap.size() +" after set");
@@ -172,6 +164,12 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             holder.tvPrice.setText(cartItemInfo.getGroupPrice());
             holder.tvGroupStyle.setText(cartItemInfo.getStyleName());
 
+            int orderAmount = cartItem.getAmount();
+            holder.etOrderAmount.setText(String.valueOf(orderAmount));
+            if(orderAmount > cartItemInfo.getInventoryAmount()) {
+                holder.etOrderAmount.setError("Amount must be greater than 0 and less than "+cartItemInfo.getInventoryAmount());
+                holder.etOrderAmount.requestFocus();
+            }
 
             //etOrderAmount TextWatcher
             TextWatcher watcher = new TextWatcher() {
@@ -196,18 +194,20 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                                     holder.etOrderAmount.setError(null);
                                     //save to db
                                     cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-                                    //cartRef.child(sellerId).setValue(cartItems);
+                                    sellerItemsMap.put(sellerId, cartItems);
+                                    viewModel.setSellerItemsMapLiveData(sellerItemsMap);
                                 }
                             } else {
                                 if (editAmount <= 0 || editAmount > cartItemInfo.getInventoryAmount() ) {
                                     // Show an error or notify the user that the amount is invalid
-                                    holder.etOrderAmount.setError("Amount must be greater than 0 and less than "+cartItemInfo.getInventoryAmount() );
+                                    holder.etOrderAmount.setError("Amount must be greater than 0 and less than "+cartItemInfo.getInventoryAmount());
                                 } else {
                                     // The amount is valid, do something with it
                                     holder.etOrderAmount.setError(null);
                                     //save to db
                                     cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-                                    //cartRef.child(sellerId).setValue(cartItems);
+                                    sellerItemsMap.put(sellerId, cartItems);
+                                    viewModel.setSellerItemsMapLiveData(sellerItemsMap);
                                 }
                             }
 
@@ -231,74 +231,58 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                     if (editAmount < cartItemInfo.getInventoryAmount() ) {
                         holder.btnIncreaseAmount.setEnabled(true);
                     }
-                    holder.etOrderAmount.setText((String.valueOf(editAmount)));
-
-                    if(editAmount == 1) {
-                        holder.btnDecreaseAmount.setEnabled(false);
-                    }
+                    //holder.etOrderAmount.setText((String.valueOf(editAmount)));
+                } else {
+                    showDeleteDialog(holder);
                 }
                 cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-                //cartRef.child(sellerId).setValue(cartItems);
+                sellerItemsMap.put(sellerId, cartItems);
+                viewModel.setSellerItemsMapLiveData(sellerItemsMap);
             });
 
             holder.btnIncreaseAmount.setOnClickListener(v -> {
                 int editAmount = Integer.parseInt(String.valueOf(holder.etOrderAmount.getText()));
                 if(editAmount >= cartItemInfo.getInventoryAmount() ) {
                     holder.btnIncreaseAmount.setEnabled(false);
+                    Toast.makeText(context,"Only "+ cartItemInfo.getInventoryAmount() + " left, " +
+                            "cannot order more than " + cartItemInfo.getInventoryAmount(), Toast.LENGTH_SHORT).show();
                 } else {
                     if (editAmount == cartItemInfo.getInventoryAmount() -1) {
                         holder.btnIncreaseAmount.setEnabled(false);
+                        Toast.makeText(context,"Only "+ cartItemInfo.getInventoryAmount() + " left, " +
+                                "cannot order more than " + cartItemInfo.getInventoryAmount(), Toast.LENGTH_SHORT).show();
                     }
                     editAmount++;
-                    holder.etOrderAmount.setText(String.valueOf(editAmount));
+                    Log.d("HHH","increased");
+                    //holder.etOrderAmount.setText(String.valueOf(editAmount));
                     holder.btnDecreaseAmount.setEnabled(true);
                 }
                 cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-                //cartRef.child(sellerId).setValue(cartItems);
+                sellerItemsMap.put(sellerId, cartItems);
+                viewModel.setSellerItemsMapLiveData(sellerItemsMap);
             });
 
             //delete cart item
             holder.btnDeleteCartItem.setOnClickListener(v->{
-
                 PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
-                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                popupMenu.getMenuInflater().inflate(R.menu.cart_item_popup_menu, popupMenu.getMenu());
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-
-                        //dialog - confirm deletion
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setTitle("Delete the item");
-                        builder.setMessage("Are you sure you want to delete the item from the cart?");
-                        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                cartItems.remove(holder.getBindingAdapterPosition());
-                                //cartRef.child(sellerId).setValue(cartItems);
-                            }
-                        });
-                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        });
-
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
+                        showDeleteDialog(holder);
                         return true;
                     }
                 });
 
                 popupMenu.show();
-
-
             });
 
             //set checked
             boolean checked = cartItem.getChecked();
             Log.d("TestAllCheck", cartItem.getGroupId() +" InnerSetChecked "+ checked);
             if (holder.cbxSingleItem.isEnabled()) {
+                //holder.view.setOnClickListener(v -> {});
                 holder.cbxSingleItem.setChecked(checked);
 
                 holder.cbxSingleItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -306,6 +290,8 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                     cartItem.setChecked(isChecked);
                     sellerItemsMap.put(sellerId, cartItems);
                     viewModel.setSellerItemsMapLiveData(sellerItemsMap);
+//                    cartItemsInfoMap.put(cartItem,cartItemInfo);
+//                    viewModel.setCartItemsInfoMapLiveData(cartItemsInfoMap);
 
                     //check if check all
                     boolean allChecked = true;
@@ -365,5 +351,60 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
     }
     public interface onSingleCartItemListener{
         void onAllItemsChecked(Boolean isAllChecked);
+    }
+
+    private void showDeleteDialog(CustomerCartItemsWithSameSellerAdapter.ViewHolder holder) {
+        //dialog - confirm deletion
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Delete the item");
+        builder.setMessage("Are you sure you want to delete the item from the cart?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                CartItem cartItemToRemove = cartItems.get(holder.getBindingAdapterPosition());
+                cartItems.remove(holder.getBindingAdapterPosition());
+                Log.d("HHH", "delete cartItems size: "+ cartItems.size());
+                if (cartItems.isEmpty()) {
+                    sellerItemsMap.remove(sellerId);
+                    Log.d("HHH", "inner removed");
+                    sellerAllItemsCheckedMap.remove(sellerId);
+                    viewModel.setSellerItemsMapLiveData(sellerItemsMap);
+                    viewModel.setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
+                } else {
+                    sellerItemsMap.put(sellerId, cartItems);
+                    viewModel.setSellerItemsMapLiveData(sellerItemsMap);
+
+                    // outer seller checked status might change
+                    //check if check all
+                    boolean allChecked = true;
+                    for (CartItem c: cartItems) {
+                        if (!c.getChecked()) {
+                            allChecked = false;
+                        }
+                    }
+                    //set seller all checked
+                    sellerAllItemsCheckedMap.put(sellerId, allChecked);
+                    viewModel.setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
+                    onSingleCartItemListener.onAllItemsChecked(allChecked);
+                    Log.d("HHH", "delete map size: "+ sellerItemsMap.size());
+                }
+
+                //remove from info map
+                cartItemsInfoMap.remove(cartItemToRemove);
+                viewModel.setCartItemsInfoMapLiveData(cartItemsInfoMap);
+
+                Log.d("HHH", "inner map: "+sellerItemsMap.size());
+                Log.d("HHH", "outer map: "+sellerAllItemsCheckedMap.size());
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
