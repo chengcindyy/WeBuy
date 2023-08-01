@@ -132,6 +132,10 @@ public class Order {
             this.isAllocated = isAllocated;
         }
 
+        public void setAllocated(boolean allocated) {
+            isAllocated = allocated;
+        }
+
         public int getOrderAmount() {
             return orderAmount;
         }

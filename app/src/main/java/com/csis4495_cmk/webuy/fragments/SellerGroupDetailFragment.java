@@ -43,6 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -79,6 +80,8 @@ public class SellerGroupDetailFragment extends Fragment {
 
     private List<Inventory> inventoryList;
 
+    private Map<String, String> inventoryIdMap;
+
     private SellerGroupDetailOrderListViewPagerAdapter viewPagerAdapter;
 
     SimpleDateFormat simpleDateFormat;
@@ -102,6 +105,7 @@ public class SellerGroupDetailFragment extends Fragment {
             }
 
         inventoryList = new ArrayList<>();
+        inventoryIdMap = new HashMap<>();
 
         simpleDateFormat = new SimpleDateFormat("HH:mm yyyy-MM-dd");
 
@@ -332,6 +336,7 @@ public class SellerGroupDetailFragment extends Fragment {
 
     private void getInventoryData(){
         inventoryList.clear();
+        inventoryIdMap.clear();
         inventoryRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -339,6 +344,7 @@ public class SellerGroupDetailFragment extends Fragment {
                     Inventory i = dataSnapshot.getValue(Inventory.class);
                     if(i.getProductId().equals(productId)){
                         inventoryList.add(i);
+                        inventoryIdMap.put(dataSnapshot.getKey(), i.getProductStyleKey());
                     }
                 }
                 if(inventoryList != null){
@@ -357,6 +363,8 @@ public class SellerGroupDetailFragment extends Fragment {
                     listViewModel.setInventoryList(inventoryList);
                     listViewModel.setGroupId(groupId);
                     listViewModel.setGroup(group);
+                    listViewModel.setinventoryIdMap(inventoryIdMap);
+
                 }
             }
             @Override

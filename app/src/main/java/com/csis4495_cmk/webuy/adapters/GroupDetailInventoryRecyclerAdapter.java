@@ -32,12 +32,22 @@ import java.util.Map;
 
 public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<GroupDetailInventoryRecyclerAdapter.ViewHolder> {
 
-    private Map<String, Map<String, Boolean>>  selectedItems = new HashMap<>();
+    private Map<String, Map<String, Boolean>> toAllocateMap = new HashMap<>();
 
-    private List< Map.Entry <String, Map.Entry<String, Order.OrderItemInfo> > > allItems;
+    private List<Map.Entry<String, Map.Entry<String, Order.OrderItemInfo>>> allItems;
+
+    private List<Inventory> inventoryList;
 
     private String groupId;
     private Group group;
+
+    public void setInventoryList(List<Inventory> inventoryList) {
+        this.inventoryList = inventoryList;
+    }
+
+    public Map<String, Map<String, Boolean>> getToAllocateMap() {
+        return toAllocateMap;
+    }
 
     public GroupDetailInventoryRecyclerAdapter(Map<String, Map<String, Order.OrderItemInfo>> customerIdandItemsMap, String groupId) {
         allItems = new ArrayList<>();
@@ -49,32 +59,18 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                 allItems.add(combinedEntry);
             }
         }
-
         this.groupId = groupId;
-
-        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
-        groupRef.child(groupId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot != null){
-                    Group g = snapshot.getValue(Group.class);
-                    group = g;
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { /* None*/  } });
-
     }
 
     public GroupDetailInventoryRecyclerAdapter() {
     }
 
     public Map<String, Map<String, Boolean>> getSelectedItems() {
-        return selectedItems;
+        return toAllocateMap;
     }
 
-    public void setSelectedItems(Map<String, Map<String, Boolean>> selectedItems) {
-        this.selectedItems = selectedItems;
+    public void setSelectedItems(Map<String, Map<String, Boolean>> toAllocateMap) {
+        this.toAllocateMap = toAllocateMap;
     }
 
     @NonNull
@@ -86,36 +82,98 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
 
     @Override
     public void onBindViewHolder(@NonNull GroupDetailInventoryRecyclerAdapter.ViewHolder holder, int position) {
-        Map.Entry<String, Map.Entry<String, Order.OrderItemInfo>> item = allItems.get(position);
-        String customerId = item.getKey();
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("User");
-        userRef.child(customerId).addValueEventListener(new ValueEventListener() {
+        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
+        Log.d(TAG, "onBindViewHolder: check inventory" + inventoryList);
+        groupRef.child(groupId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot != null){
-                    User customer = snapshot.getValue(User.class);
-                    String email = customer.getEmail();
-                    holder.email.setText(email);
+                if (snapshot != null) {
+                    Group g = snapshot.getValue(Group.class);
+                    group = g;
                 }
+
+                Map.Entry<String, Map.Entry<String, Order.OrderItemInfo>> item = allItems.get(position);
+                String orderId = item.getKey();
+                DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("Order");
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("User");
+
+                orderRef.child(orderId).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot != null) {
+                            Order order = snapshot.getValue(Order.class);
+                            String customerId = order.getCustomerId();
+                            userRef.child(customerId).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot != null) {
+                                        User customer = snapshot.getValue(User.class);
+                                        String email = customer.getEmail();
+                                        holder.email.setText(email);
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) { /* None*/ }
+                            });
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) { /* None*/ }
+                });
+
+                String product_style_id = item.getValue().getKey();
+                String pSplit = "p___";
+                String sSplit = "s___";
+                if (!product_style_id.contains(sSplit)) {
+                    String productId = product_style_id.split(pSplit)[1].split(sSplit)[0];
+                    if (productId.equals(group.getProductId())) {
+                        holder.style.setText(group.getGroupName());
+                    }
+                } else {
+                    int index = product_style_id.indexOf(sSplit);
+                    if (index != -1) {
+                        String sId = product_style_id.substring(index + sSplit.length());
+                        for (ProductStyle style : group.getGroupStyles()) {
+                            if (style.getStyleId().equals(sId)) {
+                                holder.style.setText(style.getStyleName());
+
+                            }
+                        }
+                    }
+                }
+
+                Order.OrderItemInfo orderItemInfo = item.getValue().getValue();
+                Integer ordered = orderItemInfo.getOrderAmount();
+                holder.ordered.setText(Integer.toString(ordered));
+
+                holder.cb.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (holder.cb.isChecked()) {
+                            Map<String, Boolean> innerMap = toAllocateMap.get(orderId);
+                            if (innerMap == null) {
+                                innerMap = new HashMap<>();
+                                toAllocateMap.put(orderId, innerMap);
+                            }
+                            innerMap.put(product_style_id, true);
+                            Log.d(TAG, "Checkbox onClick: " + toAllocateMap);
+                        } else {
+                            Map<String, Boolean> innerMap = toAllocateMap.get(orderId);
+                            if (innerMap != null) {
+                                innerMap.remove(product_style_id);
+                                if (innerMap.isEmpty()) {
+                                    toAllocateMap.remove(orderId);
+                                }
+                            }
+                            Log.d(TAG, "Checkbox onClick: " + toAllocateMap);
+                        }
+                    }
+                });
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { /* None*/  } });
-
-        String styleId = item.getValue().getKey().split("p___")[1].split("s___")[1];
-        holder.style.setText(styleId);
-
-
-        Order.OrderItemInfo orderItemInfo = item.getValue().getValue();
-        Integer ordered = orderItemInfo.getOrderAmount();
-        holder.ordered.setText(Integer.toString(ordered));
-
-        holder.cb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) { /* None*/ }
         });
-
     }
 
     @Override

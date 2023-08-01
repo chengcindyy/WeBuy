@@ -10,6 +10,7 @@ import com.csis4495_cmk.webuy.models.Inventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SharedGroupInventoryListViewModel extends ViewModel {
     private final MutableLiveData<List<Inventory>> inventoryList = new MutableLiveData<>();
@@ -17,6 +18,17 @@ public class SharedGroupInventoryListViewModel extends ViewModel {
     private final MutableLiveData<String> groupId = new MutableLiveData<>();
 
     private final MutableLiveData<Group> group = new MutableLiveData<>();
+
+    private final MutableLiveData<Map<String,String>> inventoryIdMap = new MutableLiveData<>();
+
+    public void setinventoryIdMap(Map<String, String> list) {
+
+        inventoryIdMap.setValue(list);
+    }
+
+    public LiveData<Map<String, String>> getinventoryIdMap() {
+        return inventoryIdMap;
+    }
 
     public void setGroup(Group g) {
         group.setValue(g);
