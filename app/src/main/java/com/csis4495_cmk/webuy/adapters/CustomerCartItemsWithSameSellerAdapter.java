@@ -7,12 +7,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -258,25 +260,39 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             //delete cart item
             holder.btnDeleteCartItem.setOnClickListener(v->{
 
-                //dialog - confirm deletion
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Delete the item");
-                builder.setMessage("Are you sure you want to delete the item from the cart?");
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        cartItems.remove(holder.getBindingAdapterPosition());
-                        //cartRef.child(sellerId).setValue(cartItems);
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public boolean onMenuItemClick(MenuItem menuItem) {
 
+                        //dialog - confirm deletion
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setTitle("Delete the item");
+                        builder.setMessage("Are you sure you want to delete the item from the cart?");
+                        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                cartItems.remove(holder.getBindingAdapterPosition());
+                                //cartRef.child(sellerId).setValue(cartItems);
+                            }
+                        });
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        return true;
                     }
                 });
 
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                popupMenu.show();
+
+
             });
 
             //set checked
@@ -343,7 +359,7 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             etOrderAmount = itemView.findViewById(R.id.et_cart_item_order_amount);
             btnDecreaseAmount = itemView.findViewById(R.id.btn_cart_item_decrease_amount);
             btnIncreaseAmount = itemView.findViewById(R.id.btn_cart_item_increase_amount);
-            btnDeleteCartItem = itemView.findViewById(R.id.imvbtn_delete_cart_item);
+            btnDeleteCartItem = itemView.findViewById(R.id.imvbtn_more_cart_item);
             view = itemView;
         }
     }
