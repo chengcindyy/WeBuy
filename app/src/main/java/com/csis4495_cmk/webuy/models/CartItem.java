@@ -4,7 +4,7 @@ public class CartItem {
     private String groupId;
     private String sellerId;
     private String productId;
-    private String styleId;
+    private String styleId = null;
     private int amount;
     private boolean checked = false;
 

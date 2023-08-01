@@ -13,13 +13,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.fragments.CustomerCartItemsFragment;
 import com.csis4495_cmk.webuy.models.CartItem;
+import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartItemsAdapter.ViewHolder>
@@ -49,7 +47,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
         this.context = context;
         this.viewModel = viewModel;
         this.lifecycleOwner = lifecycleOwner;
-        viewModel.getSellerItemsMap().observe(lifecycleOwner, new Observer<Map<String, ArrayList<CartItem>>>() {
+        viewModel.getSellerItemsMapLiveData().observe(lifecycleOwner, new Observer<Map<String, ArrayList<CartItem>>>() {
             @Override
             public void onChanged(Map<String, ArrayList<CartItem>> stringArrayListMap) {
                 sellerItemsMap = stringArrayListMap;
@@ -125,12 +123,11 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
                 for(CartItem cartItem: sellerItemsMap.get(sellerId)){
                     cartItem.setChecked(isChecked);
                 }
-                viewModel.setSellerItemsMap(sellerItemsMap);
+                viewModel.setSellerItemsMapLiveData(sellerItemsMap);
                 sellerAllItemsCheckedMap.put(sellerId, isChecked);
                 Log.d("TestAllCheck", sellerId +" OuterClicked "+ isChecked);
-                viewModel.setSellerAllItemsCheckedMap(sellerAllItemsCheckedMap);
-                holder.rvCartItemsWithSameSeller.setAdapter(customerCartItemsWithSameSellerAdapter);
-
+                viewModel.setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
+                //holder.rvCartItemsWithSameSeller.setAdapter(customerCartItemsWithSameSellerAdapter);
                 mCartSellerBannerListener.onSellerBannerChecked(sellerAllItemsCheckedMap,sellerItemsMap);
 
             }
@@ -144,7 +141,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
 
     @Override
     public void onAllItemsChecked(Boolean isAllChecked) {
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
         Log.d("TestAllCheck", "onAllItemsChecked() "+ isAllChecked);
     }
 

@@ -18,7 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.CartItemsViewModel;
+import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
 import com.csis4495_cmk.webuy.adapters.CustomerCheckoutShoppingDetailsAdapter;
 import com.csis4495_cmk.webuy.models.Delivery;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCheckoutDataViewModel;
@@ -40,14 +40,14 @@ public class CustomerCheckoutFragment extends Fragment {
                      txvPayment, txvProductAmount, txvShipmentAmount, txvGstAmount, txvPstAmount, txvOrderTotalPrice;
     private EditText customerNote;
     private CustomerCheckoutShoppingDetailsAdapter adapter;
-    private CartItemsViewModel viewModel;
+    private CartItemsViewModel cartItemsViewModel;
 
     public CustomerCheckoutFragment(){}
-    public CustomerCheckoutFragment(CartItemsViewModel viewModel) {
-        this.viewModel = viewModel;
+    public CustomerCheckoutFragment(CartItemsViewModel cartItemsViewModel) {
+        this.cartItemsViewModel = cartItemsViewModel;
     }
-    public static CustomerCheckoutFragment newInstance(CartItemsViewModel viewModel){
-        CustomerCheckoutFragment fragment = new CustomerCheckoutFragment(viewModel);
+    public static CustomerCheckoutFragment newInstance(CartItemsViewModel cartItemsViewModel){
+        CustomerCheckoutFragment fragment = new CustomerCheckoutFragment(cartItemsViewModel);
         return fragment;
     }
 
@@ -83,6 +83,8 @@ public class CustomerCheckoutFragment extends Fragment {
         txvOrderTotalPrice = view.findViewById(R.id.txv_checkout_order_total_amount);
         // Edittext
         customerNote = view.findViewById(R.id.edt_customer_notes);
+
+
     }
 
     private void setShipmentClickListener(TextView txvShipment) {
