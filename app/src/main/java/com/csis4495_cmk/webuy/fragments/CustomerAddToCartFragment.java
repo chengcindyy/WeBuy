@@ -25,6 +25,7 @@ import com.csis4495_cmk.webuy.adapters.CustomerGroupStyleAdapter;
 import com.csis4495_cmk.webuy.models.CartItem;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -324,6 +325,8 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference("Customer").child(customerId);
         customerRef.child("Cart").child(item.getSellerId()).push().setValue(item);
+        //update cart
+        new CartItemsViewModel();
     }
 
     @Override
