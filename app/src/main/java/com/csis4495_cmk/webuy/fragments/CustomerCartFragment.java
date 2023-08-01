@@ -5,19 +5,28 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CustomerCartViewPagerAdapter;
-import com.csis4495_cmk.webuy.adapters.CustomerHomeViewPagerAdapter;
+import com.csis4495_cmk.webuy.models.Wishlist;
+import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CustomerCartFragment extends Fragment {
@@ -28,6 +37,10 @@ public class CustomerCartFragment extends Fragment {
 
     private BottomNavigationView bottomNavigationView;
     private NavController navController;
+    private CustomerWishlistViewModel wishlistViewModel;
+    private List<Wishlist> wishlist;
+    final DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference("Customer");
+    CustomerWishlistViewModel wishListViewModel;
 
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -75,7 +88,7 @@ public class CustomerCartFragment extends Fragment {
         navController = NavHostFragment.findNavController(CustomerCartFragment.this);
         tabLayout = view.findViewById(R.id.cart_tab_layout);
         viewPager2 = view.findViewById(R.id.cart_view_pager);
-        viewPagerAdapter = new CustomerCartViewPagerAdapter(getActivity());
+        viewPagerAdapter = new CustomerCartViewPagerAdapter(getActivity(), wishlistViewModel, wishlist);
         viewPager2.setAdapter(viewPagerAdapter);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

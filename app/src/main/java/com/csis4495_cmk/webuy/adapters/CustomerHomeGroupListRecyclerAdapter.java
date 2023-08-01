@@ -15,6 +15,8 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -23,8 +25,12 @@ import com.bumptech.glide.request.transition.Transition;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Seller;
+import com.csis4495_cmk.webuy.models.Wishlist;
+import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +42,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<CustomerHomeGroupListRecyclerAdapter.ViewHolder> {
 
     Context context;
-
+    private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     public StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
     private String groupId;
     private String productId;
@@ -61,24 +67,26 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
     private String sellerPic;
     private String sellerName;
     private String sellerId;
-    //
+
     private int groupStatus; // notStarted: 0; started: 1; ended: 2
 //    private Long startTimestamp;
 //    private Long endTimestamp;
-
     private Map<String,Group> groupsMap;
     private List<Map.Entry<String, Group>> groupsEntryList;
     private onGroupListener mGroupListener;
+    private CustomerWishlistViewModel wishListViewModel;
+    private LifecycleOwner lifecycleOwner;
 
     public CustomerHomeGroupListRecyclerAdapter(){
 
     }
 
-    public CustomerHomeGroupListRecyclerAdapter(Context ct, Map<String,Group> groupsMap){
+    public CustomerHomeGroupListRecyclerAdapter(Context ct, Map<String,Group> groupsMap, LifecycleOwner lifecycleOwner, CustomerWishlistViewModel wishListViewModel){
         this.context = ct;
         this.groupsMap = groupsMap;
         this.groupsEntryList = new ArrayList<>(groupsMap.entrySet());
-        //groupsMap.forEach((key, value) -> Log.d("keyvalue","Key: " + key + ", Value: " + value.getGroupName()));
+        this.lifecycleOwner = lifecycleOwner;
+        this.wishListViewModel = wishListViewModel;
     }
 
     public void setOnGroupListener(onGroupListener mGroupListener) {
@@ -96,18 +104,6 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         groupId = groupsEntryList.get(position).getKey();
-
-        // save or unsave to wish list
-        // pre set the save btn
-        holder.btnWishList.setOnClickListener(v -> {
-            if (holder.btnWishList.isChecked()) {
-                holder.btnWishList.setBackgroundResource(R.drawable.baseline_saved_24);
-                Toast.makeText(context,"Item added to Wish List",Toast.LENGTH_SHORT).show();
-            } else {
-                holder.btnWishList.setBackgroundResource(R.drawable.baseline_unsave_border_24);
-                Toast.makeText(context,"Item removed from Wish List",Toast.LENGTH_SHORT).show();
-            }
-        });
 
         //image
         productId = groupsEntryList.get(position).getValue().getProductId();
@@ -275,6 +271,51 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
             holder.tvTimer.setText("");
         }
 
+        // Before doing onClick listener first set it as null
+        holder.btnWishList.setOnClickListener(null);
+
+        int clickedPosition = position;
+
+        // Before doing onClick listener first set it as null
+        holder.btnWishList.setOnClickListener(null);
+
+        // Get the wishlist from the ViewModel
+        ArrayList<Wishlist> wishlists = wishListViewModel.getWishlistObject().getValue();
+        boolean isGroupIdInWishlist = false;
+        if (wishlists != null) {
+            for (Wishlist wishlist : wishlists) {
+                if (wishlist.getGroupId().equals(groupId)) {
+                    isGroupIdInWishlist = true;
+                    break;
+                }
+            }
+        }
+        holder.btnWishList.setChecked(isGroupIdInWishlist);
+        holder.btnWishList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Get current item
+                String currentGroupId = groupsEntryList.get(clickedPosition).getKey();
+                String currentSellerId = groupsEntryList.get(clickedPosition).getValue().getSellerId();
+                String currentProductId = groupsEntryList.get(clickedPosition).getValue().getProductId();
+
+                // Set to wishlist
+                Wishlist wishlistItem = new Wishlist();
+                wishlistItem.setGroupId(currentGroupId);
+                wishlistItem.setSellerId(currentSellerId);
+                wishlistItem.setProductId(currentProductId);
+                Log.d("Test wishlistItem", "groupId"+ wishlistItem.getGroupId() + " ProductId: "+ wishlistItem.getProductId());
+
+                if (holder.btnWishList.isChecked()) {
+                    Toast.makeText(context,"Item added to Wish List",Toast.LENGTH_SHORT).show();
+                    wishListViewModel.addToWishlist(wishlistItem, firebaseUser.getUid());
+                } else {
+                    wishListViewModel.removeFromWishlist(wishlistItem, firebaseUser.getUid());
+                    Toast.makeText(context,"Item removed from Wish List",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -282,11 +323,12 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
         return groupsEntryList.size();
     }
 
-    public void updateData(Map<String, Group> newGroupMap) {
-        this.groupsMap.putAll(newGroupMap);
-        this.groupsEntryList.clear();
-        this.groupsEntryList.addAll(newGroupMap.entrySet());
+    public void updateData(Map<String,Group> groupsMap) {
+        this.groupsMap = groupsMap;
+        this.groupsEntryList = new ArrayList<>(groupsMap.entrySet());
+        notifyDataSetChanged();
     }
+
 
     public void reverseData(Map<String, Group> newGroupMap) {
         List<String> groupIds = new ArrayList<>(newGroupMap.keySet());
@@ -300,7 +342,6 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
         this.groupsMap.putAll(reversedMap);
         this.groupsEntryList.clear();
         this.groupsEntryList.addAll(reversedMap.entrySet());
-
     }
 
 

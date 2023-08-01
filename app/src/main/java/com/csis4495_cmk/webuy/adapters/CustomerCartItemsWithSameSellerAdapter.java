@@ -3,42 +3,33 @@ package com.csis4495_cmk.webuy.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.CartItem;
-import com.csis4495_cmk.webuy.models.Group;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter<CustomerCartItemsWithSameSellerAdapter.ViewHolder> {
@@ -52,18 +43,23 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
     Map<String, ArrayList<CartItem>> sellerItemsMap;
     ArrayList<CartItem> cartItems;
     Map<String, Boolean> sellerAllItemsCheckedMap;
-    DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
-    String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    DatabaseReference cartRef = FirebaseDatabase.getInstance().getReference("Customer").child(customerId).child("Cart");
+    Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemsInfoMap;
+//    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+//    DatabaseReference groupRef = firebaseDatabase.getReference("Group");
+//    String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//    DatabaseReference cartRef = firebaseDatabase.getReference("Customer").child(customerId).child("Cart");
+//    DatabaseReference productRef = firebaseDatabase.getReference("Product");
 
     private final int IN_STOCK = 0;
+    private final int PRE_ORDER = 1;
+    private final int OPENING = 1;
 
     public CustomerCartItemsWithSameSellerAdapter(Context context, String sellerId, CartItemsViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.context = context;
         this.sellerId = sellerId;
         this.viewModel = viewModel;
         this.lifecycleOwner = lifecycleOwner;
-        viewModel.getSellerItemsMap().observe(lifecycleOwner, new Observer<Map<String, ArrayList<CartItem>>>() {
+        viewModel.getSellerItemsMapLiveData().observe(lifecycleOwner, new Observer<Map<String, ArrayList<CartItem>>>() {
             @Override
             public void onChanged(Map<String, ArrayList<CartItem>> stringArrayListMap) {
                 sellerItemsMap = stringArrayListMap;
@@ -78,7 +74,15 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             }
         });
 
+        viewModel.getCartItemsInfoMapLiveData().observe(lifecycleOwner, new Observer<Map<CartItem, CartItemsViewModel.CartItemInfo>>() {
+            @Override
+            public void onChanged(Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
+                cartItemsInfoMap = cartItemCartItemInfoMap;
+            }
+        });
+
         Log.d("TestMap", cartItems.size()+"");
+        Log.d("GGG", cartItemsInfoMap.size()+"");
     }
 
     public void setOnSingleCartItemListener(onSingleCartItemListener onSingleCartItemListener) {
@@ -95,224 +99,234 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        String groupId = cartItems.get(position).getGroupId();
-        String productId = cartItems.get(position).getProductId();
-        String styleId = cartItems.get(position).getStyleId();
-
-        int orderAmount = cartItems.get(position).getAmount();
+        CartItem cartItem = cartItems.get(position);
+        int orderAmount = cartItem.getAmount();
         holder.etOrderAmount.setText(String.valueOf(orderAmount));
-        //TODO: if qty = -1
-        final int[] inventoryAmount = {9999};
 
-        groupRef.child(groupId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+        //set CartItemsInfoMap in ViewModel
+        CartItemsViewModel.CartItemInfo cartItemInfo = cartItemsInfoMap.get(cartItem);
+        Log.d("GGG", cartItemsInfoMap.size() +" after set");
 
-                String groupPicName = null;
-                String groupPrice = "CA$ N/A";
-                String styleName = "Style N/A";
-                String groupName = "Group N/A";
+        if (cartItemInfo != null) {
+            if (cartItemInfo.getGroupName().equals("Group N/A")) { //group is deleted in firebase
+                holder.view.setAlpha(0.5f);
+                holder.view.setOnClickListener(v->{
+                    Toast.makeText(context, "The group is no longer available", Toast.LENGTH_SHORT).show();
+                });
+                holder.cbxSingleItem.setChecked(false);
+                holder.cbxSingleItem.setEnabled(false);
+                holder.btnIncreaseAmount.setEnabled(false);
+                holder.btnDecreaseAmount.setEnabled(false);
+                holder.tvGroupName.setTextColor(ContextCompat.getColor(context,R.color.light_grey));
+                holder.tvPrice.setTextColor(ContextCompat.getColor(context,R.color.light_grey));
+                holder.tvGroupStyle.setTextColor(ContextCompat.getColor(context,R.color.light_grey));
+
+            } else {
+                Log.d("TestGroup", "group is not null");
+                holder.view.setOnClickListener(v->{
+                    // TODO: open the group detail
+                });
+
+                if (cartItemInfo.getStyleName() == null) {
+                    holder.tvGroupStyle.setVisibility(View.GONE);
+                    Log.d("TestGroup","no style");
+                } else { // with style
+                    holder.tvGroupStyle.setVisibility(View.VISIBLE);
+                }
+
+                Picasso.get().load(cartItemInfo.getGroupPicUrl()).into(holder.imvGroupPic);
+
+                //pre-order group expired
+                if (cartItemInfo.getGroupType() == PRE_ORDER) {
+                    if (cartItemInfo.getGroupEndTimestamp() < System.currentTimeMillis()) {
+                        holder.view.setAlpha(0.5f);
+                        holder.view.setOnClickListener(v -> {
+                            Toast.makeText(context, "The group is no longer available", Toast.LENGTH_SHORT).show();
+                        });
+                        holder.cbxSingleItem.setChecked(false);
+                        holder.cbxSingleItem.setEnabled(false);
+                        holder.btnIncreaseAmount.setEnabled(false);
+                        holder.btnDecreaseAmount.setEnabled(false);
+                        holder.tvGroupName.setTextColor(ContextCompat.getColor(context, R.color.light_grey));
+                        holder.tvPrice.setTextColor(ContextCompat.getColor(context, R.color.light_grey));
+                        holder.tvGroupStyle.setTextColor(ContextCompat.getColor(context, R.color.light_grey));
+                    }
+                }
+                // group not opening
+                if (cartItemInfo.getGroupStatus() != OPENING) {
+                    holder.view.setAlpha(0.5f);
+                    holder.view.setOnClickListener(v -> {
+                        Toast.makeText(context, "The group is no longer available", Toast.LENGTH_SHORT).show();
+                    });
+                    holder.cbxSingleItem.setChecked(false);
+                    holder.cbxSingleItem.setEnabled(false);
+                    holder.btnIncreaseAmount.setEnabled(false);
+                    holder.btnDecreaseAmount.setEnabled(false);
+                    holder.tvGroupName.setTextColor(ContextCompat.getColor(context, R.color.light_grey));
+                    holder.tvPrice.setTextColor(ContextCompat.getColor(context, R.color.light_grey));
+                    holder.tvGroupStyle.setTextColor(ContextCompat.getColor(context, R.color.light_grey));
+                }
+            }
+
+            holder.tvGroupName.setText(cartItemInfo.getGroupName());
+            holder.tvPrice.setText(cartItemInfo.getGroupPrice());
+            holder.tvGroupStyle.setText(cartItemInfo.getStyleName());
 
 
-                Group group = snapshot.getValue(Group.class);
-                if (group == null) {
-                    Log.d("TestGroup",groupId+" is null");
-                } else {
-                    Log.d("TestGroup", groupId+ " is not null");
-                    groupName = group.getGroupName();
-                    if (styleId == null) {
-                        groupPicName = group.getGroupImages().get(0);
-                        groupPrice = group.getGroupPrice();
-                        holder.tvGroupStyle.setVisibility(View.GONE);
-                        Log.d("TestGroup","no style");
-                        if (group.getGroupType() == IN_STOCK) {
-                            inventoryAmount[0] = group.getGroupQtyMap().get("p___"+productId);
-                        }
+            //etOrderAmount TextWatcher
+            TextWatcher watcher = new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    } else { // with style
-                        holder.tvGroupStyle.setVisibility(View.VISIBLE);
-                        for(DataSnapshot styleShot: snapshot.child("groupStyles").getChildren()){
-                            if (styleShot.child("styleId").getValue(String.class).equals(styleId)) {
-                                groupPicName = styleShot.child("stylePicName").getValue(String.class);
-                                groupPrice = "CA$ " + styleShot.child("stylePrice").getValue(Double.class);
-                                styleName = styleShot.child("styleName").getValue(String.class);
+                }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                                if (group.getGroupType() == IN_STOCK) {
-                                    inventoryAmount[0] = group.getGroupQtyMap().get("s___"+styleId);
+                }
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String inputText = s.toString().trim();
+                    if (!inputText.isEmpty()) {
+                        try {
+                            int editAmount = Integer.parseInt(inputText);
+                            if (cartItemInfo.getInventoryAmount() == -1) {
+                                if(editAmount <= 0) {
+                                    holder.etOrderAmount.setError("Amount must be greater than 0");
+                                } else {
+                                    holder.etOrderAmount.setError(null);
+                                    //save to db
+                                    cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
+                                    //cartRef.child(sellerId).setValue(cartItems);
+                                }
+                            } else {
+                                if (editAmount <= 0 || editAmount > cartItemInfo.getInventoryAmount() ) {
+                                    // Show an error or notify the user that the amount is invalid
+                                    holder.etOrderAmount.setError("Amount must be greater than 0 and less than "+cartItemInfo.getInventoryAmount() );
+                                } else {
+                                    // The amount is valid, do something with it
+                                    holder.etOrderAmount.setError(null);
+                                    //save to db
+                                    cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
+                                    //cartRef.child(sellerId).setValue(cartItems);
                                 }
                             }
+
+                        } catch (NumberFormatException e) {
+                            // Handle the case when the input cannot be parsed as an integer
+                            holder.etOrderAmount.setError("Invalid input");
                         }
+                    } else {
+                        // Handle the case when the input is empty
+                        holder.etOrderAmount.setError("Amount is required");
                     }
-                    StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage").child(productId);
-                    imgRef.child(groupPicName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            String imgUrl = uri.toString();
-                            Picasso.get().load(imgUrl).into(holder.imvGroupPic);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            //pic not found
-                        }
-                    });
-
-                    holder.tvGroupStyle.setText(styleName);
-                    Log.d("TestGroup", groupPrice);
                 }
+            };
+            holder.etOrderAmount.addTextChangedListener(watcher);
 
-                holder.tvGroupName.setText(groupName);
-                holder.tvPrice.setText(groupPrice);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        //etOrderAmount TextWatcher
-        TextWatcher watcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                String inputText = s.toString().trim();
-                if (!inputText.isEmpty()) {
-                    try {
-                        int editAmount = Integer.parseInt(inputText);
-                        if (inventoryAmount[0] == -1) {
-                            if(editAmount <= 0) {
-                                holder.etOrderAmount.setError("Amount must be greater than 0");
-                            } else {
-                                holder.etOrderAmount.setError(null);
-                                //save to db
-                                cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-                                cartRef.child(sellerId).setValue(cartItems);
-                            }
-                        } else {
-                            if (editAmount <= 0 || editAmount > inventoryAmount[0]) {
-                                // Show an error or notify the user that the amount is invalid
-                                holder.etOrderAmount.setError("Amount must be greater than 0 and less than "+inventoryAmount[0]);
-                            } else {
-                                // The amount is valid, do something with it
-                                holder.etOrderAmount.setError(null);
-                                //save to db
-                                cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-                                cartRef.child(sellerId).setValue(cartItems);
-                            }
-                        }
-
-                    } catch (NumberFormatException e) {
-                        // Handle the case when the input cannot be parsed as an integer
-                        holder.etOrderAmount.setError("Invalid input");
+            //increase and decrease the amount
+            holder.btnDecreaseAmount.setOnClickListener(v -> {
+                int editAmount = Integer.parseInt(String.valueOf(holder.etOrderAmount.getText()));
+                if (editAmount > 1) {
+                    editAmount--;
+                    if (editAmount < cartItemInfo.getInventoryAmount() ) {
+                        holder.btnIncreaseAmount.setEnabled(true);
                     }
-                } else {
-                    // Handle the case when the input is empty
-                    holder.etOrderAmount.setError("Amount is required");
-                }
-            }
-        };
-        holder.etOrderAmount.addTextChangedListener(watcher);
-        //increase and decrease the amount
-        holder.btnDecreaseAmount.setOnClickListener(v -> {
-            int editAmount = Integer.parseInt(String.valueOf(holder.etOrderAmount.getText()));
-            if (editAmount > 1) {
-                editAmount--;
-                if (editAmount < inventoryAmount[0]) {
-                    holder.btnIncreaseAmount.setEnabled(true);
-                }
-                holder.etOrderAmount.setText((String.valueOf(editAmount)));
+                    holder.etOrderAmount.setText((String.valueOf(editAmount)));
 
-                if(editAmount == 1) {
-                    holder.btnDecreaseAmount.setEnabled(false);
+                    if(editAmount == 1) {
+                        holder.btnDecreaseAmount.setEnabled(false);
+                    }
                 }
-            }
-            cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-            cartRef.child(sellerId).setValue(cartItems);
-        });
+                cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
+                //cartRef.child(sellerId).setValue(cartItems);
+            });
 
-        holder.btnIncreaseAmount.setOnClickListener(v -> {
-            int editAmount = Integer.parseInt(String.valueOf(holder.etOrderAmount.getText()));
-            if(editAmount >= inventoryAmount[0]) {
-                holder.btnIncreaseAmount.setEnabled(false);
-            } else {
-                if (editAmount == inventoryAmount[0]-1) {
+            holder.btnIncreaseAmount.setOnClickListener(v -> {
+                int editAmount = Integer.parseInt(String.valueOf(holder.etOrderAmount.getText()));
+                if(editAmount >= cartItemInfo.getInventoryAmount() ) {
                     holder.btnIncreaseAmount.setEnabled(false);
+                } else {
+                    if (editAmount == cartItemInfo.getInventoryAmount() -1) {
+                        holder.btnIncreaseAmount.setEnabled(false);
+                    }
+                    editAmount++;
+                    holder.etOrderAmount.setText(String.valueOf(editAmount));
+                    holder.btnDecreaseAmount.setEnabled(true);
                 }
-                editAmount++;
-                holder.etOrderAmount.setText(String.valueOf(editAmount));
-                holder.btnDecreaseAmount.setEnabled(true);
-            }
-            cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-            cartRef.child(sellerId).setValue(cartItems);
-        });
-
-
-        //delete cart item
-        holder.btnDeleteCartItem.setOnClickListener(v->{
-
-            //dialog - confirm deletion
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Delete the item");
-            builder.setMessage("Are you sure you want to delete the item from the cart?");
-            builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    cartItems.remove(holder.getBindingAdapterPosition());
-                    cartRef.child(sellerId).setValue(cartItems);
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
+                cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
+                //cartRef.child(sellerId).setValue(cartItems);
             });
 
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        });
+            //delete cart item
+            holder.btnDeleteCartItem.setOnClickListener(v->{
 
-        //set checked
-        boolean checked = cartItems.get(holder.getBindingAdapterPosition()).getChecked();
-        Log.d("TestAllCheck", cartItems.get(holder.getBindingAdapterPosition()).getGroupId() +" InnerSetChecked "+ checked);
-        holder.cbxSingleItem.setChecked(checked);
+                PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
 
-        holder.cbxSingleItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                //set checked
-                cartItems.get(holder.getBindingAdapterPosition()).setChecked(true);
-            } else {
-                //set all unchecked
-                cartItems.get(holder.getBindingAdapterPosition()).setChecked(false);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+
+                        //dialog - confirm deletion
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setTitle("Delete the item");
+                        builder.setMessage("Are you sure you want to delete the item from the cart?");
+                        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                cartItems.remove(holder.getBindingAdapterPosition());
+                                //cartRef.child(sellerId).setValue(cartItems);
+                            }
+                        });
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        return true;
+                    }
+                });
+
+                popupMenu.show();
+
+
+            });
+
+            //set checked
+            boolean checked = cartItem.getChecked();
+            Log.d("TestAllCheck", cartItem.getGroupId() +" InnerSetChecked "+ checked);
+            if (holder.cbxSingleItem.isEnabled()) {
+                holder.cbxSingleItem.setChecked(checked);
+
+                holder.cbxSingleItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+                    cartItem.setChecked(isChecked);
+                    sellerItemsMap.put(sellerId, cartItems);
+                    viewModel.setSellerItemsMapLiveData(sellerItemsMap);
+
+                    //check if check all
+                    boolean allChecked = true;
+                    for (CartItem c: cartItems) {
+                        if (!c.getChecked()) {
+                            allChecked = false;
+                        }
+                    }
+                    //set seller all checked
+                    Log.d("TestAllCheck", "inner checked map size "+ sellerAllItemsCheckedMap.size());
+                    Log.d("TestAllCheck", sellerId +" is all checked "+ allChecked);
+                    sellerAllItemsCheckedMap.put(sellerId, allChecked);
+                    Log.d("TestAllCheck", "inner checked map size "+ sellerAllItemsCheckedMap.size());
+                    viewModel.setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
+                    onSingleCartItemListener.onAllItemsChecked(allChecked);
+
+                });
             }
-            sellerItemsMap.put(sellerId, cartItems);
-            viewModel.setSellerItemsMap(sellerItemsMap);
 
-            //check if check all
-            boolean allChecked = true;
-            for (CartItem cartItem: cartItems) {
-                if (!cartItem.getChecked()) {
-                    allChecked = false;
-                }
-            }
-            //set seller all checked
-            Log.d("TestAllCheck", "inner checked map size "+ sellerAllItemsCheckedMap.size());
-            Log.d("TestAllCheck", sellerId +" is all checked "+ allChecked);
-            sellerAllItemsCheckedMap.put(sellerId, allChecked);
-            Log.d("TestAllCheck", "inner checked map size "+ sellerAllItemsCheckedMap.size());
-            viewModel.setSellerAllItemsCheckedMap(sellerAllItemsCheckedMap);
-            onSingleCartItemListener.onAllItemsChecked(allChecked);
 
-        });
-
+        }
     }
 
     @Override
@@ -328,8 +342,8 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
         TextView tvGroupStyle;
         TextView tvPrice;
         EditText etOrderAmount;
-        Button btnDecreaseAmount;
-        Button btnIncreaseAmount;
+        ImageButton btnDecreaseAmount;
+        ImageButton btnIncreaseAmount;
 
         ImageButton btnDeleteCartItem;
 
@@ -337,7 +351,6 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             cbxSingleItem = itemView.findViewById(R.id.checkbox_single_group);
             imvGroupPic = itemView.findViewById(R.id.imv_cart_item_group_pic);
             tvGroupName = itemView.findViewById(R.id.tv_cart_item_group_name);
@@ -346,7 +359,7 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             etOrderAmount = itemView.findViewById(R.id.et_cart_item_order_amount);
             btnDecreaseAmount = itemView.findViewById(R.id.btn_cart_item_decrease_amount);
             btnIncreaseAmount = itemView.findViewById(R.id.btn_cart_item_increase_amount);
-            btnDeleteCartItem = itemView.findViewById(R.id.imvbtn_delete_cart_item);
+            btnDeleteCartItem = itemView.findViewById(R.id.imvbtn_more_cart_item);
             view = itemView;
         }
     }

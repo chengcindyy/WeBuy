@@ -23,15 +23,12 @@ import android.widget.TextView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CheckInventoryRecyclerAdapter;
 
-import com.csis4495_cmk.webuy.models.ProductStyle;
-import com.csis4495_cmk.webuy.models.SharedInventoryViewModel;
+import com.csis4495_cmk.webuy.viewmodels.SharedInventoryViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {

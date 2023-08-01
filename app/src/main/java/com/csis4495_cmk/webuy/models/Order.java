@@ -6,9 +6,9 @@ import java.util.Map;
 public class Order {
     private String customerId;
     private Map<String, Map<String, OrderItemInfo>> groupsAndItemsMap; //groupId, p___ + productId + s___ + styleId, orderItemInfo
-//    String styleId = key.split("s___")[1];
-//    String productId = key.split("s___")[0].split("p___")[1];
-//    p___thisIsAProductIds___thisIsAStyleId
+    //    String styleId = key.split("s___")[1];
+    //    String productId = key.split("s___")[0].split("p___")[1];
+    //    p___thisIsAProductIds___thisIsAStyleId
     private double totalPrice;
     //= itemsTotal + gstTotal + pstTotal + deliveryFee
     private double itemsTotal;

@@ -40,10 +40,12 @@
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginTop="-40dp"
                 android:alpha="1"
-                android:background="@drawable/baseline_unsave_border_24"
+                android:background="@android:color/transparent"
+                android:button="@drawable/wishlist_toggle_button"
                 android:textOn=""
                 android:textOff=""
                 android:checked="false" />
+
 
             <TextView
                 android:id="@+id/tv_group_detail_group_style"

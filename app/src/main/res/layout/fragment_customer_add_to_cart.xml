@@ -27,11 +27,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="group name"
+            android:paddingHorizontal="10dp"
             android:id="@+id/tv_add_to_cart_group_name"
             android:layout_marginEnd="20dp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/tv_add_to_cart_group_price"
@@ -55,12 +57,14 @@
             android:layout_marginTop="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
             android:text="Group Style" />
         <!-- Style images -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_add_to_cart_group_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
             android:orientation="horizontal" />
 
         <!--    amount, add and deduct    -->
@@ -71,6 +75,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
                 android:text="Amount"
                 android:layout_weight="2"
                 android:layout_marginEnd="20dp" />
