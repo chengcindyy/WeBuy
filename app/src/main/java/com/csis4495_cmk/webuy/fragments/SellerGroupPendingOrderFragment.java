@@ -74,7 +74,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
 
     private String svaedProductId;
 
-    boolean outOfStock = true;
+    boolean isEnough;
 
     private GroupDetailInventoryRecyclerAdapter adapter;
 
@@ -120,20 +120,22 @@ public class SellerGroupPendingOrderFragment extends Fragment {
         getOrderData();
 
         btnAllocate.setOnClickListener(v -> {
+            List<Inventory> tempInventoryList = new ArrayList<>();
+            tempInventoryList = inventoryList;
+            isEnough = true;
+            Log.d(TAG, "First set inEnough = : " + isEnough);
             selectedOrderMap = adapter.getToAllocateMap();
+            List<Inventory> toUpdateInventory = new ArrayList<>();
+            Map<String, ArrayList<String>> toUpdateOrder = new HashMap<>();
             Log.d(TAG, "Allocate click selectedOrderMap: " + selectedOrderMap);
+
             if (selectedOrderMap == null || selectedOrderMap.size() == 0) {
                 Toast.makeText(getContext(), "Please select an order", Toast.LENGTH_SHORT).show();
             } else {
-                boolean isEnough = true;
-                List<Inventory> toUpdateInventory = new ArrayList<>();
-                Map<String, ArrayList<String>> toUpdateOrder = new HashMap<>();
-
                 outerLoop:
                 // Iterate the selectedOrderMap
                 for (Map.Entry<String, Map<String, Boolean>> selectedOrderEntry : selectedOrderMap.entrySet()) {
                     String orderId = selectedOrderEntry.getKey();
-
                     Map<String, Boolean> selectedItemsMap = selectedOrderEntry.getValue();
                     Log.d(TAG, "Allocate click: selectedItems " + selectedItemsMap);
 
@@ -165,7 +167,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                                 order_style_key = productId + "_" + styleId;
                                 Log.d(TAG, "Allocate click: productId_styleId: " + order_style_key);
                             }
-                            for (Inventory i : inventoryList) {
+                            for (Inventory i : tempInventoryList) {
                                 if (i.getProductStyleKey().contains(order_style_key)) {
                                     Log.d(TAG, "Allocate click: inventory name: " + i.getInventoryTitle());
                                     Integer oldInStock = i.getInStock();
@@ -174,11 +176,11 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                                     Log.d(TAG, "Allocate click: inventory in stock Before: " + Integer.toString(oldInStock));
                                     Log.d(TAG, "Allocate click: inventory to allocated Before: " + Integer.toString(oldToAllocated));
                                     Log.d(TAG, "Allocate click: inventory allocated Before: " + Integer.toString(oldAllocated));
-
                                     if (oldInStock < orderAmount) {
+                                        Log.d(TAG, "oldInStock < orderAmount, set inEnough = : " + isEnough);
+                                        Log.d(TAG, i.getInventoryName() + " oldStock " + Integer.toString(oldInStock));
+                                        Log.d(TAG, item.getOrderAmount() + " orderAmount " + Integer.toString(orderAmount));
                                         isEnough = false;
-                                        toUpdateOrder.clear();
-                                        toUpdateInventory.clear();
                                         break outerLoop;
                                     } else {
                                         Integer newInStock = oldInStock - orderAmount;
@@ -203,6 +205,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                         }
                     }
                 }
+
                 if (isEnough) {
                     Log.d(TAG, "Allocate click toUpdateInventory: " + toUpdateInventory);
                     Log.d(TAG, "Allocate click toUpdateOrder: " + toUpdateOrder);
@@ -243,7 +246,6 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                             }
                         }
                     }
-
                     if (listener != null) {
                         svaedProductId = productId;
                         listener.onGroupOrderInventoryAllocated();
@@ -254,32 +256,18 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                     }
                 } else {
                     Toast.makeText(getContext(), "Not enough inventory, please select again", Toast.LENGTH_SHORT).show();
+                    isEnough = true;
+                    tempInventoryList.clear();
+                    Log.d(TAG, "Reset inEnough = : " + isEnough);
                 }
             }
         });
+
         return view;
     }
 
-    private void checkOutOfStock(){
-        for (Inventory i : inventoryList) {
-            if (i.getInStock() != 0) {
-                outOfStock = false;
-                break;
-            }
-        }
-        if (outOfStock == true) {
-            Log.d(TAG, "check btnAllocate visibility: outOfStock " + outOfStock);
-            btnAllocate.setVisibility(View.VISIBLE);
-            btnAllocate.setText("Out of stock");
-            btnAllocate.setEnabled(false);
-        } else {
-            btnAllocate.setVisibility(View.VISIBLE);
-            btnAllocate.setEnabled(true);
-        }
-    }
-
     private void getNewInventoryData() {
-        if(svaedProductId != null){
+        if (svaedProductId != null) {
             productId = svaedProductId;
         }
         inventoryList.clear();
@@ -290,14 +278,33 @@ public class SellerGroupPendingOrderFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Inventory i = dataSnapshot.getValue(Inventory.class);
-                    if(i.getProductId().equals(productId)){
+                    if (i.getProductId().equals(productId)) {
                         inventoryList.add(i);
                         inventoryIdMap.put(dataSnapshot.getKey(), i.getProductStyleKey());
                     }
                 }
-                checkOutOfStock();
+                Log.d(TAG, "getNewInventoryData check out of stock : " + inventoryList);
                 getOrderData();
+//                outOfStock = true;
+//                for (Inventory i : inventoryList) {
+//                    if (i.getInStock() != 0) {
+//                        outOfStock = false;
+//                        break;
+//                    }else{
+//                        outOfStock = true;
+//                    }
+//                }
+//                if (outOfStock == true) {
+//                    Log.d(TAG, "check btnAllocate visibility: outOfStock " + outOfStock);
+//                    btnAllocate.setVisibility(View.VISIBLE);
+//                    btnAllocate.setText("Out of stock");
+//                    btnAllocate.setEnabled(false);
+//                } else {
+//                    btnAllocate.setVisibility(View.VISIBLE);
+//                    btnAllocate.setEnabled(true);
+//                }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
@@ -311,8 +318,24 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                 if (inventories != null) {
                     inventoryList.clear();
                     inventoryList = inventories;
+//                    for (Inventory i : inventories) {
+//                        if (i.getInStock() != 0) {
+//                            outOfStock = false;
+//                            break;
+//                        }else{
+//                            outOfStock = true;
+//                        }
+//                    }
+//                    if (outOfStock == true) {
+//                        Log.d(TAG, "check btnAllocate visibility: outOfStock " + outOfStock);
+//                        btnAllocate.setVisibility(View.VISIBLE);
+//                        btnAllocate.setText("Out of stock");
+//                        btnAllocate.setEnabled(false);
+//                    } else {
+//                        btnAllocate.setVisibility(View.VISIBLE);
+//                        btnAllocate.setEnabled(true);
+//                    }
                     Log.d(TAG, "livemodel inventory: " + inventoryList);
-                    checkOutOfStock();
                 }
             });
 
@@ -348,6 +371,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
 
     public void getOrderData() {
         orderIdandItemsMap.clear();
+
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
