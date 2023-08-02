@@ -15,6 +15,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
@@ -96,7 +97,7 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.card_customer_home_groups, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.card_customer_home_groups_new, parent, false);
         return new CustomerHomeGroupListRecyclerAdapter.ViewHolder(v);
     }
 
@@ -131,9 +132,9 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
 
         groupType = groupsEntryList.get(position).getValue().getGroupType();
         if (groupType == 0) {
-            holder.tvGroupType.setText("in-stock");
+            holder.tvGroupType.setText("In-stock");
         } else if (groupType == 1) {
-            holder.tvGroupType.setText("pre-order");
+            holder.tvGroupType.setText("Pre-order");
         } else {
             holder.tvGroupType.setText("no type");
         }

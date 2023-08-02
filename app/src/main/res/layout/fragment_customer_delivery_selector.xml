@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="20dp"
+    tools:context=".fragments.CustomerCheckoutPaymentSelectorFragment">
+
+    <RadioGroup
+        android:id="@+id/radio_group_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- RADIO BUTTON: DELIVERY -->
+        <RadioButton
+            android:id="@+id/radio_btn_home_delivery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:drawableLeft="@drawable/outline_local_shipping_24"
+            android:drawablePadding="10dp"
+            android:visibility="gone"
+            android:hint="Home delivery"/>
+
+        <!-- CONTACT INFO -->
+        <LinearLayout
+            android:id="@+id/linearLayout_contact_info_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="30dp"
+            android:visibility="gone">
+
+            <!-- NAME -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_delivery_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:hint="Full name"
+                android:textColorHint="@color/light_grey"
+                app:boxBackgroundColor="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- PHONE -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_delivery_phone"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginTop="5dp"
+                android:hint="Contact number"
+                android:textColorHint="@color/light_grey"
+                app:boxBackgroundColor="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- EMAIL -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_delivery_email"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginTop="5dp"
+                android:hint="Email"
+                android:textColorHint="@color/light_grey"
+                app:boxBackgroundColor="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:text="" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- ADDRESS -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_delivery_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:hint="Address"
+                android:textColorHint="@color/light_grey"
+                app:boxBackgroundColor="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:inputType="text"
+                    android:text="" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- CITY & POSTAL CODE-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- CITY -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edit_delivery_city"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:hint="City"
+                    android:textColorHint="@color/light_grey"
+                    app:boxBackgroundColor="@null">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <!-- POSTAL CODE -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edit_delivery_postal_code"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:hint="Postal code"
+                    android:textColorHint="@color/light_grey"
+                    app:boxBackgroundColor="@null"
+                    app:hintTextColor="@color/deep_blue"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- PROVINCE & COUNTRY-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp">
+
+                <!-- PROVINCE -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Province"
+                    android:textColorHint="@color/light_grey"
+                    app:boxBackgroundColor="@null">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/autoComplete_delivery_province"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- COUNTRY -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:hint="Country"
+                    android:textColorHint="@color/light_grey"
+                    app:boxBackgroundColor="@null">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/autoComplete_delivery_country"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txv_show_fee"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginVertical="10dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:hint="Click to check delivery fee"
+                    android:background="@drawable/text_view_outline"/>
+
+                <Button
+                    android:id="@+id/btn_check_shipping_fee"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="10dp"
+                    android:background="@drawable/button_solid"
+                    android:text="@string/check"
+                    android:textAllCaps="true" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <!-- RADIO BUTTON: PICKUP -->
+        <RadioButton
+            android:id="@+id/radio_btn_self_pickup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:visibility="gone"
+            android:drawableLeft="@drawable/outline_storefront_24"
+            android:drawablePadding="10dp"
+            android:hint="Store pickup"/>
+
+        <LinearLayout
+            android:id="@+id/linearLayout_pick_up_info_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginLeft="30dp">
+
+            <!-- LOCATION -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Pickup locations"
+                app:boxBackgroundColor="@null">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoComplete_delivery_store_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- NAME -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_pick_up_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:hint="Full name"
+                android:textColorHint="@color/light_grey"
+                app:boxBackgroundColor="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- PHONE -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_pick_up_phone"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginTop="5dp"
+                android:hint="Contact number"
+                android:textColorHint="@color/light_grey"
+                app:boxBackgroundColor="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+    </RadioGroup>
+
+
+    <Button
+        android:id="@+id/btn_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/radio_group_container"
+        android:layout_alignStart="@+id/radio_group_container"
+        android:layout_alignEnd="@+id/radio_group_container"
+        android:layout_marginVertical="10dp"
+        android:background="@drawable/button_solid"
+        android:text="@string/confirm"
+        android:textAllCaps="true" />
+
+</RelativeLayout>

@@ -123,17 +123,17 @@ public class CustomerCheckoutFragment extends Fragment {
                         bottomSheetDialog.show(getParentFragmentManager(), "Delivery BottomSheet Show");
 
 
-//                        // Set text for payment
-//                        model.getSelectedPayment().observe(getViewLifecycleOwner(), new Observer<String>() {
-//                            @Override
-//                            public void onChanged(String payment) {
-//                                if(payment != null){
-//                                    txvPayment.setText(payment);
-//                                }
-//                            }
-//                        });
-
-
+                        // Set text for deliveryInfo
+                        model.getShipmentInfoObject().observe(getViewLifecycleOwner(), new Observer<CustomerCheckoutDataViewModel.ShipmentInfo>() {
+                            @Override
+                            public void onChanged(CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo) {
+                                if (shipmentInfo != null){
+                                    txvShipment.setText(shipmentInfo.getMethod());
+                                    txvReceiverPhone.setText(shipmentInfo.getReceiver()+" "+shipmentInfo.getPhone());
+                                    txvAddress.setText(shipmentInfo.getAddress());
+                                }
+                            }
+                        });
                     }
 
                     @Override
