@@ -34,6 +34,7 @@ import java.util.Set;
 public class CustomerCartItemsFragment extends Fragment
                     implements CustomerCartItemsAdapter.onCartSellerBannerListener{
 
+    private final int CART = 1;
     private NavController navController;
     RecyclerView recyclerView;
     TextView tvNoItems, tvCartItemsTotal, tvCartItemsCheckoutAmount;
@@ -231,7 +232,7 @@ public class CustomerCartItemsFragment extends Fragment
             } else if (checkOutSellerSet.size() == 0) { //no checkout item
                 Toast.makeText(getContext(),"Please select at least one item",Toast.LENGTH_SHORT).show();
             } else {
-                CustomerCheckoutFragment.newInstance();
+                CustomerCheckoutFragment.newInstance(CART);
                 navController.navigate(R.id.customerCheckoutFragment);
             }
         });

@@ -52,6 +52,7 @@ import java.util.Map;
 public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         implements CustomerGroupStyleAdapter.onStyleItemListener{
 
+    private final int DIRECTLY_BUY = 0;
     private NavController navController;
     private final static String ARG_GROUPID = "groupId";
     private final static String ARG_GROUPJSON = "groupJson";
@@ -275,7 +276,24 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         });
 
         //TODO: direct checkout
+        btnDirectCheckout.setOnClickListener(v -> {
+            orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
+            //check style
+            if (group.getGroupStyles() != null) {
+                if (selectedStyle == null) {
+                    Toast.makeText(getContext(), "Please select a style", Toast.LENGTH_SHORT).show();
+                } else {
+                    //checkAmountValidity(inventoryAmount,getContext());
+                }
+            } else {
+                //checkAmountValidity(inventoryAmount,getContext());
+                Log.d("addToCart","with style");
+            }
 
+            CustomerCheckoutFragment.newInstance(DIRECTLY_BUY);
+            navController.navigate(R.id.customerCheckoutFragment);
+
+        });
         //add to cart
         btnAddToCart.setOnClickListener(v -> {
             orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
@@ -288,8 +306,7 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                 }
             } else {
                 checkAmountValidity(inventoryAmount,getContext());
-                Log.d("aaa","with style");
-
+                Log.d("addToCart","with style");
             }
 
         });
@@ -332,7 +349,7 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
 
         } else {
             if (orderAmount <= 0 || orderAmount > inventoryAmount) {
-                etOrderAmount.setError("Amount must be greater than 0 and less than? " + inventoryAmount);
+                etOrderAmount.setError("Amount must be greater than 0 and less than " + inventoryAmount);
             } else {
                 //upload
                 CartItem item;
