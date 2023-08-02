@@ -21,7 +21,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.CheckInventoryRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.CheckInventoryRecyclerAdapter;
 
 import com.csis4495_cmk.webuy.viewmodels.SharedInventoryViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;

@@ -1,8 +1,7 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.recyclerview;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.media.metrics.BundleSession;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;

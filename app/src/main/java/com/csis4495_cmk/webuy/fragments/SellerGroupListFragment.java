@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.SellerGroupListViewPagerAdapter;
+import com.csis4495_cmk.webuy.adapters.viewpager.SellerGroupListViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 

@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.viewpager;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.recyclerview;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cottacush.android.currencyedittext.CurrencyEditText;
 import com.csis4495_cmk.webuy.R;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

@@ -19,13 +19,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.CustomerHomeGroupListRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.CustomerHomeGroupListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Wishlist;
 import com.csis4495_cmk.webuy.viewmodels.CustomerHomeFilterViewModel;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;

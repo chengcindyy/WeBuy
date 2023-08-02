@@ -13,7 +13,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,7 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.SellerProductListRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerProductListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

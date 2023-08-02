@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.recyclerview;
 
 import static android.content.ContentValues.TAG;
 
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingDeque;
 
 public class CheckInventoryRecyclerAdapter extends RecyclerView.Adapter<CheckInventoryRecyclerAdapter.ViewHolder> {
     private Map<String, Integer> inventoryMap;

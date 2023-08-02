@@ -23,7 +23,7 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.CartItem;
 import com.csis4495_cmk.webuy.models.Order;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
-import com.csis4495_cmk.webuy.adapters.CustomerCheckoutShoppingDetailsAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.CustomerCheckoutShoppingDetailsAdapter;
 import com.csis4495_cmk.webuy.models.Delivery;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCheckoutDataViewModel;
 import com.google.firebase.auth.FirebaseAuth;

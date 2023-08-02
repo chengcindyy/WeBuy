@@ -1,7 +1,5 @@
 package com.csis4495_cmk.webuy.fragments;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,20 +10,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.CustomerWishlistItemsAdapter;
-import com.csis4495_cmk.webuy.models.Group;
+import com.csis4495_cmk.webuy.adapters.recyclerview.CustomerWishlistItemsAdapter;
 import com.csis4495_cmk.webuy.models.Wishlist;
 import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 

@@ -31,8 +31,8 @@ import android.widget.Toast;
 
 import com.cottacush.android.currencyedittext.CurrencyEditText;
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.SellerAddGroupImagesAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerAddGroupStylesAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerAddGroupImagesAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerAddGroupStylesAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;

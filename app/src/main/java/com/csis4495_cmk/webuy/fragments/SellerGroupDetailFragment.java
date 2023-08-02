@@ -21,9 +21,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.SellerGroupDetailImageRecyclerAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerGroupDetailOrderListViewPagerAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerGroupDetailStyleListRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerGroupDetailImageRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.viewpager.SellerGroupDetailOrderListViewPagerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerGroupDetailStyleListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.google.android.gms.tasks.OnCompleteListener;

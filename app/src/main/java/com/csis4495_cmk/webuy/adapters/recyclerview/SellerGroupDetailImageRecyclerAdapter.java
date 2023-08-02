@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.recyclerview;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;

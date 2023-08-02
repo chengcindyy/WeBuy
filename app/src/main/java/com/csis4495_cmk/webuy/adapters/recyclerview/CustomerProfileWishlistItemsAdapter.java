@@ -1,12 +1,10 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.recyclerview;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -25,13 +23,13 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
-public class CustomerWishlistItemsAdapter extends RecyclerView.Adapter<CustomerWishlistItemsAdapter.ViewHolder> {
+public class CustomerProfileWishlistItemsAdapter extends RecyclerView.Adapter<CustomerProfileWishlistItemsAdapter.ViewHolder> {
     Context context;
     List<Wishlist> wishlistList;
     CustomerWishlistViewModel wishListViewModel;
     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-    public CustomerWishlistItemsAdapter(Context context, CustomerWishlistViewModel wishListViewModel, List<Wishlist> wishlistList) {
+    public CustomerProfileWishlistItemsAdapter(Context context, CustomerWishlistViewModel wishListViewModel, List<Wishlist> wishlistList) {
         this.context = context;
         this.wishListViewModel = wishListViewModel;
         this.wishlistList = wishlistList;
@@ -40,8 +38,8 @@ public class CustomerWishlistItemsAdapter extends RecyclerView.Adapter<CustomerW
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.card_wishlist_item, parent, false);
-        return new CustomerWishlistItemsAdapter.ViewHolder(v);
+        View v = LayoutInflater.from(context).inflate(R.layout.card_customer_wishlist_item_horizental, parent, false);
+        return new CustomerProfileWishlistItemsAdapter.ViewHolder(v);
     }
 
     @Override
@@ -49,17 +47,15 @@ public class CustomerWishlistItemsAdapter extends RecyclerView.Adapter<CustomerW
         Wishlist wishlist = wishlistList.get(position);
 
         holder.txvGroupName.setText(wishlist.getGroupName());
-        holder.txvGroupPrice.setText(wishlist.getGroupPrice());
-        Glide.with(context).load(wishlist.getGroupImage()).into(holder.imgGroupPic);
-
-
-        // Add to cart
-        holder.btnAddToCart.setOnClickListener(new View.OnClickListener() {
+        holder.txvGroupName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("btnAddToCart", "btnAddToCart clicked");
+                wishlist.getGroupId();
             }
         });
+
+        holder.txvGroupPrice.setText(wishlist.getGroupPrice());
+        Glide.with(context).load(wishlist.getGroupImage()).into(holder.imgGroupPic);
 
         // Show remove
         holder.btnMore.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +89,6 @@ public class CustomerWishlistItemsAdapter extends RecyclerView.Adapter<CustomerW
 
         ImageView imgGroupPic;
         TextView txvGroupName, txvGroupPrice;
-        Button btnAddToCart;
         ImageButton btnMore;
 
         public ViewHolder(@NonNull View itemView) {
@@ -101,7 +96,6 @@ public class CustomerWishlistItemsAdapter extends RecyclerView.Adapter<CustomerW
             imgGroupPic = itemView.findViewById(R.id.imv_cart_item_group_pic);
             txvGroupName = itemView.findViewById(R.id.tv_cart_item_group_name);
             txvGroupPrice = itemView.findViewById(R.id.tv_cart_item_group_price);
-            btnAddToCart = itemView.findViewById(R.id.btn_add_to_cart);
             btnMore = itemView.findViewById(R.id.btn_more);
         }
     }

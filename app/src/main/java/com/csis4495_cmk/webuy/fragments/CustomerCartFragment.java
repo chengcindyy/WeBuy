@@ -5,19 +5,16 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.CustomerCartViewPagerAdapter;
+import com.csis4495_cmk.webuy.adapters.viewpager.CustomerCartViewPagerAdapter;
 import com.csis4495_cmk.webuy.models.Wishlist;
 import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -25,7 +22,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

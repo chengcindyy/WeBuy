@@ -128,10 +128,19 @@
                     app:expandable_duration="300"
                     app:expandable_animation="bounce"
                     app:expandable_isExpanded="false"
-                    app:expandable_parentLayout="@layout/layout_parent_title"
-                    app:expandable_secondLayout="@layout/layout_second_customer_show_wish_list">
+                    app:expandable_parentLayout="@layout/layout_parent_title">
 
                 </com.skydoves.expandablelayout.ExpandableLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_profile_wishlist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/layout_content"
+                    android:layout_marginBottom="5dp"
+                    android:scrollbars="horizontal"
+                    android:visibility="gone"/>
+
 
                 <com.skydoves.expandablelayout.ExpandableLayout
                     android:id="@+id/expandableLayout_more_function"

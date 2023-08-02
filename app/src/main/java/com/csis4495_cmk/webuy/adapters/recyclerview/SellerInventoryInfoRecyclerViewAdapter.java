@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.recyclerview;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,13 +9,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.fragments.SellerInventoryFragment;
 import com.csis4495_cmk.webuy.fragments.SellerInventoryStockManagementFragment;
 import com.csis4495_cmk.webuy.models.Inventory;
 

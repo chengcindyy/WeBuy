@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.recyclerview;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -20,7 +20,6 @@ import com.csis4495_cmk.webuy.models.Inventory;
 import com.skydoves.expandablelayout.ExpandableLayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

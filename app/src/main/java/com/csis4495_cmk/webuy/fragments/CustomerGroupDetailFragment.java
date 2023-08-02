@@ -27,15 +27,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.CustomerGroupDetailImageViewPagerAdapter;
-import com.csis4495_cmk.webuy.adapters.CustomerGroupStyleAdapter;
+import com.csis4495_cmk.webuy.adapters.viewpager.CustomerGroupDetailImageViewPagerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.CustomerGroupStyleAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.csis4495_cmk.webuy.models.Seller;
 import com.csis4495_cmk.webuy.models.Wishlist;
 import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -91,7 +89,7 @@ public class CustomerGroupDetailFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_customer_group_detail, container, false);
+        return inflater.inflate(R.layout.fragment_customer_group_detail_new, container, false);
     }
 
     @Override

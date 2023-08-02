@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.viewpager;
 
 import android.content.Context;
 import android.view.LayoutInflater;

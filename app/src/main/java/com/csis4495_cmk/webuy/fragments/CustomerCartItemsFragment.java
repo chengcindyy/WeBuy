@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
-import com.csis4495_cmk.webuy.adapters.CustomerCartItemsAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.CustomerCartItemsAdapter;
 import com.csis4495_cmk.webuy.models.CartItem;
 
 import java.util.ArrayList;
