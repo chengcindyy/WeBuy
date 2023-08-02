@@ -74,7 +74,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
 
     private String svaedProductId;
 
-    boolean isEnough;
+    boolean isEnough = false;
 
     private GroupDetailInventoryRecyclerAdapter adapter;
 
@@ -285,26 +285,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                 }
                 Log.d(TAG, "getNewInventoryData check out of stock : " + inventoryList);
                 getOrderData();
-//                outOfStock = true;
-//                for (Inventory i : inventoryList) {
-//                    if (i.getInStock() != 0) {
-//                        outOfStock = false;
-//                        break;
-//                    }else{
-//                        outOfStock = true;
-//                    }
-//                }
-//                if (outOfStock == true) {
-//                    Log.d(TAG, "check btnAllocate visibility: outOfStock " + outOfStock);
-//                    btnAllocate.setVisibility(View.VISIBLE);
-//                    btnAllocate.setText("Out of stock");
-//                    btnAllocate.setEnabled(false);
-//                } else {
-//                    btnAllocate.setVisibility(View.VISIBLE);
-//                    btnAllocate.setEnabled(true);
-//                }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
