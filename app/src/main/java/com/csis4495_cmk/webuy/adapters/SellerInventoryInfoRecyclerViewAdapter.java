@@ -97,7 +97,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
             txvOrdered = itemView.findViewById(R.id.txv_ordered);
             txvAllocated = itemView.findViewById(R.id.txv_allocated);
             txvInStock = itemView.findViewById(R.id.txv_in_stock);
-            txvToAllocate = itemView.findViewById(R.id.txv_to_allocated);
+            txvToAllocate = itemView.findViewById(R.id.txv_to_allocate);
             txvToOrder = itemView.findViewById(R.id.txv_to_order);
             // Button
             btnStockMgmt = itemView.findViewById(R.id.btn_stock_mgmt);

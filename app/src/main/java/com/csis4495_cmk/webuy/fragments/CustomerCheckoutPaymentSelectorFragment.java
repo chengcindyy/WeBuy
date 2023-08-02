@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCheckoutDataViewModel;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
 
 public class CustomerCheckoutPaymentSelectorFragment extends BottomSheetDialogFragment {
 
-    private CheckBox checkBoxEmt, checkBoxCashDelivery, checkBoxCashStore, checkBoxCard;
+    private RadioGroup radioGroup;
     private Button btnConfirm;
     private CustomerCheckoutDataViewModel model;
     private String payment;
@@ -45,50 +47,53 @@ public class CustomerCheckoutPaymentSelectorFragment extends BottomSheetDialogFr
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        model = new ViewModelProvider(requireActivity()).get(CustomerCheckoutDataViewModel.class);
-        model.getPayments().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
-            @Override
-            public void onChanged(ArrayList<String> paymentsList) {
-                Log.d("PaymentTypesList", "List: " + paymentsList.toString());
-                for (String payment : paymentsList) {
-                    if (payment.equals("e-Transfer")) {
-                        checkBoxEmt.setVisibility(View.VISIBLE);
-                    } else if (payment.equals("Cash on delivery")) {
-                        checkBoxCashDelivery.setVisibility(View.VISIBLE);
-                    } else if (payment.equals("Pay in store")) {
-                        checkBoxCashStore.setVisibility(View.VISIBLE);
-                    } else if (payment.equals("Debit or Credit")) {
-                        checkBoxCard.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        });
-
-        // CheckBox
-        checkBoxEmt = view.findViewById(R.id.checkbox_child_1);
-        checkBoxCashDelivery = view.findViewById(R.id.checkbox_child_2);
-        checkBoxCashStore  = view.findViewById(R.id.checkbox_child_3);
-        checkBoxCard = view.findViewById(R.id.checkbox_child_4);
+        radioGroup = view.findViewById(R.id.radio_group_container);
 
         // Button
         btnConfirm = view.findViewById(R.id.btn_confirm);
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkBoxEmt.isChecked()){
-                    payment = "e-Transfer";
-                } else if (checkBoxCashDelivery.isChecked()) {
-                    payment = "Cash on delivery";
-                } else if (checkBoxCashStore.isChecked()) {
-                    payment = "Pay in store";
-                } else {
-                    payment = "Debit or Credit";
-                }
-                Log.d("PaymentType", "Selected payment: "+payment );
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                RadioButton selectedRadioButton = radioGroup.findViewById(selectedId);
+                if (selectedRadioButton != null) {
+                    payment = selectedRadioButton.getText().toString();
+                    Log.d("PaymentType", "Selected payment: " + payment);
 
-                model.payment(payment);
-                dismiss();
+                    model.payment(payment);
+                    dismiss();
+                }
             }
         });
+
+
+        model = new ViewModelProvider(requireActivity()).get(CustomerCheckoutDataViewModel.class);
+        model.getPayments().observe(getViewLifecycleOwner(), new Observer<ArrayList<String>>() {
+            @Override
+            public void onChanged(ArrayList<String> paymentsList) {
+                Log.d("PaymentTypesList", "List: " + paymentsList.toString());
+                for (String payment : paymentsList) {
+                    RadioButton radioButton = view.findViewById(getRadioButtonId(payment));
+                    if (radioButton != null) {
+                        radioButton.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
+    }
+
+    private int getRadioButtonId(String payment) {
+        switch (payment) {
+            case "e-Transfer":
+                return R.id.radio_child_1;
+            case "Cash on delivery":
+                return R.id.radio_child_2;
+            case "Pay in store":
+                return R.id.radio_child_3;
+            case "Debit or Credit":
+                return R.id.radio_child_4;
+            default:
+                return -1;
+        }
     }
 }
