@@ -231,7 +231,7 @@ public class CustomerCartItemsFragment extends Fragment
             } else if (checkOutSellerSet.size() == 0) { //no checkout item
                 Toast.makeText(getContext(),"Please select at least one item",Toast.LENGTH_SHORT).show();
             } else {
-                CustomerCheckoutFragment.newInstance(viewModel);
+                CustomerCheckoutFragment.newInstance();
                 navController.navigate(R.id.customerCheckoutFragment);
             }
         });

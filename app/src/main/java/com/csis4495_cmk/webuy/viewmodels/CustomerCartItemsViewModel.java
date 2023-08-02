@@ -403,11 +403,3 @@ public class CustomerCartItemsViewModel extends ViewModel {
 // 7. if the group is expired and is still in the cart... what will happen?
 
 
-//        switch (product.getTax()) {
-//            case 0:
-//                tax[0] = 0;
-//            case 1:
-//                tax[0] = 0.05;
-//            case 2:
-//                tax[0] = 0.07 ;
-//        }

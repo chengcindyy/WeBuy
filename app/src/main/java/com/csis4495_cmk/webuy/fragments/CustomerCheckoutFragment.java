@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.models.CartItem;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
 import com.csis4495_cmk.webuy.adapters.CustomerCheckoutShoppingDetailsAdapter;
 import com.csis4495_cmk.webuy.models.Delivery;
@@ -30,24 +31,31 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class CustomerCheckoutFragment extends Fragment {
 
     final DatabaseReference sellersRef = FirebaseDatabase.getInstance().getReference("Seller");
     private CustomerCheckoutDataViewModel model;
+    private CustomerCartItemsViewModel cartItemsViewModel;
+    private ArrayList<CartItem> shoppingItems = new ArrayList<>();
+    private ArrayList<CustomerCartItemsViewModel.CartItemInfo> cartItemInfos = new ArrayList<>();
+    private String sellerId;
     private RecyclerView rvShoppingItemList;
     private TextView txvStoreName, txvShipment, txvReceiverPhone, txvAddress,
-                     txvPayment, txvProductAmount, txvShipmentAmount, txvGstAmount, txvPstAmount, txvOrderTotalPrice;
+                     txvPayment, txvCheckoutAmount, txvShipmentAmount, txvGstAmount, txvPstAmount, txvOrderTotalPrice;
     private EditText customerNote;
     private CustomerCheckoutShoppingDetailsAdapter adapter;
     private CustomerCartItemsViewModel customerCartItemsViewModel;
+    private double checkoutTotal = 0;
+    private double gstTotal = 0;
+    private double pstTotal = 0;
+    private double orderTotal = 0;
 
     public CustomerCheckoutFragment(){}
-    public CustomerCheckoutFragment(CustomerCartItemsViewModel customerCartItemsViewModel) {
-        this.customerCartItemsViewModel = customerCartItemsViewModel;
-    }
-    public static CustomerCheckoutFragment newInstance(CustomerCartItemsViewModel customerCartItemsViewModel){
-        CustomerCheckoutFragment fragment = new CustomerCheckoutFragment(customerCartItemsViewModel);
+
+    public static CustomerCheckoutFragment newInstance(){
+        CustomerCheckoutFragment fragment = new CustomerCheckoutFragment();
         return fragment;
     }
 
@@ -64,10 +72,71 @@ public class CustomerCheckoutFragment extends Fragment {
 
         // Initialized viewModel
         model = new ViewModelProvider(requireActivity()).get(CustomerCheckoutDataViewModel.class);
+        cartItemsViewModel = new ViewModelProvider(requireActivity()).get(CustomerCartItemsViewModel.class);
+        //set shoppingItems and cartInfos
+        cartItemsViewModel.getSellerItemsMapLiveData().observe(getViewLifecycleOwner(), new Observer<Map<String, ArrayList<CartItem>>>() {
+            @Override
+            public void onChanged(Map<String, ArrayList<CartItem>> stringArrayListMap) {
+                //clear data
+                shoppingItems.clear();
+                cartItemInfos.clear();
+                checkoutTotal = 0;
+                gstTotal = 0;
+                pstTotal = 0;
+
+                for (String sellerId: stringArrayListMap.keySet()) {
+                    for (CartItem cartItem: stringArrayListMap.get(sellerId)) {
+                        if (cartItem.getChecked()) {
+                            shoppingItems.add(cartItem);
+                        }
+                    }
+                }
+
+                cartItemsViewModel.getCartItemsInfoMapLiveData().observe(getViewLifecycleOwner(), cartItemCartItemInfoMap -> {
+                    for (CartItem cartItem: shoppingItems) {
+                        CustomerCartItemsViewModel.CartItemInfo cartItemInfo = cartItemCartItemInfoMap.get(cartItem);
+                        cartItemInfos.add(cartItemInfo);
+
+                        //calculate total
+                        int amount = cartItem.getAmount();
+                        double price = Double.parseDouble(cartItemInfo.getGroupPrice().split("CA\\$ ")[1]);
+                        double subTotal = price * amount;
+
+                        checkoutTotal += subTotal;
+                        switch (cartItemInfo.getProductTax()) {
+                            case 0:
+                                break;
+                            case 1:
+                                gstTotal += 0.05 * subTotal;
+                                break;
+                            case 2:
+                                gstTotal += 0.05 * subTotal;
+                                pstTotal += 0.07 * subTotal;
+                                break;
+                        }
+                    }
+                    Log.d("shopping", "Item size:"+shoppingItems.size()+ " Info size:"+ cartItemInfos.size());
+                    orderTotal = checkoutTotal + gstTotal + pstTotal;
+                    txvCheckoutAmount.setText("CA$ "+ String.format("%.2f", checkoutTotal));
+                    txvGstAmount.setText("CA$ "+ String.format("%.2f", gstTotal));
+                    txvPstAmount.setText("CA$ "+ String.format("%.2f", pstTotal));
+                    txvOrderTotalPrice.setText("CA$ " + String.format("%.2f", orderTotal));
+
+                    // two maps ready
+
+                    //set recyclerview
+                    rvShoppingItemList.setLayoutManager(new LinearLayoutManager(getContext()));
+                    adapter = new CustomerCheckoutShoppingDetailsAdapter(getContext(),shoppingItems,cartItemInfos);
+                    rvShoppingItemList.setAdapter(adapter);
+
+                });
+                // set seller information
+                setSellerInfo();
+            }
+        });
+
         // RecyclerView: shopping items
         rvShoppingItemList = view.findViewById(R.id.recyclerView_shopping_info);
-        rvShoppingItemList.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CustomerCheckoutShoppingDetailsAdapter(getContext());
         // TextViews
         txvStoreName = view.findViewById(R.id.txv_store_name);
         txvShipment = view.findViewById(R.id.txv_shipment_method);
@@ -76,7 +145,7 @@ public class CustomerCheckoutFragment extends Fragment {
         txvAddress = view.findViewById(R.id.txv_shipment_method_address);
         txvPayment = view.findViewById(R.id.txv_payment);
         setPaymentClickListener(txvPayment);
-        txvProductAmount = view.findViewById(R.id.txv_checkout_total_amount);
+        txvCheckoutAmount = view.findViewById(R.id.txv_checkout_total_amount);
         txvShipmentAmount = view.findViewById(R.id.txv_checkout_shipment_amount);
         txvGstAmount = view.findViewById(R.id.txv_checkout_gst_amount);
         txvPstAmount = view.findViewById(R.id.txv_checkout_pst_amount);
@@ -85,6 +154,25 @@ public class CustomerCheckoutFragment extends Fragment {
         customerNote = view.findViewById(R.id.edt_customer_notes);
 
 
+    }
+
+    private void setSellerInfo () {
+
+        if(shoppingItems != null || !shoppingItems.isEmpty()) {
+            sellerId = shoppingItems.get(0).getSellerId();
+            sellersRef.child(sellerId).child("storeInfo").child("storeName").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    // set seller store name
+                    txvStoreName.setText(snapshot.getValue(String.class));
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    txvStoreName.setText("Store N/A");
+                }
+            });
+        }
     }
 
     private void setShipmentClickListener(TextView txvShipment) {

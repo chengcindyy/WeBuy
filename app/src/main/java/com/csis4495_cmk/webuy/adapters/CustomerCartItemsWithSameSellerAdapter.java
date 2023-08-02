@@ -76,9 +76,6 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                 cartItemsInfoMap = cartItemCartItemInfoMap;
             }
         });
-
-        Log.d("TestMap", cartItems.size()+"");
-        Log.d("GGG", cartItemsInfoMap.size()+"");
     }
 
     public void setOnSingleCartItemListener(onSingleCartItemListener onSingleCartItemListener) {

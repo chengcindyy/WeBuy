@@ -65,7 +65,7 @@ public class CartItem {
 
     @Override
     public boolean equals(Object o) {
-        Log.d("aaa","equals");
+        Log.d("cartItem","equals");
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CartItem cartItem = (CartItem) o;
