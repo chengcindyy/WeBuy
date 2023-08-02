@@ -66,8 +66,8 @@ public class TestFragment extends Fragment {
                 DatabaseReference orderRef = reference.push();
 
 
-                String customerId = "UElcwADSG6ddV4jveqWDR98PIAC3";  //Karl
-//                String customerId2 ="0sO8iW7NRfSMOWB6TXIs0fEYOR33";  //Cindy
+//                String customerId = "UElcwADSG6ddV4jveqWDR98PIAC3";  //Karl
+                String customerId2 ="0sO8iW7NRfSMOWB6TXIs0fEYOR33";  //Cindy
 
                 int orderStatus = 0;
                 double itemsTotal = 200.00;
@@ -122,7 +122,7 @@ public class TestFragment extends Fragment {
 //                groupsAndItemsMap.put(pocky_GROUPID, pok_map);
 
 
-                Order order = new Order(customerId, groupsAndItemsMap, totalPrice, itemsTotal, gstTotal, pstTotal, orderDate, deliveryFee,
+                Order order = new Order(customerId2, groupsAndItemsMap, totalPrice, itemsTotal, gstTotal, pstTotal, orderDate, deliveryFee,
                         address, country, province, city, postalCode, paymentType, orderStatus);
 
                 orderRef.setValue(order).addOnCompleteListener(new OnCompleteListener<Void>() {

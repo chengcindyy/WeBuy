@@ -17,6 +17,16 @@ public class SharedGroupInventoryListViewModel extends ViewModel {
 
     private final MutableLiveData<String> groupId = new MutableLiveData<>();
 
+    private final MutableLiveData<String> productId = new MutableLiveData<>();
+
+    public void setProductId(String value) {
+        productId.setValue(value); // This will work, since myString is MutableLiveData
+    }
+
+    public LiveData<String> getProductId() {
+        return productId;
+    }
+
     private final MutableLiveData<Group> group = new MutableLiveData<>();
 
     private final MutableLiveData<Map<String,String>> inventoryIdMap = new MutableLiveData<>();

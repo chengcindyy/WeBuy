@@ -41,6 +41,10 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
     private String groupId;
     private Group group;
 
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
     public void setInventoryList(List<Inventory> inventoryList) {
         this.inventoryList = inventoryList;
     }

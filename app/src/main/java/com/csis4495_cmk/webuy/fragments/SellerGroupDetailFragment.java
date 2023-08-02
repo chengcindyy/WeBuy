@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -28,6 +29,7 @@ import com.csis4495_cmk.webuy.adapters.SellerGroupDetailStyleListRecyclerAdapter
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.tools.OnGroupOrderInventoryAllocatedListener;
 import com.csis4495_cmk.webuy.viewmodels.SharedGroupInventoryListViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,6 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,7 +52,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class SellerGroupDetailFragment extends Fragment {
+public class SellerGroupDetailFragment extends Fragment implements OnGroupOrderInventoryAllocatedListener {
 
    private TextView gName, gDes, gPrice, gStart, gEnd, gCountdown, gQty, gInventory, gOrdered, gAllocated, gToAllocate;
    private RecyclerView imgRecyclerView, styleRecyclerView;
@@ -87,6 +90,8 @@ public class SellerGroupDetailFragment extends Fragment {
     SimpleDateFormat simpleDateFormat;
 
     private Group group;
+
+    private SharedGroupInventoryListViewModel listViewModel;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,8 +143,14 @@ public class SellerGroupDetailFragment extends Fragment {
         tabLayout = view.findViewById(R.id.group_detail_order_tab_layout);
         viewPager = view.findViewById(R.id.group_detail_order_view_pager);
 
-        viewPagerAdapter = new SellerGroupDetailOrderListViewPagerAdapter(getChildFragmentManager(), getLifecycle());
-        viewPager.setAdapter(viewPagerAdapter);
+//        viewPagerAdapter = new SellerGroupDetailOrderListViewPagerAdapter(getChildFragmentManager(), getLifecycle());
+//        viewPager.setAdapter(viewPagerAdapter);
+
+        getGroupDetail();
+
+        getInventoryData();
+
+        setViewPager();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -166,12 +177,12 @@ public class SellerGroupDetailFragment extends Fragment {
             }
         });
 
-
-        getGroupDetail();
-
-        getInventoryData();
-
         return view;
+    }
+
+    public void setViewPager() {
+        viewPagerAdapter = new SellerGroupDetailOrderListViewPagerAdapter(getChildFragmentManager(), getLifecycle());
+        viewPager.setAdapter(viewPagerAdapter);
     }
 
     private void getGroupDetail() {
@@ -359,21 +370,32 @@ public class SellerGroupDetailFragment extends Fragment {
                         styleAdapter.setInventoryList(inventoryList);
                         styleAdapter.notifyDataSetChanged();
                     }
-                    SharedGroupInventoryListViewModel listViewModel = new ViewModelProvider(requireActivity()).get(SharedGroupInventoryListViewModel.class);
-                    listViewModel.setInventoryList(inventoryList);
-                    listViewModel.setGroupId(groupId);
-                    listViewModel.setGroup(group);
-                    listViewModel.setinventoryIdMap(inventoryIdMap);
-
+                    if(getActivity()!=null){
+                        listViewModel = new ViewModelProvider(requireActivity()).get(SharedGroupInventoryListViewModel.class);
+                        shareLiveData();
+                    }
                 }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
 
     }
 
+    public void shareLiveData(){
+        listViewModel.setInventoryList(inventoryList);
+        listViewModel.setGroupId(groupId);
+        listViewModel.setGroup(group);
+        listViewModel.setinventoryIdMap(inventoryIdMap);
+        listViewModel.setProductId(productId);
+    }
 
+    @Override
+    public void onGroupOrderInventoryAllocated() {
+        getGroupDetail();
+        getInventoryData();
+        styleAdapter.notifyDataSetChanged();
+        setViewPager();
+    }
 }

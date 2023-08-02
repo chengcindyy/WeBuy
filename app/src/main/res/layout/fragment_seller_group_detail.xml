@@ -116,25 +116,10 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="Ordered: "
-                app:layout_constraintBottom_toTopOf="@+id/group_detail_allocated"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/group_detail_inventory" />
-
-            <TextView
-                android:id="@+id/group_detail_allocated"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Allocated: "
                 app:layout_constraintBottom_toTopOf="@+id/group_detail_toAllocate"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/group_detail_ordered" />
-
+                app:layout_constraintTop_toBottomOf="@+id/group_detail_inventory" />
 
             <TextView
                 android:id="@+id/group_detail_toAllocate"
@@ -145,10 +130,25 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="To Allocate: "
+                app:layout_constraintBottom_toTopOf="@+id/group_detail_allocated"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/group_detail_ordered" />
+
+
+            <TextView
+                android:id="@+id/group_detail_allocated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Allocated: "
                 app:layout_constraintBottom_toTopOf="@+id/group_detail_start"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/group_detail_allocated" />
+                app:layout_constraintTop_toBottomOf="@+id/group_detail_toAllocate" />
 
             <TextView
                 android:id="@+id/group_detail_start"
@@ -162,7 +162,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/group_detail_end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/group_detail_toAllocate" />
+                app:layout_constraintTop_toBottomOf="@+id/group_detail_allocated" />
 
             <TextView
                 android:id="@+id/group_detail_end"
