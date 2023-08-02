@@ -120,18 +120,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
                     }
 
-                    //time - change group status
-                    if (group.getGroupType() == 1) { // pre-order
-                        Long startTimestamp = group.getStartTimestamp();
-                        Long endTimestamp = group.getEndTimestamp();
-                        long currentTime = System.currentTimeMillis();
-
-                        if (groupStatus == 1 && currentTime > endTimestamp) { // ongoing to expire: 1->2
-                            allGroupRef.child(groupId).child("status").setValue(2);
-                        } else if (groupStatus == 0 && currentTime > startTimestamp) { // not started to ongoing: 0->1
-                            allGroupRef.child(groupId).child("status").setValue(1);
-                        }
-                    }
+                    checkGroupTimestamp(groupId, group, groupStatus);
 
                     //soldAmount
 
@@ -202,9 +191,14 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                                 mGroupMap.clear();
                                 for (DataSnapshot groupSnapshot: snapshot.getChildren()) {
                                     String sellerId = groupSnapshot.child("sellerId").getValue(String.class);
-                                    if (sellersInCity.contains(sellerId)){
-                                        String groupId = groupSnapshot.getKey();
-                                        Group group = groupSnapshot.getValue(Group.class);
+                                    String groupId = groupSnapshot.getKey();
+                                    Group group = groupSnapshot.getValue(Group.class);
+                                    int status = groupSnapshot.child("status").getValue(Integer.class);
+
+                                    if (sellersInCity.contains(sellerId) && status != 2){
+
+                                        checkGroupTimestamp(groupId, group, status);
+
                                         mGroupMap.put(groupId,group);  // Update the filtered map
                                     }
                                 }
@@ -328,6 +322,21 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                 UpdateRecyclerView(mGroupMap);
             }
         });
+    }
+
+    private void checkGroupTimestamp(String groupId, Group group, int status) {
+        //time - change group status
+        if (group.getGroupType() == 1) { // pre-order
+            Long startTimestamp = group.getStartTimestamp();
+            Long endTimestamp = group.getEndTimestamp();
+            long currentTime = System.currentTimeMillis();
+
+            if (status == 1 && currentTime > endTimestamp) { // ongoing to expire: 1->2
+                allGroupRef.child(groupId).child("status").setValue(2);
+            } else if (status == 0 && currentTime > startTimestamp) { // not started to ongoing: 0->1
+                allGroupRef.child(groupId).child("status").setValue(1);
+            }
+        }
     }
 
 
