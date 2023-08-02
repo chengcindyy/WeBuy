@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SellerGroupCanceledOrderFragment">
+    tools:context=".fragments.SellerGroupProcessedOrderFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -12,13 +12,13 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_group_order_canceled"
+            android:id="@+id/tv_group_order_processed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="There are no canceled orders" />
+            android:text="There are no processed orders" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_group_order_canceled"
+            android:id="@+id/rv_group_order_processed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

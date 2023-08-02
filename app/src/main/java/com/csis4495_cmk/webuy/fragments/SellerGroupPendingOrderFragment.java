@@ -42,8 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.grpc.InternalGlobalInterceptors;
-
 
 public class SellerGroupPendingOrderFragment extends Fragment {
 
@@ -105,7 +103,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_seller_group_order, container, false);
+        View view = inflater.inflate(R.layout.fragment_seller_group_pending, container, false);
 
         selectedOrderMap = new HashMap<>();
 
@@ -138,7 +136,6 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                     String orderId = selectedOrderEntry.getKey();
                     Map<String, Boolean> selectedItemsMap = selectedOrderEntry.getValue();
                     Log.d(TAG, "Allocate click: selectedItems " + selectedItemsMap);
-
                     // Check if the selected orderId exists in orderIdandItemsMap
                     if (orderIdandItemsMap.containsKey(orderId)) {
                         Map<String, Order.OrderItemInfo> orderItemInfoMap = orderIdandItemsMap.get(orderId);
@@ -180,6 +177,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                                         Log.d(TAG, "oldInStock < orderAmount, set inEnough = : " + isEnough);
                                         Log.d(TAG, i.getInventoryName() + " oldStock " + Integer.toString(oldInStock));
                                         Log.d(TAG, item.getOrderAmount() + " orderAmount " + Integer.toString(orderAmount));
+                                       adapter.uncheckAll();
                                         isEnough = false;
                                         break outerLoop;
                                     } else {
@@ -216,12 +214,50 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                             toUpdateGroupOrder.setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
-                                    Log.d(TAG, "Successfully allocated order: " + orderId + ", " + id);
+
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Log.d(TAG, "Failed to allocate order: " + orderId + ", " + id);
+                                }
+                            });
+
+                            DatabaseReference groupsAndItemsMapRef = orderRef.child(orderId).child("groupsAndItemsMap");
+                            groupsAndItemsMapRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    boolean allAllocated = true;
+                                    for (DataSnapshot groupSnapshot : snapshot.getChildren()) {
+                                        for (DataSnapshot itemSnapshot : groupSnapshot.getChildren()) {
+                                            Boolean allocated = itemSnapshot.child("allocated").getValue(Boolean.class);
+                                            if (allocated == null || !allocated) {
+                                                allAllocated = false;
+                                                break;
+                                            }
+                                        }
+                                        if (!allAllocated) break;
+                                    }
+
+                                    if (allAllocated) {
+                                        DatabaseReference orderStatusRef = orderRef.child(orderId).child("orderStatus");
+                                        orderStatusRef.setValue(2).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                Log.d(TAG, "Successfully updated orderStatus to 2 for order: " + orderId);
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.d(TAG, "Failed to update orderStatus for order: " + orderId);
+                                            }
+                                        });
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
                                 }
                             });
                         }
@@ -258,6 +294,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                     Toast.makeText(getContext(), "Not enough inventory, please select again", Toast.LENGTH_SHORT).show();
                     isEnough = true;
                     tempInventoryList.clear();
+                    adapter.uncheckAll();
                     Log.d(TAG, "Reset inEnough = : " + isEnough);
                 }
             }
@@ -390,7 +427,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                         Log.d(TAG, "setInventoryList: " + inventoryList);
                     }
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
-                    tv_no.setText("To Allocate");
+                    tv_no.setText("To Allocate: ");
                     Log.d(TAG, "check orderIdandItemsMap: " + orderIdandItemsMap);
                     Log.d(TAG, "check inventoryList: " + inventoryList);
                 }

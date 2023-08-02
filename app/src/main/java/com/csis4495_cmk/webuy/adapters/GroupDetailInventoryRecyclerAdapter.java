@@ -40,10 +40,16 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
 
     private List<Inventory> inventoryList;
 
+    private boolean isAllocatedOrder = false;
     private String groupId;
     private Group group;
-
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+    private List<ViewHolder> viewHolders = new ArrayList<>();
+
+    public void setAllocatedOrder(boolean allocatedOrder) {
+        isAllocatedOrder = allocatedOrder;
+    }
 
     public void setGroupId(String groupId) {
         this.groupId = groupId;
@@ -90,8 +96,9 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
 
     @Override
     public void onBindViewHolder(@NonNull GroupDetailInventoryRecyclerAdapter.ViewHolder holder, int position) {
+        viewHolders.add(holder);
         DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
-        Log.d(TAG, "onBindViewHolder: check inventory" + inventoryList);
+//        Log.d(TAG, "onBindViewHolder: check inventory" + inventoryList);
         groupRef.child(groupId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -154,6 +161,10 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                 Integer ordered = orderItemInfo.getOrderAmount();
                 holder.ordered.setText(Integer.toString(ordered));
 
+                if(isAllocatedOrder){
+                    holder.cb.setEnabled(false);
+                    holder.cb.setVisibility(View.GONE);
+                }
                 holder.cb.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -178,10 +189,24 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                     }
                 });
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) { /* None*/ }
         });
+
+    }
+
+    public void uncheckAll() {
+        for (ViewHolder viewHolder : viewHolders) {
+            viewHolder.cb.setChecked(false);
+        }
+        toAllocateMap.clear();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        super.onViewRecycled(holder);
+        viewHolders.remove(holder);
     }
 
     @Override
@@ -192,7 +217,6 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView email, style, ordered, date;
         CheckBox cb;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             date = itemView.findViewById(R.id.tv_group_order_item_date);
