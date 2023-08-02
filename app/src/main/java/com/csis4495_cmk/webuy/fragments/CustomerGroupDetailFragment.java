@@ -417,7 +417,7 @@ public class CustomerGroupDetailFragment extends Fragment
 
     @Override
     public void onStyleClicked(int stylePosition, ProductStyle style) {
-        Toast.makeText(getContext(),"styleId: "+ style.getStyleId(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(),"styleId: "+ style.getStyleId(), Toast.LENGTH_SHORT).show();
         tvGroupPrice.setText("CA$ "+ style.getStylePrice());
         selectedStyle = style;
         selectedStylePosition = stylePosition;

@@ -18,7 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
+import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
 import com.csis4495_cmk.webuy.adapters.CustomerCheckoutShoppingDetailsAdapter;
 import com.csis4495_cmk.webuy.models.Delivery;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCheckoutDataViewModel;
@@ -40,14 +40,14 @@ public class CustomerCheckoutFragment extends Fragment {
                      txvPayment, txvProductAmount, txvShipmentAmount, txvGstAmount, txvPstAmount, txvOrderTotalPrice;
     private EditText customerNote;
     private CustomerCheckoutShoppingDetailsAdapter adapter;
-    private CartItemsViewModel cartItemsViewModel;
+    private CustomerCartItemsViewModel customerCartItemsViewModel;
 
     public CustomerCheckoutFragment(){}
-    public CustomerCheckoutFragment(CartItemsViewModel cartItemsViewModel) {
-        this.cartItemsViewModel = cartItemsViewModel;
+    public CustomerCheckoutFragment(CustomerCartItemsViewModel customerCartItemsViewModel) {
+        this.customerCartItemsViewModel = customerCartItemsViewModel;
     }
-    public static CustomerCheckoutFragment newInstance(CartItemsViewModel cartItemsViewModel){
-        CustomerCheckoutFragment fragment = new CustomerCheckoutFragment(cartItemsViewModel);
+    public static CustomerCheckoutFragment newInstance(CustomerCartItemsViewModel customerCartItemsViewModel){
+        CustomerCheckoutFragment fragment = new CustomerCheckoutFragment(customerCartItemsViewModel);
         return fragment;
     }
 

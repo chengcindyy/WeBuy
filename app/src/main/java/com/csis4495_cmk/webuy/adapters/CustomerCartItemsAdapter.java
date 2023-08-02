@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.CartItem;
-import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
+import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,7 +33,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
                                     implements CustomerCartItemsWithSameSellerAdapter.onSingleCartItemListener{
 
     Context context;
-    CartItemsViewModel viewModel;
+    CustomerCartItemsViewModel viewModel;
     LifecycleOwner lifecycleOwner;
     Map<String, ArrayList<CartItem>> sellerItemsMap;
     Map<String, Boolean> sellerAllItemsCheckedMap;
@@ -43,7 +43,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
 
     DatabaseReference sellerRef = FirebaseDatabase.getInstance().getReference("Seller");
 
-    public CustomerCartItemsAdapter(Context context, CartItemsViewModel viewModel, LifecycleOwner lifecycleOwner) {
+    public CustomerCartItemsAdapter(Context context, CustomerCartItemsViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.context = context;
         this.viewModel = viewModel;
         this.lifecycleOwner = lifecycleOwner;

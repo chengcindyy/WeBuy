@@ -9,8 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -35,10 +33,9 @@ import com.csis4495_cmk.webuy.adapters.CustomerGroupStyleAdapter;
 import com.csis4495_cmk.webuy.models.CartItem;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.ProductStyle;
-import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
+import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
@@ -389,7 +386,7 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         alertDialog.show();
     }
     private void checkItemInCart(CartItem item, OnCheckItemInCartListener listener) {
-        CartItemsViewModel viewModel = new ViewModelProvider(requireActivity()).get(CartItemsViewModel.class);
+        CustomerCartItemsViewModel viewModel = new ViewModelProvider(requireActivity()).get(CustomerCartItemsViewModel.class);
         viewModel.getSellerItemsMapLiveData().observe(requireActivity(), new Observer<Map<String, ArrayList<CartItem>>>() {
             @Override
             public void onChanged(Map<String, ArrayList<CartItem>> stringArrayListMap) {

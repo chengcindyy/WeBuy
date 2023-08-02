@@ -2,10 +2,6 @@ package com.csis4495_cmk.webuy.models;
 
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
-import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
-
 import java.util.Objects;
 
 public class CartItem {

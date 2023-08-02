@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
+import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
 import com.csis4495_cmk.webuy.adapters.CustomerCartItemsAdapter;
 import com.csis4495_cmk.webuy.models.CartItem;
 
@@ -39,13 +39,13 @@ public class CustomerCartItemsFragment extends Fragment
     TextView tvNoItems, tvCartItemsTotal, tvCartItemsCheckoutAmount;
     CheckBox cbxSelectAll;
     CustomerCartItemsAdapter customerCartItemsAdapter;
-    CartItemsViewModel viewModel;
+    CustomerCartItemsViewModel viewModel;
 //    Map<String, ArrayList<CartItem>> sellerItemsMap;
 //    Map<String, Boolean> sellerAllItemsCheckedMap;
-//    Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemsInfoMap;
+//    Map<CartItem, CustomerCartItemsViewModel.CartItemInfo> cartItemsInfoMap;
     Map<String, ArrayList<CartItem>> sellerItemsMap = new HashMap<>();
     Map<String, Boolean> sellerAllItemsCheckedMap = new HashMap<>();
-    Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemsInfoMap = new HashMap<>();
+    Map<CartItem, CustomerCartItemsViewModel.CartItemInfo> cartItemsInfoMap = new HashMap<>();
 
 
     public CustomerCartItemsFragment() {
@@ -82,7 +82,7 @@ public class CustomerCartItemsFragment extends Fragment
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        viewModel = new ViewModelProvider(requireActivity()).get(CartItemsViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(CustomerCartItemsViewModel.class);
         viewModel.getSellerItemsMapLiveData().observe(getViewLifecycleOwner(), new Observer<Map<String, ArrayList<CartItem>>>() {
             @Override
             public void onChanged(Map<String, ArrayList<CartItem>> stringArrayListMap) {
@@ -111,9 +111,9 @@ public class CustomerCartItemsFragment extends Fragment
                     for (CartItem sellerCartItem: stringArrayListMap.get(sellerId)) {
                         if (sellerCartItem.getChecked()) {
                             checkoutAmount++;
-                            viewModel.getCartItemsInfoMapLiveData().observe(getViewLifecycleOwner(), new Observer<Map<CartItem, CartItemsViewModel.CartItemInfo>>() {
+                            viewModel.getCartItemsInfoMapLiveData().observe(getViewLifecycleOwner(), new Observer<Map<CartItem, CustomerCartItemsViewModel.CartItemInfo>>() {
                                 @Override
-                                public void onChanged(Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
+                                public void onChanged(Map<CartItem, CustomerCartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
                                     if (cartItemCartItemInfoMap.get(sellerCartItem) != null) {
                                         String strPrice = cartItemCartItemInfoMap.get(sellerCartItem).getGroupPrice();
                                         if (strPrice != null) {
@@ -173,41 +173,63 @@ public class CustomerCartItemsFragment extends Fragment
             viewModel.setSellerItemsMapLiveData(sellerItemsMap);
         });
 
-        viewModel.getCartItemsInfoMapLiveData().observe(getViewLifecycleOwner(), new Observer<Map<CartItem, CartItemsViewModel.CartItemInfo>>() {
+        viewModel.getCartItemsInfoMapLiveData().observe(getViewLifecycleOwner(), new Observer<Map<CartItem, CustomerCartItemsViewModel.CartItemInfo>>() {
             @Override
-            public void onChanged(Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
+            public void onChanged(Map<CartItem, CustomerCartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
                 cartItemsInfoMap = cartItemCartItemInfoMap;
             }
         });
 
         //checkout clicked
         tvCartItemsCheckoutAmount.setOnClickListener(v -> {
-            boolean isAllValidOrderAmount = true;
-            Set<String> checkOutSellerSet = new HashSet<>();
+            boolean isAllValidOrderAmount = true; //all the orderAmount cannot be more than inventory amount
+            Set<String> checkOutSellerSet = new HashSet<>(); // to know how many sellers checked
 
             for (String sellerId: sellerItemsMap.keySet() ) {
-                if (!isAllValidOrderAmount) {
-                    break;
-                }
                 for(CartItem cartItem: sellerItemsMap.get(sellerId)) {
                     if(cartItem.getChecked()) {
-                        Log.d("checkInfoMap", cartItemsInfoMap.size()+"");
-                        boolean condValidOrderAmount = cartItem.getAmount() > cartItemsInfoMap.get(cartItem).getInventoryAmount();
                         checkOutSellerSet.add(cartItem.getSellerId());
+                        Log.d("checkInfoMap", cartItemsInfoMap.size()+" cart items");
+                        int inventoryAmount = cartItemsInfoMap.get(cartItem).getInventoryAmount();
+                        int orderAmount = cartItem.getAmount();
+                        boolean condValidOrderAmount;
+                        if (orderAmount > 0) {
+                            switch (inventoryAmount) {
+                                case -1:
+                                    condValidOrderAmount = true;
+                                    break;
+                                case 0:
+                                    condValidOrderAmount = false;
+                                    break;
+                                default:
+                                    condValidOrderAmount = orderAmount <= inventoryAmount;
+                                    break;
+                            }
+                            Log.d("checkInfoMap", orderAmount+" order amount");
+                            Log.d("checkInfoMap", inventoryAmount+" inventory amount");
+                        } else { //orderAmount == 0 or < 0
+                            condValidOrderAmount = false;
+                        }
+
                         if (!condValidOrderAmount) {
+                            Log.d("checkInfoMap", orderAmount+" invalid amount");
                             isAllValidOrderAmount = false;
                             break;
                         }
                     }
                 }
+                if (!isAllValidOrderAmount) {
+                    break;
+                }
             }
 
             if(!isAllValidOrderAmount) { //invalid amount
                 Toast.makeText(getContext(),"Please change your order amount",Toast.LENGTH_SHORT).show();
-            } else if (checkOutSellerSet.size() >= 1) { //not the same seller
+            } else if (checkOutSellerSet.size() > 1) { //not the same seller
+                Log.d("checkInfoMap", checkOutSellerSet.size()+" sellers");
                 Toast.makeText(getContext(),"Please select items from one store",Toast.LENGTH_SHORT).show();
             } else if (checkOutSellerSet.size() == 0) { //no checkout item
-                Toast.makeText(getContext(),"Please select an item",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),"Please select at least one item",Toast.LENGTH_SHORT).show();
             } else {
                 CustomerCheckoutFragment.newInstance(viewModel);
                 navController.navigate(R.id.customerCheckoutFragment);

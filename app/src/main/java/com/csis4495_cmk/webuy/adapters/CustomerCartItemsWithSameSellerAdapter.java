@@ -3,6 +3,7 @@ package com.csis4495_cmk.webuy.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -26,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.CartItem;
-import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
+import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -37,19 +38,19 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
     Context context;
 
     onSingleCartItemListener onSingleCartItemListener;
-    CartItemsViewModel viewModel;
+    CustomerCartItemsViewModel viewModel;
     LifecycleOwner lifecycleOwner;
     String sellerId;
     Map<String, ArrayList<CartItem>> sellerItemsMap;
     ArrayList<CartItem> cartItems;
     Map<String, Boolean> sellerAllItemsCheckedMap;
-    Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemsInfoMap;
+    Map<CartItem, CustomerCartItemsViewModel.CartItemInfo> cartItemsInfoMap;
 
     private final int IN_STOCK = 0;
     private final int PRE_ORDER = 1;
     private final int OPENING = 1;
 
-    public CustomerCartItemsWithSameSellerAdapter(Context context, String sellerId, CartItemsViewModel viewModel, LifecycleOwner lifecycleOwner) {
+    public CustomerCartItemsWithSameSellerAdapter(Context context, String sellerId, CustomerCartItemsViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.context = context;
         this.sellerId = sellerId;
         this.viewModel = viewModel;
@@ -69,9 +70,9 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             }
         });
 
-        viewModel.getCartItemsInfoMapLiveData().observe(lifecycleOwner, new Observer<Map<CartItem, CartItemsViewModel.CartItemInfo>>() {
+        viewModel.getCartItemsInfoMapLiveData().observe(lifecycleOwner, new Observer<Map<CartItem, CustomerCartItemsViewModel.CartItemInfo>>() {
             @Override
-            public void onChanged(Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
+            public void onChanged(Map<CartItem, CustomerCartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
                 cartItemsInfoMap = cartItemCartItemInfoMap;
             }
         });
@@ -96,7 +97,7 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
 
         CartItem cartItem = cartItems.get(position);
         //set CartItemsInfoMap in ViewModel
-        CartItemsViewModel.CartItemInfo cartItemInfo = cartItemsInfoMap.get(cartItem);
+        CustomerCartItemsViewModel.CartItemInfo cartItemInfo = cartItemsInfoMap.get(cartItem);
         Log.d("GGG", cartItemsInfoMap.size() +" after set");
 
         if (cartItemInfo != null) {
@@ -173,53 +174,60 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
 
             //etOrderAmount TextWatcher
             TextWatcher watcher = new TextWatcher() {
+                private static final long DELAY = 2000;
+                private Handler handler = new Handler();
+
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                    // Remove any pending callbacks to avoid unnecessary updates
+                    handler.removeCallbacks(updateRunnable);
                 }
                 @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
                 @Override
                 public void afterTextChanged(Editable s) {
-                    String inputText = s.toString().trim();
-                    if (!inputText.isEmpty()) {
-                        try {
-                            int editAmount = Integer.parseInt(inputText);
-                            if (cartItemInfo.getInventoryAmount() == -1) {
-                                if(editAmount <= 0) {
-                                    holder.etOrderAmount.setError("Amount must be greater than 0");
-                                } else {
-                                    holder.etOrderAmount.setError(null);
-                                    //save to db
-                                    cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-                                    sellerItemsMap.put(sellerId, cartItems);
-                                    viewModel.setSellerItemsMapLiveData(sellerItemsMap);
-                                }
-                            } else {
-                                if (editAmount <= 0 || editAmount > cartItemInfo.getInventoryAmount() ) {
-                                    // Show an error or notify the user that the amount is invalid
-                                    holder.etOrderAmount.setError("Amount must be greater than 0 and less than "+cartItemInfo.getInventoryAmount());
-                                } else {
-                                    // The amount is valid, do something with it
-                                    holder.etOrderAmount.setError(null);
-                                    //save to db
-                                    cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
-                                    sellerItemsMap.put(sellerId, cartItems);
-                                    viewModel.setSellerItemsMapLiveData(sellerItemsMap);
-                                }
-                            }
-
-                        } catch (NumberFormatException e) {
-                            // Handle the case when the input cannot be parsed as an integer
-                            holder.etOrderAmount.setError("Invalid input");
-                        }
-                    } else {
-                        // Handle the case when the input is empty
-                        holder.etOrderAmount.setError("Amount is required");
-                    }
+                    // Remove any pending callbacks to avoid unnecessary updates
+                    handler.removeCallbacks(updateRunnable);
+                    // Post a delayed callback to update the database
+                    handler.postDelayed(updateRunnable, DELAY);
                 }
+
+                private Runnable updateRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        String inputText = holder.etOrderAmount.getText().toString().trim();
+                        if (!inputText.isEmpty()) {
+                            try {
+                                int editAmount = Integer.parseInt(inputText);
+                                if (cartItemInfo.getInventoryAmount() == -1) {
+                                    if (editAmount <= 0) {
+                                        holder.etOrderAmount.setError("Amount must be greater than 0");
+                                    } else {
+                                        holder.etOrderAmount.setError(null);
+                                    }
+                                } else {
+                                    if (editAmount <= 0 || editAmount > cartItemInfo.getInventoryAmount()) {
+                                        // Show an error or notify the user that the amount is invalid
+                                        holder.etOrderAmount.setError("Amount must be greater than 0 and less than " + cartItemInfo.getInventoryAmount());
+                                    } else {
+                                        holder.etOrderAmount.setError(null);
+                                    }
+                                }
+                                // Save to db
+                                Log.d("TxtWatcher", inputText);
+                                cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
+                                sellerItemsMap.put(sellerId, cartItems);
+                                viewModel.setSellerItemsMapLiveData(sellerItemsMap);
+                            } catch (NumberFormatException e) {
+                                // Handle the case when the input cannot be parsed as an integer
+                                holder.etOrderAmount.setError("Invalid input");
+                            }
+                        } else {
+                            // Handle the case when the input is empty
+                            holder.etOrderAmount.setError("Amount is required");
+                        }
+                    }
+                };
             };
             holder.etOrderAmount.addTextChangedListener(watcher);
 
@@ -320,6 +328,44 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
         return cartItems.size();
     }
 
+//    private void validateInput(String inputText, ViewHolder holder, CustomerCartItemsViewModel.CartItemInfo cartItemInfo) {
+//        if (!inputText.isEmpty()) {
+//            try {
+//                int editAmount = Integer.parseInt(inputText);
+//                if (cartItemInfo.getInventoryAmount() == -1) { //unlimited inventory
+//                    if (editAmount <= 0) {
+//                        holder.etOrderAmount.setError("Amount must be greater than 0");
+//                    } else {
+//                        holder.etOrderAmount.setError(null);
+//                        // Save to db
+//                        Log.d("TxtWatcher", inputText);
+//                        cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
+//                        sellerItemsMap.put(sellerId, cartItems);
+//                        viewModel.setSellerItemsMapLiveData(sellerItemsMap);
+//                    }
+//                } else { //limited inventory
+//                    if (editAmount <= 0 || editAmount > cartItemInfo.getInventoryAmount()) {
+//                        // Show an error or notify the user that the amount is invalid
+//                        holder.etOrderAmount.setError("Amount must be greater than 0 and less than " + cartItemInfo.getInventoryAmount());
+//                    } else { //greater than zero and less equal to inventory amount
+//                        holder.etOrderAmount.setError(null);
+//                        // Save to db
+//                        Log.d("TxtWatcher", inputText);
+//                        cartItems.get(holder.getBindingAdapterPosition()).setAmount(editAmount);
+//                        sellerItemsMap.put(sellerId, cartItems);
+//                        viewModel.setSellerItemsMapLiveData(sellerItemsMap);
+//                    }
+//                }
+//
+//            } catch (NumberFormatException e) {
+//                // Handle the case when the input cannot be parsed as an integer
+//                holder.etOrderAmount.setError("Invalid input");
+//            }
+//        } else {
+//            // Handle the case when the input is empty
+//            holder.etOrderAmount.setError("Amount is required");
+//        }
+//    }
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         CheckBox cbxSingleItem;

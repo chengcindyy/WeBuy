@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -28,29 +27,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class CartItemsViewModel extends ViewModel {
+public class CustomerCartItemsViewModel extends ViewModel {
     private MutableLiveData<Map<String, ArrayList<CartItem>>> sellerItemsMapLiveData = new MutableLiveData<>();
     private MutableLiveData<Map<String, Boolean>> sellerAllItemsCheckedMapLiveData = new MutableLiveData<>();
     private MutableLiveData<Map<CartItem, CartItemInfo>> cartItemsInfoMapLiveData = new MutableLiveData<>();
 
-    public CartItemsViewModel() { //get data from firebase and set two maps
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    DatabaseReference customerRef = firebaseDatabase.getReference("Customer").child(customerId);
+    DatabaseReference groupRef = firebaseDatabase.getReference("Group");
+    DatabaseReference productRef = firebaseDatabase.getReference("Product");
+
+    public CustomerCartItemsViewModel() { //get data from firebase and set two maps
         Log.d("vm","vm constructor created");
         Map<String, ArrayList<CartItem>> sellerItemsMap = new HashMap<>();
         Map<String, Boolean> sellerAllItemsCheckedMap = new HashMap<>();
-        Map<CartItem, CartItemsViewModel.CartItemInfo> cartItemsInfoMap = new HashMap<>();
+        Map<CartItem, CustomerCartItemsViewModel.CartItemInfo> cartItemsInfoMap = new HashMap<>();
 
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference customerRef = firebaseDatabase.getReference("Customer").child(customerId);
-        DatabaseReference groupRef = firebaseDatabase.getReference("Group");
-        DatabaseReference productRef = firebaseDatabase.getReference("Product");
-        Log.d("vm","vm here");
         customerRef.child("Cart").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot sellerSnapshot: snapshot.getChildren()) {
                     String sellerId = sellerSnapshot.getKey();
-                    Log.d("vm",sellerId);
+                    Log.d("vm","hearing seller " + sellerId);
                     ArrayList<CartItem> sellerItems = new ArrayList<>();
                     final boolean[] allChecked = {true};
                     long totalCallbacks = sellerSnapshot.getChildrenCount();
@@ -60,8 +59,8 @@ public class CartItemsViewModel extends ViewModel {
                         CartItem cartItem = cartItemSnapshot.getValue(CartItem.class);
                         if(cartItem != null) {
                             sellerItems.add(cartItem);
-                            Log.d("vm!!!!", cartItemSnapshot.getKey());
-                            Log.d("vm!!!!", cartItem.getAmount()+" amount");
+                            Log.d("vm!!!!", "key: "+cartItemSnapshot.getKey());
+                            Log.d("vm!!!!", "value: "+cartItem.getAmount()+" amount");
 
                             //get cart info
                             String groupId = cartItem.getGroupId();
@@ -147,7 +146,7 @@ public class CartItemsViewModel extends ViewModel {
                                                             finalGroupType, inventoryAmount[0], finalGroupEndTimestamp, finalGroupStatus);
                                                 }
                                                 cartItemsInfoMap.put(cartItem, cartItemInfo[0]);
-                                                Log.d("vm", "map size: "+ cartItemsInfoMap.size());
+                                                Log.d("vm", "cartInfoMap size: "+ cartItemsInfoMap.size());
                                                 callbacksCompleted[0]++;
 
                                                 // Check if all callbacks are completed
@@ -235,18 +234,33 @@ public class CartItemsViewModel extends ViewModel {
                 Log.d("vm", error.getMessage());
             }
         });
-        Log.d("vm", "vm finished constructor: "+ sellerItemsMap.size());
+        Log.d("vm", "vm finished constructor: "+ sellerItemsMap.size() + " sellers");
         Log.d("vm", "get data from firebase...");
     }
 
     public void setSellerItemsMapLiveData(Map<String, ArrayList<CartItem>> sellerItemsMap) {
-        sellerItemsMapLiveData.setValue(sellerItemsMap);
+//        if (!Objects.equals(this.sellerItemsMapLiveData.getValue(), sellerItemsMap)) {
+//            this.sellerItemsMapLiveData.postValue(sellerItemsMap);
+//            // when set the LiveData, upload it to the firebase
+//            Log.d("vm", "data set to firebase");
+//            customerRef.child("Cart").setValue(sellerItemsMap);
+//        }
+        this.sellerItemsMapLiveData.postValue(sellerItemsMap);
+        // when set the LiveData, upload it to the firebase
+        Log.d("vm", "data set to firebase");
+        customerRef.child("Cart").setValue(sellerItemsMap);
     }
     public void setSellerAllItemsCheckedMapLiveData(Map<String, Boolean> sellerAllItemsChecked) {
-        this.sellerAllItemsCheckedMapLiveData.setValue(sellerAllItemsChecked);
+        if (!Objects.equals(this.sellerItemsMapLiveData.getValue(), sellerAllItemsChecked)) {
+            this.sellerAllItemsCheckedMapLiveData.postValue(sellerAllItemsChecked);
+        }
+        //this.sellerAllItemsCheckedMapLiveData.postValue(sellerAllItemsChecked);
     }
     public void setCartItemsInfoMapLiveData(Map<CartItem, CartItemInfo> cartItemsInfoMapLiveData) {
-        this.cartItemsInfoMapLiveData.setValue(cartItemsInfoMapLiveData);
+        if (!Objects.equals(this.cartItemsInfoMapLiveData.getValue(), cartItemsInfoMapLiveData)) {
+            this.cartItemsInfoMapLiveData.postValue(cartItemsInfoMapLiveData);
+        }
+        //this.cartItemsInfoMapLiveData.postValue(cartItemsInfoMapLiveData);
     }
 
     public LiveData<Map<String, ArrayList<CartItem>>> getSellerItemsMapLiveData() {
@@ -258,8 +272,6 @@ public class CartItemsViewModel extends ViewModel {
     public LiveData<Map<CartItem, CartItemInfo>> getCartItemsInfoMapLiveData() {
         return cartItemsInfoMapLiveData;
     }
-
-    //method
 
 
     //inner class
@@ -381,16 +393,15 @@ public class CartItemsViewModel extends ViewModel {
     }
 
 }
+// TODO: 2023-08-01
 // 1. group detail set product name and check preorder inventory amount
 // 2. cart item card set product name
-// 3. seller should prevent going back to login page
+
 // 4. seller group page there is no hint for seller to know -1 is unlimited
 // and instock should not be unlimited
-// 5. if group is null, make it grey and only delete available
-// 6. if the same group same item added, should show already in the cart and lead to the cart
+
 // 7. if the group is expired and is still in the cart... what will happen?
-// 8. in seller, groups, closed, swiped left then group disappeared
-// 9.
+
 
 //        switch (product.getTax()) {
 //            case 0:
