@@ -6,63 +6,56 @@
     android:padding="20dp"
     tools:context=".fragments.CustomerCheckoutPaymentSelectorFragment">
 
-    <LinearLayout
-        android:id="@+id/checkbox_container"
+    <RadioGroup
+        android:id="@+id/radio_group_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <CheckBox
-            android:id="@+id/checkbox_child_1"
+        <RadioButton
+            android:id="@+id/radio_child_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layoutDirection="rtl"
             android:drawableLeft="@drawable/outline_foundation_24"
-            android:visibility="gone"
             android:drawablePadding="10dp"
             android:text="@string/eTransfer"/>
 
-        <CheckBox
-            android:id="@+id/checkbox_child_2"
+        <RadioButton
+            android:id="@+id/radio_child_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layoutDirection="rtl"
             android:drawableLeft="@drawable/outline_monetization_on_24"
-            android:visibility="gone"
             android:drawablePadding="10dp"
             android:text="@string/cash_on_delivery"/>
 
-        <CheckBox
-            android:id="@+id/checkbox_child_3"
+        <RadioButton
+            android:id="@+id/radio_child_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layoutDirection="rtl"
             android:drawableLeft="@drawable/outline_fire_truck_24"
-            android:visibility="gone"
             android:drawablePadding="10dp"
             android:text="@string/pay_in_store"/>
 
-        <CheckBox
-            android:id="@+id/checkbox_child_4"
+        <RadioButton
+            android:id="@+id/radio_child_4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
             android:drawableLeft="@drawable/baseline_payment_yellow"
             android:drawablePadding="10dp"
-            android:visibility="gone"
-            android:layoutDirection="rtl"
             android:text="@string/debit_or_credit"/>
-
-
-    </LinearLayout>
-
+    </RadioGroup>
 
     <Button
         android:id="@+id/btn_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/checkbox_container"
-        android:layout_alignStart="@+id/checkbox_container"
-        android:layout_alignEnd="@+id/checkbox_container"
+        android:layout_below="@id/radio_group_container"
+        android:layout_alignStart="@+id/radio_group_container"
+        android:layout_alignEnd="@+id/radio_group_container"
         android:layout_marginVertical="10dp"
         android:background="@drawable/button_solid"
         android:text="@string/confirm"

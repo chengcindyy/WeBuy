@@ -9,6 +9,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.fragments.CustomerHomeGroupsFragment;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -29,9 +30,6 @@ public class CustomerHomePageActivity extends AppCompatActivity {
         // Set up the BottomAppBar menu click events
         bottomAppBar.setOnMenuItemClickListener(menuItem -> {
             switch (menuItem.getItemId()) {
-                case R.id.customerHomeFragment:
-                    navController.navigate(R.id.customerHomeFragment);
-                    return true;
                 case R.id.customerProfileFragment:
                     navController.navigate(R.id.customerProfileFragment);
                     return true;
@@ -46,6 +44,8 @@ public class CustomerHomePageActivity extends AppCompatActivity {
         // Set up the FloatingActionButton click event if needed
         floatingActionButton.setOnClickListener(v -> {
             // Navigate or perform some action
+            new CustomerHomeGroupsFragment();
+            navController.navigate(R.id.customerHomeFragment);
         });
 
         // Navigate to the initial fragment

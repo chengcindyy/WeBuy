@@ -60,6 +60,7 @@
     <string name="add_range">Add a new range</string>
     <string name="clear">Clear</string>
     <string name="confirm">confirm</string>
+    <string name="check">Check</string>
 
 
 </resources>
