@@ -24,8 +24,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,8 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
 
     private String groupId;
     private Group group;
+
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public void setGroupId(String groupId) {
         this.groupId = groupId;
@@ -107,6 +111,7 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                         if (snapshot != null) {
                             Order order = snapshot.getValue(Order.class);
                             String customerId = order.getCustomerId();
+                            holder.date.setText(simpleDateFormat.format(new Date(order.getOrderedTimestamp())));
                             userRef.child(customerId).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -145,7 +150,6 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                         }
                     }
                 }
-
                 Order.OrderItemInfo orderItemInfo = item.getValue().getValue();
                 Integer ordered = orderItemInfo.getOrderAmount();
                 holder.ordered.setText(Integer.toString(ordered));
@@ -186,11 +190,12 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView email, style, ordered;
+        TextView email, style, ordered, date;
         CheckBox cb;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            date = itemView.findViewById(R.id.tv_group_order_item_date);
             email = itemView.findViewById(R.id.tv_group_order_item_email);
             style = itemView.findViewById(R.id.tv_group_order_item_style);
             ordered = itemView.findViewById(R.id.tv_group_order_item_ordered);

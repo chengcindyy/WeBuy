@@ -14,11 +14,20 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/tv_group_order_item_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="6"
+            android:maxLines="6"
+            android:text="Date" />
+
+        <TextView
             android:id="@+id/tv_group_order_item_email"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:layout_weight="4"
+            android:layout_margin="2dp"
+            android:layout_weight="8"
             android:maxLines="6"
             android:text="Email" />
 
@@ -26,8 +35,8 @@
             android:id="@+id/tv_group_order_item_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:layout_weight="3"
+            android:layout_margin="2dp"
+            android:layout_weight="4"
             android:maxLines="6"
             android:text="Style" />
 
@@ -35,7 +44,7 @@
             android:id="@+id/tv_group_order_item_ordered"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:layout_margin="2dp"
             android:text="Ordered"
             android:layout_weight="1"/>
 
@@ -43,7 +52,7 @@
             android:id="@+id/cb_group_order_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp" />
+            android:layout_margin="2dp" />
     </LinearLayout>
 
 
