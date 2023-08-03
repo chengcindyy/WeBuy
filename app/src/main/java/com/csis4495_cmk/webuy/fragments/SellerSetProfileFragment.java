@@ -129,7 +129,7 @@ public class SellerSetProfileFragment extends Fragment {
         }
         // For Testing
         btnTest = view.findViewById(R.id.btn_test_page);
-        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));
+        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_sellerProfileFragment_to_testFragment));
         // Logout
         logoutButton = view.findViewById(R.id.btn_logout);
         SetLogoutOnClickListener(logoutButton);

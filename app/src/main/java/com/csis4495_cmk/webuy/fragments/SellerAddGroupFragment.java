@@ -38,7 +38,9 @@ import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 
 import com.csis4495_cmk.webuy.viewmodels.SharedEditStyleViewModel;
-import com.csis4495_cmk.webuy.viewmodels.SharedInventoryViewModel;
+
+import com.csis4495_cmk.webuy.viewmodels.SharedICheckInventoryViewModel;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -120,7 +122,7 @@ public class SellerAddGroupFragment extends Fragment {
 
     private Map<String, String> inventoryNameMap;
 
-    private SharedInventoryViewModel inventoryViewModel;
+    private SharedICheckInventoryViewModel inventoryViewModel;
     private List<ProductStyle> newEditGroupStyles;
 
     private SharedEditStyleViewModel styleViewModel;
@@ -128,7 +130,7 @@ public class SellerAddGroupFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        inventoryViewModel = new ViewModelProvider(getActivity()).get(SharedInventoryViewModel.class);
+        inventoryViewModel = new ViewModelProvider(getActivity()).get(SharedICheckInventoryViewModel.class);
         inventoryViewModel.getselectedInventory().observe(this, item -> {
             Log.d(TAG, "Get selected Inventory from child fragment: " + item);
             if (item != null) {
@@ -1210,65 +1212,6 @@ public class SellerAddGroupFragment extends Fragment {
 //                    Toast.makeText(getContext(), ps.getStyleName() + "qty: " +  groupQtyMap.get(ps) , Toast.LENGTH_SHORT ).show();
                 }
                 comparePriceRange();
-                //                if (groupStyles.size() > 0) {
-//                    groupPriceCurrency.setVisibility(View.GONE);
-//                    groupPriceCurrency.setEnabled(false);
-//                    editLayout_groupPriceCurrency_publish.setVisibility(View.GONE);
-//
-//                    editLayout_groupPriceRange_publish.setVisibility(View.VISIBLE);
-//                    groupPriceRange.setVisibility(View.VISIBLE);
-//                    groupPriceRange.setEnabled(false);
-//
-//                    double minStylePrice = Double.MAX_VALUE;
-//                    double maxStylePrice = Double.MIN_VALUE;
-//
-//                    for (ProductStyle ps : groupStyles) {
-//                        double stylePrice = ps.getStylePrice();
-//                        if (stylePrice < minStylePrice) {
-//                            minStylePrice = stylePrice;
-//                        }
-//                        if (stylePrice > maxStylePrice) {
-//                            maxStylePrice = stylePrice;
-//                        }
-//                    }
-//                    if (minStylePrice == maxStylePrice) {
-//                        groupPriceRange.setText("CA$ " + minStylePrice);
-//                        minPrice = minStylePrice;
-//                        maxPrice = maxStylePrice;
-//                        Log.d(TAG, "minPrice " + minPrice + " maxPrice: " + maxPrice);
-//                    } else {
-//                        groupPriceRange.setText("CA$ " + minStylePrice + "~" + maxStylePrice);
-//                        minPrice = minStylePrice;
-//                        maxPrice = maxStylePrice;
-//                        Log.d(TAG, "minPrice " + minPrice + " maxPrice: " + maxPrice);
-//                    }
-//                } else if (groupStyles.size() == 1) {
-//                    editLayout_groupPriceRange_publish.setVisibility(View.GONE);
-//                    groupPriceRange.setVisibility(View.GONE);
-//                    groupPriceRange.setEnabled(false);
-//
-//                    groupPriceCurrency.setVisibility(View.VISIBLE);
-//                    editLayout_groupPriceCurrency_publish.setVisibility(View.VISIBLE);
-//                    groupPriceCurrency.setEnabled(false);
-//                    groupPriceCurrency.setText(Double.toString(groupStyles.get(0).getStylePrice()));
-//                    groupPriceCurrency.findFocus();
-//
-//                    minPrice = groupStyles.get(0).getStylePrice();
-//                    maxPrice = groupStyles.get(0).getStylePrice();
-//                    Log.d(TAG, "minPrice " + minPrice + " maxPrice: " + maxPrice);
-//                } else if (groupStyles.size() == 0) {
-//                    editLayout_groupPriceRange_publish.setVisibility(View.GONE);
-//                    groupPriceRange.setVisibility(View.GONE);
-//                    groupPriceRange.setEnabled(false);
-//
-//                    groupPriceCurrency.setVisibility(View.VISIBLE);
-//                    editLayout_groupPriceCurrency_publish.setVisibility(View.VISIBLE);
-//                    groupPriceCurrency.setEnabled(true);
-//                    groupPriceCurrency.findFocus();
-//
-//                    group_no_style_qty.setVisibility(View.VISIBLE);
-//                    group_no_style_qty.findFocus();
-//                }
                 stylesAdapter.updateStyleData2(productId, groupStyles);
             }
 

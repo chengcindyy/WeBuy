@@ -54,29 +54,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:text="Instock quantity"/>
+            android:text="Quantity: "/>
+
+        <TextView
+            android:id="@+id/tv_group_style_stock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Inventory: "/>
 
         <TextView
             android:id="@+id/tv_group_style_ordered"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:text="Ordered"/>
+            android:text="Ordered: "/>
 
-        <TextView
-            android:id="@+id/tv_group_style_allocated"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:text="Allocated"/>
 
         <TextView
             android:id="@+id/tv_group_style_toAllocated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:text="To allocate"/>
+            android:text="To allocate: "/>
 
+        <TextView
+            android:id="@+id/tv_group_style_allocated"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Allocated: "/>
     </LinearLayout>
 
 </LinearLayout>

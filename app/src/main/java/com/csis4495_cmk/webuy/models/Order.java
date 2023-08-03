@@ -120,12 +120,20 @@ public class Order {
     }
 
     public static class OrderItemInfo {
+        public OrderItemInfo(){
+
+        };
+
         int orderAmount;
         boolean isAllocated; //true: if the item is allocated by seller
 
         public OrderItemInfo(int orderAmount, boolean isAllocated) {
             this.orderAmount = orderAmount;
             this.isAllocated = isAllocated;
+        }
+
+        public void setAllocated(boolean allocated) {
+            isAllocated = allocated;
         }
 
         public int getOrderAmount() {

@@ -23,7 +23,8 @@ import android.widget.TextView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CheckInventoryRecyclerAdapter;
 
-import com.csis4495_cmk.webuy.viewmodels.SharedInventoryViewModel;
+import com.csis4495_cmk.webuy.viewmodels.SharedICheckInventoryViewModel;
+
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -56,7 +57,7 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
 
     private Button btnCancel, btnAdd;
 
-    private SharedInventoryViewModel model;
+    private SharedICheckInventoryViewModel model;
 
     public GroupCheckInventoryFragment() {
         // Required empty public constructor
@@ -66,7 +67,7 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        model = new ViewModelProvider(getActivity()).get(SharedInventoryViewModel.class);
+        model = new ViewModelProvider(getActivity()).get(SharedICheckInventoryViewModel.class);
     }
 
     public static GroupCheckInventoryFragment newInstance(String param1, String param2) {
