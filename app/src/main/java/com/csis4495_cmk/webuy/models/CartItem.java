@@ -1,5 +1,9 @@
 package com.csis4495_cmk.webuy.models;
 
+import android.util.Log;
+
+import java.util.Objects;
+
 public class CartItem {
     private String groupId;
     private String sellerId;
@@ -57,4 +61,23 @@ public class CartItem {
     public void setChecked(boolean checked) {
         this.checked = checked;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        Log.d("cartItem","equals");
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CartItem cartItem = (CartItem) o;
+        return Objects.equals(groupId, cartItem.groupId) &&
+                Objects.equals(sellerId, cartItem.sellerId) &&
+                Objects.equals(productId, cartItem.productId) &&
+                Objects.equals(styleId, cartItem.styleId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId, sellerId, productId, styleId);
+    }
+
 }

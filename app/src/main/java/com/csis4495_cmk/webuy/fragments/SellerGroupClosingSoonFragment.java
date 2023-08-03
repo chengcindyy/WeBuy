@@ -25,7 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.SellerGroupListRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerGroupListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

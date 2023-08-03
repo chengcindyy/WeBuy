@@ -25,7 +25,7 @@ import android.widget.Button;
 import android.widget.PopupWindow;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.CustomerHomeViewPagerAdapter;
+import com.csis4495_cmk.webuy.adapters.viewpager.CustomerHomeViewPagerAdapter;
 import com.csis4495_cmk.webuy.viewmodels.CustomerHomeFilterViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;

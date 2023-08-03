@@ -1,10 +1,18 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,20 +29,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.CustomerGroupStyleAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.CustomerGroupStyleAdapter;
 import com.csis4495_cmk.webuy.models.CartItem;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.ProductStyle;
-import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
+import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,6 +52,8 @@ import java.util.ArrayList;
 public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         implements CustomerGroupStyleAdapter.onStyleItemListener{
 
+    private final int DIRECTLY_BUY = 0;
+    private NavController navController;
     private final static String ARG_GROUPID = "groupId";
     private final static String ARG_GROUPJSON = "groupJson";
     private final static String ARG_STYLEPOS = "stylePosition";
@@ -118,6 +128,10 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //set navigation controller
+        navController = NavHostFragment.findNavController(CustomerAddToCartFragment.this);
+
         imvGroupPic = view.findViewById(R.id.imv_add_to_cart_group_pic);
         TextView tvGroupName = view.findViewById(R.id.tv_add_to_cart_group_name);
         tvGroupPrice = view.findViewById(R.id.tv_add_to_cart_group_price);
@@ -262,7 +276,24 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
         });
 
         //TODO: direct checkout
+        btnDirectCheckout.setOnClickListener(v -> {
+            orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
+            //check style
+            if (group.getGroupStyles() != null) {
+                if (selectedStyle == null) {
+                    Toast.makeText(getContext(), "Please select a style", Toast.LENGTH_SHORT).show();
+                } else {
+                    //checkAmountValidity(inventoryAmount,getContext());
+                }
+            } else {
+                //checkAmountValidity(inventoryAmount,getContext());
+                Log.d("addToCart","with style");
+            }
 
+            CustomerCheckoutFragment.newInstance(DIRECTLY_BUY);
+            navController.navigate(R.id.customerCheckoutFragment);
+
+        });
         //add to cart
         btnAddToCart.setOnClickListener(v -> {
             orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));
@@ -271,17 +302,18 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                 if (selectedStyle == null) {
                     Toast.makeText(getContext(), "Please select a style", Toast.LENGTH_SHORT).show();
                 } else {
-                    checkAmountValidity(inventoryAmount);
+                    checkAmountValidity(inventoryAmount,getContext());
                 }
             } else {
-                checkAmountValidity(inventoryAmount);
+                checkAmountValidity(inventoryAmount,getContext());
+                Log.d("addToCart","with style");
             }
 
         });
 
     }
 
-    private void checkAmountValidity(int inventoryAmount) {
+    private void checkAmountValidity(int inventoryAmount, Context context) {
         //check amount
         if (inventoryAmount == -1) { //unlimited
             if (orderAmount <= 0) {
@@ -294,16 +326,30 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                 } else {
                     item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
                 }
-                //upload item with style to customerRef
-                uploadNewCartItem(item);
-                //show item added and pop back to the previous page
-                onDismiss(getDialog());
-                Toast.makeText(getContext(),"Item Added to the Cart!", Toast.LENGTH_SHORT).show();
-                //TODO:cart small badges added
+
+                // check if item existing
+                checkItemInCart(item, new OnCheckItemInCartListener() {
+                    @Override
+                    public void onItemExists(boolean exists) {
+                        if (exists) {
+                            // Item exists in the cart
+                            Toast.makeText(context,"Item already existed in the cart",Toast.LENGTH_SHORT).show();
+                            // Do something
+                        } else { // Item does not exist in the cart
+                            //upload item with style to customerRef
+                            uploadNewCartItem(item);
+                            //show item added and pop back to the previous page
+                            onDismiss(getDialog());
+                            Toast.makeText(context,"Item Added to the Cart!", Toast.LENGTH_SHORT).show();
+                            //TODO:cart small badges added
+                        }
+                    }
+                });
             }
+
         } else {
             if (orderAmount <= 0 || orderAmount > inventoryAmount) {
-                etOrderAmount.setError("Amount must be greater than 0 and less than? " + inventoryAmount);
+                etOrderAmount.setError("Amount must be greater than 0 and less than " + inventoryAmount);
             } else {
                 //upload
                 CartItem item;
@@ -312,21 +358,82 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                 } else {
                     item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
                 }
-                //upload item with style to customerRef
-                uploadNewCartItem(item);
-                //show item added and pop back to the previous page
-                onDismiss(getDialog());
-                Toast.makeText(getContext(),"Item Added to the Cart!", Toast.LENGTH_SHORT).show();
-                //TODO:cart small badges added
+
+                // check if item existed
+                checkItemInCart(item, exists -> {
+                    if (exists) {
+                        // Item exists in the cart
+                        Log.d("aaa","exists");
+                        // show dialog
+                        showRedirectToCartDialog(context,getDialog());
+                    } else { // Item does not exist in the cart
+                        //upload item with style to customerRef
+                        uploadNewCartItem(item);
+                        //show item added and pop back to the previous page
+                        Toast.makeText(context,"Item Added to the Cart!", Toast.LENGTH_SHORT).show();
+                        Log.d("aaa","with style");
+                        onDismiss(getDialog());
+                        //TODO:cart small badges added
+                    }
+                });
             }
         }
     }
+
+    private void showRedirectToCartDialog(Context context, Dialog addToCartDialog) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder .setTitle("Go to shopping cart")
+                .setMessage("The item already existed, you want to check at your cart?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Dismiss the addToCartDialog
+                        onDismiss(addToCartDialog);
+                        // Navigate to customerCartFragment
+                        navController.navigate(R.id.action_customerAddToCartFragment_to_customerCartFragment);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        onDismiss(addToCartDialog);
+                    }
+                });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    private void checkItemInCart(CartItem item, OnCheckItemInCartListener listener) {
+        CustomerCartItemsViewModel viewModel = new ViewModelProvider(requireActivity()).get(CustomerCartItemsViewModel.class);
+        viewModel.getSellerItemsMapLiveData().observe(requireActivity(), new Observer<Map<String, ArrayList<CartItem>>>() {
+            @Override
+            public void onChanged(Map<String, ArrayList<CartItem>> stringArrayListMap) {
+                if (stringArrayListMap.containsKey(item.getSellerId())) {
+                    ArrayList<CartItem> cartItems = stringArrayListMap.get(item.getSellerId());
+                    Log.d("aaa",cartItems.size()+" seller items");
+                    for (CartItem existedCartItem : cartItems) {
+                        if (item.equals(existedCartItem)) {
+                            viewModel.getSellerItemsMapLiveData().removeObserver(this);
+                            listener.onItemExists(true);
+                            return;
+                        }
+                    }
+                }
+                viewModel.getSellerItemsMapLiveData().removeObserver(this);
+                listener.onItemExists(false); //if two exists, will cause loop (add more than one)// need to test null to exist
+            }
+        });
+    }
+
+    // Interface to provide the callback result
+    interface OnCheckItemInCartListener {
+        void onItemExists(boolean exists);
+    }
+
     private void uploadNewCartItem(CartItem item) {
+        // upload to firebase
         String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference("Customer").child(customerId);
         customerRef.child("Cart").child(item.getSellerId()).push().setValue(item);
-        //update cart
-        new CartItemsViewModel();
     }
 
     @Override

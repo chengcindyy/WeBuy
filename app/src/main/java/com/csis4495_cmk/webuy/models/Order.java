@@ -1,6 +1,5 @@
 package com.csis4495_cmk.webuy.models;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class Order {
@@ -9,9 +8,9 @@ public class Order {
     //    String styleId = key.split("s___")[1];
     //    String productId = key.split("s___")[0].split("p___")[1];
     //    p___thisIsAProductIds___thisIsAStyleId
-    private double totalPrice;
+    private double orderTotalPrice;
     //= itemsTotal + gstTotal + pstTotal + deliveryFee
-    private double itemsTotal;
+    private double checkoutItemsTotal;
     //= {style price * qty}
     private double gstTotal;
     private double pstTotal;
@@ -24,7 +23,12 @@ public class Order {
     private String postalCode;
     private String paymentType;
     private int orderStatus;
-    /*
+    private String note;
+
+    public String getNote() {
+        return note;
+    }
+/*
     -1: canceled
     0: pending (when customer make a order)
     1: paid (when seller confirm the payment
@@ -37,13 +41,14 @@ public class Order {
     }
 
     public Order(String customerId, Map<String, Map<String, OrderItemInfo>> groupsAndItemsMap,
-                 double totalPrice, double itemsTotal, double gstTotal, double pstTotal,
+                 double orderTotalPrice, double checkoutItemsTotal, double gstTotal, double pstTotal,
                  long orderedTimestamp, double deliveryFee, String address, String country,
-                 String province, String city, String postalCode, String paymentType, int orderStatus) {
+                 String province, String city, String postalCode, String paymentType, int orderStatus,
+                 String note) {
         this.customerId = customerId;
         this.groupsAndItemsMap = groupsAndItemsMap;
-        this.totalPrice = totalPrice;
-        this.itemsTotal = itemsTotal;
+        this.orderTotalPrice = orderTotalPrice;
+        this.checkoutItemsTotal = checkoutItemsTotal;
         this.gstTotal = gstTotal;
         this.pstTotal = pstTotal;
         this.orderedTimestamp = orderedTimestamp;
@@ -55,6 +60,7 @@ public class Order {
         this.postalCode = postalCode;
         this.paymentType = paymentType;
         this.orderStatus = orderStatus;
+        this.note = note;
     }
 
     public String getCustomerId() {
@@ -62,8 +68,8 @@ public class Order {
     }
 
 
-    public double getTotalPrice() {
-        return totalPrice;
+    public double getOrderTotalPrice() {
+        return orderTotalPrice;
     }
 
 
@@ -107,8 +113,8 @@ public class Order {
         return groupsAndItemsMap;
     }
 
-    public double getItemsTotal() {
-        return itemsTotal;
+    public double getCheckoutItemsTotal() {
+        return checkoutItemsTotal;
     }
 
     public double getGstTotal() {

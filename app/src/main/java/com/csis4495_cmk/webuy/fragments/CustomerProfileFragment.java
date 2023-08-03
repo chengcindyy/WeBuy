@@ -12,7 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.util.Pair;
@@ -35,10 +39,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.activities.MainActivity;
+import com.csis4495_cmk.webuy.adapters.recyclerview.CustomerProfileWishlistItemsAdapter;
 import com.csis4495_cmk.webuy.dialog.CustomerOrderStatusDialog;
 import com.csis4495_cmk.webuy.models.Customer;
 import com.csis4495_cmk.webuy.models.User;
 import com.csis4495_cmk.webuy.models.Wishlist;
+import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -57,10 +63,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.skydoves.expandablelayout.ExpandableLayout;
+import com.skydoves.expandablelayout.OnExpandListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +83,12 @@ public class CustomerProfileFragment extends Fragment {
     private AutoCompleteTextView editProvince;
     private AlertDialog alertDialog;
     Map<String, Wishlist> _FAVORITE;
+    RecyclerView recyclerView;
+    CustomerProfileWishlistItemsAdapter customerProfileWishlistItemsAdapter;
+    List<Wishlist> wishlistDisplayList;
+    CustomerWishlistViewModel wishListViewModel;
     String _USERNAME, _NAME, _EMAIL, _PHONE, _ADDRESS, _CITY, _PROVINCE, _POSTCODE, _PIC, _DOB;
+    Boolean isLayoutClicked = false;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = auth.getCurrentUser();
@@ -161,6 +172,26 @@ public class CustomerProfileFragment extends Fragment {
         SetOrderStatusOnClickListener(btnViewShipped);
         SetOrderStatusOnClickListener(btnViewDelivered);
 
+        // Get data from viewModel
+        wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
+
+        // Set wishlist recyclerView
+        wishlistDisplayList = new ArrayList<>();
+        recyclerView = view.findViewById(R.id.recyclerView_profile_wishlist);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        customerProfileWishlistItemsAdapter = new CustomerProfileWishlistItemsAdapter(getContext(), wishListViewModel, wishlistDisplayList);
+        recyclerView.setAdapter(customerProfileWishlistItemsAdapter);
+        wishListViewModel.getWishlistObject().observe(getViewLifecycleOwner(), new Observer<ArrayList<Wishlist>>() {
+            @Override
+            public void onChanged(ArrayList<Wishlist> wishlists) {
+                wishlistDisplayList.clear();
+                wishlistDisplayList.addAll(wishlists);
+                customerProfileWishlistItemsAdapter.notifyDataSetChanged();
+            }
+        });
+        setExpandableLayoutTitleOnClickListener(expWishList);
+
         // Setting
         btnChat = view.findViewById(R.id.btn_setting);
 
@@ -180,6 +211,19 @@ public class CustomerProfileFragment extends Fragment {
         // Logout
         logoutButton = view.findViewById(R.id.btn_logout);
         SetLogoutOnClickListener(logoutButton);
+    }
+
+    private void setExpandableLayoutTitleOnClickListener(ExpandableLayout expWishList) {
+        expWishList.setOnExpandListener(new OnExpandListener() {
+            @Override
+            public void onExpand(boolean isExpand) {
+                if(isExpand){
+                    recyclerView.setVisibility(View.VISIBLE);
+                }else{
+                    recyclerView.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void updateCustomerProfile(FirebaseUser firebaseUser) {

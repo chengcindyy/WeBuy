@@ -92,7 +92,7 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                 Log.d("Test deliveryHashMap", "Size: " + deliveryHashMap.size());
                 List<String> locationsList = new ArrayList<>();
                 final Double[] shippingFeeContainer = {0.0};
-                Double orderPrice = .0;
+                Double orderPrice = 100.0;
 
                 // Loop through the deliveryHashMap and check provided delivery services
                 for (String key : deliveryHashMap.keySet()) {

@@ -20,7 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.GroupEditStyleAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.GroupEditStyleAdapter;
 import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.csis4495_cmk.webuy.viewmodels.SharedEditStyleViewModel;

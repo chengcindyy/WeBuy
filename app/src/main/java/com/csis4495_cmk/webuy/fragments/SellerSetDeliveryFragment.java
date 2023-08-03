@@ -22,15 +22,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cottacush.android.currencyedittext.CurrencyEditText;
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.SellerDeliveryEditPriceRangeRecyclerAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerDeliveryItemRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerDeliveryEditPriceRangeRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerDeliveryItemRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Delivery;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;

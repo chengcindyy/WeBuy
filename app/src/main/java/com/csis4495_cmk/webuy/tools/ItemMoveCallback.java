@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.csis4495_cmk.webuy.adapters.SellerAddProductImagesAdapter;
-import com.csis4495_cmk.webuy.adapters.SellerStyleListRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerAddProductImagesAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerStyleListRecyclerAdapter;
 
 public class ItemMoveCallback extends ItemTouchHelper.Callback{
     private final ItemTouchHelperContract mAdapter;

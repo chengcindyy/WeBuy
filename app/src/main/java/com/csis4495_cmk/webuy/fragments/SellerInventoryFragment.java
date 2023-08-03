@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.SellerInventoryListRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerInventoryListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.ProductStyle;
