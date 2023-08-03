@@ -212,6 +212,7 @@ public class SellerAddGroupFragment extends Fragment {
             if (bundle.containsKey("new_group_productId")) {
                 isNewGroup = true;
                 productId = bundle.getString("new_group_productId");
+                Log.d("Test bundle productId", "productId: "+productId);
                 publishTitle.setText("Publish a new product group");
             } else if (bundle.containsKey("edit_group_productId")) {
                 isNewGroup = false;
@@ -250,6 +251,7 @@ public class SellerAddGroupFragment extends Fragment {
         newEditGroupStyles = new ArrayList<>();
 
         if (isNewGroup) {
+            Log.d(TAG, "isNewGroup:"+isNewGroup+" productId"+productId);
             getProductData();
             getProductStyle();
         } else {
@@ -432,7 +434,7 @@ public class SellerAddGroupFragment extends Fragment {
                         if (inventoryMap.isEmpty() || inventoryMap == null) {
                             Toast.makeText(getContext(), "There is no inventory", Toast.LENGTH_SHORT).show();
                         } else {
-                            GroupCheckInventoryFragment fragment = GroupCheckInventoryFragment.newInstance(inventoryMap, inventoryNameMap);
+                            CheckInventoryFragment fragment = CheckInventoryFragment.newInstance(inventoryMap, inventoryNameMap);
                             fragment.show(getActivity().getSupportFragmentManager(), "tag");
                         }
 
@@ -1128,6 +1130,11 @@ public class SellerAddGroupFragment extends Fragment {
     //Get Product data
     private void getProductData() {
         imgPaths.clear();
+        if (productId == null) {
+            Log.e(TAG, "Product ID is null");
+            return;
+        }
+
         DatabaseReference productReference = databaseReference.child("Product").child(productId);
         productReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override

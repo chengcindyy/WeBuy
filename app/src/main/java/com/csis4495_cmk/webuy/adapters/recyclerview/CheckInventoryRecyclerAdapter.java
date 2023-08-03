@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SellerCheckInventoryRecyclerAdapter extends RecyclerView.Adapter<SellerCheckInventoryRecyclerAdapter.ViewHolder> {
+public class CheckInventoryRecyclerAdapter extends RecyclerView.Adapter<CheckInventoryRecyclerAdapter.ViewHolder> {
     private Map<String, Integer> inventoryMap;
     private Map<String, String> nameMap;
     private Map<String, Boolean> toAddMap = new HashMap<>();
@@ -38,10 +38,10 @@ public class SellerCheckInventoryRecyclerAdapter extends RecyclerView.Adapter<Se
         this.keys = keys;
     }
 
-    public SellerCheckInventoryRecyclerAdapter() {
+    public CheckInventoryRecyclerAdapter() {
     }
 
-    public SellerCheckInventoryRecyclerAdapter(Map<String, Integer> inventoryMap, Map<String, String> nameMap) {
+    public CheckInventoryRecyclerAdapter(Map<String, Integer> inventoryMap, Map<String, String> nameMap) {
         this.inventoryMap = inventoryMap;
         this.nameMap = nameMap;
         this.keys = new ArrayList<>(nameMap.keySet());
@@ -70,13 +70,13 @@ public class SellerCheckInventoryRecyclerAdapter extends RecyclerView.Adapter<Se
 
     @NonNull
     @Override
-    public SellerCheckInventoryRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CheckInventoryRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_seller_check_group_inventory, parent, false);
-        return new SellerCheckInventoryRecyclerAdapter.ViewHolder(v);
+        return new CheckInventoryRecyclerAdapter.ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SellerCheckInventoryRecyclerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CheckInventoryRecyclerAdapter.ViewHolder holder, int position) {
         String key  = keys.get(position);
         String pName = nameMap.get(key);
         Integer pInventory = inventoryMap.get(key);

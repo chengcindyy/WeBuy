@@ -262,7 +262,7 @@ public class SellerAllProductListFragment extends Fragment {
     }
 
     private void updateRecyclerView(List<Product> pList) {
-        sellerAllProductAdapter = new SellerAllProductAdapter(getContext(), pList);
+        sellerAllProductAdapter = new SellerAllProductAdapter(getContext(), pList, navController);
         recyclerView.setAdapter(sellerAllProductAdapter);
         sellerAllProductAdapter.notifyDataSetChanged();
     }
