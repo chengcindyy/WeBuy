@@ -53,7 +53,7 @@ import com.skydoves.expandablelayout.ExpandableLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SellerSetProfileFragment extends Fragment {
+public class SellerProfileSetInfoFragment extends Fragment {
 
     private Button logoutButton, btnTest, btnPaymentSetting, btnUpdateSellerProfile, btnUpdateStoreProfile, btnUploadStoreImg, btnDeliverySetting;
     private Uri uploadedImgUri;

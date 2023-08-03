@@ -53,6 +53,14 @@ public class SellerAllProductAdapter extends RecyclerView.Adapter<SellerAllProdu
         // Get coverImage
         String coverImageName = product.getProductImages().get(0);
         getDownloadUrl(coverImageName, product.getKey(), holder.productImage);
+
+        // Button
+        holder.btn_post.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     private void getDownloadUrl(String coverImageName, String key, ImageView productImage) {
