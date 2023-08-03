@@ -533,6 +533,7 @@ public class UserLoginFragment extends Fragment {
                                         getActivity().finish();
                                     }
                                 }
+                                navController.navigate(R.id.sellerHomeFragment);
                             }
                         }
                     }

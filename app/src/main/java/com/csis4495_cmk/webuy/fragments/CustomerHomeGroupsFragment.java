@@ -11,8 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -22,8 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.CustomerHomeGroupListRecyclerAdapter;
+import com.csis4495_cmk.webuy.models.Wishlist;
 import com.csis4495_cmk.webuy.viewmodels.CustomerHomeFilterViewModel;
 import com.csis4495_cmk.webuy.models.Group;
+import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,20 +44,20 @@ import java.util.stream.Collectors;
 
 public class CustomerHomeGroupsFragment extends Fragment implements CustomerHomeGroupListRecyclerAdapter.onGroupListener {
 
+    private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private NavController navController;
     private FirebaseDatabase firebaseInstance = FirebaseDatabase.getInstance();
     private DatabaseReference allGroupRef = firebaseInstance.getReference("Group");
+    final DatabaseReference sellersRef = FirebaseDatabase.getInstance().getReference("Seller");
+    final DatabaseReference customerRef = FirebaseDatabase.getInstance().getReference("Customer");
     private RecyclerView recyclerView;
     private TextView tvNotFound;
     private Map<String,Group> groupMap;
-
-    private ArrayList<String> filter;
-    private CustomerHomeFilterViewModel model;
     private CustomerHomeGroupListRecyclerAdapter adapter;
     Map<String, Group> mGroupMap = new LinkedHashMap<>();
-    final DatabaseReference sellersRef = FirebaseDatabase.getInstance().getReference("Seller");
-    final DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
-
+    private CustomerWishlistViewModel wishListViewModel;
+    private Boolean isChecked;
+    private List<Wishlist> wishlistList;
     private String category;
     public CustomerHomeGroupsFragment() {
 
@@ -79,11 +83,19 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
         tvNotFound = view.findViewById(R.id.tv_not_found);
 
         groupMap = new HashMap<>();
+        wishlistList = new ArrayList<>();
 
+        // Get data from viewModel
+        wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
+
+        // RecyclerView
         recyclerView = view.findViewById(R.id.rv_cust_home_group);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
         Log.d("custTest", "size: " + groupMap.size());
-
+        adapter = new CustomerHomeGroupListRecyclerAdapter(getContext(), new HashMap<>(), getViewLifecycleOwner(), wishListViewModel);
+        recyclerView.setAdapter(adapter);
+        adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
+        // Set photo
         allGroupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -136,9 +148,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                     tvNotFound.setVisibility(View.GONE);
                 }
 
-                adapter = new CustomerHomeGroupListRecyclerAdapter(getContext(), groupMap);
-                recyclerView.setAdapter(adapter);
-                adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
+                adapter.updateData(groupMap);
 
             }
 
@@ -147,9 +157,14 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                 Log.d("custTest", error.getMessage());
             }
         });
+        // Search
+        doSearch();
 
+    }
+
+    private void doSearch() {
+        CustomerHomeFilterViewModel model = new ViewModelProvider(requireActivity()).get(CustomerHomeFilterViewModel.class);
         // Search by keywords
-        model = new ViewModelProvider(requireActivity()).get(CustomerHomeFilterViewModel.class);
         model.getKeywords().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String str) {
@@ -183,7 +198,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                             }
                         }
 
-                        groupRef.addValueEventListener(new ValueEventListener() {
+                        allGroupRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 mGroupMap.clear();
@@ -217,7 +232,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
             public void onChanged(String condition) {
                 Log.d("Test search price", "search keyword: "+ condition);
                 mGroupMap.clear();
-                groupRef.orderByChild("minPrice").addListenerForSingleValueEvent(new ValueEventListener() {
+                allGroupRef.orderByChild("minPrice").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -255,7 +270,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
             public void onChanged(String timeRange) {
                 Log.d("Test timeRange", "TimeRange: "+ timeRange);
                 mGroupMap.clear();
-                groupRef.orderByChild("startTimestamp").addListenerForSingleValueEvent(new ValueEventListener() {
+                allGroupRef.orderByChild("startTimestamp").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -316,6 +331,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
             }
         });
     }
+
 
     private void UpdateRecyclerView(Map<String, Group> gMap) {
         Log.d("Test UpdateRecyclerView", gMap + "");

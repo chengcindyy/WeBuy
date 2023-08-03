@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_customer_home"
+    android:layout_width="185dp"
+    android:layout_height="285dp"
+    android:layout_margin="5dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp">
+<!--<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="250dp"-->
+<!--    android:layout_height="380dp"-->
+<!--    android:layout_margin="10dp"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    app:cardCornerRadius="20dp"-->
+<!--    app:cardElevation="5dp">-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/groupImage"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/app_default_image" />
+
+        <ToggleButton
+            android:id="@+id/saveToWishListButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:alpha="1"
+
+            android:background="@drawable/wishlist_toggle_button"
+            android:checked="false"
+            android:textOff=""
+            android:textOn="" />
+
+        <TextView
+            android:id="@+id/groupName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/groupType"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Group Name"
+            android:textSize="14dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/groupPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:text="$10"
+            android:layout_marginVertical="3dp"
+            android:textColor="#E5B59E"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:layout_below="@+id/groupName"/>
+
+        <TextView
+            android:id="@+id/soldAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/groupPrice"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginVertical="3dp"
+            android:gravity="left|center_vertical"
+            android:text="0 sold"
+            android:textSize="12dp" />
+
+        <TextView
+            android:id="@+id/groupType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/groupImage"
+            android:layout_alignEnd="@+id/groupImage"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginVertical="3dp"
+            android:background="@drawable/text_view_outline"
+            android:padding="2dp"
+            android:text="in-stock" />
+
+        <TextView
+            android:id="@+id/groupCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/groupImage"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:text="category" />
+
+        <TextView
+            android:id="@+id/timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/groupPrice"
+            android:layout_alignEnd="@+id/seller_name"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="0dp"
+            android:layout_toEndOf="@+id/soldAmount"
+            android:gravity="end"
+            android:text="Timer"
+            android:textSize="12dp" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/seller_picture"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_below="@+id/soldAmount"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="3dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/app_default_image"
+            app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+            app:strokeColor="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/seller_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/seller_picture"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="5dp"
+            android:layout_toEndOf="@+id/seller_picture"
+            android:text="Seller Name" />
+
+
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>

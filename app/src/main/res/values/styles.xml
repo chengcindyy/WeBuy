@@ -10,4 +10,13 @@
         <item name="android:layoutDirection">rtl</item>
         <item name="android:drawablePadding">10dp</item>
     </style>
+
+    <style name="DeliveryRadioButtonStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layoutDirection">rtl</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:padding">20dp</item>
+    </style>
+
 </resources>

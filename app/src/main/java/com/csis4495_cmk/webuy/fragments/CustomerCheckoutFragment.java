@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.viewmodels.CartItemsViewModel;
 import com.csis4495_cmk.webuy.adapters.CustomerCheckoutShoppingDetailsAdapter;
 import com.csis4495_cmk.webuy.models.Delivery;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCheckoutDataViewModel;
@@ -39,6 +40,17 @@ public class CustomerCheckoutFragment extends Fragment {
                      txvPayment, txvProductAmount, txvShipmentAmount, txvGstAmount, txvPstAmount, txvOrderTotalPrice;
     private EditText customerNote;
     private CustomerCheckoutShoppingDetailsAdapter adapter;
+    private CartItemsViewModel cartItemsViewModel;
+
+    public CustomerCheckoutFragment(){}
+    public CustomerCheckoutFragment(CartItemsViewModel cartItemsViewModel) {
+        this.cartItemsViewModel = cartItemsViewModel;
+    }
+    public static CustomerCheckoutFragment newInstance(CartItemsViewModel cartItemsViewModel){
+        CustomerCheckoutFragment fragment = new CustomerCheckoutFragment(cartItemsViewModel);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -71,6 +83,8 @@ public class CustomerCheckoutFragment extends Fragment {
         txvOrderTotalPrice = view.findViewById(R.id.txv_checkout_order_total_amount);
         // Edittext
         customerNote = view.findViewById(R.id.edt_customer_notes);
+
+
     }
 
     private void setShipmentClickListener(TextView txvShipment) {
@@ -109,17 +123,17 @@ public class CustomerCheckoutFragment extends Fragment {
                         bottomSheetDialog.show(getParentFragmentManager(), "Delivery BottomSheet Show");
 
 
-//                        // Set text for payment
-//                        model.getSelectedPayment().observe(getViewLifecycleOwner(), new Observer<String>() {
-//                            @Override
-//                            public void onChanged(String payment) {
-//                                if(payment != null){
-//                                    txvPayment.setText(payment);
-//                                }
-//                            }
-//                        });
-
-
+                        // Set text for deliveryInfo
+                        model.getShipmentInfoObject().observe(getViewLifecycleOwner(), new Observer<CustomerCheckoutDataViewModel.ShipmentInfo>() {
+                            @Override
+                            public void onChanged(CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo) {
+                                if (shipmentInfo != null){
+                                    txvShipment.setText(shipmentInfo.getMethod());
+                                    txvReceiverPhone.setText(shipmentInfo.getReceiver()+" "+shipmentInfo.getPhone());
+                                    txvAddress.setText(shipmentInfo.getAddress());
+                                }
+                            }
+                        });
                     }
 
                     @Override

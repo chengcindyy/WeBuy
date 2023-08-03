@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -30,10 +32,16 @@ import com.csis4495_cmk.webuy.adapters.CustomerGroupStyleAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.csis4495_cmk.webuy.models.Seller;
+import com.csis4495_cmk.webuy.models.Wishlist;
+import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,7 +60,6 @@ import java.util.concurrent.TimeUnit;
 
 public class CustomerGroupDetailFragment extends Fragment
                                         implements CustomerGroupStyleAdapter.onStyleItemListener {
-
     ViewPager2 viewPagerGroupImg;
     CustomerGroupDetailImageViewPagerAdapter viewPagerAdapter;
     String groupId;
@@ -62,7 +69,7 @@ public class CustomerGroupDetailFragment extends Fragment
 
     List<ProductStyle> groupStyles;
     ArrayList<String> groupImgUrls;
-
+    List<Group> wishList;
     ArrayList<String> groupAndStylesImgUrls;
     StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
     DatabaseReference groupsRef  = FirebaseDatabase.getInstance().getReference("Group");
@@ -76,8 +83,9 @@ public class CustomerGroupDetailFragment extends Fragment
     ToggleButton btnSaveToList;
 
     CustomerGroupStyleAdapter styleAdapter;
-
     int selectedStylePosition = -1;
+    CustomerWishlistViewModel wishListViewModel;
+    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,19 +115,56 @@ public class CustomerGroupDetailFragment extends Fragment
         imvSellerPic = view.findViewById(R.id.imv_detail_store_pic);
         fabAddToCart = view.findViewById(R.id.fab_add_to_cart);
         btnSaveToList = view.findViewById(R.id.btn_detail_save_to_list);
+        // Get data from viewModel
+        wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
+        wishListViewModel.getWishlistObject().observe(getViewLifecycleOwner(), new Observer<ArrayList<Wishlist>>() {
+            @Override
+            public void onChanged(ArrayList<Wishlist> wishlists) {
+                boolean isGroupIdInWishlist = false;
+                if (wishlists != null) {
+                    for (Wishlist wishlist : wishlists) {
+                        if (wishlist.getGroupId().equals(groupId)) {
+                            isGroupIdInWishlist = true;
+                            break;
+                        }
+                    }
+                }
+                btnSaveToList.setChecked(isGroupIdInWishlist);
+            }
+        });
+        btnSaveToList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Get current item
+                String currentGroupId = groupId;
+                String currentSellerId = group.getSellerId();
+                String currentProductId = group.getProductId();
+
+                // Set to wishlist
+                Wishlist wishlistItem = new Wishlist();
+                wishlistItem.setGroupId(currentGroupId);
+                wishlistItem.setSellerId(currentSellerId);
+                wishlistItem.setProductId(currentProductId);
+                Log.d("Test wishlistItem", "groupId"+ wishlistItem.getGroupId() + " ProductId: "+ wishlistItem.getProductId());
+
+                if (btnSaveToList.isChecked()) {
+                    Toast.makeText(getContext(),"Item added to Wish List",Toast.LENGTH_SHORT).show();
+                    wishListViewModel.addToWishlist(wishlistItem, firebaseUser.getUid());
+                } else {
+                    wishListViewModel.removeFromWishlist(wishlistItem, firebaseUser.getUid());
+                    Toast.makeText(getContext(),"Item removed from Wish List",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         //get the groupId from Bundle passed
         Bundle bundle = getArguments();
         if (bundle != null) {
             groupId = bundle.getString("groupId");
             groupJson = bundle.getString("group");
-
-            // Convert the JSON string back to a Group object
             Gson gson = new Gson();
             group = gson.fromJson(groupJson, Group.class);
-
         }
-
         //set recycler view for group style
         groupStyles = group.getGroupStyles();
         if (groupStyles != null && groupStyles.size() != 0) {
@@ -175,18 +220,6 @@ public class CustomerGroupDetailFragment extends Fragment
                     viewPagerGroupImg.setAdapter(viewPagerAdapter);
                 }
 
-            }
-        });
-
-        // save or unsave to wish list
-        // pre set the save btn
-        btnSaveToList.setOnClickListener(v -> {
-            if (btnSaveToList.isChecked()) {
-                btnSaveToList.setBackgroundResource(R.drawable.baseline_saved_24);
-                Toast.makeText(getContext(),"Item added to Wish List",Toast.LENGTH_SHORT).show();
-            } else {
-                btnSaveToList.setBackgroundResource(R.drawable.baseline_unsave_border_24);
-                Toast.makeText(getContext(),"Item removed from Wish List",Toast.LENGTH_SHORT).show();
             }
         });
 

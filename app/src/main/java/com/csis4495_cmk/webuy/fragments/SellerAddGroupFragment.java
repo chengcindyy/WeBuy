@@ -38,7 +38,9 @@ import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 
 import com.csis4495_cmk.webuy.viewmodels.SharedEditStyleViewModel;
+
 import com.csis4495_cmk.webuy.viewmodels.SharedICheckInventoryViewModel;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;

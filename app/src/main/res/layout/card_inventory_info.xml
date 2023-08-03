@@ -18,35 +18,9 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:gravity="center"
-                android:text=""
+                android:hint="Style"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textSize="13sp"/>
-
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:id="@+id/txv_to_sell"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:gravity="center"
-                android:text=""
-                android:textSize="13sp"/>
-
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:id="@+id/txv_ordered"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:gravity="center"
-                android:text=""
                 android:textSize="13sp"/>
 
         </TableRow>
@@ -59,8 +33,33 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:gravity="center"
-                android:text=""
+                android:hint="In-Stock"
                 android:textSize="13sp"/>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/txv_ordered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:gravity="center"
+                android:hint="Ordered"
+                android:textSize="13sp"/>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/txv_to_allocate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:gravity="center"
+                android:hint="To allocate" />
 
         </TableRow>
 
@@ -72,20 +71,8 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:gravity="center"
-                android:text=""
+                android:hint="Allocated"
                 android:textSize="13sp"/>
-
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:id="@+id/txv_to_allocated"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:gravity="center"
-                android:text="" />
 
         </TableRow>
 
@@ -97,7 +84,20 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:gravity="center"
-                android:text=""
+                android:hint="To order"
+                android:textSize="13sp"/>
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/txv_to_sell"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:gravity="center"
+                android:hint="To sell"
                 android:textSize="13sp"/>
 
         </TableRow>
@@ -116,7 +116,6 @@
                     android:layout_width="70dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center"
-
                     android:textAllCaps="false"
                     android:background="@drawable/button_solid"
                     android:text="Stock Mgmt"
