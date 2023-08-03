@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,7 +27,10 @@ import com.csis4495_cmk.webuy.adapters.recyclerview.SellerGroupDetailImageRecycl
 import com.csis4495_cmk.webuy.adapters.viewpager.SellerGroupDetailOrderListViewPagerAdapter;
 import com.csis4495_cmk.webuy.adapters.recyclerview.SellerGroupDetailStyleListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
+import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.tools.OnGroupOrderInventoryAllocatedListener;
+import com.csis4495_cmk.webuy.viewmodels.SharedGroupInventoryListViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
@@ -37,16 +42,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class SellerGroupDetailFragment extends Fragment {
+public class SellerGroupDetailFragment extends Fragment implements OnGroupOrderInventoryAllocatedListener {
 
-   private TextView gName, gDes, gPrice, gStart, gEnd, gCountdown, gQty, gOrdered, gAllocated, gToAllocate;
+   private TextView gName, gDes, gPrice, gStart, gEnd, gCountdown, gQty, gInventory, gOrdered, gAllocated, gToAllocate;
    private RecyclerView imgRecyclerView, styleRecyclerView;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -58,6 +66,8 @@ public class SellerGroupDetailFragment extends Fragment {
     private DatabaseReference dBRef;
 
     private DatabaseReference groupRef;
+
+    private DatabaseReference inventoryRef;
 
     private NavController navController;
 
@@ -71,10 +81,17 @@ public class SellerGroupDetailFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
 
+    private List<Inventory> inventoryList;
+
+    private Map<String, String> inventoryIdMap;
+
     private SellerGroupDetailOrderListViewPagerAdapter viewPagerAdapter;
 
-
     SimpleDateFormat simpleDateFormat;
+
+    private Group group;
+
+    private SharedGroupInventoryListViewModel listViewModel;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,13 +109,20 @@ public class SellerGroupDetailFragment extends Fragment {
             groupId = bundle.getString("detail_groupId");
             }
 
+        inventoryList = new ArrayList<>();
+        inventoryIdMap = new HashMap<>();
+
         simpleDateFormat = new SimpleDateFormat("HH:mm yyyy-MM-dd");
 
         navController = NavHostFragment.findNavController(SellerGroupDetailFragment.this);
 
+        styleAdapter = new SellerGroupDetailStyleListRecyclerAdapter();
+        imgAdapter = new SellerGroupDetailImageRecyclerAdapter();
+
         firebaseDatabase = FirebaseDatabase.getInstance();
         dBRef = firebaseDatabase.getReference();
         groupRef = dBRef.child("Group");
+        inventoryRef = dBRef.child("Inventory");
 
         gName = view.findViewById(R.id.group_detail_name);
         gDes = view.findViewById(R.id.group_detail_des);
@@ -107,6 +131,7 @@ public class SellerGroupDetailFragment extends Fragment {
         gEnd = view.findViewById(R.id.group_detail_end);
         gCountdown = view.findViewById(R.id.group_detail_countdown);
         gQty = view.findViewById(R.id.group_detail_qty);
+        gInventory = view.findViewById(R.id.group_detail_inventory);
         gOrdered = view.findViewById(R.id.group_detail_ordered);
         gAllocated = view.findViewById(R.id.group_detail_allocated);
         gToAllocate = view.findViewById(R.id.group_detail_toAllocate);
@@ -118,8 +143,14 @@ public class SellerGroupDetailFragment extends Fragment {
         tabLayout = view.findViewById(R.id.group_detail_order_tab_layout);
         viewPager = view.findViewById(R.id.group_detail_order_view_pager);
 
-        viewPagerAdapter = new SellerGroupDetailOrderListViewPagerAdapter(getChildFragmentManager(), getLifecycle());
-        viewPager.setAdapter(viewPagerAdapter);
+//        viewPagerAdapter = new SellerGroupDetailOrderListViewPagerAdapter(getChildFragmentManager(), getLifecycle());
+//        viewPager.setAdapter(viewPagerAdapter);
+
+        getGroupDetail();
+
+        getInventoryData();
+
+        setViewPager();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -146,10 +177,12 @@ public class SellerGroupDetailFragment extends Fragment {
             }
         });
 
-
-        getGroupDetail();
-
         return view;
+    }
+
+    public void setViewPager() {
+        viewPagerAdapter = new SellerGroupDetailOrderListViewPagerAdapter(getChildFragmentManager(), getLifecycle());
+        viewPager.setAdapter(viewPagerAdapter);
     }
 
     private void getGroupDetail() {
@@ -157,8 +190,8 @@ public class SellerGroupDetailFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Group gp = snapshot.getValue(Group.class);
-
                 if(gp != null){
+                    group = gp;
                     productId = gp.getProductId();
                     gName.setText(gp.getGroupName());
                     gDes.setText(gp.getDescription());
@@ -270,9 +303,6 @@ public class SellerGroupDetailFragment extends Fragment {
                     }
                 }
 
-                styleAdapter = new SellerGroupDetailStyleListRecyclerAdapter();
-                imgAdapter = new SellerGroupDetailImageRecyclerAdapter();
-
                 List<String> imageUrls = gp.getGroupImages();
                 imgAdapter.setImgUrls(imageUrls);
                 imgAdapter.setProductId(productId);
@@ -294,6 +324,7 @@ public class SellerGroupDetailFragment extends Fragment {
                     styleRecyclerView.setAdapter(styleAdapter);
 
                     gQty.setVisibility(View.GONE);
+                    gInventory.setVisibility(View.GONE);
                     gOrdered.setVisibility(View.GONE);
                     gAllocated.setVisibility(View.GONE);
                     gToAllocate.setVisibility(View.GONE);
@@ -301,25 +332,70 @@ public class SellerGroupDetailFragment extends Fragment {
                     Integer qty = qtyMap.get("p___"+gp.getProductId());
                     gQty.setVisibility(View.VISIBLE);
                     gOrdered.setVisibility(View.VISIBLE);
+                    gInventory.setVisibility(View.VISIBLE);
                     gAllocated.setVisibility(View.VISIBLE);
                     gToAllocate.setVisibility(View.VISIBLE);
-
                     gQty.setText("Quantity: " + Integer.toString(qty));
-
                     styleRecyclerView.setVisibility(View.GONE);
                 }
-
-
-
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
+    private void getInventoryData(){
+        inventoryList.clear();
+        inventoryIdMap.clear();
+        inventoryRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Inventory i = dataSnapshot.getValue(Inventory.class);
+                    if(i.getProductId().equals(productId)){
+                        inventoryList.add(i);
+                        inventoryIdMap.put(dataSnapshot.getKey(), i.getProductStyleKey());
+                    }
+                }
+                if(inventoryList != null){
+                    Log.d(TAG, "Inventory list" + inventoryList);
+                    if(inventoryList.size() == 1 && inventoryList.get(0).getProductStyleKey().equals(productId)){
+                        gInventory.setText("Inventory: " + Integer.toString(inventoryList.get(0).getInStock()));
+                        gOrdered.setText("Ordered: " + Integer.toString(inventoryList.get(0).getOrdered()));
+                        gAllocated.setText("Allocated: " + Integer.toString(inventoryList.get(0).getAllocated()));
+                        gToAllocate.setText("To Allocate: "+ Integer.toString(inventoryList.get(0).getToAllocated()));
+                    }
+                    else{
+                        styleAdapter.setInventoryList(inventoryList);
+                        styleAdapter.notifyDataSetChanged();
+                    }
+                    if(getActivity()!=null){
+                        listViewModel = new ViewModelProvider(requireActivity()).get(SharedGroupInventoryListViewModel.class);
+                        shareLiveData();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
+    }
+
+    public void shareLiveData(){
+        listViewModel.setInventoryList(inventoryList);
+        listViewModel.setGroupId(groupId);
+        listViewModel.setGroup(group);
+        listViewModel.setinventoryIdMap(inventoryIdMap);
+        listViewModel.setProductId(productId);
+    }
+
+    @Override
+    public void onGroupOrderInventoryAllocated() {
+        getGroupDetail();
+        getInventoryData();
+        styleAdapter.notifyDataSetChanged();
+        setViewPager();
+    }
 }

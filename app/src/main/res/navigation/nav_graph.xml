@@ -165,6 +165,9 @@
         <action
             android:id="@+id/action_sellerProfileFragment_to_sellerPaymentSettingFragment"
             app:destination="@id/sellerPaymentSettingFragment" />
+        <action
+            android:id="@+id/action_sellerProfileFragment_to_testFragment"
+            app:destination="@id/testFragment" />
     </fragment>
     <fragment
         android:id="@+id/sellerStoreManagementFragment"

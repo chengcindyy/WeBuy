@@ -3,6 +3,7 @@ package com.csis4495_cmk.webuy.activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -19,7 +20,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.fragments.SellerGroupDetailFragment;
 import com.csis4495_cmk.webuy.models.Seller;
+import com.csis4495_cmk.webuy.tools.OnGroupOrderInventoryAllocatedListener;
 import com.facebook.login.LoginManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,7 +51,6 @@ public class SellerHomePageActivity extends AppCompatActivity {
         navController.navigate(R.id.sellerHomeFragment);
 
 
-
         // Top toolbar
         topToolbar = findViewById(R.id.topAppBar);
         topToolbar.setOnMenuItemClickListener(item -> {
@@ -58,7 +60,7 @@ public class SellerHomePageActivity extends AppCompatActivity {
                 MenuInflater inflater = popupMenu.getMenuInflater();
                 inflater.inflate(R.menu.seller_profile_menu, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(menuItem -> {
-                    switch (menuItem.getItemId()){
+                    switch (menuItem.getItemId()) {
                         case R.id.profile:
                             navController.navigate(R.id.sellerProfileFragment);
                             return true;
@@ -85,7 +87,7 @@ public class SellerHomePageActivity extends AppCompatActivity {
                 Seller seller = snapshot.getValue(Seller.class);
                 String storePic = seller.getStoreInfo().getStorePic();
 
-                if(storePic != null){
+                if (storePic != null) {
                     imageUrl = storePic;
                     Log.d("Upload img: imageUrl ", imageUrl);
                     MenuItem profileItem = topToolbar.getMenu().findItem(R.id.ic_user_profile);
@@ -114,13 +116,13 @@ public class SellerHomePageActivity extends AppCompatActivity {
     }
 
 
-
     private void logoutAccount() {
         auth.signOut();
         LoginManager.getInstance().logOut();
-        Toast.makeText(SellerHomePageActivity.this,"Logged Out", Toast.LENGTH_SHORT).show();
+        Toast.makeText(SellerHomePageActivity.this, "Logged Out", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(SellerHomePageActivity.this, MainActivity.class);
         startActivity(intent);
         SellerHomePageActivity.this.finish();
     }
+
 }

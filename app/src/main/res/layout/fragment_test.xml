@@ -37,10 +37,10 @@
             android:text="Seller"/>
 
         <Button
+            android:id="@+id/btn_temp_order"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open Groups Details Page"/>
-
+            android:text="Create temp order"/>
 
 
         <Button
