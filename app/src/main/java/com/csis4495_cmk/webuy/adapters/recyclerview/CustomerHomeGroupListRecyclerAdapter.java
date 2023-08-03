@@ -336,6 +336,7 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
         Map<String, Group> reversedMap = new LinkedHashMap<>();
         for (int i = 0; i < groupIds.size(); i++) {
             reversedMap.put(groupIds.get(i), groupList.get(i));
+            Log.d("Test PriceRange", "mGroupMap: "+reversedMap.keySet());
         }
         this.groupsMap.putAll(reversedMap);
         this.groupsEntryList.clear();

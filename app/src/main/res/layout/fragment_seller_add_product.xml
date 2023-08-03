@@ -199,7 +199,7 @@
                        android:layout_gravity="center"
                        android:layout_weight="1"
                        android:layout_margin="10dp"
-                       android:background="@color/cancel_grey"
+                       android:background="@drawable/button_outline"
                        android:text="Cancel"
                        android:textColor="@color/black" />
 

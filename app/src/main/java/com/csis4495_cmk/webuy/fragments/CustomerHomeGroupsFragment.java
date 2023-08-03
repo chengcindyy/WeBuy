@@ -26,6 +26,7 @@ import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,6 +54,9 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
     private Map<String,Group> groupMap;
     private CustomerHomeGroupListRecyclerAdapter adapter;
     Map<String, Group> mGroupMap = new LinkedHashMap<>();
+    Map<String, Group> mGroupInStockMap = new LinkedHashMap();
+    Map<String, Group> mGroupPreOrderMap = new LinkedHashMap();
+    Map<String, Group> searchedMap = new LinkedHashMap<>();
     private CustomerWishlistViewModel wishListViewModel;
     private Boolean isChecked;
     private List<Wishlist> wishlistList;
@@ -82,6 +86,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
         groupMap = new HashMap<>();
         wishlistList = new ArrayList<>();
+        searchedMap = new LinkedHashMap<>();
 
         // Get data from viewModel
         wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
@@ -150,6 +155,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
     }
 
     private void doSearch() {
+        searchedMap.clear();
         CustomerHomeFilterViewModel model = new ViewModelProvider(requireActivity()).get(CustomerHomeFilterViewModel.class);
         // Search by keywords
         model.getKeywords().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -203,6 +209,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                                     }
                                 }
                                 UpdateRecyclerView(mGroupMap);
+
                             }
 
                             @Override
@@ -222,7 +229,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
         model.getSelectedPriceRange().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String condition) {
-                Log.d("Test search price", "search keyword: "+ condition);
+                Log.d("Test PriceRange", "search keyword: "+ condition);
                 mGroupMap.clear();
                 allGroupRef.orderByChild("minPrice").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -237,7 +244,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                         switch (condition){
                             case "Price low to high":
                                 UpdateRecyclerView(mGroupMap);
-                                Log.d("Test sort", "mGroupMap: "+mGroupMap.keySet());
+                                Log.d("Test PriceRange", "mGroupMap: "+mGroupMap.keySet());
                                 break;
                             case "Price high to low":
                                 adapter.reverseData(mGroupMap);
@@ -262,23 +269,38 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
             public void onChanged(String timeRange) {
                 Log.d("Test timeRange", "TimeRange: "+ timeRange);
                 mGroupMap.clear();
+                mGroupInStockMap.clear();
+                mGroupPreOrderMap.clear();
                 allGroupRef.orderByChild("startTimestamp").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             String groupId = snapshot.getKey();
                             Group group = snapshot.getValue(Group.class);
+
+                            // First, check groupType, only sort pre order's group
+                            int groupType = group.getGroupType();
                             Log.d("Test timeRange", "Key: "+snapshot.getKey()+" Value: "+group.getStartTimestamp());
-                            mGroupMap.put(groupId, group);
+
+                            // If groupType is 0 (inStock), then save it to a map
+                            if (groupType == 0){
+                                mGroupInStockMap.put(groupId, group);
+                            } // else is 1 (pre order)
+                            else {
+                                mGroupPreOrderMap.put(groupId, group);
+                            }
                         }
 
                         // Update RecyclerView after all data have been read
                         switch (timeRange){
                             case "Time nearest to furthest":
+                                mGroupMap.putAll(mGroupPreOrderMap);
+                                mGroupMap.putAll(mGroupInStockMap);
                                 UpdateRecyclerView(mGroupMap);
-                                Log.d("Test timeRange", "mGroupMap: "+mGroupMap.keySet());
                                 break;
                             case "Time furthest to nearest":
+                                mGroupMap.putAll(mGroupInStockMap);
+                                mGroupMap.putAll(mGroupPreOrderMap);
                                 adapter.reverseData(mGroupMap);
                                 adapter.setOnGroupListener(CustomerHomeGroupsFragment.this);
                                 adapter.notifyDataSetChanged();
@@ -314,14 +336,16 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
             @Override
             public void onChanged(Integer groupType) {
                 Log.d("Test GroupType", "GroupType: "+ groupType);
-                mGroupMap.clear();
-                mGroupMap = groupMap.entrySet()
+                Map<String, Group> filteredGroupMap = groupMap.entrySet()
                         .stream()
                         .filter(map -> map.getValue().getGroupType() == groupType)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                mGroupMap.clear();
+                mGroupMap.putAll(filteredGroupMap);
                 UpdateRecyclerView(mGroupMap);
             }
         });
+
     }
 
     private void checkGroupTimestamp(String groupId, Group group, int status) {

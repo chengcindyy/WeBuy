@@ -1,17 +1,15 @@
 package com.csis4495_cmk.webuy.activities;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
+
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.fragments.CustomerHomeGroupsFragment;
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class CustomerHomePageActivity extends AppCompatActivity {
@@ -26,7 +24,6 @@ public class CustomerHomePageActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_customer);
         NavController navController = navHostFragment.getNavController();
 
-        // Set up the BottomAppBar menu click events
         // Set up the BottomAppBar menu click events
         bottomAppBar.setOnMenuItemClickListener(menuItem -> {
             switch (menuItem.getItemId()) {

@@ -1,12 +1,10 @@
 package com.csis4495_cmk.webuy.fragments;
 
 import static androidx.navigation.Navigation.findNavController;
-
 import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -17,12 +15,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.recyclerview.SellerProductListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Product;
@@ -30,19 +28,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,23 +46,20 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class SellerProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener {
     private NavController navController;
-    private FloatingActionButton btnAddProduct;
     private RecyclerView mRecyclerView;
     private SellerProductListRecyclerAdapter adapter;
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    DatabaseReference reference;
-    private androidx.appcompat.widget.SearchView searchView;
-    private boolean addProductBtnClicked = false;
     private int position;
     private ArrayList<Product> allProductsList;
     private ArrayList<String> allProductIds;
     private Map<String, Product> idsToProductsMap;
     private ArrayList<String> allCoverImgsList;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    DatabaseReference reference;
+    final StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,62 +93,57 @@ public class SellerProductListFragment extends Fragment implements SellerProduct
         // Call swipe helper
         OnRecyclerItemSwipeActionHelper();
 
-        // Search
-        searchView = view.findViewById(R.id.sv_seller_product_list);
-        if (searchView != null) {
-            searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String s) {
-                    search(s);
-                    return false;
-                }
+        // ButtonAppBar and search
+        BottomAppBar bottomAppBar = view.findViewById(R.id.bottomAppBar);
+        Menu menu = bottomAppBar.getMenu();
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        androidx.appcompat.widget.SearchView searchView =
+                (androidx.appcompat.widget.SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                search(s);
+                return false;
+            }
 
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    search(s);
-                    return false;
-                }
-            });
-        }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                search(s);
+                return false;
+            }
+        });
 
-        // Open add product page
-        btnAddProduct = view.findViewById(R.id.fab_add_new_product);
-        btnAddProduct.setOnClickListener(view1 ->
-                findNavController(view1).navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment));
+        // Fab navigation
+        FloatingActionButton floatingActionButton = view.findViewById(R.id.seller_fab);
+        floatingActionButton.setOnClickListener(v -> {
+            // Open add product page
+            navController.navigate(R.id.action_sellerProductListFragment_to_sellerAddProductFragment);
+        });
     }
 
-
-
-
     private void setAllProductDetails() {
-        StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
         reference = FirebaseDatabase.getInstance().getReference("Product");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //allProductsList.clear();
                 allProductsList.clear();
                 allProductIds.clear();
                 allCoverImgsList.clear();
                 List<Task<Uri>> tasks = new ArrayList<>();
 
-                //all products
+                // Get all products
                 for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
                     Product product = productSnapshot.getValue(Product.class);
                     String sellerId = product.getSellerId();
                     String currentUser = auth.getCurrentUser().getUid();
 
-                    //seller's products
+                    // But only filter one seller's products
                     if(sellerId.equals(currentUser)){
-                        //SetSellerProductDetails(sellerId);
-//                        allProductsList.clear();
-//                        allProductIds.clear();
-//                        allCoverImgsList.clear();
-
                         String productId = productSnapshot.getKey();
                         allProductsList.add(product);
                         allProductIds.add(productId);
                         idsToProductsMap.put(productId, product);
+                        // Pass this productId to adapter for later use
                         adapter.setProductId(productId);
 
                         //get coverImgUrl
@@ -171,10 +159,8 @@ public class SellerProductListFragment extends Fragment implements SellerProduct
                                 allCoverImgsList.clear();
                                 for (Object object : objects) {
                                     Uri uri = (Uri) object;
-
                                     allCoverImgsList.add(uri.toString());
                                 }
-
                                 UpdateRecyclerView(allProductsList);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -185,63 +171,17 @@ public class SellerProductListFragment extends Fragment implements SellerProduct
                                 allCoverImgsList.add(null);
                             }
                         });
-//                        imgRef.child(productId).child(product.getProductImages().get(0)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                            @Override
-//                            public void onSuccess(Uri uri) {
-//                               allCoverImgsList.add(uri.toString());
-//                            }
-//                        }).addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.e("StorageGetUrl", "Failed");
-//                            }
-//                        });
 
                         Log.d("Current product is: ", allProductsList + "!");
                         Log.d("Current product id is: ", allProductIds + "!");
                         Log.d("Now map content are: ", idsToProductsMap + "!");
                     }
-
                 }
-                //UpdateRecyclerView(allProductsList);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 // Do nothing
-            }
-        });
-    }
-
-    private void SetSellerProductDetails(String sellerId) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Product");
-        Query query = reference.orderByChild("sellerId").equalTo(sellerId);
-
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                allProductsList.clear();
-                allProductIds.clear();
-                for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
-                    Product product = productSnapshot.getValue(Product.class);
-                    String productId = productSnapshot.getKey();
-
-                    allProductsList.add(product);
-                    allProductIds.add(productId);
-                    idsToProductsMap.put(productId, product);
-                    adapter.setProductId(productId);
-                    //adapter.setProducts(allProductsList);
-
-                    Log.d("Current product is: ", allProductsList + "!");
-                    Log.d("Current product id is: ", allProductIds + "!");
-                    Log.d("Now map content are: ", idsToProductsMap + "!");
-                }
-                UpdateRecyclerView(allProductsList);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // TODO: handle if canceled
             }
         });
     }
@@ -253,8 +193,9 @@ public class SellerProductListFragment extends Fragment implements SellerProduct
             pList.get(i).setCoverImgUrl(allCoverImgsList.get(i));
         }
         adapter.setProducts(pList);
-        adapter.notifyDataSetChanged();
         mRecyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
     }
 
     private void search(String str) {
@@ -377,6 +318,11 @@ public class SellerProductListFragment extends Fragment implements SellerProduct
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return false;
+    }
+
+    @Override
     public void onButtonClick(Boolean btnClicked, int position) {
 
         //use bundle to save selected productId
@@ -391,6 +337,5 @@ public class SellerProductListFragment extends Fragment implements SellerProduct
     public void onResume() {
         super.onResume();
         adapter.notifyItemChanged(position);
-        //adapter.notifyDataSetChanged();
     }
 }
