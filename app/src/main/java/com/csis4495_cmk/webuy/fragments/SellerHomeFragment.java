@@ -43,7 +43,7 @@ public class SellerHomeFragment extends Fragment {
         navController = NavHostFragment.findNavController(SellerHomeFragment.this);
 
         btnProducts = view.findViewById(R.id.btn_seller_products);
-        setOpenNewFragmentOnClickListener(btnProducts,R.id.action_sellerHomeFragment_to_sellerProductListFragment);
+        setOpenNewFragmentOnClickListener(btnProducts,R.id.action_sellerHomeFragment_to_sellerAllProductListFragment2);
 
         btnPostings = view.findViewById(R.id.btn_seller_postings);
         btnPostings.setOnClickListener(v -> navController.navigate(R.id.action_sellerHomeFragment_to_sellerGroupList2));
