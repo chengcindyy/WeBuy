@@ -58,7 +58,8 @@
                 android:layout_marginBottom="10dp"
                 android:clickable="true"
                 android:contentDescription="@string/fab_description"
-                android:src="@drawable/baseline_add_24"
+                android:src="@drawable/baseline_add_white_24"
+                android:backgroundTint="#774E24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
