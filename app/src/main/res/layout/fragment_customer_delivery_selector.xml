@@ -37,7 +37,7 @@
                 android:id="@+id/edit_delivery_full_name"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
-                android:hint="Full name"
+                android:hint="Full name*"
                 android:textColorHint="@color/light_grey"
                 app:boxBackgroundColor="@null">
 
@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginTop="5dp"
-                android:hint="Contact number"
+                android:hint="Contact number*"
                 android:textColorHint="@color/light_grey"
                 app:boxBackgroundColor="@null">
 
@@ -72,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginTop="5dp"
-                android:hint="Email"
+                android:hint="Email*"
                 android:textColorHint="@color/light_grey"
                 app:boxBackgroundColor="@null">
 
@@ -90,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:hint="Address"
+                android:hint="Address*"
                 android:textColorHint="@color/light_grey"
                 app:boxBackgroundColor="@null">
 
@@ -115,13 +115,14 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
-                    android:hint="City"
+                    android:hint="City*"
                     android:textColorHint="@color/light_grey"
                     app:boxBackgroundColor="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxLines="1"
                         android:text="" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -133,7 +134,7 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
-                    android:hint="Postal code"
+                    android:hint="Postal code*"
                     android:textColorHint="@color/light_grey"
                     app:boxBackgroundColor="@null"
                     app:hintTextColor="@color/deep_blue"
@@ -162,7 +163,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="Province"
+                    android:hint="Province*"
                     android:textColorHint="@color/light_grey"
                     app:boxBackgroundColor="@null">
 
@@ -181,7 +182,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
-                    android:hint="Country"
+                    android:hint="Country*"
                     android:textColorHint="@color/light_grey"
                     app:boxBackgroundColor="@null">
 
@@ -209,7 +210,7 @@
                     android:gravity="center_vertical"
                     android:paddingLeft="15dp"
                     android:layout_marginRight="5dp"
-                    android:hint="Click to check delivery fee"
+                    android:hint="Delivery fee*"
                     android:background="@drawable/text_view_outline"/>
 
                 <Button
@@ -250,13 +251,15 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Pickup locations"
+                android:hint="Pickup locations*"
                 app:boxBackgroundColor="@null">
 
                 <AutoCompleteTextView
                     android:id="@+id/autoComplete_delivery_store_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:inputType="none"
                     android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -266,7 +269,7 @@
                 android:id="@+id/edit_pick_up_full_name"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
-                android:hint="Full name"
+                android:hint="Full name*"
                 android:textColorHint="@color/light_grey"
                 app:boxBackgroundColor="@null">
 
@@ -283,7 +286,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginTop="5dp"
-                android:hint="Contact number"
+                android:hint="Contact number*"
                 android:textColorHint="@color/light_grey"
                 app:boxBackgroundColor="@null">
 

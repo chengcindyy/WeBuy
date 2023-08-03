@@ -81,15 +81,15 @@ public class CustomerCheckoutDataViewModel extends ViewModel {
         private String country;
         private String province;
         private Double shippingFee;
-        private String location;
         private String method;
 
         public ShipmentInfo() {
         }
 
+        // home delivery
         public ShipmentInfo(String method, String receiver, String phone, String email, String address, String postalCode,
                             String city, String country, String province, Double shippingFee) {
-            this.method = method;
+            this.method = method; //Home delivery
             this.receiver = receiver;
             this.phone = phone;
             this.email = email;
@@ -102,11 +102,13 @@ public class CustomerCheckoutDataViewModel extends ViewModel {
 
         }
 
-        public ShipmentInfo(String method, String receiver, String phone, String location, Double shippingFee) {
-            this.method = method;
+
+        // pick up
+        public ShipmentInfo(String method, String receiver, String phone, String address, Double shippingFee) {
+            this.method = method; //Store pickup
             this.receiver = receiver;
             this.phone = phone;
-            this.location = location;
+            this.address = address;
             this.shippingFee = shippingFee;
         }
 
@@ -144,10 +146,6 @@ public class CustomerCheckoutDataViewModel extends ViewModel {
 
         public Double getShippingFee() {
             return shippingFee;
-        }
-
-        public String getLocation() {
-            return location;
         }
 
         public String getMethod() {

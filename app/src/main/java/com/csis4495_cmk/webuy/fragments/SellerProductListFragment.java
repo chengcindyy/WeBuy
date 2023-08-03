@@ -158,33 +158,33 @@ public class SellerProductListFragment extends Fragment implements SellerProduct
                         idsToProductsMap.put(productId, product);
                         adapter.setProductId(productId);
 
-                        //get coverImgUrl
-                        String coverImgName = product.getProductImages().get(0);
-                        Log.d("Test StoragePath" ,imgRef.child(productId).child(coverImgName).getPath());
-                        Log.d("Test StorageGetUrl", "pId: "+ productId + ", Name: " +coverImgName);
-                        tasks.add(imgRef.child(productId).child(coverImgName).getDownloadUrl());
-
-                        Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
-                            @Override
-                            public void onSuccess(List<Object> objects) {
-                                // All tasks are successful, and each object corresponds to a download URL
-                                allCoverImgsList.clear();
-                                for (Object object : objects) {
-                                    Uri uri = (Uri) object;
-
-                                    allCoverImgsList.add(uri.toString());
-                                }
-
-                                UpdateRecyclerView(allProductsList);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // Handle failure for any of the tasks
-                                Log.e("Test StorageGetUrl", "Download Url Failed");
-                                allCoverImgsList.add(null);
-                            }
-                        });
+//                        //get coverImgUrl
+//                        String coverImgName = product.getProductImages().get(0);
+//                        Log.d("Test StoragePath" ,imgRef.child(productId).child(coverImgName).getPath());
+//                        Log.d("Test StorageGetUrl", "pId: "+ productId + ", Name: " +coverImgName);
+//                        tasks.add(imgRef.child(productId).child(coverImgName).getDownloadUrl());
+//
+//                        Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+//                            @Override
+//                            public void onSuccess(List<Object> objects) {
+//                                // All tasks are successful, and each object corresponds to a download URL
+//                                allCoverImgsList.clear();
+//                                for (Object object : objects) {
+//                                    Uri uri = (Uri) object;
+//
+//                                    allCoverImgsList.add(uri.toString());
+//                                }
+//
+//                                UpdateRecyclerView(allProductsList);
+//                            }
+//                        }).addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                // Handle failure for any of the tasks
+//                                Log.e("Test StorageGetUrl", "Download Url Failed");
+//                                allCoverImgsList.add(null);
+//                            }
+//                        });
 //                        imgRef.child(productId).child(product.getProductImages().get(0)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
 //                            @Override
 //                            public void onSuccess(Uri uri) {
@@ -203,7 +203,7 @@ public class SellerProductListFragment extends Fragment implements SellerProduct
                     }
 
                 }
-                //UpdateRecyclerView(allProductsList);
+                UpdateRecyclerView(allProductsList);
             }
 
             @Override

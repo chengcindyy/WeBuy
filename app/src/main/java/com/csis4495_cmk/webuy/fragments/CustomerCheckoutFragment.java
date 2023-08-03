@@ -58,11 +58,11 @@ public class CustomerCheckoutFragment extends Fragment {
     private EditText customerNote;
     private Button btnOrder;
     private CustomerCheckoutShoppingDetailsAdapter adapter;
-    private CustomerCartItemsViewModel customerCartItemsViewModel;
     private double checkoutTotal = 0;
     private double gstTotal = 0;
     private double pstTotal = 0;
     private double orderTotal = 0;
+    private double shipmentAmount = 0;
 
     public CustomerCheckoutFragment(){}
     public CustomerCheckoutFragment(int fromWhere) {
@@ -151,7 +151,7 @@ public class CustomerCheckoutFragment extends Fragment {
                     }
 
                     Log.d("shopping", "Item size:"+shoppingItems.size()+ " Info size:"+ cartItemInfos.size());
-                    orderTotal = checkoutTotal + gstTotal + pstTotal;
+                    orderTotal = checkoutTotal + gstTotal + pstTotal + shipmentAmount;
 
                     checkoutTotal = Double.parseDouble(String.format("%.2f", checkoutTotal));
                     gstTotal = Double.parseDouble(String.format("%.2f", gstTotal));
@@ -159,9 +159,10 @@ public class CustomerCheckoutFragment extends Fragment {
                     orderTotal = Double.parseDouble(String.format("%.2f", orderTotal));
 
                     txvCheckoutAmount.setText("CA$ "+ checkoutTotal);
+                    txvShipmentAmount.setText("-");
                     txvGstAmount.setText("CA$ "+ gstTotal);
                     txvPstAmount.setText("CA$ "+ pstTotal);
-                    txvOrderTotalPrice.setText("CA$ " + orderTotal);
+                    txvOrderTotalPrice.setText("-");
 
                     // two maps ready
 
@@ -196,39 +197,66 @@ public class CustomerCheckoutFragment extends Fragment {
         // Btn Order
         btnOrder = view.findViewById(R.id.btn_place_order);
         btnOrder.setOnClickListener(v -> {
+            //Todo: check validity first
             placeOrder();
         });
 
     }
-    private void checkValidity() {
-
-    }
+//    private void checkValidity() {
+//        String receiver = model.getShipmentInfoObject().observe();,
+//                phone,
+//                email,
+//                address = txvAddress.getText().toString(),
+//                country = txvCountry.getText().toString(),
+//                province = txvProvince.getText().toString(),
+//                city = txvCity.getText().toString(),
+//                postalCode = txvPostalCode.getText().toString(),
+//                paymentType = txvPayment.getText().toString();
+//        double deliveryFee;
+//    }
 
     private void placeOrder() {
         //upload to db
-        int orderStatus = -1;
-        double deliveryFee = 10;
-        String address = "test", country = "test", province = "test",
-                city = "test", postalCode = "test", paymentType = "test";
+        model.getShipmentInfoObject().observe(getViewLifecycleOwner(), new Observer<CustomerCheckoutDataViewModel.ShipmentInfo>() {
+            @Override
+            public void onChanged(CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo) {
+                String address = shipmentInfo.getAddress(),
+                        country = shipmentInfo.getCountry(),
+                        province = shipmentInfo.getProvince(),
+                        city = shipmentInfo.getCity(),
+                        postalCode = shipmentInfo.getPostalCode(),
+                        receiverName = shipmentInfo.getReceiver(),
+                        phone = shipmentInfo.getPhone(),
+                        email = shipmentInfo.getEmail(),
+                        shippingMethod = shipmentInfo.getMethod(),
+                        paymentType = txvPayment.getText().toString(),
+                        note = customerNote.getText().toString();
+                int orderStatus = -1;
+                Double deliveryFee = shipmentInfo.getShippingFee();
 
-        Order order = new Order(customerId, groupsAndItemsMap,
-         orderTotal, checkoutTotal, gstTotal, pstTotal,
-                System.currentTimeMillis(),deliveryFee, address,  country,
-                province,  city,  postalCode,  paymentType, orderStatus ,
-        customerNote.getText().toString());
+                Order order = new Order(customerId, groupsAndItemsMap,
+                        orderTotal, checkoutTotal, gstTotal, pstTotal,
+                        System.currentTimeMillis(), deliveryFee, address,  country,
+                        province,  city,  postalCode,  paymentType, orderStatus ,
+                        note, receiverName, phone, email, shippingMethod);
 
-        orderRef.push().setValue(order);
-        Log.d("shopping", "uploaded");
+                orderRef.push().setValue(order);
+                Log.d("shopping", "uploaded");
 
-        //TODO: delete orderItems from cart if from cart
-        if(fromWhere == CART) {
+                //TODO: delete orderItems from cart if from cart
+                if(fromWhere == CART) {
 
-        } else if (fromWhere == DIRECTLY_BUY) {
+                } else if (fromWhere == DIRECTLY_BUY) {
 
-        }
-        //TODO: no need to delete if from direct checkout
+                }
+                //TODO: no need to delete if from direct checkout
 
-        Toast.makeText(getContext(),"Your order has been placed",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),"Your order has been placed",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
     }
 
     private void setSellerInfo () {
@@ -257,9 +285,8 @@ public class CustomerCheckoutFragment extends Fragment {
                 sellersRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        // TODO: get sellerId from cart recyclerView position
-                        String selectedProductSellerId = "WWQyDcHPuuOjoMwRCbY1EBWChSX2";
+                        
+                        String selectedProductSellerId = sellerId;
 
                         for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                             String sellerId = childSnapshot.getKey();
@@ -282,9 +309,8 @@ public class CustomerCheckoutFragment extends Fragment {
 
 
                         // Create BottomSheet
-                        CustomerCheckoutDeliveryMethodFragment bottomSheetDialog = new CustomerCheckoutDeliveryMethodFragment();
+                        CustomerCheckoutDeliveryMethodFragment bottomSheetDialog = new CustomerCheckoutDeliveryMethodFragment(checkoutTotal);
                         bottomSheetDialog.show(getParentFragmentManager(), "Delivery BottomSheet Show");
-
 
                         // Set text for deliveryInfo
                         model.getShipmentInfoObject().observe(getViewLifecycleOwner(), new Observer<CustomerCheckoutDataViewModel.ShipmentInfo>() {
@@ -292,8 +318,17 @@ public class CustomerCheckoutFragment extends Fragment {
                             public void onChanged(CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo) {
                                 if (shipmentInfo != null){
                                     txvShipment.setText(shipmentInfo.getMethod());
-                                    txvReceiverPhone.setText(shipmentInfo.getReceiver()+" "+shipmentInfo.getPhone());
-                                    txvAddress.setText(shipmentInfo.getAddress());
+//                                    txvReceiverPhone.setText(shipmentInfo.getReceiver()+" "+shipmentInfo.getPhone());
+//                                    txvAddress.setText(shipmentInfo.getAddress());
+                                    setTxvShipment(txvReceiverPhone, shipmentInfo.getReceiver()+" "+shipmentInfo.getPhone());
+                                    setTxvShipment(txvAddress,shipmentInfo.getAddress());
+                                    //set selected shipment fee
+                                    shipmentAmount = shipmentInfo.getShippingFee();
+                                    txvShipmentAmount.setText("CA$ "+ shipmentAmount);
+                                    orderTotal = checkoutTotal + gstTotal + pstTotal + shipmentAmount;
+                                    txvOrderTotalPrice.setText("CA$ " + orderTotal);
+
+
                                 }
                             }
                         });
@@ -308,6 +343,13 @@ public class CustomerCheckoutFragment extends Fragment {
         });
     }
 
+    private void setTxvShipment(TextView txv, String str) {
+        if (str.trim().isEmpty()) {
+            txv.setText(null);
+        } else {
+            txv.setText(str);
+        }
+    }
     private void setPaymentClickListener(TextView txvPayment) {
         txvPayment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -316,8 +358,8 @@ public class CustomerCheckoutFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         ArrayList<String> acceptedPaymentTypes;
-                        // TODO: get sellerId from cart recyclerView position
-                        String selectedProductSellerId = "WWQyDcHPuuOjoMwRCbY1EBWChSX2";
+
+                        String selectedProductSellerId = sellerId;
 
                         for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                             String sellerId = childSnapshot.getKey();
