@@ -194,9 +194,10 @@
                    <!--    Cancel    -->
                    <androidx.appcompat.widget.AppCompatButton
                        android:id="@+id/btn_cancel_add_product"
-                       android:layout_width="wrap_content"
+                       android:layout_width="0dp"
                        android:layout_height="match_parent"
                        android:layout_gravity="center"
+                       android:layout_weight="1"
                        android:layout_margin="10dp"
                        android:background="@color/cancel_grey"
                        android:text="Cancel"
@@ -205,11 +206,12 @@
                    <!--    Confirm    -->
                    <androidx.appcompat.widget.AppCompatButton
                        android:id="@+id/btn_submit_add_product"
-                       android:layout_width="wrap_content"
+                       android:layout_width="0dp"
                        android:layout_height="match_parent"
+                       android:layout_weight="1"
                        android:layout_gravity="center"
                        android:layout_margin="10dp"
-                       android:background="@color/purple_500"
+                       android:background="@drawable/button_solid"
                        android:text="Confirm"
                        android:textColor="@color/white" />
 

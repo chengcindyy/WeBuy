@@ -129,7 +129,7 @@
         tools:layout="@layout/fragment_seller_add_product" />
     <fragment
         android:id="@+id/sellerProductListFragment"
-        android:name="com.csis4495_cmk.webuy.fragments.SellerViewProductListFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerProductListFragment"
         android:label="fragment_seller_product_list"
         tools:layout="@layout/fragment_seller_all_product_list" >
         <action

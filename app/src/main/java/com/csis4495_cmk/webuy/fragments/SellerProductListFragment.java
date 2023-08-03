@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class SellerViewProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener {
+public class SellerProductListFragment extends Fragment implements SellerProductListRecyclerAdapter.OnAddProductButtonClickedListener {
     private NavController navController;
     private FloatingActionButton btnAddProduct;
     private RecyclerView mRecyclerView;
@@ -81,7 +81,7 @@ public class SellerViewProductListFragment extends Fragment implements SellerPro
         super.onViewCreated(view, savedInstanceState);
 
         // Set navigation controller, how to navigate simply call -> controller.navigate(destination id)
-        navController = NavHostFragment.findNavController(SellerViewProductListFragment.this);
+        navController = NavHostFragment.findNavController(SellerProductListFragment.this);
 
         allProductsList = new ArrayList<>();
         allProductIds = new ArrayList<>();
