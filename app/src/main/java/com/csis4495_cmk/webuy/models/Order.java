@@ -24,6 +24,10 @@ public class Order {
     private String paymentType;
     private int orderStatus;
     private String note;
+    private String receiverName;
+    private String phone;
+    private String email;
+    private String shippingMethod;
 
     public String getNote() {
         return note;
@@ -44,7 +48,7 @@ public class Order {
                  double orderTotalPrice, double checkoutItemsTotal, double gstTotal, double pstTotal,
                  long orderedTimestamp, double deliveryFee, String address, String country,
                  String province, String city, String postalCode, String paymentType, int orderStatus,
-                 String note) {
+                 String note, String receiverName, String phone, String email, String shippingMethod) {
         this.customerId = customerId;
         this.groupsAndItemsMap = groupsAndItemsMap;
         this.orderTotalPrice = orderTotalPrice;
@@ -61,6 +65,10 @@ public class Order {
         this.paymentType = paymentType;
         this.orderStatus = orderStatus;
         this.note = note;
+        this.receiverName = receiverName;
+        this.phone = phone;
+        this.email = email;
+        this.shippingMethod = shippingMethod;
     }
 
     public String getCustomerId() {
@@ -123,6 +131,22 @@ public class Order {
 
     public double getPstTotal() {
         return pstTotal;
+    }
+
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getShippingMethod() {
+        return shippingMethod;
     }
 
     public static class OrderItemInfo {

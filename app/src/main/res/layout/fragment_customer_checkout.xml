@@ -42,7 +42,6 @@
         android:id="@+id/recyclerView_shopping_info"
         android:background="@color/white"
         android:paddingTop="5dp"
-        android:paddingHorizontal="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txv_store_name"/>
@@ -67,13 +66,13 @@
         android:layout_alignParentRight="true"
         android:layout_marginStart="0dp"
         android:paddingTop="5dp"
-        android:paddingEnd="25dp"
         android:textSize="18sp"
         android:background="@color/white"
+        android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
         android:layout_below="@id/recyclerView_shopping_info"
         android:layout_toRightOf="@id/label_shipment"
         android:gravity="end"
-        android:hint="Select a shipment" />
+        android:hint="Select a shipment*" />
 
     <TextView
         android:id="@+id/txv_shipment_method_name_phone"
@@ -85,20 +84,21 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/txv_shipment_method"
+        android:hint="Receiver* and phone numbers*"
         android:gravity="end" />
 
     <TextView
         android:id="@+id/txv_shipment_method_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
         android:textSize="18dp"
         android:paddingBottom="5dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentLeft="true"
+        android:paddingEnd="25dp"
         android:layout_below="@+id/txv_shipment_method_name_phone"
+        android:hint="Address*"
         android:gravity="end"
-        android:clickable="true"
         android:focusable="true"
         android:background="@android:color/white"/>
 
@@ -111,14 +111,17 @@
 
     <TextView
         android:id="@+id/label_notes"
+        android:gravity="center_vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/edt_customer_notes"
         android:layout_below="@id/divider3"
         android:paddingStart="10dp"
         android:drawablePadding="5dp"
         android:drawableLeft="@drawable/baseline_edit_note_purple"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
+        android:paddingRight="50dp"
         android:background="@color/white"
         android:textSize="18sp"
         android:text="Notes"/>
@@ -131,10 +134,12 @@
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:layout_below="@+id/divider3"
-        android:paddingEnd="10dp"
+        android:paddingEnd="25dp"
         android:layout_toRightOf="@+id/label_notes"
         android:layout_alignParentRight="true"
         android:hint="Buzzer / time etc"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:background="@color/white"/>
 
     <TextView
@@ -159,7 +164,7 @@
         android:textSize="18sp"
         android:layout_toRightOf="@+id/label_payment"
         android:layout_alignParentRight="true"
-        android:hint="Select a payment type"
+        android:hint="Select a payment type*"
         android:gravity="end"
         android:layout_marginVertical="5dp"
         android:background="@color/white"
@@ -303,7 +308,8 @@
         android:paddingHorizontal="15dp"
         android:background="@color/white"
         android:paddingTop="3dp"
-        android:paddingBottom="10dp"/>
+        android:paddingBottom="10dp"
+        android:layout_alignBottom="@+id/view_bottom_sticker"/>
 
     <TextView
         android:id="@+id/txv_checkout_order_total_amount"
@@ -320,23 +326,27 @@
         android:textSize="15sp"
         android:paddingTop="3dp"
         android:paddingBottom="10dp"
-
+        android:layout_alignBottom="@+id/view_bottom_sticker"
         android:background="@color/white"/>
+
     <Button
+        android:id="@+id/btn_place_order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_place_order"
-        android:text="Place Order"
+        android:layout_above="@+id/txv_checkout_order_total_amount"
         android:layout_alignParentRight="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginRight="31dp"
+        android:layout_marginBottom="-140dp"
+        android:text="Place Order" />
+
+    <View
+        android:id="@+id/view_bottom_sticker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        />
-
-
-
-
-
-
-
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp" />
 
 
 </RelativeLayout>

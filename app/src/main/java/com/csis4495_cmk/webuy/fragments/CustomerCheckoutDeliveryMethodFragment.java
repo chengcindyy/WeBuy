@@ -37,14 +37,15 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
     private RadioGroup radioGroupContainer;
     private RadioButton radioButtonDelivery, radioButtonPickup;
     private Button btnConfirm, btnCheck;
-    private TextInputLayout txvName, txvPhone, txvEmail, txvAddress, txvPostalCode,  txvCity, txvPKname, txvPKphone;
+    private TextInputLayout txvHDname, txvHDphone, txvEmail, txvAddress, txvPostalCode,  txvCity, txvPKname, txvPKphone;
     private AutoCompleteTextView txvProvince, txvCountry, txvLocation;
     private TextView txvShowFee;
     private CustomerCheckoutDataViewModel model;
     private Boolean isDataVerified = false;
+    private double checkoutTotal;
 
-    public CustomerCheckoutDeliveryMethodFragment() {
-        // Required empty public constructor
+    public CustomerCheckoutDeliveryMethodFragment(double checkoutTotal) {
+        this.checkoutTotal = checkoutTotal;
     }
 
     @Override
@@ -68,8 +69,8 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
         radioButtonPickup = view.findViewById(R.id.radio_btn_self_pickup);
 
         // TextViews
-        txvName = view.findViewById(R.id.edit_delivery_full_name);
-        txvPhone = view.findViewById(R.id.edit_delivery_phone);
+        txvHDname = view.findViewById(R.id.edit_delivery_full_name);
+        txvHDphone = view.findViewById(R.id.edit_delivery_phone);
         txvEmail = view.findViewById(R.id.edit_delivery_email);
         txvAddress = view.findViewById(R.id.edit_delivery_address);
         txvPostalCode = view.findViewById(R.id.edit_delivery_postal_code);
@@ -86,26 +87,26 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
 
         // Monitor data from CustomerCheckoutFragment: Get deliveryHashMap
         model = new ViewModelProvider(requireActivity()).get(CustomerCheckoutDataViewModel.class);
+
         model.getSelectedDeliveryMethods().observe(getViewLifecycleOwner(), new Observer<HashMap<String, Delivery>>() {
             @Override
             public void onChanged(HashMap<String, Delivery> deliveryHashMap) {
                 Log.d("Test deliveryHashMap", "Size: " + deliveryHashMap.size());
                 List<String> locationsList = new ArrayList<>();
                 final Double[] shippingFeeContainer = {0.0};
-                Double orderPrice = 100.0;
 
                 // Loop through the deliveryHashMap and check provided delivery services
                 for (String key : deliveryHashMap.keySet()) {
                     Delivery delivery = deliveryHashMap.get(key);
-                    String providedMethods = delivery.getDeliveredMethod();
+                    String providedMethod = delivery.getDeliveredMethod();
                     String providedLocations = delivery.getPickUpLocation();
-                    Log.d("Test deliveryHashMap", "Methods: "+providedMethods);
+                    Log.d("Test deliveryHashMap", "Methods: "+providedMethod);
 
                     // Display provided options:
-                    if ("[Home delivery] ".equals(providedMethods)) {
+                    if ("[Home delivery] ".equals(providedMethod)) {
                         // 1. Delivery: if seller has provided delivery show the text fields
                         radioButtonDelivery.setVisibility(View.VISIBLE);
-                    } else if ("[Self pick up] ".equals(providedMethods)) {
+                    } else if ("[Self pick up] ".equals(providedMethod)) {
                         // 2. Pickup: if seller has provided delivery show store location dropdown
                         radioButtonPickup.setVisibility(View.VISIBLE);
 
@@ -117,7 +118,7 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                             Double keyPrice = Double.parseDouble(feeKey.split("_")[1]);
                             Double valuePrice = feeMap.get(feeKey);
 
-                            if (orderPrice >= keyPrice){
+                            if (checkoutTotal >= keyPrice){
                                 if (valuePrice == 0){
                                     shippingFee = "Free";
                                 } else {
@@ -156,18 +157,17 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                                                 Double keyPrice = Double.parseDouble(feeKey.split("_")[1]);
                                                 Double valuePrice = feeMap.get(feeKey);
 
-                                                if (orderPrice >= keyPrice){
+                                                if (checkoutTotal >= keyPrice){
                                                     if (valuePrice == 0){
                                                         shippingFeeStr = "Free delivery";
                                                     } else {
-                                                        shippingFeeStr = "CA$"+valuePrice;
+                                                        shippingFeeStr = "CA$ "+valuePrice;
                                                     }
                                                 }
                                                 shippingFeeContainer[0] = valuePrice;
                                             }
                                             // Set the fee to textView
                                             txvShowFee.setText("Shipped to " + deliveryLocation + " (" + shippingFeeStr+")");
-
                                             Log.d("Test shipping fee", "shippingFee: "+shippingFeeStr);
                                         }
                                     }
@@ -177,8 +177,8 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                                 btnConfirm.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        String name = txvName.getEditText().getText().toString();
-                                        String phone = txvPhone.getEditText().getText().toString();
+                                        String name = txvHDname.getEditText().getText().toString();
+                                        String phone = txvHDphone.getEditText().getText().toString();
                                         String email = txvEmail.getEditText().getText().toString();
                                         String address = txvAddress.getEditText().getText().toString();
                                         String postalCode = txvPostalCode.getEditText().getText().toString();
@@ -187,7 +187,8 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                                         String city = txvCity.getEditText().getText().toString();
 
                                         CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo =
-                                                new CustomerCheckoutDataViewModel.ShipmentInfo("Home delivery", name, phone, email, address, postalCode, province, country, city, shippingFeeContainer[0]);
+                                                new CustomerCheckoutDataViewModel.ShipmentInfo("Home delivery", name, phone, email, address, postalCode,
+                                                                                                 city,country, province, shippingFeeContainer[0]);
                                         model.shipmentInfoObject(shipmentInfo);
                                         dismiss();
                                     }
@@ -207,16 +208,21 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                                     @Override
                                     public void onClick(View view) {
 
-                                        String method = txvLocation.getText().toString();
+                                        String method = "Store pickup"; //location + " " + "CA$:8.0"
                                         String location = txvLocation.getText().toString().split(" ")[0];
                                         String PKname = txvPKname.getEditText().getText().toString();
                                         String PKphone = txvPKphone.getEditText().getText().toString();
+                                        String strShippingFee = txvLocation.getText().toString();
+                                        double shippingFee = 0;
+                                        if (!strShippingFee.isEmpty() && strShippingFee != null) {
+                                            shippingFee = Double.parseDouble(strShippingFee.split("\\$:")[1].split("\\)")[0]);
+                                        }
 
                                         Log.d("Test pickup info", "method: " + method + " location: " + location + " PKname: " + PKname + " PKphone: " + PKphone);
 
                                         // Set to Order
                                         CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo =
-                                                new CustomerCheckoutDataViewModel.ShipmentInfo(method, PKname, PKphone, location, shippingFeeContainer[0]);
+                                                new CustomerCheckoutDataViewModel.ShipmentInfo(method, PKname, PKphone, location, shippingFee);
                                         model.shipmentInfoObject(shipmentInfo);
                                         dismiss();
                                     }
@@ -226,6 +232,45 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                         }
                     });
                 }
+            }
+        });
+
+        // preset if user already have input data
+        model.getShipmentInfoObject().observe(getViewLifecycleOwner(), new Observer<CustomerCheckoutDataViewModel.ShipmentInfo>() {
+            @Override
+            public void onChanged(CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo) {
+                if (shipmentInfo.getMethod().equals("Home delivery")) {
+                    radioButtonDelivery.setChecked(true);
+                    txvHDname.getEditText().setText(shipmentInfo.getReceiver());
+                    txvHDphone.getEditText().setText(shipmentInfo.getReceiver());
+                    txvEmail.getEditText().setText(shipmentInfo.getEmail());
+                    txvAddress.getEditText().setText(shipmentInfo.getAddress());
+                    txvPostalCode.getEditText().setText(shipmentInfo.getPostalCode());
+                    txvProvince.setText(shipmentInfo.getProvince()); //editText
+                    txvCountry.setText(shipmentInfo.getCountry()); //editText
+                    txvCity.getEditText().setText(shipmentInfo.getCity());
+                    //check shipment fee
+                    btnCheck.performClick();
+                    Log.d("Test shipping fee", btnCheck.callOnClick() +"");
+                } else if (shipmentInfo.getMethod().equals("Store pickup")) {
+                    radioButtonPickup.setChecked(true);
+                    String strShippingFee;
+                    double shippingFee = shipmentInfo.getShippingFee();
+                    if (shippingFee == 0){
+                        strShippingFee = "Free";
+                    } else {
+                        strShippingFee = String.valueOf(shippingFee);
+                    }
+                    if (shipmentInfo.getAddress() != "") {
+                        txvLocation.setText(shipmentInfo.getAddress() + " (CA$:" + strShippingFee + ")");
+                    }
+                    txvPKname.getEditText().setText(shipmentInfo.getReceiver());
+                    txvPKphone.getEditText().setText(shipmentInfo.getPhone());
+                } else {
+                    // no preselection
+                }
+
+
             }
         });
     }
@@ -243,13 +288,14 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
         });
     }
 
+
     private void VerifyingEnteredContent(String name, String phone, String email, String address, String postalCode, String city, String province, String country) {
         if (TextUtils.isEmpty(name)){
-            txvName.setError("Name is required");
-            txvName.requestFocus();
+            txvHDname.setError("Name is required");
+            txvHDname.requestFocus();
         } else if (TextUtils.isEmpty(phone)){
-            txvPhone.setError("Phone is required");
-            txvPhone.requestFocus();
+            txvHDphone.setError("Phone is required");
+            txvHDphone.requestFocus();
         } else if (TextUtils.isEmpty(email)){
             txvEmail.setError("Email is required");
             txvEmail.requestFocus();
