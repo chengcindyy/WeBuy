@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<SellerInventoryListRecyclerAdapter.ViewHolder> implements SellerInventoryInfoRecyclerViewAdapter.OnAllocateClickListener{
+public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<SellerInventoryListRecyclerAdapter.ViewHolder> implements SellerInventoryInfoRecyclerViewAdapter.OnActionButtonClickListener {
 
     private Context context;
     private static OnButtonClickListener onButtonClickListener;
@@ -93,8 +93,13 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
     }
 
     @Override
-    public void onAllocateClick(int position) {
-        onButtonClickListener.onOpenAllocateButtonClick(position);
+    public void onAllocateClicked(String groupId) {
+        onButtonClickListener.onOpenAllocateButtonClick(groupId);
+    }
+
+    @Override
+    public void onRestoreClicked(int restoreAmount) {
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -130,6 +135,7 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
 
     public interface OnButtonClickListener {
         void onOpenProductPageButtonClick(String productId);
-        void onOpenAllocateButtonClick(int position);
+        void onOpenAllocateButtonClick(String productId);
+        void onOpenStoreRestoreButtonClick();
     }
 }
