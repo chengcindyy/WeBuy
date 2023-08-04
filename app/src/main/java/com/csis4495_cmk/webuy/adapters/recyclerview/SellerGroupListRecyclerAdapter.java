@@ -126,7 +126,7 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
         });
 
         holder.groupName.setText(g.getGroupName());
-        holder.groupDescription.setText(g.getDescription());
+//        holder.groupDescription.setText(g.getDescription());
         holder.groupPrice.setText(g.getGroupPrice());
 
         if (countDowns.containsKey(holder)) {
@@ -273,7 +273,7 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
             super(itemView);
             groupImg = itemView.findViewById(R.id.img_group_img);
             groupName = itemView.findViewById(R.id.tv_group_name);
-            groupDescription = itemView.findViewById(R.id.tv_group_description);
+//            groupDescription = itemView.findViewById(R.id.tv_group_description);
             groupPrice = itemView.findViewById(R.id.tv_group_price);
             groupStart = itemView.findViewById(R.id.tv_group_start);
             groupEnd = itemView.findViewById(R.id.tv_group_end);

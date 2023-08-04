@@ -10,10 +10,10 @@
         android:label="fragment_customer_home"
         tools:layout="@layout/fragment_customer_home" >
 
+        <action
+            android:id="@+id/action_customerHomeFragment_to_customerGroupDetailFragment"
+            app:destination="@id/customerGroupDetailFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_customerHomeFragment_to_customerGroupDetailFragment"
-        app:destination="@id/customerGroupDetailFragment" />
 
     <!-- Define actions with popUpTo and popUpToInclusive -->
     <action
@@ -37,13 +37,6 @@
         android:name="com.csis4495_cmk.webuy.fragments.CustomerHomeGroupsFragment"
         android:label="fragment_customer_home_groups"
         tools:layout="@layout/fragment_customer_home_groups" />
-
-    <fragment
-        android:id="@+id/customerGroupDetailFragment"
-        android:name="com.csis4495_cmk.webuy.fragments.CustomerGroupDetailFragment"
-        android:label="fragment_customer_group_detail"
-        tools:layout="@layout/fragment_customer_group_detail" >
-    </fragment>
 
     <fragment
         android:id="@+id/customerSettingFragment"
@@ -254,5 +247,10 @@
             android:id="@+id/action_sellerAllProductListFragment2_to_sellerAddProductFragment"
             app:destination="@id/sellerAddProductFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/customerGroupDetailFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerGroupDetailFragment"
+        android:label="fragment_customer_group_detail"
+        tools:layout="@layout/fragment_customer_group_detail" />
 
 </navigation>
