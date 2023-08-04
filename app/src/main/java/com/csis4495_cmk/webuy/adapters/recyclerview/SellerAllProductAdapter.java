@@ -3,6 +3,8 @@ package com.csis4495_cmk.webuy.adapters.recyclerview;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
@@ -29,7 +32,6 @@ public class SellerAllProductAdapter extends RecyclerView.Adapter<SellerAllProdu
     private NavController navController;
     Context context;
     List<Product> productList;
-
 
     public SellerAllProductAdapter(Context context, List<Product> productList, NavController navController) {
         this.context = context;
@@ -55,14 +57,14 @@ public class SellerAllProductAdapter extends RecyclerView.Adapter<SellerAllProdu
 
         // Get coverImage
         String coverImageName = product.getProductImages().get(0);
-        getDownloadUrl(coverImageName, product.getKey(), holder.productImage);
+        getDownloadUrl(coverImageName, product.getProductId(), holder.productImage);
 
         // Button
         holder.btn_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //use bundle to save selected productId
-                String productId = product.getKey();
+                String productId = product.getProductId();
                 Bundle bundle  = new Bundle();
                 bundle.putString("new_group_productId", productId);
                 //pass bundle to fragment
@@ -88,6 +90,12 @@ public class SellerAllProductAdapter extends RecyclerView.Adapter<SellerAllProdu
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getDownloadUrl(coverImageName, key, productImage);
+                    }
+                }, 100);
                 productImage.setImageResource(R.drawable.loading_image);
             }
         });

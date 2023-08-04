@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -22,7 +23,9 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.recyclerview.SellerInventoryListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
+import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
+import com.csis4495_cmk.webuy.viewmodels.SharedInventoryViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -58,10 +61,11 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     private Map<String, List<Inventory>> preOrderItemsMap;
     private Map<String, Integer> groupTypeMap;
     private Map<String, String> allImagesMap;
-    private String styleId, productId, sellerId, name, inventoryTitle;
+    private String styleId, productId, groupId, sellerId, name, inventoryTitle;
     private int inStock, toSell, status, ordered, allocated, toAllocate, toOrder;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     DatabaseReference reference;
+    SharedInventoryViewModel inventoryViewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,6 +80,8 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
 
         // References
         navController = NavHostFragment.findNavController(SellerInventoryFragment.this);
+        // ViewModel
+        inventoryViewModel = new ViewModelProvider(requireActivity()).get(SharedInventoryViewModel.class);
         // SearchBar
         searchView = view.findViewById(R.id.search_product);
         if (searchView != null) {
@@ -112,6 +118,37 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         setTabLayout(tabLayout);
     }
 
+//    private void onOrderWasCreated() {
+//        // Go to Order table and find groupsAndItemsMap
+//        DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("Order");
+//        orderRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                for (DataSnapshot orderSnapshot : snapshot.getChildren()){
+//                    Order order = orderSnapshot.getValue(Order.class);
+//                    Map<String, Map<String, Order.OrderItemInfo >> groupsAndItemsMap = order.getGroupsAndItemsMap();
+//
+//                    for (String groupKey : groupsAndItemsMap.keySet()){
+//                        Log.d("Test key", groupKey);
+//                        Map<String, Order.OrderItemInfo> innerMap = groupsAndItemsMap.get(groupKey);
+//
+//                        for (String innerKey : innerMap.keySet()) {
+//                            Order.OrderItemInfo itemInfo = innerMap.get(innerKey);
+//
+//                            Log.d("Test inner key and value", "Key: " + innerKey + ", Value: " + itemInfo.toString());
+//                        }
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
+
     private void search(String str) {
         Map<String, List<Inventory>> mInventoryMap = inventoryMap.entrySet()
                 .stream()
@@ -147,10 +184,10 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                 preOrderItemsMap.clear();
 
                 // Fill the inventoryMap (this is for all products).
-                for (DataSnapshot productSnapshot : snapshot.getChildren()){
-                    Inventory inventory = productSnapshot.getValue(Inventory.class);
+                for (DataSnapshot inventorySnapshot : snapshot.getChildren()){
+                    Inventory inventory = inventorySnapshot.getValue(Inventory.class);
                     String productId = inventory.getProductId();
-                    String inventoryId = productSnapshot.getKey();
+                    String inventoryId = inventorySnapshot.getKey();
                     String sellerId = inventory.getSellerId();
 
                     Log.d("Test sellerId", "SellerId: "+ sellerId+ "currentUser: "+ auth.getCurrentUser().getUid());
@@ -215,8 +252,8 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             } else {
                 productStyleKey = productId;
             }
-
-            Inventory inventory = new Inventory(sellerId, productId, styleId, toSell, inStock, name, productStyleKey, inventoryTitle);
+            Log.d("Test create inventory", "data:"+ " sellerId "+sellerId+" productId "+productId+" groupId "+groupId+" styleId "+styleId);
+            Inventory inventory = new Inventory(sellerId, productId, groupId, styleId, toSell, inStock, name, productStyleKey, inventoryTitle);
 
             DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
             Query query = inventoryRef.orderByChild("productStyleKey").equalTo(inventory.getProductStyleKey());
@@ -227,6 +264,9 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                     if (!snapshot.exists()) {
                         // Generate a new child location using a unique key
                         String inventoryKey = inventoryRef.push().getKey();
+                        Product product = new Product();
+                        product.setInventoryId(inventoryKey);
+
                         if (inventoryKey != null) {
                             inventoryRef.child(inventoryKey).setValue(inventory).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
@@ -265,7 +305,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
 
                 for (DataSnapshot productSnapshot : snapshot.getChildren()){
                     Group group = productSnapshot.getValue(Group.class);
-
+                    groupId = group.getKey();
                     // Check sellerId to only display a seller's groups
                     sellerId = group.getSellerId();
                     Log.d("TestSellerId", sellerId);
@@ -341,6 +381,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             }
         });
     }
+
     private void addInStockToProductDb(String productId, int newInStock) {
         Log.d("Test product inStock","addInStockToProductDb()");
         DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product").child(productId);
@@ -405,10 +446,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         });
     }
 
-    @Override
-    public void onOpenAllocateButtonClick(int position) {
-        Log.d("Test stock", "onOpenAllocateButtonClick()");
-    }
+
 
     @Override
     public void onStockInButtonClicked(String inventoryId, int stockIn) {
@@ -521,6 +559,23 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                 Log.d("Product", "Failed to read product styles.", databaseError.toException());
             }
         });
+    }
+
+    @Override
+    public void onOpenAllocateButtonClick(String groupId) {
+        Log.d("Test stock", "onOpenAllocateButtonClick()");
+        //use bundle to save selected productId
+        Bundle bundle = new Bundle();
+        bundle.putString("detail_groupId", groupId);
+        Log.d("Test detail_groupId", groupId);
+        //pass bundle to fragment
+        navController.navigate(R.id.action_sellerInventoryFragment_to_sellerGroupDetailFragment, bundle);
+    }
+
+    @Override
+    public void onOpenStoreRestoreButtonClick(int restoreAmount) {
+        Log.d("Test restore", "passed restoreAmount:"+restoreAmount);
+//        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product").child();
     }
 
     class DownloadTaskWithId {

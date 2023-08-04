@@ -15,7 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.fragments.SellerInventoryStockManagementFragment;
+import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -23,7 +29,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
     private Context context;
     private List<Inventory> inventoryList;
     private Fragment fragment;
-    private OnAllocateClickListener allocateListener;
+    private OnActionButtonClickListener buttonListener;
     private SellerInventoryStockManagementFragment.onStockButtonClickListener stockListener;
 
 
@@ -34,8 +40,8 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
         notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnAllocateClickListener listener) {
-        this.allocateListener = listener;
+    public void setOnItemClickListener(OnActionButtonClickListener listener) {
+        this.buttonListener = listener;
     }
 
     public void setOnStockButtonClickListener(SellerInventoryStockManagementFragment.onStockButtonClickListener listener) {
@@ -63,9 +69,9 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
         holder.btnStockMgmt.setOnClickListener(view -> {
             String inventoryId = inventory.getInventoryId();
             String styleName = inventory.getInventoryName();
-            int inStock = inventory.getInStock();
-            int ordered = inventory.getOrdered();
-            int toOrder = inventory.getToOrder();
+            int inStock = inventory.getInStock(); // Current stock
+            int ordered = inventory.getOrdered(); // Require order
+            int toOrder = inventory.getToOrder(); // Still need
             Log.d("test content", "inventoryId: "+inventoryId+"Style name: "+ styleName+ "inStock: "+ inStock+"ordered: "+ ordered+"toOrder: "+ toOrder);
 
             // Create Button menu
@@ -74,7 +80,32 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
             inventoryFragment.show(fragmentManager, "Inventory Management Frag show");
             inventoryFragment.setOnStockButtonClickListener(stockListener);
         });
-        holder.btnAllocate.setOnClickListener(view -> allocateListener.onAllocateClick(position));
+        String productId = inventory.getProductId();
+
+        final String[] groupId = {null};
+        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
+        groupRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot groupSnapshot : snapshot.getChildren()){
+                    Group group = groupSnapshot.getValue(Group.class);
+                    if (group.getProductId().equals(productId)){
+                        groupId[0] = group.getKey();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(groupId[0]));
+        holder.btnRestore.setOnClickListener(view -> {
+            int restoreAmount = inventory.getInStock();
+            Log.d("Test restore", "restoreAmount: "+ restoreAmount);
+            buttonListener.onRestoreClicked(restoreAmount);
+        });
     }
 
     @Override
@@ -85,7 +116,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView txvStyleName, txvToSell, txvOrdered, txvAllocated, txvInStock, txvToAllocate, txvToOrder;
-        Button btnStockMgmt, btnAllocate;
+        Button btnStockMgmt, btnAllocate, btnRestore;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -100,11 +131,13 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
             // Button
             btnStockMgmt = itemView.findViewById(R.id.btn_stock_mgmt);
             btnAllocate = itemView.findViewById(R.id.btn_allocate);
+            btnRestore = itemView.findViewById(R.id.btn_stock_restore);
         }
     }
 
-    public interface OnAllocateClickListener {
-        void onAllocateClick(int position);
+    public interface OnActionButtonClickListener {
+        void onAllocateClicked(String groupId);
+        void onRestoreClicked(int restoreAmount);
     }
 }
 

@@ -39,6 +39,13 @@
         tools:layout="@layout/fragment_customer_home_groups" />
 
     <fragment
+        android:id="@+id/customerGroupDetailFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerGroupDetailFragment"
+        android:label="fragment_customer_group_detail"
+        tools:layout="@layout/fragment_customer_group_detail" >
+    </fragment>
+
+    <fragment
         android:id="@+id/customerSettingFragment"
         android:name="com.csis4495_cmk.webuy.CustomerSettingFragment"
         android:label="fragment_customer_setting"
@@ -117,6 +124,9 @@
         <action
             android:id="@+id/action_sellerHomeFragment_to_sellerAllProductListFragment2"
             app:destination="@id/sellerAllProductListFragment" />
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_sellerOrderListFragment"
+            app:destination="@id/sellerOrderListFragment" />
     </fragment>
     <fragment
         android:id="@+id/sellerAddProductFragment"
@@ -235,6 +245,11 @@
         app:destination="@id/customerCartFragment"
         app:popUpTo="@id/customerAddToCartFragment"
         app:popUpToInclusive="true"/>
+    <fragment
+        android:id="@+id/sellerOrderListFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerOrderListFragment"
+        android:label="fragment_seller_order_list"
+        tools:layout="@layout/fragment_seller_order_list" />
     <fragment
         android:id="@+id/sellerAllProductListFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerAllProductListFragment"

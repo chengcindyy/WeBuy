@@ -4,12 +4,12 @@ import java.util.List;
 
 public class Product {
 
-    private String key;
+    private String productId;
     private String productName;
     private String category;
     private String description;
     private int tax; // 0: no tax  1: GST  2: GST+PST
-    private int inStock = 11;
+    private int inStock;
 
     private List<String> productImages;
     private String sellerId;
@@ -20,13 +20,13 @@ public class Product {
     private List<String> tags;
 
     private String coverImgUrl;
-
+    private String inventoryId;
     public Product() {
     }
 
     public Product(String productName, String category, String description,
                    int tax, List<String> productImages, String sellerId,
-                    List<ProductStyle> productStyles,String productPrice) {
+                    List<ProductStyle> productStyles,String productPrice ) {
         this.productName = productName;
         this.category = category;
         this.description = description;
@@ -51,13 +51,23 @@ public class Product {
         this.tags = categories;
     }
 
-    public String getKey() {
-        return key;
+    public String getInventoryId() {
+        return inventoryId;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setInventoryId(String inventoryId) {
+        this.inventoryId = inventoryId;
     }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+
 
     public Product(int inStock) {
         this.inStock = inStock;

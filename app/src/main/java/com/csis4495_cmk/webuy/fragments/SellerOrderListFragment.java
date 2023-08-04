@@ -14,11 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.viewpager.SellerGroupListViewPagerAdapter;
+import com.csis4495_cmk.webuy.adapters.viewpager.SellerOrderListViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 
-public class SellerGroupListFragment extends Fragment {
+public class SellerOrderListFragment extends Fragment {
 
     private NavController navController;
 
@@ -26,7 +26,7 @@ public class SellerGroupListFragment extends Fragment {
 
     private ViewPager2 viewPager2;
 
-    private SellerGroupListViewPagerAdapter sellerGroupListViewPagerAdapter;
+    private SellerOrderListViewPagerAdapter adapter;
 
 
     @Override
@@ -37,22 +37,18 @@ public class SellerGroupListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_seller_group_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_seller_order_list, container, false);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        //Set navigation controller, how to navigate simply call -> controller.navigate(destination id)
-        navController = NavHostFragment.findNavController(SellerGroupListFragment.this);
-
-        tabLayout = view.findViewById(R.id.tab_seller_group_list);
-        viewPager2 = view.findViewById(R.id.seller_group_list_view_pager);
-        sellerGroupListViewPagerAdapter = new SellerGroupListViewPagerAdapter(getActivity());
-        viewPager2.setAdapter(sellerGroupListViewPagerAdapter);
-
+        navController = NavHostFragment.findNavController(SellerOrderListFragment.this);
+        tabLayout = view.findViewById(R.id.tab_seller_order_list);
+        viewPager2 = view.findViewById(R.id.seller_order_list_view_pager);
+        adapter = new SellerOrderListViewPagerAdapter(getActivity());
+        viewPager2.setAdapter(adapter);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -75,7 +71,6 @@ public class SellerGroupListFragment extends Fragment {
                 tabLayout.getTabAt(position).select();
             }
         });
-
 
     }
 }

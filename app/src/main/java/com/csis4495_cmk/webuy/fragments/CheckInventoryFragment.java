@@ -2,8 +2,10 @@ package com.csis4495_cmk.webuy.fragments;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.recyclerview.CheckInventoryRecyclerAdapter;
 
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerAddGroupStylesAdapter;
 import com.csis4495_cmk.webuy.viewmodels.SharedICheckInventoryViewModel;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -30,6 +33,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CheckInventoryFragment extends BottomSheetDialogFragment {
@@ -58,6 +62,8 @@ public class CheckInventoryFragment extends BottomSheetDialogFragment {
     private Button btnCancel, btnAdd;
 
     private SharedICheckInventoryViewModel model;
+
+    private TextView tv_inventory_des;
 
     public CheckInventoryFragment() {
         // Required empty public constructor
@@ -129,6 +135,8 @@ public class CheckInventoryFragment extends BottomSheetDialogFragment {
 
         title = view.findViewById(R.id.tv_inventory_frag);
 
+        tv_inventory_des = view.findViewById(R.id.tv_inventory_des);
+
         recyclerView = view.findViewById(R.id.rv_check_inventory);
 
         adapter = new CheckInventoryRecyclerAdapter(inventoryMap, inventoryNameMap);
@@ -151,9 +159,18 @@ public class CheckInventoryFragment extends BottomSheetDialogFragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, Boolean> myData = adapter.getToAddMap();
+                Map<String, Integer> myData = adapter.getToAddMap();
                 Log.d(TAG, "onClick: getToAddMap" + myData);
+                for (int i = 0; i < adapter.getItemCount(); i++) {
+                    CheckInventoryRecyclerAdapter.ViewHolder viewHolder = (CheckInventoryRecyclerAdapter.ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+                    if (viewHolder != null && viewHolder.isAnyFieldEmpty()) {
+                       viewHolder.setEmptyError();
+                        return;
+                    }
+                }
+                Log.d(TAG, "Selected restock: getToAddMap" + myData);
                 model.select(myData);
+                model.setIsRestockChecked();
                 dismiss();
             }
         });

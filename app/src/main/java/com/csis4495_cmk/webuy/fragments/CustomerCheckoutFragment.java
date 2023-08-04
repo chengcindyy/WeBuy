@@ -26,6 +26,8 @@ import com.csis4495_cmk.webuy.viewmodels.CustomerCartItemsViewModel;
 import com.csis4495_cmk.webuy.adapters.recyclerview.CustomerCheckoutShoppingDetailsAdapter;
 import com.csis4495_cmk.webuy.models.Delivery;
 import com.csis4495_cmk.webuy.viewmodels.CustomerCheckoutDataViewModel;
+import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
+import com.csis4495_cmk.webuy.viewmodels.SharedInventoryViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -216,6 +218,7 @@ public class CustomerCheckoutFragment extends Fragment {
 //    }
 
     private void placeOrder() {
+
         //upload to db
         model.getShipmentInfoObject().observe(getViewLifecycleOwner(), new Observer<CustomerCheckoutDataViewModel.ShipmentInfo>() {
             @Override

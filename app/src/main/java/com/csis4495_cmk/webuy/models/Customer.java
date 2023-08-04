@@ -15,7 +15,7 @@ public class Customer implements Serializable {
     private String postalCode;
     private String profilePic;
 
-    private ArrayList<CartItem> cart;
+    private ArrayList<CartItem> cart ;
     private Map<String, Wishlist> wishlistMap;
 
     private String birth;

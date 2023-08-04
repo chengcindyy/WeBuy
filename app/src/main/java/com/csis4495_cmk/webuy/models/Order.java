@@ -3,7 +3,11 @@ package com.csis4495_cmk.webuy.models;
 import java.util.Map;
 
 public class Order {
+
+    private String sellerId;
+
     private String customerId;
+
     private Map<String, Map<String, OrderItemInfo>> groupsAndItemsMap; //groupId, p___ + productId + s___ + styleId, orderItemInfo
     //    String styleId = key.split("s___")[1];
     //    String productId = key.split("s___")[0].split("p___")[1];
@@ -44,6 +48,10 @@ public class Order {
     public Order() {
     }
 
+    public String getSellerId() {
+        return sellerId;
+    }
+
     public Order(String customerId, Map<String, Map<String, OrderItemInfo>> groupsAndItemsMap,
                  double orderTotalPrice, double checkoutItemsTotal, double gstTotal, double pstTotal,
                  long orderedTimestamp, double deliveryFee, String address, String country,
@@ -74,7 +82,6 @@ public class Order {
     public String getCustomerId() {
         return customerId;
     }
-
 
     public double getOrderTotalPrice() {
         return orderTotalPrice;

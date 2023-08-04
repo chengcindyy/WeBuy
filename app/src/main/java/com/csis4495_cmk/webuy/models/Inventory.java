@@ -4,6 +4,7 @@ public class Inventory {
     private String sellerId;
     private String productId;
     private String styleId;
+    private String groupId;
     private String inventoryName;
     private int toSell;
     private int inStock;
@@ -19,10 +20,10 @@ public class Inventory {
     public Inventory() {
     }
 
-    public Inventory(String sellerId, String productId, String styleId, int toSell, int inStock, String inventoryName, String productStyleKey, String inventoryTitle) {
-        this.inventoryId = inventoryId;
+    public Inventory(String sellerId, String productId, String groupId, String styleId, int toSell, int inStock, String inventoryName, String productStyleKey, String inventoryTitle) {
         this.sellerId = sellerId;
         this.toSell = toSell;
+        this.groupId = groupId;
         this.productId = productId;
         this.styleId = styleId;
         this.inStock = inStock;
@@ -31,8 +32,16 @@ public class Inventory {
         this.inventoryTitle = inventoryTitle;
     }
 
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
     public int getToSell() {
-        return toSell;
+        return toSell - ordered;
     }
 
     public void setToSell(int toSell) {

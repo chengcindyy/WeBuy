@@ -23,10 +23,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.recyclerview.SellerAllProductAdapter;
+import com.csis4495_cmk.webuy.models.Group;
+import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.Product;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -58,6 +63,8 @@ public class SellerAllProductListFragment extends Fragment {
     private SellerAllProductAdapter sellerAllProductAdapter;
     private FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     final DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product");
+    final DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
+    final DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -126,12 +133,12 @@ public class SellerAllProductListFragment extends Fragment {
 
                 // Swiped item left: remove item from database
                 if (direction == ItemTouchHelper.LEFT) {
-                    productId = productList.get(position).getKey();
+                    productId = productList.get(position).getProductId();
                     showConfirmToRemoveDialog(productId, position);
                     Log.d("Test swipe", "currently swipe left: " + productList.get(position).getProductName());
                     // Swiped item right: open edit page
                 } else if (direction == ItemTouchHelper.RIGHT) {
-                    productId = productList.get(position).getKey();
+                    productId = productList.get(position).getProductId();
                     Log.d("Test swipe", "currently swipe right: " + productList.get(position).getProductName());
                     Bundle bundle = new Bundle();
                     bundle.putString("productId", productId);
@@ -164,14 +171,19 @@ public class SellerAllProductListFragment extends Fragment {
         //Set up alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Remove this product");
-        builder.setMessage("Are you sure you want to remove this product?");
+        builder.setMessage("Are you sure you want to remove this product? Deleting it will also delete all related groups and inventory. Please confirm.");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
                 productList.remove(position);
                 sellerAllProductAdapter.notifyItemRemoved(position);
+                // Delete - Product
                 productRef.child(productId).removeValue();
+                // Delete - Group
+                deleteProductRelatedInfoFormFirebase(groupRef, productId);
+                // Delete - Inventory
+                deleteProductRelatedInfoFormFirebase(inventoryRef, productId);
 
                 //remove images from storage
                 Executors.newSingleThreadExecutor().execute(() -> {
@@ -221,6 +233,35 @@ public class SellerAllProductListFragment extends Fragment {
         alertDialog.show();
     }
 
+    private void deleteProductRelatedInfoFormFirebase(DatabaseReference reference, String productId) {
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot currentSnapshot : snapshot.getChildren()){
+                    Group group = currentSnapshot.getValue(Group.class);
+                    if (group != null && group.getProductId().equals(productId)){
+                        reference.child(currentSnapshot.getKey()).removeValue().addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getContext(), "Cannot delete the group because " + e, Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(getContext(), "The Group has been deleted", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void setAllProductsDetails() {
         productRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -236,7 +277,7 @@ public class SellerAllProductListFragment extends Fragment {
                     String sellerId = product.getSellerId();
                     // Matching ... so it will only show this seller's products
                     if (currentUserId.equals(sellerId)){
-                        product.setKey(dataSnapshot.getKey());
+                        product.setProductId(dataSnapshot.getKey());
                         // once finds the product, added this product to the product list, and update recyclerView
                         productList.add(product);
                         updateRecyclerView(productList);

@@ -261,10 +261,9 @@
             <TextView
                 android:id="@+id/tv_detail_group_description"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="10dp"
                 android:text="Description"
@@ -272,20 +271,24 @@
                 android:background="@color/white"
                 android:layout_below="@+id/linearLayout9" />
 
-            <!--    fab- add to cart(then pop up, style, amount)    -->
+            <View
+                android:id="@+id/bottom_sticker"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_below="@+id/tv_detail_group_description"
+                android:background="@color/white"
+                android:layout_alignParentBottom="true" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <!--    fab- add to cart(then pop up, style, amount)    -->
+            <Button
                 android:id="@+id/fab_add_to_cart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="32dp"
-                android:background="@android:color/transparent"
-                android:backgroundTint="@color/delete_red"
-                android:src="@drawable/baseline_add_shopping_cart_24" />
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Add to cart" />
 
         </RelativeLayout>
 
