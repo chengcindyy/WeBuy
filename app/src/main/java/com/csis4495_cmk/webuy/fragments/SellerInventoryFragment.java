@@ -22,6 +22,8 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.recyclerview.SellerInventoryListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
+import com.csis4495_cmk.webuy.models.Order;
+import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -110,6 +112,38 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         // TabLayout
         tabLayout = view.findViewById(R.id.tabLayout_filter);
         setTabLayout(tabLayout);
+        onOrderWasCreated();
+    }
+
+    private void onOrderWasCreated() {
+        DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("Order");
+        orderRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot orderSnapshot : snapshot.getChildren()){
+                    Order order = orderSnapshot.getValue(Order.class);
+                    Map<String, Map<String, Order.OrderItemInfo >> groupsAndItemsMap = order.getGroupsAndItemsMap();
+
+                    for (String groupKey : groupsAndItemsMap.keySet()){
+                        Log.d("Test key", groupKey);
+                        Map<String, Order.OrderItemInfo> innerMap = groupsAndItemsMap.get(groupKey);
+
+                        // You can now access the inner map and its content
+                        for (String innerKey : innerMap.keySet()) {
+                            Order.OrderItemInfo itemInfo = innerMap.get(innerKey);
+                            // Now you can work with itemInfo, e.g., log it
+                            Log.d("Test inner key and value", "Key: " + innerKey + ", Value: " + itemInfo.toString());
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void search(String str) {
@@ -227,6 +261,9 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                     if (!snapshot.exists()) {
                         // Generate a new child location using a unique key
                         String inventoryKey = inventoryRef.push().getKey();
+                        Product product = new Product();
+                        product.setInventoryId(inventoryKey);
+
                         if (inventoryKey != null) {
                             inventoryRef.child(inventoryKey).setValue(inventory).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
@@ -341,6 +378,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             }
         });
     }
+
     private void addInStockToProductDb(String productId, int newInStock) {
         Log.d("Test product inStock","addInStockToProductDb()");
         DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product").child(productId);
@@ -408,6 +446,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     @Override
     public void onOpenAllocateButtonClick(int position) {
         Log.d("Test stock", "onOpenAllocateButtonClick()");
+        navController.navigate(R.id.action_sellerInventoryFragment_to_sellerGroupDetailFragment);
     }
 
     @Override

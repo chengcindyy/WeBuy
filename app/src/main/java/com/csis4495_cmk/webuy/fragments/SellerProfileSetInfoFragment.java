@@ -127,9 +127,9 @@ public class SellerProfileSetInfoFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "Loading user problem!", Toast.LENGTH_LONG).show();
         }
-        // For Testing
-        btnTest = view.findViewById(R.id.btn_test_page);
-        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_sellerProfileFragment_to_testFragment));
+//        // For Testing
+//        btnTest = view.findViewById(R.id.btn_test_page);
+//        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_sellerProfileFragment_to_testFragment));
         // Logout
         logoutButton = view.findViewById(R.id.btn_logout);
         SetLogoutOnClickListener(logoutButton);

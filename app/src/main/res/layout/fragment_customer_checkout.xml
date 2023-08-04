@@ -195,7 +195,7 @@
         android:layout_height="wrap_content"
         android:text="Total amount:"
         android:layout_below="@id/label_payment_detail"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingHorizontal="15dp"
         android:background="@color/white"
         android:paddingTop="3dp"
@@ -211,7 +211,7 @@
         android:paddingHorizontal="15dp"
         android:hint="CA$"
         android:gravity="end"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
         android:background="@color/white"/>
@@ -222,7 +222,7 @@
         android:layout_height="wrap_content"
         android:text="Shipment amount:"
         android:layout_below="@id/label_total_amount"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingHorizontal="15dp"
         android:background="@color/white"
         android:paddingTop="3dp"
@@ -238,7 +238,7 @@
         android:paddingHorizontal="15dp"
         android:hint="CA$"
         android:gravity="end"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
         android:background="@color/white"/>
@@ -249,7 +249,7 @@
         android:layout_height="wrap_content"
         android:text="GST / HST:"
         android:layout_below="@id/label_shipment_amount"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingHorizontal="15dp"
         android:background="@color/white"
         android:paddingTop="3dp"
@@ -265,7 +265,7 @@
         android:paddingHorizontal="15dp"
         android:hint="CA$"
         android:gravity="end"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
         android:background="@color/white"/>
@@ -276,7 +276,7 @@
         android:layout_height="wrap_content"
         android:text="PST / QST:"
         android:layout_below="@id/label_gst_amount"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingHorizontal="15dp"
         android:background="@color/white"
         android:paddingTop="3dp"
@@ -292,7 +292,7 @@
         android:paddingHorizontal="15dp"
         android:hint="CA$"
         android:gravity="end"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
         android:background="@color/white"/>
@@ -304,12 +304,28 @@
         android:text="Order total price:"
         android:textStyle="bold"
         android:layout_below="@id/label_pst_amount"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingHorizontal="15dp"
         android:background="@color/white"
         android:paddingTop="3dp"
         android:paddingBottom="10dp"
-        android:layout_alignBottom="@+id/view_bottom_sticker"/>
+        android:layout_alignBottom="@+id/view_bottom_sticker1"/>
+
+    <View
+        android:id="@+id/view_bottom_sticker1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp" />
+
+    <View
+        android:id="@+id/view_bottom_sticker2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp" />
 
     <TextView
         android:id="@+id/txv_checkout_order_total_amount"
@@ -323,30 +339,23 @@
         android:hint="CA$"
         android:textColor="#D3A588"
         android:gravity="end"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:paddingTop="3dp"
         android:paddingBottom="10dp"
-        android:layout_alignBottom="@+id/view_bottom_sticker"
+        android:layout_alignBottom="@+id/view_bottom_sticker2"
         android:background="@color/white"/>
 
     <Button
         android:id="@+id/btn_place_order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/txv_checkout_order_total_amount"
-        android:layout_alignParentRight="true"
-        android:layout_marginEnd="30dp"
-        android:layout_marginRight="31dp"
-        android:layout_marginBottom="-140dp"
+        android:layout_alignEnd="@+id/view_bottom_sticker2"
+        android:layout_alignBottom="@+id/view_bottom_sticker2"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         android:text="Place Order" />
 
-    <View
-        android:id="@+id/view_bottom_sticker"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp" />
+
 
 
 </RelativeLayout>

@@ -204,9 +204,9 @@ public class CustomerProfileFragment extends Fragment {
             }
         });
 
-        // For Testing
-        btnTest = view.findViewById(R.id.btn_test_page);
-        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));// End Testing
+//        // For Testing
+//        btnTest = view.findViewById(R.id.btn_test_page);
+//        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));// End Testing
 
         // Logout
         logoutButton = view.findViewById(R.id.btn_logout);

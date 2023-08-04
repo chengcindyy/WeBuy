@@ -9,7 +9,7 @@ public class Inventory {
     private int inStock;
     private int allocated;
     private int toAllocated;
-    private int ordered;
+    private int ordered = 5;
     private int toOrder;
     private String productStyleKey;
     private String imageUrl;
@@ -32,7 +32,7 @@ public class Inventory {
     }
 
     public int getToSell() {
-        return toSell;
+        return toSell - ordered;
     }
 
     public void setToSell(int toSell) {
