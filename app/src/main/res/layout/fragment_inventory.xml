@@ -65,11 +65,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:text="Add Inventory"
+                android:text="Restock"
                 android:background="@drawable/button_solid"
                 android:layout_weight="1"
                 android:layout_gravity="center"/>
-
         </LinearLayout>
 
 

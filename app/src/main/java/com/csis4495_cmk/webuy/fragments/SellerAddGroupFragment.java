@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -139,14 +140,19 @@ public class SellerAddGroupFragment extends Fragment {
         inventoryViewModel.getselectedInventory().observe(this, item -> {
             if (item != null) {
                 selectedRestockInventory = item;
-                isRestockChecked = true;
+            }
+        });
+
+        inventoryViewModel.getIsRestockChecked().observe(this, aBoolean -> {
+            if (aBoolean != null){
+                isRestockChecked = aBoolean;
             }
         });
 
         if (!isNewGroup) {
             btnCheckInventory.setEnabled(false);
             btnCheckInventory.setVisibility(View.GONE);
-
+            isRestockChecked = true;
             styleViewModel = new ViewModelProvider(getActivity()).get(SharedEditStyleViewModel.class);
             styleViewModel.getSelectedStyle().observe(this, item -> {
                 Log.d(TAG, "Get selected new style from child fragment: " + item);
@@ -415,6 +421,7 @@ public class SellerAddGroupFragment extends Fragment {
                         }
                         if (inventoryMap.isEmpty() || inventoryMap == null) {
                             Toast.makeText(getContext(), "There is no inventory to restock", Toast.LENGTH_SHORT).show();
+                            isRestockChecked = true;
                         } else {
                             CheckInventoryFragment fragment = CheckInventoryFragment.newInstance(inventoryMap, inventoryNameMap);
                             fragment.show(getActivity().getSupportFragmentManager(), "tag");
@@ -707,9 +714,7 @@ public class SellerAddGroupFragment extends Fragment {
 
     private void onSubmitNewGroup() {
         Group newGroup = new Group();
-
         boolean isComplete = true;
-
         String gName = groupName.getText().toString();
         String gDescription = description.getText().toString();
         String gCategory = groupCategory.getText().toString();

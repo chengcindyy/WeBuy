@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.adapters.recyclerview.SellerOrderListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Order;
 import com.csis4495_cmk.webuy.models.Product;
@@ -56,6 +58,7 @@ public class SellerOrderPendingFragment extends Fragment {
 
     private int position;
 
+    private SellerOrderListRecyclerAdapter adapter;
 
     public SellerOrderPendingFragment() {
         // Required empty public constructor
@@ -89,6 +92,8 @@ public class SellerOrderPendingFragment extends Fragment {
 
         tv_no = view.findViewById(R.id.tv_seller_order_list_no_pending);
 
+        getOrderData();
+
         return view;
     }
 
@@ -101,7 +106,7 @@ public class SellerOrderPendingFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Order order = dataSnapshot.getValue(Order.class);
                     String orderId = dataSnapshot.getKey();
-                    if (order.getOrderStatus() == 1 && order.getSellerId().equals(sellerId)) {
+                    if (order.getOrderStatus() == 0 && order.getSellerId().equals(sellerId)) {
                         pendingOrders.add(order);
                         orderIds.add(orderId);
                     }
@@ -113,6 +118,9 @@ public class SellerOrderPendingFragment extends Fragment {
                 } else {
                     tv_no.setVisibility(View.GONE);
                     rv.setVisibility(View.VISIBLE);
+                    adapter = new SellerOrderListRecyclerAdapter(pendingOrders);
+                    rv.setAdapter(adapter);
+                    rv.setLayoutManager(new LinearLayoutManager(getContext()));
                 }
             }
             @Override
