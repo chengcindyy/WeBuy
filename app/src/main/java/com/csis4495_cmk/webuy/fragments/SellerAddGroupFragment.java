@@ -144,7 +144,7 @@ public class SellerAddGroupFragment extends Fragment {
         });
 
         inventoryViewModel.getIsRestockChecked().observe(this, aBoolean -> {
-            if (aBoolean != null){
+            if (aBoolean != null) {
                 isRestockChecked = aBoolean;
             }
         });
@@ -875,67 +875,6 @@ public class SellerAddGroupFragment extends Fragment {
             }
         }
 
-        for (Map.Entry<String, Integer> entry : groupQtyMap.entrySet()) {
-
-            //check if the style qty is missing
-            if (entry.getValue() == null) {
-                isComplete = false;
-                // trigger alert
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("No Quantity");
-                builder.setMessage("Please input the quantity for the style(s)");
-//                builder.setMessage("Please input the quantity for " + entry.getKey());
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                break;
-            }
-            if (groupType == 0 && isNewGroup) {
-                if (entry.getValue() < 1) {
-                    isComplete = false;
-                    // trigger alert
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle("Invalid Quantity");
-                    builder.setMessage("The quantity for in stock group must be greater than 0");
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                    break;
-                }
-            }
-
-        }
-
-        for (int i = 0; i < stylesAdapter.getItemCount(); i++) {
-            SellerAddGroupStylesAdapter.ViewHolder viewHolder = (SellerAddGroupStylesAdapter.ViewHolder) rv_style.findViewHolderForAdapterPosition(i);
-            if (viewHolder != null && viewHolder.isAnyFieldEmpty()) {
-                isComplete = false;
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Empty Field");
-                builder.setMessage("Please input all the fields");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                break;
-            }
-        }
-
-        if (groupStyles.size() > 0) {
-            newGroup.setGroupStyles(groupStyles);
-            if (!isNewGroup) {
-                editGroup.setGroupStyles(groupStyles);
-            }
-        }
-
         if (groupStyles.size() == 0) {
             groupQtyMap.clear();
             if (TextUtils.isEmpty(gNoStyleQty)) {
@@ -971,6 +910,71 @@ public class SellerAddGroupFragment extends Fragment {
             }
         }
 
+        if (groupQtyMap != null) {
+            for (Map.Entry<String, Integer> entry : groupQtyMap.entrySet()) {
+
+                //check if the style qty is missing
+                if (entry.getValue() == null) {
+                    isComplete = false;
+                    // trigger alert
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("No Quantity");
+                    builder.setMessage("Please input the quantity for the style(s)");
+//                builder.setMessage("Please input the quantity for " + entry.getKey());
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    break;
+                }
+                if (groupType == 0 && isNewGroup) {
+                    if (entry.getValue() < 1) {
+                        isComplete = false;
+                        // trigger alert
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("Invalid Quantity");
+                        builder.setMessage("The quantity for in stock group must be greater than 0");
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        break;
+                    }
+                }
+
+            }
+        }
+
+
+        for (int i = 0; i < stylesAdapter.getItemCount(); i++) {
+            SellerAddGroupStylesAdapter.ViewHolder viewHolder = (SellerAddGroupStylesAdapter.ViewHolder) rv_style.findViewHolderForAdapterPosition(i);
+            if (viewHolder != null && viewHolder.isAnyFieldEmpty()) {
+                isComplete = false;
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Empty Field");
+                builder.setMessage("Please input all the fields");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                break;
+            }
+        }
+
+        if (groupStyles.size() > 0) {
+            newGroup.setGroupStyles(groupStyles);
+            if (!isNewGroup) {
+                editGroup.setGroupStyles(groupStyles);
+            }
+        }
+
+
         if (!groupQtyMap.isEmpty()) {
             newGroup.setGroupQtyMap(groupQtyMap);
             if (!isNewGroup) {
@@ -996,68 +1000,73 @@ public class SellerAddGroupFragment extends Fragment {
             DatabaseReference inventoryRef = firebaseDatabase.getReference("Inventory");
             DatabaseReference productStyleRef = productRef.child("productStyles");
 
-            for (String key : selectedRestockInventory.keySet()) {
-                String styleId;
-                String split = "s___";
-                if (key.startsWith("p___")) {
-                    productRef.child("inStock").setValue(0);
-                    Log.d(TAG, "Restock: update product instock: " + productId + " 0");
-                    inventoryRef.addListenerForSingleValueEvent (new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot ds : snapshot.getChildren()) {
-                                Integer toAdd = selectedRestockInventory.get(key);
-                                Inventory inventory = ds.getValue(Inventory.class);
-                                if (inventory.getProductStyleKey().equals(productId)){
-                                    Integer newInStock = inventory.getInStock() + toAdd;
-                                    ds.child("inStock").getRef().setValue(newInStock);
-                                    Log.d(TAG, "Restock: update inventory instock: " + ds.getKey() + " " + Integer.toString(newInStock));
+            if (selectedRestockInventory != null) {
+                for (String key : selectedRestockInventory.keySet()) {
+                    String styleId;
+                    String split = "s___";
+                    if (key.startsWith("p___")) {
+                        productRef.child("inStock").setValue(0);
+                        Log.d(TAG, "Restock: update product instock: " + productId + " 0");
+                        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot ds : snapshot.getChildren()) {
+                                    Integer toAdd = selectedRestockInventory.get(key);
+                                    Inventory inventory = ds.getValue(Inventory.class);
+                                    if (inventory.getProductStyleKey().equals(productId)) {
+                                        Integer newInStock = inventory.getInStock() + toAdd;
+                                        ds.child("inStock").getRef().setValue(newInStock);
+                                        Log.d(TAG, "Restock: update inventory instock: " + ds.getKey() + " " + Integer.toString(newInStock));
+                                    }
                                 }
                             }
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
-                    });
-                } else {
-                    Integer toAdd = selectedRestockInventory.get(key);
-                    styleId = key.split(split)[1];
-                    productStyleRef.addListenerForSingleValueEvent (new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot ds : snapshot.getChildren()) {
-                                String sid = ds.child("styleId").getValue(String.class);
-                                if (sid.equals(styleId)) {
-                                    ds.child("inStock").getRef().setValue(0);
-                                    Log.d(TAG, "Restock: update product instock: " + sid + " 0");
-                                    break;
-                                }
-                            }
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                        }
-                    });
-                    inventoryRef.addListenerForSingleValueEvent (new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot ds : snapshot.getChildren()) {
-                                Inventory inventory = ds.getValue(Inventory.class);
-                                if (inventory.getProductStyleKey().equals(productId + "_" + styleId)){
-                                    Integer newInStock = inventory.getInStock() + toAdd;
-                                    ds.child("inStock").getRef().setValue(newInStock);
-                                    Log.d(TAG, "Restock: update inventory instock: " + ds.getKey() + " " + Integer.toString(newInStock));
-                                }
-                            }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+                    } else {
+                        Integer toAdd = selectedRestockInventory.get(key);
+                        styleId = key.split(split)[1];
+                        productStyleRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot ds : snapshot.getChildren()) {
+                                    String sid = ds.child("styleId").getValue(String.class);
+                                    if (sid.equals(styleId)) {
+                                        ds.child("inStock").getRef().setValue(0);
+                                        Log.d(TAG, "Restock: update product instock: " + sid + " 0");
+                                        break;
+                                    }
+                                }
+                            }
 
-                        }
-                    });
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+                        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot ds : snapshot.getChildren()) {
+                                    Inventory inventory = ds.getValue(Inventory.class);
+                                    if (inventory.getProductStyleKey().equals(productId + "_" + styleId)) {
+                                        Integer newInStock = inventory.getInStock() + toAdd;
+                                        ds.child("inStock").getRef().setValue(newInStock);
+                                        Log.d(TAG, "Restock: update inventory instock: " + ds.getKey() + " " + Integer.toString(newInStock));
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+                    }
                 }
             }
+
+
         }
     }
 
