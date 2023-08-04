@@ -125,7 +125,7 @@ public class CustomerProfileFragment extends Fragment {
 
         if (firebaseUser != null){
             // Notify user if they have not verified email
-            checkIfEmailVerified(firebaseUser);
+//            checkIfEmailVerified(firebaseUser);
             showCustomerProfileTitle(firebaseUser);
             showCustomerProfileMoreInfo(firebaseUser);
 
@@ -203,10 +203,6 @@ public class CustomerProfileFragment extends Fragment {
                 updateCustomerProfile(firebaseUser);
             }
         });
-
-//        // For Testing
-//        btnTest = view.findViewById(R.id.btn_test_page);
-//        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));// End Testing
 
         // Logout
         logoutButton = view.findViewById(R.id.btn_logout);
@@ -420,38 +416,6 @@ public class CustomerProfileFragment extends Fragment {
                         "Show profile was canceled", Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    private void checkIfEmailVerified(FirebaseUser firebaseUser) {
-        if (! firebaseUser.isEmailVerified()){
-            showAlertDialog();
-        }
-    }
-
-    private void showAlertDialog() {
-        //Set up alert builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-        builder.setTitle("Your account is not verified!");
-        builder.setMessage("Please verify your email now. Or You may not login without email verification next time. If you have already verified your email, please login again.");
-        //Open email app if "continue" clicked
-        builder.setPositiveButton("Continue", (dialog, which) -> {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //open in a new window
-            startActivity(intent);
-        }).setNeutralButton("Log out", (dialog, which) -> {
-            auth.signOut();
-            LoginManager.getInstance().logOut();
-            Toast.makeText(requireActivity(),"Logged out successfully, please login again", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(requireActivity(), MainActivity.class);
-            startActivity(intent);
-            requireActivity().finish(); // if you want to finish the current activity
-        });
-
-        //Create AlertDialog
-        AlertDialog alertDialog = builder.create();
-        //Show AlertDialog
-        alertDialog.show();
     }
 
     private void showUploadPicSelectionDialog() {

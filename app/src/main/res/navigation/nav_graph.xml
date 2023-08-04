@@ -100,7 +100,11 @@
         android:id="@+id/userRegistrationFragment"
         android:name="com.csis4495_cmk.webuy.fragments.UserRegistrationFragment"
         android:label="fragment_user_registration"
-        tools:layout="@layout/fragment_user_registration" />
+        tools:layout="@layout/fragment_user_registration" >
+        <action
+            android:id="@+id/action_userRegistrationFragment_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
+    </fragment>
     <fragment
         android:id="@+id/sellerHomeFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerHomeFragment"
