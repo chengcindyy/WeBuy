@@ -273,7 +273,7 @@
                     android:layout_weight="1"
                     android:drawableLeft="@drawable/baseline_archive_24"
                     android:drawableTint="#ffffff"
-                    android:text="Check Inventory" />
+                    android:text="Restock Inventory" />
 
                 <!--  Button to edit new group style   -->
                 <Button

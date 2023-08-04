@@ -27,15 +27,23 @@
             android:id="@+id/tv_group_check_inventory_inventory"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"
+            android:layout_weight="1"
             android:layout_marginHorizontal="5dp"
             android:hint="stock" />
 
-        <CheckBox
-            android:id="@+id/tv_group_check_inventory_cb"
-            android:layout_width="0dp"
+<!--        <CheckBox-->
+<!--            android:id="@+id/tv_group_check_inventory_cb"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="0.2" />-->
+
+        <EditText
+            android:id="@+id/et_group_check_inventory_to_restock"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2" />
+            android:inputType="number"
+            android:text="0"/>
+
     </LinearLayout>
 
 
