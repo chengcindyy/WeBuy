@@ -83,7 +83,6 @@ public class Order {
         return customerId;
     }
 
-
     public double getOrderTotalPrice() {
         return orderTotalPrice;
     }

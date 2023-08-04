@@ -9,7 +9,7 @@ import java.util.Map;
 public class SharedICheckInventoryViewModel extends ViewModel {
 
     private final MutableLiveData<Map<String, Integer>> selectedInventory = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> isRestockChecked = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isRestockChecked = new MutableLiveData<>(false);
     public void select(Map<String, Integer> item){
         selectedInventory.setValue(item);
     }
@@ -17,7 +17,11 @@ public class SharedICheckInventoryViewModel extends ViewModel {
         return selectedInventory;
     }
 
-    public boolean getIsRestockChecked(){
-        return true;
+    public void setIsRestockChecked(){
+        isRestockChecked.setValue(true);
+    }
+
+    public MutableLiveData<Boolean> getIsRestockChecked(){
+        return isRestockChecked;
     }
 }

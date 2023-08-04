@@ -170,6 +170,7 @@ public class CheckInventoryFragment extends BottomSheetDialogFragment {
                 }
                 Log.d(TAG, "Selected restock: getToAddMap" + myData);
                 model.select(myData);
+                model.setIsRestockChecked();
                 dismiss();
             }
         });
