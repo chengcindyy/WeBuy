@@ -252,7 +252,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             } else {
                 productStyleKey = productId;
             }
-
+            Log.d("Test create inventory", "data:"+ " sellerId "+sellerId+" productId "+productId+" groupId "+groupId+" styleId "+styleId);
             Inventory inventory = new Inventory(sellerId, productId, groupId, styleId, toSell, inStock, name, productStyleKey, inventoryTitle);
 
             DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
@@ -573,8 +573,9 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     }
 
     @Override
-    public void onOpenStoreRestoreButtonClick() {
-
+    public void onOpenStoreRestoreButtonClick(int restoreAmount) {
+        Log.d("Test restore", "passed restoreAmount:"+restoreAmount);
+//        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product").child();
     }
 
     class DownloadTaskWithId {

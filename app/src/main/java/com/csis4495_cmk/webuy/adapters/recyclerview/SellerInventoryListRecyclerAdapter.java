@@ -99,7 +99,7 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
 
     @Override
     public void onRestoreClicked(int restoreAmount) {
-
+        onButtonClickListener.onOpenStoreRestoreButtonClick(restoreAmount);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -136,6 +136,6 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
     public interface OnButtonClickListener {
         void onOpenProductPageButtonClick(String productId);
         void onOpenAllocateButtonClick(String productId);
-        void onOpenStoreRestoreButtonClick();
+        void onOpenStoreRestoreButtonClick(int restoreAmount);
     }
 }

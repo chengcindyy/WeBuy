@@ -101,13 +101,10 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
             }
         });
         holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(groupId[0]));
-        holder.btnRestore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int restoreAmount = inventory.getInStock();
-                Log.d("Test restore", "restoreAmount: "+ restoreAmount);
-                buttonListener.onRestoreClicked(restoreAmount);
-            }
+        holder.btnRestore.setOnClickListener(view -> {
+            int restoreAmount = inventory.getInStock();
+            Log.d("Test restore", "restoreAmount: "+ restoreAmount);
+            buttonListener.onRestoreClicked(restoreAmount);
         });
     }
 
