@@ -13,9 +13,9 @@
 
         <ImageView
             android:id="@+id/imv_style_img"
-            android:layout_width="100dp"
+            android:layout_width="80dp"
             android:layout_height="match_parent"
-            android:scaleType="center"
+            android:scaleType="fitCenter"
             android:background="@color/cancel_grey"/>
         <TextView
             android:id="@+id/tv_style_name"

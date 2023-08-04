@@ -2,6 +2,7 @@ package com.csis4495_cmk.webuy.adapters.recyclerview;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +61,12 @@ public class SellerAllProductAdapter extends RecyclerView.Adapter<SellerAllProdu
         holder.btn_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navController.navigate(R.id.action_sellerAllProductListFragment2_to_sellerAddGroupFragment);
+                //use bundle to save selected productId
+                String productId = product.getKey();
+                Bundle bundle  = new Bundle();
+                bundle.putString("new_group_productId", productId);
+                //pass bundle to fragment
+                navController.navigate(R.id.action_sellerAllProductListFragment2_to_sellerAddGroupFragment, bundle);
             }
         });
     }
