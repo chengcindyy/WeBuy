@@ -1020,7 +1020,6 @@ public class SellerAddGroupFragment extends Fragment {
                                     }
                                 }
                             }
-
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
                             }
@@ -1040,7 +1039,6 @@ public class SellerAddGroupFragment extends Fragment {
                                     }
                                 }
                             }
-
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
                             }
