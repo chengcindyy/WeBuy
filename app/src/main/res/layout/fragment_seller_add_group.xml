@@ -219,6 +219,39 @@
                     android:visibility="gone" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!--   RecyclerView to select product styles         -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_groupStyle_publish"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/editLayout_groupQty_publish"
+                tools:layout_editor_absoluteX="10dp" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/rv_groupStyle_publish"
+                tools:layout_editor_absoluteX="10dp">
+
+                <Button
+                    android:id="@+id/btn_start_group_publish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Group Start" />
+
+                <Button
+                    android:id="@+id/btn_end_group_publish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Group End" />
+
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/linearLayout5"
                 android:layout_width="match_parent"
@@ -226,7 +259,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@+id/editLayout_groupQty_publish"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
                 tools:layout_editor_absoluteX="10dp">
 
                 <!--  Button to check inventory          -->
@@ -256,38 +289,7 @@
                     android:text="Add Group Style" />
             </LinearLayout>
 
-            <!--   RecyclerView to select product styles         -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_groupStyle_publish"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout5"
-                tools:layout_editor_absoluteX="10dp" />
 
-            <LinearLayout
-                android:id="@+id/linearLayout3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginVertical="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/rv_groupStyle_publish"
-                tools:layout_editor_absoluteX="10dp">
-
-                <Button
-                    android:id="@+id/btn_start_group_publish"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Group Start" />
-
-                <Button
-                    android:id="@+id/btn_end_group_publish"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Group End" />
-
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayout6"
@@ -296,7 +298,7 @@
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:layout_marginVertical="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout5"
                 tools:layout_editor_absoluteX="10dp">
 
                 <!--    Cancel    -->

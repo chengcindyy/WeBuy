@@ -9,7 +9,7 @@ public class Inventory {
     private int inStock;
     private int allocated;
     private int toAllocated;
-    private int ordered = 15;
+    private int ordered;
     private int toOrder;
     private String productStyleKey;
     private String imageUrl;
