@@ -6,7 +6,7 @@ public class ProductStyle {
     double stylePrice;
     String stylePicName;
     String styleId;
-    private int inStock = 33;
+    private int inStock = 0;
 
     public ProductStyle() {}
 

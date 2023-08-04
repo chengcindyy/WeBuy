@@ -18,9 +18,19 @@
             android:id="@+id/tv_inventory_frag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Inventory"
+            android:text="Restock Inventory"
             android:textSize="18sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/rv_check_inventory"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_inventory_des"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enter quantity to restock; the remaining will be written off"
             app:layout_constraintBottom_toTopOf="@+id/rv_check_inventory"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -9,8 +9,7 @@ public class Product {
     private String category;
     private String description;
     private int tax; // 0: no tax  1: GST  2: GST+PST
-    private int inStock = 11;
-
+    private int inStock = 0;
     private List<String> productImages;
     private String sellerId;
 

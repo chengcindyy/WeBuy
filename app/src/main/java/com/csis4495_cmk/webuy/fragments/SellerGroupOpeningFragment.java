@@ -59,9 +59,9 @@ public class SellerGroupOpeningFragment extends Fragment {
 
     private DatabaseReference groupRef;
 
-    private SellerGroupListRecyclerAdapter groupListRecyclerAdapter;
-
     private String sellerId;
+
+    private SellerGroupListRecyclerAdapter groupListRecyclerAdapter;
 
     private List<Group> openingGroups = new ArrayList<>();
 

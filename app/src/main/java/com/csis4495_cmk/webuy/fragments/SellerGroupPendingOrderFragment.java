@@ -177,7 +177,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                                         Log.d(TAG, "oldInStock < orderAmount, set inEnough = : " + isEnough);
                                         Log.d(TAG, i.getInventoryName() + " oldStock " + Integer.toString(oldInStock));
                                         Log.d(TAG, item.getOrderAmount() + " orderAmount " + Integer.toString(orderAmount));
-                                       adapter.uncheckAll();
+                                        adapter.uncheckAll();
                                         isEnough = false;
                                         break outerLoop;
                                     } else {
