@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter<SellerInventoryInfoRecyclerViewAdapter.ViewHolder> {
@@ -32,6 +33,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
     private OnActionButtonClickListener buttonListener;
     private SellerInventoryStockManagementFragment.onStockButtonClickListener stockListener;
 
+    private List<String > groupIds = new ArrayList<>();
 
     public SellerInventoryInfoRecyclerViewAdapter(Context context, List<Inventory> inventoryList, Fragment fragment) {
         this.context = context;
@@ -57,6 +59,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        groupIds.clear();
         Inventory inventory = inventoryList.get(position);
 
         holder.txvStyleName.setText(inventory.getInventoryName());
@@ -82,7 +85,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
         });
         String productId = inventory.getProductId();
 
-        final String[] groupId = {null};
+//        String[] groupId = {null};
         DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -90,7 +93,8 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
                 for (DataSnapshot groupSnapshot : snapshot.getChildren()){
                     Group group = groupSnapshot.getValue(Group.class);
                     if (group.getProductId().equals(productId)){
-                        groupId[0] = group.getKey();
+                        groupIds.add(groupSnapshot.getKey());
+//                        groupId[0] = group.getKey();
                     }
                 }
             }
@@ -100,7 +104,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
 
             }
         });
-        holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(groupId[0]));
+        holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(groupIds.get(position)));
         holder.btnRestore.setOnClickListener(view -> {
             int restoreAmount = inventory.getInStock();
             Log.d("Test restore", "restoreAmount: "+ restoreAmount);
