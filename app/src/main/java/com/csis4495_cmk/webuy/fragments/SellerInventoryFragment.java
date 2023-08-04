@@ -151,36 +151,40 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                     Inventory inventory = productSnapshot.getValue(Inventory.class);
                     String productId = inventory.getProductId();
                     String inventoryId = productSnapshot.getKey();
+                    String sellerId = inventory.getSellerId();
 
-                    inventory.setInventoryId(inventoryId);
+                    Log.d("Test sellerId", "SellerId: "+ sellerId+ "currentUser: "+ auth.getCurrentUser().getUid());
+                    if (sellerId.equals(auth.getCurrentUser().getUid())){
+                        inventory.setInventoryId(inventoryId);
 
-                    if (!inventoryMap.containsKey(productId)) {
-                        inventoryMap.put(productId, new ArrayList<>());
-                    }
-                    inventoryMap.get(productId).add(inventory);
+                        if (!inventoryMap.containsKey(productId)) {
+                            inventoryMap.put(productId, new ArrayList<>());
+                        }
+                        inventoryMap.get(productId).add(inventory);
 
-                    // Matching images.
-                    if (allImagesMap.containsKey(productId)){
-                        String imageUrl = allImagesMap.get(productId);
-                        inventory.setImageUrl(imageUrl);
-                    }
+                        // Matching images.
+                        if (allImagesMap.containsKey(productId)){
+                            String imageUrl = allImagesMap.get(productId);
+                            inventory.setImageUrl(imageUrl);
+                        }
 
-                    // Fill the inventoryMap (this is for inStock & preOrder).
-                    if (groupTypeMap.containsKey(productId)){
-                        int typeNum = groupTypeMap.get(productId);
+                        // Fill the inventoryMap (this is for inStock & preOrder).
+                        if (groupTypeMap.containsKey(productId)){
+                            int typeNum = groupTypeMap.get(productId);
 
-                        if (typeNum == 0) {
-                            if (!inStockItemsMap.containsKey(productId)) {
-                                inStockItemsMap.put(productId, new ArrayList<>());
+                            if (typeNum == 0) {
+                                if (!inStockItemsMap.containsKey(productId)) {
+                                    inStockItemsMap.put(productId, new ArrayList<>());
+                                }
+                                inStockItemsMap.get(productId).add(inventory);
+                                Log.d("Test group type", "inStockItemsMap key:"+inStockItemsMap.keySet()+"value:"+inStockItemsMap.values());
+                            } else {
+                                if (!preOrderItemsMap.containsKey(productId)) {
+                                    preOrderItemsMap.put(productId, new ArrayList<>());
+                                }
+                                preOrderItemsMap.get(productId).add(inventory);
+                                Log.d("Test group type", "preOrderItemsMap key:"+preOrderItemsMap.keySet()+"value:"+preOrderItemsMap.values());
                             }
-                            inStockItemsMap.get(productId).add(inventory);
-                            Log.d("Test group type", "inStockItemsMap key:"+inStockItemsMap.keySet()+"value:"+inStockItemsMap.values());
-                        } else {
-                            if (!preOrderItemsMap.containsKey(productId)) {
-                                preOrderItemsMap.put(productId, new ArrayList<>());
-                            }
-                            preOrderItemsMap.get(productId).add(inventory);
-                            Log.d("Test group type", "preOrderItemsMap key:"+preOrderItemsMap.keySet()+"value:"+preOrderItemsMap.values());
                         }
                     }
                 }

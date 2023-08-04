@@ -289,9 +289,7 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
             if (holder.cbxSingleItem.isEnabled()) {
                 //holder.view.setOnClickListener(v -> {});
                 holder.cbxSingleItem.setChecked(checked);
-
                 holder.cbxSingleItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
                     cartItem.setChecked(isChecked);
                     sellerItemsMap.put(sellerId, cartItems);
                     viewModel.setSellerItemsMapLiveData(sellerItemsMap);
@@ -303,6 +301,7 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                     for (CartItem c: cartItems) {
                         if (!c.getChecked()) {
                             allChecked = false;
+                            break;
                         }
                     }
                     //set seller all checked
@@ -314,6 +313,25 @@ public class CustomerCartItemsWithSameSellerAdapter extends RecyclerView.Adapter
                     onSingleCartItemListener.onAllItemsChecked(allChecked);
 
                 });
+            } else {
+                //if is disable, cannot be check
+//                holder.view.setOnClickListener(v -> {});
+//                cartItem.setChecked(false);
+
+//                boolean allChecked = true;
+//                for (CartItem c: cartItems) {
+//                    if (!c.getChecked()) {
+//                        allChecked = false;
+//                        break;
+//                    }
+//                }
+//                //set seller all checked
+//                Log.d("TestAllCheck", "inner checked map size "+ sellerAllItemsCheckedMap.size());
+//                Log.d("TestAllCheck", sellerId +" is all checked "+ allChecked);
+//                sellerAllItemsCheckedMap.put(sellerId, allChecked);
+//                Log.d("TestAllCheck", "inner checked map size "+ sellerAllItemsCheckedMap.size());
+//                viewModel.setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
+//                onSingleCartItemListener.onAllItemsChecked(allChecked);
             }
 
 

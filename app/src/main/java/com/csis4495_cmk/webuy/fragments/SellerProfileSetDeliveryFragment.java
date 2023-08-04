@@ -49,7 +49,7 @@ import java.util.Map;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class SellerSetDeliveryFragment extends Fragment implements SellerDeliveryEditPriceRangeRecyclerAdapter.OnItemClickListener{
+public class SellerProfileSetDeliveryFragment extends Fragment implements SellerDeliveryEditPriceRangeRecyclerAdapter.OnItemClickListener{
     private ExpandableLayout expDeliveryInfo, expCreateDelivery;
     private TextInputLayout editPickUpLocation;
     private CurrencyEditText editStartingPrice, editShippingFee;

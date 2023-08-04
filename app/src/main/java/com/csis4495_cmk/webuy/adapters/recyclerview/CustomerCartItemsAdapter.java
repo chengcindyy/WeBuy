@@ -126,6 +126,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 for(CartItem cartItem: sellerItemsMap.get(sellerId)){
+
                     cartItem.setChecked(isChecked);
                 }
                 viewModel.setSellerItemsMapLiveData(sellerItemsMap);

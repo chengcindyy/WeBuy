@@ -32,7 +32,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
+public class CheckInventoryFragment extends BottomSheetDialogFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,7 +59,7 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
 
     private SharedICheckInventoryViewModel model;
 
-    public GroupCheckInventoryFragment() {
+    public CheckInventoryFragment() {
         // Required empty public constructor
     }
 
@@ -70,8 +70,8 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
         model = new ViewModelProvider(getActivity()).get(SharedICheckInventoryViewModel.class);
     }
 
-    public static GroupCheckInventoryFragment newInstance(String param1, String param2) {
-        GroupCheckInventoryFragment fragment = new GroupCheckInventoryFragment();
+    public static CheckInventoryFragment newInstance(String param1, String param2) {
+        CheckInventoryFragment fragment = new CheckInventoryFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -79,8 +79,8 @@ public class GroupCheckInventoryFragment extends BottomSheetDialogFragment {
         return fragment;
     }
 
-    public static GroupCheckInventoryFragment newInstance(Map<String, Integer> inventoryMap, Map<String, String> inventoryNameMap){
-        GroupCheckInventoryFragment fragment = new GroupCheckInventoryFragment();
+    public static CheckInventoryFragment newInstance(Map<String, Integer> inventoryMap, Map<String, String> inventoryNameMap){
+        CheckInventoryFragment fragment = new CheckInventoryFragment();
         Bundle args = new Bundle();
 
         for (Map.Entry<String, Integer> entry : inventoryMap.entrySet()) {

@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:gravity="left|center|top"
         android:orientation="horizontal"
+        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -18,24 +19,23 @@
             android:id="@+id/tv_group_check_inventory_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:text="Product Name" />
+            android:layout_weight="2"
+            android:maxLines="1"
+            android:hint="Product Name"/>
 
         <TextView
             android:id="@+id/tv_group_check_inventory_inventory"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:text="Product Inventory" />
+            android:layout_weight="0.3"
+            android:layout_marginHorizontal="5dp"
+            android:hint="stock" />
 
         <CheckBox
             android:id="@+id/tv_group_check_inventory_cb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1" />
+            android:layout_weight="0.2" />
     </LinearLayout>
 
 

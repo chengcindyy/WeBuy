@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Product {
 
+    private String key;
     private String productName;
     private String category;
     private String description;
@@ -48,6 +49,14 @@ public class Product {
         this.productStyles = productStyles;
         this.productPrice = productPrice;
         this.tags = categories;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public Product(int inStock) {

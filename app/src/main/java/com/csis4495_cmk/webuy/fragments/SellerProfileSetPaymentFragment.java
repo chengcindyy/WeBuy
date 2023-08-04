@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SellerSetPaymentFragment extends Fragment {
+public class SellerProfileSetPaymentFragment extends Fragment {
 
     private ExpandableLayout expPaymentInfo, expBankInfo;
     private CheckBox checkBoxEmt, checkBoxCashDelivery, checkBoxCashStore, checkBoxCard;
