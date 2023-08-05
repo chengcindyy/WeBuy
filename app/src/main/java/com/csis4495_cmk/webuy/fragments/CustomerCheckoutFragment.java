@@ -251,25 +251,25 @@ public class CustomerCheckoutFragment extends Fragment {
                     Log.d("place order", "address: "+ address);
                 }
 
-//                //new order
-//                Order order = new Order(customerId, sellerId, groupsAndItemsMap,
-//                        orderTotal, checkoutTotal, gstTotal, pstTotal,
-//                        System.currentTimeMillis(), deliveryFee, address,  country,
-//                        province,  city,  postalCode,  paymentType, orderStatus ,
-//                        note, receiverName, phone, email, shippingMethod);
-//
-//                orderRef.push().setValue(order);
-//                Log.d("shopping", "uploaded");
-//
-//                //TODO: delete orderItems from cart if from cart
-//                if(fromWhere == CART) {
-//
-//                } else if (fromWhere == DIRECTLY_BUY) {
-//
-//                }
-//                //TODO: no need to delete if from direct checkout
-//
-//                Toast.makeText(getContext(),"Your order has been placed",Toast.LENGTH_SHORT).show();
+                //new order
+                Order order = new Order(customerId, sellerId, groupsAndItemsMap,
+                        orderTotal, checkoutTotal, gstTotal, pstTotal,
+                        System.currentTimeMillis(), deliveryFee, address,  country,
+                        province,  city,  postalCode,  paymentType, orderStatus ,
+                        note, receiverName, phone, email, shippingMethod);
+
+                orderRef.push().setValue(order);
+                Log.d("shopping", "uploaded");
+
+                //TODO: delete orderItems from cart if from cart
+                if(fromWhere == CART) {
+
+                } else if (fromWhere == DIRECTLY_BUY) {
+
+                }
+                //TODO: no need to delete if from direct checkout
+
+                Toast.makeText(getContext(),"Your order has been placed",Toast.LENGTH_SHORT).show();
 
             }
         });
