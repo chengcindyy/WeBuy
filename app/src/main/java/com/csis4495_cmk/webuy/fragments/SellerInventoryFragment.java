@@ -446,8 +446,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         });
     }
 
-
-
     @Override
     public void onStockInButtonClicked(String inventoryId, int stockIn) {
         Log.d("Test stock", "onStockInButtonClicked()");
@@ -469,15 +467,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                             break;
                         }
                     }
-                }
-
-                String productId = snapshot.child("productId").getValue(String.class);
-                String styleId = snapshot.child("styleId").getValue(String.class);
-                Log.d("Test in stock", "productId: "+ productId+ " current styleId: "+ styleId);
-                if(styleId != null){
-                    addInStockToStyleDb(productId, styleId, newInStock);
-                } else {
-                    addInStockToProductDb(productId, newInStock);
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -510,14 +499,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                             break;
                         }
                     }
-                }
-                String productId = snapshot.child("productId").getValue(String.class);
-                String styleId = snapshot.child("styleId").getValue(String.class);
-                Log.d("Test in stock", "productId: "+ productId+ " current styleId: "+ styleId);
-                if(styleId != null){
-                    addInStockToStyleDb(productId, styleId, newInStock);
-                } else {
-                    addInStockToProductDb(productId, newInStock);
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -573,9 +554,31 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     }
 
     @Override
-    public void onOpenStoreRestoreButtonClick(int restoreAmount) {
-        Log.d("Test restore", "passed restoreAmount:"+restoreAmount);
-//        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference("Product").child();
+    public void onOpenStoreRestoreButtonClick(int restoreAmount, String inventoryId) {
+        String inventoryKey = inventoryId;
+        DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory").child(inventoryKey);
+        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int currentInStock = snapshot.child("inStock").getValue(Integer.class);
+                Log.d("Test restore", "passed restoreAmount:"+" current in-stock:"+ currentInStock);
+
+                String productId = snapshot.child("productId").getValue(String.class);
+                String styleId = snapshot.child("styleId").getValue(String.class);
+                Log.d("Test in restore", "productId: "+ productId+ " current styleId: "+ styleId);
+                if(styleId != null){
+                    addInStockToStyleDb(productId, styleId, currentInStock);
+                } else {
+                    addInStockToProductDb(productId, currentInStock);
+                }
+                inventoryRef.child("inStock").setValue(0);
+                adapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error here
+            }
+        });
     }
 
     class DownloadTaskWithId {

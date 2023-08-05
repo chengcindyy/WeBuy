@@ -83,9 +83,8 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
             inventoryFragment.show(fragmentManager, "Inventory Management Frag show");
             inventoryFragment.setOnStockButtonClickListener(stockListener);
         });
+        // Send groupId to redirection
         String productId = inventory.getProductId();
-
-//        String[] groupId = {null};
         DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -94,11 +93,9 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
                     Group group = groupSnapshot.getValue(Group.class);
                     if (group.getProductId().equals(productId)){
                         groupIds.add(groupSnapshot.getKey());
-//                        groupId[0] = group.getKey();
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -106,9 +103,10 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
         });
         holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(groupIds.get(position)));
         holder.btnRestore.setOnClickListener(view -> {
+            String inventoryId = inventory.getInventoryId();
             int restoreAmount = inventory.getInStock();
             Log.d("Test restore", "restoreAmount: "+ restoreAmount);
-            buttonListener.onRestoreClicked(restoreAmount);
+            buttonListener.onRestoreClicked(restoreAmount, inventoryId);
         });
     }
 
@@ -141,7 +139,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
 
     public interface OnActionButtonClickListener {
         void onAllocateClicked(String groupId);
-        void onRestoreClicked(int restoreAmount);
+        void onRestoreClicked(int restoreAmount, String inventoryId);
     }
 }
 
