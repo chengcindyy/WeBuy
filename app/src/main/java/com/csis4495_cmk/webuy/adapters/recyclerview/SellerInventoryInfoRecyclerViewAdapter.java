@@ -107,6 +107,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
             int restoreAmount = inventory.getInStock();
             Log.d("Test restore", "restoreAmount: "+ restoreAmount);
             buttonListener.onRestoreClicked(restoreAmount, inventoryId);
+            holder.txvInStock.setText("0");
         });
     }
 

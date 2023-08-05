@@ -177,13 +177,14 @@ public class SellerAllProductListFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
 
                 productList.remove(position);
+//                sellerAllProductAdapter.remove(position);
                 sellerAllProductAdapter.notifyItemRemoved(position);
                 // Delete - Product
                 productRef.child(productId).removeValue();
                 // Delete - Group
-//                deleteProductRelatedInfoFormFirebase(groupRef, productId);
-//                // Delete - Inventory
-//                deleteProductRelatedInfoFormFirebase(inventoryRef, productId);
+                deleteProductRelatedInfoFormFirebase(groupRef, productId);
+                // Delete - Inventory
+                deleteProductRelatedInfoFormFirebase(inventoryRef, productId);
 
                 //remove images from storage
                 Executors.newSingleThreadExecutor().execute(() -> {

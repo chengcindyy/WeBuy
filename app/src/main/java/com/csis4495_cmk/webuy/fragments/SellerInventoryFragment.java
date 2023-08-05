@@ -572,7 +572,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                     addInStockToProductDb(productId, currentInStock);
                 }
                 inventoryRef.child("inStock").setValue(0);
-                adapter.notifyDataSetChanged();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
