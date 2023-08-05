@@ -224,7 +224,6 @@ public class CustomerCheckoutFragment extends Fragment {
         } else {
 
         }
-
         //upload to db
         model.getShipmentInfoObject().observe(getViewLifecycleOwner(), new Observer<CustomerCheckoutDataViewModel.ShipmentInfo>() {
 
