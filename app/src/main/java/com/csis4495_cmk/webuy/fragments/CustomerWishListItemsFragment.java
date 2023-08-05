@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.recyclerview.CustomerWishlistItemsAdapter;
 import com.csis4495_cmk.webuy.models.Wishlist;
@@ -24,15 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CustomerAddToWishListItemsFragment extends Fragment {
+public class CustomerWishListItemsFragment extends Fragment {
 
     public StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
     RecyclerView recyclerView;
     CustomerWishlistItemsAdapter customerWishlistItemsAdapter;
     List<Wishlist> wishlistDisplayList;
     CustomerWishlistViewModel wishListViewModel;
+    TextView tvNoItems;
 
-    public CustomerAddToWishListItemsFragment() {
+    public CustomerWishListItemsFragment() {
         // Required empty public constructor
     }
 
@@ -40,7 +43,7 @@ public class CustomerAddToWishListItemsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_wish_list_items, container, false);
+        View view = inflater.inflate(R.layout.fragment_customer_cart_items, container, false);
         return view;
     }
 
@@ -51,18 +54,29 @@ public class CustomerAddToWishListItemsFragment extends Fragment {
         // Get data from viewModel
         wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
 
+        tvNoItems = view.findViewById(R.id.tv_no_items);
         wishlistDisplayList = new ArrayList<>();
-        recyclerView = view.findViewById(R.id.recyclerView_wishlist);
+        recyclerView = view.findViewById(R.id.rv_items);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         customerWishlistItemsAdapter = new CustomerWishlistItemsAdapter(getContext(), wishListViewModel, wishlistDisplayList);
         recyclerView.setAdapter(customerWishlistItemsAdapter);
 
         wishListViewModel.getWishlistObject().observe(getViewLifecycleOwner(), new Observer<ArrayList<Wishlist>>() {
             @Override
             public void onChanged(ArrayList<Wishlist> wishlists) {
-                wishlistDisplayList.clear();
-                wishlistDisplayList.addAll(wishlists);
-                customerWishlistItemsAdapter.notifyDataSetChanged();
+                if (wishlists.size() != 0) {
+                    wishlistDisplayList.clear();
+                    wishlistDisplayList.addAll(wishlists);
+                    customerWishlistItemsAdapter.notifyDataSetChanged();
+                    recyclerView.setVisibility(View.VISIBLE);
+                    tvNoItems.setVisibility(View.GONE);
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                    tvNoItems.setText("There is no items in the wishlist.");
+                    tvNoItems.setVisibility(View.VISIBLE);
+                }
+
             }
         });
 

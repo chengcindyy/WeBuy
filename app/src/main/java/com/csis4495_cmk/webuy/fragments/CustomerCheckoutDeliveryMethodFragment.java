@@ -93,7 +93,7 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
             public void onChanged(HashMap<String, Delivery> deliveryHashMap) {
                 Log.d("Test deliveryHashMap", "Size: " + deliveryHashMap.size());
                 List<String> locationsList = new ArrayList<>();
-                final Double[] shippingFeeContainer = {0.0};
+                //final Double[] shippingFeeContainer = {0.0};
 
                 // Loop through the deliveryHashMap and check provided delivery services
                 for (String key : deliveryHashMap.keySet()) {
@@ -126,7 +126,7 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                                 }
                             }
                         }
-                        locationsList.add(providedLocations+ " (CA$:"+ shippingFee+")");
+                        locationsList.add(providedLocations+ " (CA$ "+ shippingFee+")");
                     }
 
                     // Display more options:
@@ -150,26 +150,33 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
 
                                         String shippingFeeStr = "";
 
-                                        if (city.trim().equalsIgnoreCase(deliveryLocation)){
-                                            // Matching shipping fees
-                                            Map<String, Double> feeMap = delivery.getFeeMap();
-                                            for (String feeKey : feeMap.keySet()) {
-                                                Double keyPrice = Double.parseDouble(feeKey.split("_")[1]);
-                                                Double valuePrice = feeMap.get(feeKey);
+                                        if(!city.isEmpty()) {
+                                            if (city.trim().equalsIgnoreCase(deliveryLocation)){
+                                                // Matching shipping fees
+                                                Map<String, Double> feeMap = delivery.getFeeMap();
+                                                for (String feeKey : feeMap.keySet()) {
+                                                    Double keyPrice = Double.parseDouble(feeKey.split("_")[1]);
+                                                    Double valuePrice = feeMap.get(feeKey);
 
-                                                if (checkoutTotal >= keyPrice){
-                                                    if (valuePrice == 0){
-                                                        shippingFeeStr = "Free delivery";
-                                                    } else {
-                                                        shippingFeeStr = "CA$ "+valuePrice;
+                                                    if (checkoutTotal >= keyPrice){
+                                                        if (valuePrice == 0){
+                                                            shippingFeeStr = "Free delivery";
+                                                        } else {
+                                                            shippingFeeStr = "CA$ " + valuePrice;
+                                                        }
                                                     }
+                                                    //shippingFeeContainer[0] = valuePrice;
                                                 }
-                                                shippingFeeContainer[0] = valuePrice;
+                                                // Set the fee to textView
+                                                txvShowFee.setText("Shipped to " + deliveryLocation + " (" + shippingFeeStr+")");
+                                                Log.d("Test shipping fee", "shippingFee: "+shippingFeeStr);
+                                            } else {
+                                                txvShowFee.setText("Cannot deliver to your city");
                                             }
-                                            // Set the fee to textView
-                                            txvShowFee.setText("Shipped to " + deliveryLocation + " (" + shippingFeeStr+")");
-                                            Log.d("Test shipping fee", "shippingFee: "+shippingFeeStr);
+                                        } else {
+                                            txvShowFee.setText("");
                                         }
+
                                     }
                                 });
 
@@ -186,9 +193,17 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                                         String country = txvCountry.getText().toString();
                                         String city = txvCity.getEditText().getText().toString();
 
+                                        btnCheck.performClick();
+
+                                        String strShippingFee = txvShowFee.getText().toString();
+                                        Double shippingFee = null;
+                                        if (!strShippingFee.isEmpty() && !strShippingFee.equals("Cannot deliver to your city")) {
+                                            shippingFee = Double.parseDouble(strShippingFee.split("\\$ ")[1].split("\\)")[0]);
+                                        }
+
                                         CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo =
                                                 new CustomerCheckoutDataViewModel.ShipmentInfo("Home delivery", name, phone, email, address, postalCode,
-                                                                                                 city,country, province, shippingFeeContainer[0]);
+                                                                                                 city,country, province, shippingFee);
                                         model.shipmentInfoObject(shipmentInfo);
                                         dismiss();
                                     }
@@ -208,14 +223,18 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                                     @Override
                                     public void onClick(View view) {
 
-                                        String method = "Store pickup"; //location + " " + "CA$:8.0"
-                                        String location = txvLocation.getText().toString().split(" ")[0];
+                                        String method = "Store pickup"; //location + " " + "CA$ 8.0"
+                                        String location = txvLocation.getText().toString().split(" \\(CA\\$")[0];
                                         String PKname = txvPKname.getEditText().getText().toString();
                                         String PKphone = txvPKphone.getEditText().getText().toString();
                                         String strShippingFee = txvLocation.getText().toString();
-                                        double shippingFee = 0;
-                                        if (!strShippingFee.isEmpty() && strShippingFee != null) {
-                                            shippingFee = Double.parseDouble(strShippingFee.split("\\$:")[1].split("\\)")[0]);
+                                        Double shippingFee = null;
+//                                        if (!strShippingFee.isEmpty() && strShippingFee != null) {
+//                                            shippingFee = Double.parseDouble(strShippingFee.split("\\$ ")[1].split("\\)")[0]);
+//                                        }
+
+                                        if (!strShippingFee.isEmpty() && !strShippingFee.equals("Items are not able to deliver to your city.")) {
+                                            shippingFee = Double.parseDouble(strShippingFee.split("\\$ ")[1].split("\\)")[0]);
                                         }
 
                                         Log.d("Test pickup info", "method: " + method + " location: " + location + " PKname: " + PKname + " PKphone: " + PKphone);
@@ -254,16 +273,22 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                     Log.d("Test shipping fee", btnCheck.callOnClick() +"");
                 } else if (shipmentInfo.getMethod().equals("Store pickup")) {
                     radioButtonPickup.setChecked(true);
-                    String strShippingFee;
-                    double shippingFee = shipmentInfo.getShippingFee();
-                    if (shippingFee == 0){
-                        strShippingFee = "Free";
-                    } else {
-                        strShippingFee = String.valueOf(shippingFee);
+
+                    Double shippingFee = shipmentInfo.getShippingFee();
+                    if (shippingFee != null) {
+                        String strShippingFee;
+                        if (shippingFee == 0){
+                            strShippingFee = "Free";
+                        } else {
+                            strShippingFee = String.valueOf(shippingFee);
+                        }
+
+                        if (shipmentInfo.getAddress() != "") {
+                            txvLocation.setText(shipmentInfo.getAddress() + " (CA$ " + strShippingFee + ")");
+                        }
                     }
-                    if (shipmentInfo.getAddress() != "") {
-                        txvLocation.setText(shipmentInfo.getAddress() + " (CA$:" + strShippingFee + ")");
-                    }
+
+
                     txvPKname.getEditText().setText(shipmentInfo.getReceiver());
                     txvPKphone.getEditText().setText(shipmentInfo.getPhone());
                 } else {

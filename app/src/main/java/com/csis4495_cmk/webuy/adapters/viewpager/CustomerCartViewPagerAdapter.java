@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.csis4495_cmk.webuy.fragments.CustomerCartItemsFragment;
-import com.csis4495_cmk.webuy.fragments.CustomerAddToWishListItemsFragment;
+import com.csis4495_cmk.webuy.fragments.CustomerWishListItemsFragment;
 import com.csis4495_cmk.webuy.models.Wishlist;
 import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
 
@@ -36,7 +36,7 @@ public class CustomerCartViewPagerAdapter extends FragmentStateAdapter {
                 return new CustomerCartItemsFragment();
             case 1:
                 //return CustomerCartItemsFragment.newInstance();
-                return new CustomerAddToWishListItemsFragment();
+                return new CustomerWishListItemsFragment();
             default:
                 return new CustomerCartItemsFragment();
         }
