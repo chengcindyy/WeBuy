@@ -4,12 +4,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +64,7 @@ public class CustomerCheckoutFragment extends Fragment {
     private double gstTotal = 0;
     private double pstTotal = 0;
     private double orderTotal = 0;
-    private double shipmentAmount = 0;
+    private Double shipmentAmount = null;
 
     public CustomerCheckoutFragment(){}
     public CustomerCheckoutFragment(int fromWhere) {
@@ -151,12 +153,12 @@ public class CustomerCheckoutFragment extends Fragment {
                     }
 
                     Log.d("shopping", "Item size:"+shoppingItems.size()+ " Info size:"+ cartItemInfos.size());
-                    orderTotal = checkoutTotal + gstTotal + pstTotal + shipmentAmount;
+                    //orderTotal = checkoutTotal + gstTotal + pstTotal + shipmentAmount;
 
                     checkoutTotal = Double.parseDouble(String.format("%.2f", checkoutTotal));
                     gstTotal = Double.parseDouble(String.format("%.2f", gstTotal));
                     pstTotal = Double.parseDouble(String.format("%.2f", pstTotal));
-                    orderTotal = Double.parseDouble(String.format("%.2f", orderTotal));
+                    //orderTotal = Double.parseDouble(String.format("%.2f", orderTotal));
 
                     txvCheckoutAmount.setText("CA$ "+ checkoutTotal);
                     txvShipmentAmount.setText("-");
@@ -216,8 +218,16 @@ public class CustomerCheckoutFragment extends Fragment {
 //    }
 
     private void placeOrder() {
+        Log.d("place order", "place order clicked");
+        if (model.getShipmentInfoObject().getValue() == null) {
+            txvAddress.setHintTextColor(ContextCompat.getColor(getContext(), R.color.delete_red));
+        } else {
+
+        }
+
         //upload to db
         model.getShipmentInfoObject().observe(getViewLifecycleOwner(), new Observer<CustomerCheckoutDataViewModel.ShipmentInfo>() {
+
             @Override
             public void onChanged(CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo) {
                 String address = shipmentInfo.getAddress(),
@@ -231,27 +241,36 @@ public class CustomerCheckoutFragment extends Fragment {
                         shippingMethod = shipmentInfo.getMethod(),
                         paymentType = txvPayment.getText().toString(),
                         note = customerNote.getText().toString();
-                int orderStatus = -1;
+                int orderStatus = 0; //pending
                 Double deliveryFee = shipmentInfo.getShippingFee();
 
-                Order order = new Order(customerId, groupsAndItemsMap,
-                        orderTotal, checkoutTotal, gstTotal, pstTotal,
-                        System.currentTimeMillis(), deliveryFee, address,  country,
-                        province,  city,  postalCode,  paymentType, orderStatus ,
-                        note, receiverName, phone, email, shippingMethod);
-
-                orderRef.push().setValue(order);
-                Log.d("shopping", "uploaded");
-
-                //TODO: delete orderItems from cart if from cart
-                if(fromWhere == CART) {
-
-                } else if (fromWhere == DIRECTLY_BUY) {
-
+                //check validity
+                if (TextUtils.isEmpty(address) || address == null){
+                    Log.d("place order", "address empty");
+                    txvAddress.setHintTextColor(ContextCompat.getColor(getContext(), R.color.delete_red));
+                } else {
+                    Log.d("place order", "address: "+ address);
                 }
-                //TODO: no need to delete if from direct checkout
 
-                Toast.makeText(getContext(),"Your order has been placed",Toast.LENGTH_SHORT).show();
+//                //new order
+//                Order order = new Order(customerId, sellerId, groupsAndItemsMap,
+//                        orderTotal, checkoutTotal, gstTotal, pstTotal,
+//                        System.currentTimeMillis(), deliveryFee, address,  country,
+//                        province,  city,  postalCode,  paymentType, orderStatus ,
+//                        note, receiverName, phone, email, shippingMethod);
+//
+//                orderRef.push().setValue(order);
+//                Log.d("shopping", "uploaded");
+//
+//                //TODO: delete orderItems from cart if from cart
+//                if(fromWhere == CART) {
+//
+//                } else if (fromWhere == DIRECTLY_BUY) {
+//
+//                }
+//                //TODO: no need to delete if from direct checkout
+//
+//                Toast.makeText(getContext(),"Your order has been placed",Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -285,7 +304,7 @@ public class CustomerCheckoutFragment extends Fragment {
                 sellersRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        
+
                         String selectedProductSellerId = sellerId;
 
                         for (DataSnapshot childSnapshot : snapshot.getChildren()) {
@@ -318,16 +337,15 @@ public class CustomerCheckoutFragment extends Fragment {
                             public void onChanged(CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo) {
                                 if (shipmentInfo != null){
                                     txvShipment.setText(shipmentInfo.getMethod());
-//                                    txvReceiverPhone.setText(shipmentInfo.getReceiver()+" "+shipmentInfo.getPhone());
-//                                    txvAddress.setText(shipmentInfo.getAddress());
                                     setTxvShipment(txvReceiverPhone, shipmentInfo.getReceiver()+" "+shipmentInfo.getPhone());
                                     setTxvShipment(txvAddress,shipmentInfo.getAddress());
                                     //set selected shipment fee
                                     shipmentAmount = shipmentInfo.getShippingFee();
-                                    txvShipmentAmount.setText("CA$ "+ shipmentAmount);
-                                    orderTotal = checkoutTotal + gstTotal + pstTotal + shipmentAmount;
-                                    txvOrderTotalPrice.setText("CA$ " + orderTotal);
-
+                                    if (shipmentAmount != null) {
+                                        txvShipmentAmount.setText("CA$ "+ Double.parseDouble(String.format("%.2f", shipmentAmount)));
+                                        orderTotal = checkoutTotal + gstTotal + pstTotal + shipmentAmount;
+                                        txvOrderTotalPrice.setText("CA$ " + Double.parseDouble(String.format("%.2f", orderTotal)));
+                                    }
 
                                 }
                             }

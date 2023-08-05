@@ -44,6 +44,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="text|textNoSuggestions"
                     android:text="" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -79,7 +80,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
+                    android:inputType="textEmailAddress|textNoSuggestions"
                     android:text="" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -97,7 +98,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
-                    android:inputType="text"
+                    android:inputType="text|textNoSuggestions"
                     android:text="" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -122,7 +123,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="1"
+                        android:inputType="text|textNoSuggestions"
                         android:text="" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -144,6 +145,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="text|textNoSuggestions"
                         android:text="" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -171,6 +173,8 @@
                         android:id="@+id/autoComplete_delivery_province"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="text|textNoSuggestions"
+                        android:maxLines="1"
                         android:textSize="14sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -190,6 +194,8 @@
                         android:id="@+id/autoComplete_delivery_country"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="text|textNoSuggestions"
+                        android:maxLines="1"
                         android:textSize="14sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
