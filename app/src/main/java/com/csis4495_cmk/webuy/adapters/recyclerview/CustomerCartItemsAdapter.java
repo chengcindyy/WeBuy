@@ -146,7 +146,11 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
 
     @Override
     public int getItemCount() {
-        return sellerIds.size();
+        if (sellerIds == null) {
+            return 0;
+        } else {
+            return sellerIds.size();
+        }
     }
 
     @Override

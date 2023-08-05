@@ -303,10 +303,11 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                     Toast.makeText(getContext(), "Please select a style", Toast.LENGTH_SHORT).show();
                 } else {
                     checkAmountValidity(inventoryAmount,getContext());
+                    Log.d("addToCart","with style: " + selectedStyle.getStyleName());
                 }
             } else {
                 checkAmountValidity(inventoryAmount,getContext());
-                Log.d("addToCart","with style");
+                Log.d("addToCart","without style");
             }
 
         });
@@ -316,6 +317,7 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
     private void checkAmountValidity(int inventoryAmount, Context context) {
         //check amount
         if (inventoryAmount == -1) { //unlimited
+            Log.d("addToCart","unlimited item");
             if (orderAmount <= 0) {
                 etOrderAmount.setError("Amount must be greater than 0");
             } else {
@@ -333,14 +335,17 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                     public void onItemExists(boolean exists) {
                         if (exists) {
                             // Item exists in the cart
-                            Toast.makeText(context,"Item already existed in the cart",Toast.LENGTH_SHORT).show();
+                            Log.d("addToCart","exists");
+                            // show dialog
+                            showRedirectToCartDialog(context,getDialog());
                             // Do something
                         } else { // Item does not exist in the cart
+                            Log.d("addToCart","not exist, upload");
                             //upload item with style to customerRef
                             uploadNewCartItem(item);
                             //show item added and pop back to the previous page
-                            onDismiss(getDialog());
                             Toast.makeText(context,"Item Added to the Cart!", Toast.LENGTH_SHORT).show();
+                            onDismiss(getDialog());
                             //TODO:cart small badges added
                         }
                     }
@@ -348,14 +353,18 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
             }
 
         } else {
+            Log.d("addToCart","limited item");
             if (orderAmount <= 0 || orderAmount > inventoryAmount) {
+                Log.d("addToCart","error amount");
                 etOrderAmount.setError("Amount must be greater than 0 and less than " + inventoryAmount);
             } else {
                 //upload
                 CartItem item;
                 if (selectedStyle == null) {
+                    Log.d("addToCart","to upload, w/o style");
                     item = new CartItem(groupId, group.getSellerId(), group.getProductId(), orderAmount);
                 } else {
+                    Log.d("addToCart","to upload, w/ style");
                     item = new CartItem(groupId, group.getSellerId(), group.getProductId(), selectedStyle.getStyleId(), orderAmount);
                 }
 
@@ -363,15 +372,15 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                 checkItemInCart(item, exists -> {
                     if (exists) {
                         // Item exists in the cart
-                        Log.d("aaa","exists");
+                        Log.d("addToCart","exists");
                         // show dialog
                         showRedirectToCartDialog(context,getDialog());
                     } else { // Item does not exist in the cart
+                        Log.d("addToCart","not exist, upload");
                         //upload item with style to customerRef
                         uploadNewCartItem(item);
                         //show item added and pop back to the previous page
                         Toast.makeText(context,"Item Added to the Cart!", Toast.LENGTH_SHORT).show();
-                        Log.d("aaa","with style");
                         onDismiss(getDialog());
                         //TODO:cart small badges added
                     }
@@ -409,7 +418,7 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
             public void onChanged(Map<String, ArrayList<CartItem>> stringArrayListMap) {
                 if (stringArrayListMap.containsKey(item.getSellerId())) {
                     ArrayList<CartItem> cartItems = stringArrayListMap.get(item.getSellerId());
-                    Log.d("aaa",cartItems.size()+" seller items");
+                    Log.d("addToCart",cartItems.size()+" seller items");
                     for (CartItem existedCartItem : cartItems) {
                         if (item.equals(existedCartItem)) {
                             viewModel.getSellerItemsMapLiveData().removeObserver(this);
@@ -417,6 +426,8 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
                             return;
                         }
                     }
+                } else {
+                    Log.d("addToCart","new item");
                 }
                 viewModel.getSellerItemsMapLiveData().removeObserver(this);
                 listener.onItemExists(false); //if two exists, will cause loop (add more than one)// need to test null to exist

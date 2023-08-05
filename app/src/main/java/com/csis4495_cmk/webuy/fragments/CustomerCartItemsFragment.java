@@ -79,11 +79,12 @@ public class CustomerCartItemsFragment extends Fragment
         tvCartItemsTotal = view.findViewById(R.id.tv_cart_items_total);
         tvCartItemsCheckoutAmount = view.findViewById(R.id.tv_cart_items_checkout_amount);
         cbxSelectAll = view.findViewById(R.id.checkbox_select_all);
-        recyclerView = view.findViewById(R.id.rv_cust_seller_with_cart_items);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         viewModel = new ViewModelProvider(requireActivity()).get(CustomerCartItemsViewModel.class);
+
+        recyclerView = view.findViewById(R.id.rv_items);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         viewModel.getSellerItemsMapLiveData().observe(getViewLifecycleOwner(), new Observer<Map<String, ArrayList<CartItem>>>() {
             @Override
             public void onChanged(Map<String, ArrayList<CartItem>> stringArrayListMap) {
@@ -103,36 +104,51 @@ public class CustomerCartItemsFragment extends Fragment
                     tvNoItems.setVisibility(View.VISIBLE);
                 }
 
+                //set group n/a uncheck
+
                 //set checkout amount
-                int checkoutAmount = 0;
+                final int[] checkoutAmount = {0};
                 //set total
                 final double[] total = {0};
 
                 for (String sellerId: sellerItemsMap.keySet()) {
                     for (CartItem sellerCartItem: stringArrayListMap.get(sellerId)) {
                         if (sellerCartItem.getChecked()) {
-                            checkoutAmount++;
+
+                            checkoutAmount[0]++;
                             viewModel.getCartItemsInfoMapLiveData().observe(getViewLifecycleOwner(), new Observer<Map<CartItem, CustomerCartItemsViewModel.CartItemInfo>>() {
                                 @Override
                                 public void onChanged(Map<CartItem, CustomerCartItemsViewModel.CartItemInfo> cartItemCartItemInfoMap) {
                                     if (cartItemCartItemInfoMap.get(sellerCartItem) != null) {
-                                        String strPrice = cartItemCartItemInfoMap.get(sellerCartItem).getGroupPrice();
-                                        if (strPrice != null) {
-                                            double price;
-                                            try {
-                                                price = Double.parseDouble(strPrice.split("CA\\$ ")[1]);
-                                            } catch (Exception e) {
-                                                price = 0;
+                                        if (cartItemCartItemInfoMap.get(sellerCartItem).getGroupName().equals("Group N/A")) {
+                                            sellerCartItem.setChecked(false);
+                                            sellerAllItemsCheckedMap.put(sellerId, false);
+                                            //viewModel.setSellerAllItemsCheckedMapLiveData(sellerAllItemsCheckedMap);
+                                            checkoutAmount[0]--;
+
+                                        } else {
+                                            String strPrice = cartItemCartItemInfoMap.get(sellerCartItem).getGroupPrice();
+                                            if (strPrice != null) {
+                                                double price;
+                                                try {
+                                                    price = Double.parseDouble(strPrice.split("CA\\$ ")[1]);
+                                                } catch (Exception e) {
+                                                    price = 0;
+                                                }
+                                                total[0] += price * sellerCartItem.getAmount();
                                             }
-                                            total[0] += price * sellerCartItem.getAmount();
                                         }
+
                                     }
                                 }
                             });
+
+                            //viewModel.setSellerItemsMapLiveData(sellerItemsMap);
+
                         }
                     }
                 }
-                tvCartItemsCheckoutAmount.setText("Checkout("+checkoutAmount+")");
+                tvCartItemsCheckoutAmount.setText("Checkout("+ checkoutAmount[0] +")");
                 tvCartItemsTotal.setText("CA$ " + total[0]);
             }
         });
@@ -186,6 +202,9 @@ public class CustomerCartItemsFragment extends Fragment
             boolean isAllValidOrderAmount = true; //all the orderAmount cannot be more than inventory amount
             Set<String> checkOutSellerSet = new HashSet<>(); // to know how many sellers checked
 
+            //check all selected items are available
+//            viewModel.getSellerItemsMapLiveData()
+
             for (String sellerId: sellerItemsMap.keySet() ) {
                 for(CartItem cartItem: sellerItemsMap.get(sellerId)) {
                     if(cartItem.getChecked()) {
@@ -231,7 +250,7 @@ public class CustomerCartItemsFragment extends Fragment
                 Toast.makeText(getContext(),"Please select items from one store",Toast.LENGTH_SHORT).show();
             } else if (checkOutSellerSet.size() == 0) { //no checkout item
                 Toast.makeText(getContext(),"Please select at least one item",Toast.LENGTH_SHORT).show();
-            } else {
+            }  else {
                 CustomerCheckoutFragment.newInstance(CART);
                 navController.navigate(R.id.customerCheckoutFragment);
             }
