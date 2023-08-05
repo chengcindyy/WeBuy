@@ -6,20 +6,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.GroupCheckInventoryFragment">
+    tools:context=".fragments.CheckInventoryFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="15dp"
         android:orientation="vertical">
-
-        <!-- TODO: Update blank fragment layout -->
 
         <TextView
             android:id="@+id/tv_inventory_frag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Inventory"
+            android:text="Restock Inventory"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/rv_check_inventory"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_inventory_des"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enter quantity to restock; the remaining will be written off"
             app:layout_constraintBottom_toTopOf="@+id/rv_check_inventory"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,6 +40,7 @@
             android:id="@+id/rv_check_inventory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -39,21 +51,24 @@
             android:orientation="horizontal"
             android:gravity="center">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_check_inventory_cancel"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Cancel"
-                android:layout_weight="1"
-                android:layout_gravity="center"/>
-            <Button
-                android:id="@+id/btn_check_inventory_add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Add Inventory"
+                android:background="@drawable/button_outline"
                 android:layout_weight="1"
                 android:layout_gravity="center"/>
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_check_inventory_add"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="Restock"
+                android:background="@drawable/button_solid"
+                android:layout_weight="1"
+                android:layout_gravity="center"/>
         </LinearLayout>
 
 

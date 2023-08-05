@@ -46,19 +46,6 @@
         android:textColor="@color/black" />
 
     <Button
-        android:id="@+id/btn_test_page"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="4dp"
-        android:background="@android:color/transparent"
-        android:drawableLeft="@drawable/baseline_admin_panel_settings_24"
-        android:gravity="start|center_vertical"
-        android:paddingStart="19dp"
-        android:text="Go to test page"
-        android:textAllCaps="false"
-        android:textColor="@color/black" />
-
-    <Button
         android:id="@+id/btn_logout"
         android:layout_width="match_parent"
         android:layout_height="48dp"

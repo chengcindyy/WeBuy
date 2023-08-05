@@ -5,13 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cancel_grey"
     tools:context=".fragments.CustomerGroupDetailFragment">
 
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -19,10 +19,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/parentRelative"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <!-- Swipe images and saved button -->
             <androidx.viewpager2.widget.ViewPager2
@@ -36,154 +36,266 @@
                 android:id="@+id/btn_detail_save_to_list"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_alignBottom="@+id/linearLayout8"
+                android:layout_alignParentEnd="true"
                 android:layout_gravity="top|end"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginTop="-40dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="5dp"
                 android:alpha="1"
                 android:background="@android:color/transparent"
                 android:button="@drawable/wishlist_toggle_button"
-                android:textOn=""
+                android:checked="false"
                 android:textOff=""
-                android:checked="false" />
-
-
-            <TextView
-                android:id="@+id/tv_group_detail_group_style"
-                android:layout_marginTop="15dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Group Style" />
-            <!-- Style images -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_group_style"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" />
+                android:textOn="" />
 
             <!-- Group name -->
             <TextView
                 android:id="@+id/tv_detail_group_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/viewPagerGroupImage"
+                android:layout_alignParentStart="true"
+                android:padding="10dp"
+                android:background="@color/white"
+                android:layout_toStartOf="@+id/tv_detail_group_type"
+                android:maxLines="2"
                 android:text="Group Name"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginVertical="10dp"/>
+                android:textSize="18sp" />
+
+            <!-- Type -->
+            <TextView
+                android:id="@+id/tv_detail_group_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/tv_detail_group_price"
+                android:layout_below="@id/viewPagerGroupImage"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="0dp"
+                android:background="@color/white"
+                android:padding="10dp"
+                android:text="Type"
+                android:textColor="@color/cute_orange"
+                android:textSize="16sp" />
+
             <!--    group price    -->
             <TextView
                 android:id="@+id/tv_detail_group_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@color/white"
                 android:text="Group Price"
+                android:textColor="@color/delete_red"
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="10dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/tv_detail_group_name"
                 android:textSize="14sp" />
-            <!--    type, sold amount, rating    -->
+
+            <!-- Sold amount & Category & Inventory amount -->
             <LinearLayout
+                android:id="@id/linearLayout7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:background="@color/white"
+                android:layout_below="@+id/tv_detail_group_price">
 
-                <!-- Type -->
-                <TextView
-                    android:id="@+id/tv_detail_group_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Type"
-                    android:textSize="12sp" />
+
+
+
+                <!-- TODO: Rating -->
+
                 <!--        Category        -->
                 <TextView
                     android:id="@+id/tv_detail_group_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_weight="2"
+                    android:paddingVertical="10dp"
+                    android:paddingStart="10dp"
+                    android:gravity="start"
+                    android:background="@color/white"
                     android:text="Category"
-                    android:textSize="12sp" />
-                <!-- Sold amount -->
-                <TextView
-                    android:id="@+id/tv_detail_sold_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Sold Amount"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
+
+
 
                 <!-- Inventory amount  -->
                 <TextView
                     android:id="@+id/tv_detail_inventory_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
                     android:text="Inventory Amount"
-                    android:textSize="12sp" />
-                <!-- Rating -->
+                    android:paddingVertical="10dp"
+                    android:gravity="end"
+                    android:paddingEnd="10dp"
+                    android:background="@color/white"
+                    android:textSize="14sp" />
+
+                <!-- Sold amount -->
+                <TextView
+                    android:id="@+id/tv_detail_sold_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.3"
+                    android:text="Sold Amount"
+                    android:gravity="end"
+                    android:background="@color/white"
+                    android:paddingVertical="10dp"
+                    android:paddingHorizontal="10dp"
+                    android:textSize="14sp" />
+
 
             </LinearLayout>
+
+            <!--  Store image and name-->
+            <LinearLayout
+                android:id="@+id/linearLayout8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                android:layout_below="@+id/linearLayout7"
+                android:background="@color/white">
+
+                <!--    seller pic, store name, store rating    -->
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imv_detail_store_pic"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_below="@+id/rv_group_style"
+                    android:layout_marginVertical="10dp"
+                    android:layout_marginStart="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/app_default_image"
+                    app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+                    app:strokeColor="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/tv_detail_seller_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rv_group_style"
+                    android:layout_marginVertical="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="1dp"
+                    android:text="seller name"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <!-- Group style-->
+            <TextView
+                android:id="@+id/tv_group_detail_group_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linearLayout8"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp"
+                android:background="@color/white"
+                android:layout_marginTop="10dp"
+                android:text="Group Style" />
+
+            <!-- Style images -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_group_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:paddingHorizontal="10dp"
+                android:paddingBottom="10dp"
+                android:background="@color/white"
+                android:layout_below="@+id/tv_group_detail_group_style"/>
+
+            <LinearLayout
+                android:id="@+id/linearLayout9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/white"
+                android:layout_below="@id/rv_group_style"
+                android:layout_marginTop="10dp"
+                android:paddingVertical="10dp"
+                android:padding="5dp">
+
+                <!--   start time, end time    -->
+                <TextView
+                    android:id="@+id/tv_detail_group_start_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Start time"
+                    android:paddingVertical="5dp"
+                    android:layout_marginStart="5dp"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_detail_group_end_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="End time"
+                    android:paddingVertical="5dp"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_detail_group_timer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="timer"
+                    android:gravity="end"
+                    android:paddingVertical="5dp"
+                    android:textSize="12sp"
+                    android:layout_marginEnd="5dp"/>
+            </LinearLayout>
+
+
             <!--    description    -->
             <TextView
                 android:id="@+id/tv_detail_group_description"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp"
                 android:text="Description"
-                android:textSize="12sp" />
-            <!--    start time, end time    -->
-            <TextView
-                android:id="@+id/tv_detail_group_start_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Start time"
-                android:textSize="12sp" />
+                android:textSize="14sp"
+                android:background="@color/white"
+                android:layout_below="@+id/linearLayout9" />
 
-            <TextView
-                android:id="@+id/tv_detail_group_end_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="End time"
-                android:textSize="12sp" />
+            <View
+                android:id="@+id/bottom_sticker"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_below="@+id/tv_detail_group_description"
+                android:background="@color/white"
+                android:layout_alignParentBottom="true" />
 
-            <TextView
-                android:id="@+id/tv_detail_group_timer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="timer"
-                android:textSize="12sp" />
-            <!--    amount, location    -->
-            <!--    seller pic, store name, store rating    -->
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imv_detail_store_pic"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_centerVertical="true"
-                android:layout_margin="5dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/baseline_person_24"
-                app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
-                app:strokeColor="@android:color/darker_gray" />
-
-            <TextView
-                android:id="@+id/tv_detail_seller_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="seller name"
-                android:textSize="12sp" />
             <!--    fab- add to cart(then pop up, style, amount)    -->
+            <Button
+                android:id="@+id/fab_add_to_cart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Add to cart" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/fab_add_to_cart"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
-        android:src="@drawable/baseline_add_shopping_cart_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+

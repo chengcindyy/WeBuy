@@ -91,7 +91,7 @@
                     android:layout_height="50dp"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Current Quantity"/>
+                    android:text="Current instock"/>
 
                 <TextView
                     android:id="@+id/txv_qty_value"
@@ -112,7 +112,7 @@
                     android:layout_height="50dp"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Shortfall" />
+                    android:text="Still need" />
 
                 <TextView
                     android:id="@+id/txv_shortfall_value"

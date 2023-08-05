@@ -8,13 +8,20 @@ import java.util.Map;
 
 public class SharedICheckInventoryViewModel extends ViewModel {
 
-    private final MutableLiveData<Map<String, Boolean>> selectedInventory = new MutableLiveData<>();
-
-    public void select(Map<String, Boolean> item){
+    private final MutableLiveData<Map<String, Integer>> selectedInventory = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isRestockChecked = new MutableLiveData<>(false);
+    public void select(Map<String, Integer> item){
         selectedInventory.setValue(item);
     }
-
-    public LiveData<Map<String, Boolean>> getselectedInventory(){
+    public LiveData<Map<String, Integer>> getselectedInventory(){
         return selectedInventory;
+    }
+
+    public void setIsRestockChecked(){
+        isRestockChecked.setValue(true);
+    }
+
+    public MutableLiveData<Boolean> getIsRestockChecked(){
+        return isRestockChecked;
     }
 }

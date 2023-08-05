@@ -436,7 +436,7 @@ public class UserLoginFragment extends Fragment {
         edit_password = dialogView.findViewById(R.id.edit_loginPassword);
 
         String _email = edit_email.getText().toString();
-        String _password = edit_email.getText().toString();
+        String _password = edit_password.getText().toString();
 
         // Set up login button click listener
         builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {

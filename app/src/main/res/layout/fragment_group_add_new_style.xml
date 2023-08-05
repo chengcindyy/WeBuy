@@ -6,20 +6,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.GroupAddNewStyleFragment">
+    tools:context=".fragments.SellerAddStyleFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:orientation="vertical">
 
-        <!-- TODO: Update blank fragment layout -->
 
         <TextView
             android:id="@+id/tv_add_group_style_frag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Add Style"
+            android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/rv_check_inventory"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,18 +40,22 @@
             android:orientation="horizontal"
             android:gravity="center">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_add_group_style_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/button_outline"
                 android:text="Cancel"
                 android:layout_weight="1"
                 android:layout_gravity="center"/>
-            <Button
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_add_group_style_add"
                 android:layout_width="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:layout_height="wrap_content"
                 android:text="Add Style"
+                android:background="@drawable/button_solid"
                 android:layout_weight="1"
                 android:layout_gravity="center"/>
 

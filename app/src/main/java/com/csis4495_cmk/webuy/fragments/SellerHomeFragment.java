@@ -17,18 +17,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.csis4495_cmk.webuy.activities.MainActivity;
 import com.csis4495_cmk.webuy.R;
-import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 
 
 public class SellerHomeFragment extends Fragment {
 
-    private CardView btnProducts, btnPostings, btnInventory, btnStoreMgmt, btnSupport, btnProfile, btnLogout, btnTestPage;
+    private CardView btnProducts, btnPostings, btnInventory, btnStoreMgmt, btnSupport, btnOrderList, btnLogout, btnTestPage;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     private NavController navController;
 
@@ -48,13 +43,19 @@ public class SellerHomeFragment extends Fragment {
         navController = NavHostFragment.findNavController(SellerHomeFragment.this);
 
         btnProducts = view.findViewById(R.id.btn_seller_products);
-        setOpenNewFragmentOnClickListener(btnProducts,R.id.action_sellerHomeFragment_to_sellerProductListFragment);
+        setOpenNewFragmentOnClickListener(btnProducts,R.id.action_sellerHomeFragment_to_sellerAllProductListFragment2);
 
         btnPostings = view.findViewById(R.id.btn_seller_postings);
         btnPostings.setOnClickListener(v -> navController.navigate(R.id.action_sellerHomeFragment_to_sellerGroupList2));
 
         btnInventory = view.findViewById(R.id.btn_seller_inventory);
         setOpenNewFragmentOnClickListener(btnInventory,R.id.action_sellerHomeFragment_to_sellerInventoryFragment);
+
+        btnOrderList = view.findViewById(R.id.btn_seller_order_list);
+        setOpenNewFragmentOnClickListener(btnOrderList, R.id.action_sellerHomeFragment_to_sellerOrderListFragment);
+
+        btnOrderList = view.findViewById(R.id.btn_seller_order_list);
+        // TODO: Add order list fragment
 
         // TODO: Add Support page
         btnSupport = view.findViewById(R.id.btn_seller_support);

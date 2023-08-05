@@ -8,76 +8,86 @@
     tools:context=".fragments.SellerAddGroupFragment"
     android:id="@+id/seller_add_group_container">
 
-    <!-- TODO: Update blank fragment layout -->
-    <ScrollView
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="top|center"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="20dp">
 
             <TextView
                 android:id="@+id/tv_group_publish_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="16dp"
                 android:text="Publish a new product group"
                 android:textColor="@color/black"
                 android:textSize="26sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!--  Toggle Button for in stock or group buy order          -->
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/tgBtnGp_publish"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
-                app:singleSelection="true">
-
-                <Button
-                    android:id="@+id/tgBtn_in_stock_publish"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="In stock" />
-
-                <Button
-                    android:id="@+id/tgBtn_group_buy_publish"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Preorder Group" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-
-            <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rv_groupImg_publish"/>
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/tv_group_publish_title"
+                app:singleSelection="true"
+                tools:layout_editor_absoluteX="10dp">
 
-<!--            &lt;!&ndash; Default img  &ndash;&gt;-->
-<!--            <ImageView-->
-<!--                android:id="@+id/img_default_publish"-->
-<!--                android:layout_width="366dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:layout_margin="8dp"-->
-<!--                tools:srcCompat="@tools:sample/avatars" />-->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/tgBtn_in_stock_publish"
+                    style="@style/CustomToggleButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="In stock" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/tgBtn_group_buy_publish"
+                    style="@style/CustomToggleButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Preorder Group" />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_groupImg_publish"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/tgBtnGp_publish"
+                tools:layout_editor_absoluteX="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"/>
+
+            <!--            &lt;!&ndash; Default img  &ndash;&gt;-->
+            <!--            <ImageView-->
+            <!--                android:id="@+id/img_default_publish"-->
+            <!--                android:layout_width="366dp"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_gravity="center"-->
+            <!--                android:layout_margin="8dp"-->
+            <!--                tools:srcCompat="@tools:sample/avatars" />-->
 
             <!-- Group name  -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/editLayout_group_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Group Name">
+                android:hint="Group Name"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/rv_groupImg_publish"
+                tools:layout_editor_absoluteX="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_groupName_publish"
@@ -86,12 +96,16 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+
             <!-- Group description  -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/editLayout_groupDes_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Group Description">
+                android:hint="Group Description"
+                android:layout_marginVertical="5dp"
+                app:layout_constraintTop_toBottomOf="@+id/editLayout_group_publish"
+                tools:layout_editor_absoluteX="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_groupDes_publish"
@@ -104,26 +118,29 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Group Category       -->
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:hint="Product Category"-->
-<!--                app:boxBackgroundColor="@null">-->
+            <!--            <com.google.android.material.textfield.TextInputLayout-->
+            <!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:hint="Product Category"-->
+            <!--                app:boxBackgroundColor="@null">-->
 
-<!--                <AutoCompleteTextView-->
-<!--                    android:id="@+id/edit_group_category_publish"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:cursorVisible="false"-->
-<!--                    android:inputType="none" />-->
-<!--            </com.google.android.material.textfield.TextInputLayout>-->
+            <!--                <AutoCompleteTextView-->
+            <!--                    android:id="@+id/edit_group_category_publish"-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:cursorVisible="false"-->
+            <!--                    android:inputType="none" />-->
+            <!--            </com.google.android.material.textfield.TextInputLayout>-->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/editLayout_group_category_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Group Category">
+                android:hint="Group Category"
+                android:layout_marginTop="5dp"
+                app:layout_constraintTop_toBottomOf="@+id/editLayout_groupDes_publish"
+                tools:layout_editor_absoluteX="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_group_category_publish"
@@ -138,23 +155,26 @@
                 android:id="@+id/editLayout_groupPriceRange_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Group Price Range">
+                android:hint="Group Price Range"
+                android:layout_marginVertical="5dp"
+                app:layout_constraintTop_toBottomOf="@+id/editLayout_group_category_publish"
+                tools:layout_editor_absoluteX="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_groupPriceRange_publish"
                     android:layout_width="match_parent"
-                    android:text="CA$"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="CA$" />
 
-<!--                <com.cottacush.android.currencyedittext.CurrencyEditText-->
-<!--                    android:id="@+id/edit_groupPriceRange_publish"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:ems="10"-->
-<!--                    app:currencySymbol="CA$"-->
-<!--                    app:localeTag="en-CA"-->
-<!--                    app:maxNumberOfDecimalDigits="2"-->
-<!--                    app:useCurrencySymbolAsHint="false" />-->
+                <!--                <com.cottacush.android.currencyedittext.CurrencyEditText-->
+                <!--                    android:id="@+id/edit_groupPriceRange_publish"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:ems="10"-->
+                <!--                    app:currencySymbol="CA$"-->
+                <!--                    app:localeTag="en-CA"-->
+                <!--                    app:maxNumberOfDecimalDigits="2"-->
+                <!--                    app:useCurrencySymbolAsHint="false" />-->
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -164,7 +184,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Product Price"
-                android:visibility="visible">
+                android:layout_marginVertical="5dp"
+                android:visibility="visible"
+                app:layout_constraintTop_toBottomOf="@+id/editLayout_groupPriceRange_publish"
+                tools:layout_editor_absoluteX="10dp">
 
                 <com.cottacush.android.currencyedittext.CurrencyEditText
                     android:id="@+id/edit_groupPriceCurrecny_publish"
@@ -184,60 +207,34 @@
                 android:id="@+id/editLayout_groupQty_publish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Quantity">
+                android:hint="Quantity"
+                app:layout_constraintTop_toBottomOf="@+id/editLayout_groupPriceCurrency_publish"
+                tools:layout_editor_absoluteX="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_groupQty_publish"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberSigned"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
             </com.google.android.material.textfield.TextInputLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center"
-                android:gravity="center">
-
-                <!--  Button to check inventory          -->
-                <Button
-                    android:id="@+id/btn_check_inventory_publish"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:drawableLeft="@drawable/baseline_archive_24"
-                    android:drawableTint="#ffffff"
-                    android:layout_weight="1"
-                    android:text="Check Inventory" />
-
-                <!--  Button to edit new group style   -->
-                <Button
-                    android:id="@+id/btn_group_edit_new_group_style"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:drawableLeft="@drawable/baseline_add_24"
-                    android:drawableTint="#ffffff"
-                    android:layout_weight="1"
-                    android:text="Add Group Style" />
-            </LinearLayout>
 
             <!--   RecyclerView to select product styles         -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_groupStyle_publish"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/editLayout_groupQty_publish"
+                tools:layout_editor_absoluteX="10dp" />
 
             <LinearLayout
+                android:id="@+id/linearLayout3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginVertical="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/rv_groupStyle_publish"
+                tools:layout_editor_absoluteX="10dp">
 
                 <Button
                     android:id="@+id/btn_start_group_publish"
@@ -256,38 +253,100 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearLayout5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+                tools:layout_editor_absoluteX="10dp">
+
+                <!--  Button to check inventory          -->
+                <Button
+                    android:id="@+id/btn_check_inventory_publish"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/baseline_archive_24"
+                    android:drawableTint="#ffffff"
+                    android:text="Restock Inventory" />
+
+                <!--  Button to edit new group style   -->
+                <Button
+                    android:id="@+id/btn_group_edit_new_group_style"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/baseline_add_24"
+                    android:drawableTint="#ffffff"
+                    android:text="Add Group Style" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/linearLayout6"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="center"
                 android:orientation="horizontal"
-                android:gravity="center">
+                android:layout_marginVertical="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout5"
+                tools:layout_editor_absoluteX="10dp">
 
                 <!--    Cancel    -->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_cancel_publish"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_margin="10dp"
-                    android:background="@color/cancel_grey"
-                    android:text="Cancel"
-                    android:textColor="@color/black"/>
+                    android:layout_weight="1"
+                    android:background="@drawable/button_outline"
+                    android:text="Cancel" />
 
                 <!--    Publish    -->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_publish_publish"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_margin="10dp"
-                    android:background="@color/purple_500"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/button_solid"
                     android:text="Publish"
                     android:textColor="@color/white" />
 
             </LinearLayout>
 
-
-        </LinearLayout>
-    </ScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top|center"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+
+
+
+
+
+
+
+
+
+
+
+    </LinearLayout>
 </FrameLayout>

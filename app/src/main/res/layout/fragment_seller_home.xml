@@ -106,6 +106,38 @@
                 android:textSize="20dp"/>
         </LinearLayout>
 
+        <!-- Button 1 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_columnWeight="1"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btn_seller_order_list"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                app:cardBackgroundColor="#D3A588"
+                app:cardCornerRadius="100dp">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/baseline_reorder_24" />
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Order List"
+                android:textSize="20dp"/>
+        </LinearLayout>
+
         <!-- Button 4 -->
         <LinearLayout
             android:layout_width="0dp"
