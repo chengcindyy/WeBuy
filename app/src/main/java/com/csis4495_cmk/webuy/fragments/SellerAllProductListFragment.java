@@ -181,9 +181,9 @@ public class SellerAllProductListFragment extends Fragment {
                 // Delete - Product
                 productRef.child(productId).removeValue();
                 // Delete - Group
-                deleteProductRelatedInfoFormFirebase(groupRef, productId);
-                // Delete - Inventory
-                deleteProductRelatedInfoFormFirebase(inventoryRef, productId);
+//                deleteProductRelatedInfoFormFirebase(groupRef, productId);
+//                // Delete - Inventory
+//                deleteProductRelatedInfoFormFirebase(inventoryRef, productId);
 
                 //remove images from storage
                 Executors.newSingleThreadExecutor().execute(() -> {
