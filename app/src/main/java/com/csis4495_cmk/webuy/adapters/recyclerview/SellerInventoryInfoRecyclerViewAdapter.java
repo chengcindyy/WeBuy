@@ -83,25 +83,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
             inventoryFragment.show(fragmentManager, "Inventory Management Frag show");
             inventoryFragment.setOnStockButtonClickListener(stockListener);
         });
-        // Send groupId to redirection
-        String productId = inventory.getProductId();
-        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
-        groupRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot groupSnapshot : snapshot.getChildren()){
-                    Group group = groupSnapshot.getValue(Group.class);
-                    if (group.getProductId().equals(productId)){
-                        groupIds.add(groupSnapshot.getKey());
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(groupIds.get(position)));
+        holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(inventory.getGroupId()));
         holder.btnRestore.setOnClickListener(view -> {
             String inventoryId = inventory.getInventoryId();
             int restoreAmount = inventory.getInStock();

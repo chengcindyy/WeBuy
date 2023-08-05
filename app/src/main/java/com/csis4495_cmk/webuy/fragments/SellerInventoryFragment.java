@@ -242,7 +242,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         });
     }
 
-    private void createNewInventory(int status) {
+    private void createNewInventory(int status, String groupId) {
         if(status == 1){
             // Set a key to check if this inventory exist
             String productStyleKey;
@@ -252,7 +252,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             } else {
                 productStyleKey = productId;
             }
-            Log.d("Test create inventory", "data:"+ " sellerId "+sellerId+" productId "+productId+" groupId "+groupId+" styleId "+styleId);
+            Log.d("Test create inventory", "data:"+ " sellerId "+sellerId+" productId "+productId+" groupId "+ this.groupId +" styleId "+styleId);
             Inventory inventory = new Inventory(sellerId, productId, groupId, styleId, toSell, inStock, name, productStyleKey, inventoryTitle);
 
             DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
@@ -293,70 +293,73 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     }
 
     private void findDataFromGroupInformation() {
-        groupTypeMap.clear();
         StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
         reference = FirebaseDatabase.getInstance().getReference("Group");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                allCoverImgsList.clear();
-                List<List<String>> allCoverImgUrls = new ArrayList<>();
                 List<DownloadTaskWithId> tasks = new ArrayList<>();
+                if (snapshot.exists()){
+                    for (DataSnapshot groupSnapshot : snapshot.getChildren()){
 
-                for (DataSnapshot productSnapshot : snapshot.getChildren()){
-                    Group group = productSnapshot.getValue(Group.class);
-                    groupId = group.getKey();
-                    // Check sellerId to only display a seller's groups
-                    sellerId = group.getSellerId();
-                    Log.d("TestSellerId", sellerId);
-                    if(sellerId != null && sellerId.equals(auth.getCurrentUser().getUid())) {
-                        Map<String, Integer> groupQtyMap = group.getGroupQtyMap();
-                        Set<String> keys = groupQtyMap.keySet();
+                        Group group = groupSnapshot.getValue(Group.class);
+                        // Check sellerId to only display a seller's groups
+                        sellerId = group.getSellerId();
+                        Log.d("Test create inventory", sellerId);
+                        if(sellerId != null && sellerId.equals(auth.getCurrentUser().getUid())) {
+                            Map<String, Integer> groupQtyMap = group.getGroupQtyMap();
+                            Set<String> keys = groupQtyMap.keySet();
 
-                        for (String qty : keys) {
-                            String[] parts = qty.split("___");
-                            Log.d("TestKeySet", "type:" + parts[0] + " id:" + parts[1]);
+                            groupId = groupSnapshot.getKey();
+                            for (String qty : keys) {
+                                String[] parts = qty.split("___");
+                                Log.d("TestKeySet", "type:" + parts[0] + " id:" + parts[1]);
 
-                            // Get StyleId or ProductId
-                            if (parts[0].equals("s")) {
-                                styleId = parts[1];
-                                productId = group.getProductId();  // Add this line to set productId
-                                toSell = groupQtyMap.get(qty);
-                                Log.d("TestKeySet", "styleId:" + styleId + " toSell:" + toSell);
+                                // Get StyleId or ProductId
+                                if (parts[0].equals("s")) {
+                                    styleId = parts[1];
+                                    productId = group.getProductId();  // Add this line to set productId
+                                    toSell = groupQtyMap.get(qty);
+                                    Log.d("TestKeySet", "styleId:" + styleId + " toSell:" + toSell);
 
-                                for (ProductStyle style : group.getGroupStyles()) {
-                                    if (styleId.equals(style.getStyleId())) {
-                                        name = style.getStyleName();
-                                        break;
+                                    for (ProductStyle style : group.getGroupStyles()) {
+                                        if (styleId.equals(style.getStyleId())) {
+                                            name = style.getStyleName();
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    styleId = null;
+                                    productId = parts[1];
+                                    toSell = groupQtyMap.get(qty);
+                                    Log.d("TestKeySet", "productId:" + productId + " toSell:" + toSell);
+
+                                    if (productId.equals(group.getProductId())) {
+                                        name = group.getGroupName();
                                     }
                                 }
-                            } else {
-                                styleId = null;
-                                productId = parts[1];
-                                toSell = groupQtyMap.get(qty);
-                                Log.d("TestKeySet", "productId:" + productId + " toSell:" + toSell);
-
-                                if (productId.equals(group.getProductId())) {
-                                    name = group.getGroupName();
-                                }
+                                inventoryTitle = group.getGroupName();
+                                status = group.getStatus();
+                                createNewInventory(status, groupId);
                             }
-                            inventoryTitle = group.getGroupName();
-                            status = group.getStatus();
-                            createNewInventory(status);
+
+
+                            // Check group status for filter
+                            groupTypeMap.put(productId, group.getGroupType());
+
+                            //get coverImgUrl
+                            final String[] imgUri = {""};
+                            String coverImgName = group.getGroupImages().get(0);
+                            Log.d("Test coverImgName", coverImgName);
+                            Log.d("Test StoragePath", imgRef.child(productId).child(coverImgName).getPath());
+                            Log.d("Test StorageGetUrl", "pId: " + productId + ", Name: " + coverImgName);
+                            tasks.add(new DownloadTaskWithId(imgRef.child(productId).child(coverImgName).getDownloadUrl(), productId));
                         }
-
-                        // Check group status for filter
-                        groupTypeMap.put(productId, group.getGroupType());
-
-                        //get coverImgUrl
-                        final String[] imgUri = {""};
-                        String coverImgName = group.getGroupImages().get(0);
-                        Log.d("Test coverImgName", coverImgName);
-                        Log.d("Test StoragePath", imgRef.child(productId).child(coverImgName).getPath());
-                        Log.d("Test StorageGetUrl", "pId: " + productId + ", Name: " + coverImgName);
-                        tasks.add(new DownloadTaskWithId(imgRef.child(productId).child(coverImgName).getDownloadUrl(), productId));
                     }
+                } else {
+                    Log.d("Test create inventory", "Group node does not exist!");
                 }
+
 
                 Tasks.whenAllSuccess(tasks.stream().map(t -> t.task).collect(Collectors.toList())).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
                     @Override

@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_to_testPageFragment"
             app:destination="@id/testFragment" />
+        <action
+            android:id="@+id/action_customerProfileFragment_to_sellerCustomerSupportFragment"
+            app:destination="@id/sellerCustomerSupportFragment" />
     </fragment>
 
     <fragment
@@ -100,11 +103,7 @@
         android:id="@+id/userRegistrationFragment"
         android:name="com.csis4495_cmk.webuy.fragments.UserRegistrationFragment"
         android:label="fragment_user_registration"
-        tools:layout="@layout/fragment_user_registration" >
-        <action
-            android:id="@+id/action_userRegistrationFragment_to_userLoginFragment"
-            app:destination="@id/userLoginFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_user_registration" />
     <fragment
         android:id="@+id/sellerHomeFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerHomeFragment"
@@ -131,6 +130,9 @@
         <action
             android:id="@+id/action_sellerHomeFragment_to_sellerOrderListFragment"
             app:destination="@id/sellerOrderListFragment" />
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_sellerCustomerSupportFragment"
+            app:destination="@id/sellerCustomerSupportFragment" />
     </fragment>
     <fragment
         android:id="@+id/sellerAddProductFragment"
@@ -267,9 +269,9 @@
             app:destination="@id/sellerAddProductFragment" />
     </fragment>
     <fragment
-        android:id="@+id/customerGroupDetailFragment"
-        android:name="com.csis4495_cmk.webuy.fragments.CustomerGroupDetailFragment"
-        android:label="fragment_customer_group_detail"
-        tools:layout="@layout/fragment_customer_group_detail" />
+        android:id="@+id/sellerCustomerSupportFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerCustomerSupportFragment"
+        android:label="fragment_seller_customer_support"
+        tools:layout="@layout/fragment_seller_customer_support" />
 
 </navigation>

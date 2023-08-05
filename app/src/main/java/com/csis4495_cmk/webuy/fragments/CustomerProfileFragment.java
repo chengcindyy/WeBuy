@@ -14,7 +14,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -73,7 +75,7 @@ import java.util.Map;
 public class CustomerProfileFragment extends Fragment {
 
     private TextView labelUsername;
-    private Button logoutButton, btnTest, btnUpdate;
+    private Button logoutButton, btnUpdate;
     private ImageView imgUserProfile;
     private ImageButton btnChat, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
     private ExpandableLayout expProfile, expOrderStatus, expWishList, expMoreFunctions;
@@ -88,13 +90,13 @@ public class CustomerProfileFragment extends Fragment {
     List<Wishlist> wishlistDisplayList;
     CustomerWishlistViewModel wishListViewModel;
     String _USERNAME, _NAME, _EMAIL, _PHONE, _ADDRESS, _CITY, _PROVINCE, _POSTCODE, _PIC, _DOB;
-    Boolean isLayoutClicked = false;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = auth.getCurrentUser();
     DatabaseReference reference;
     StorageReference storage = FirebaseStorage.getInstance().getReference();
     StorageReference imageRef;
+    private NavController navController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,6 +109,9 @@ public class CustomerProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Set navigation controller, and if you want to navigate to other fragment can call this to navigate
+        navController = NavHostFragment.findNavController(CustomerProfileFragment.this);
 
         // References
         editName = view.findViewById(R.id.edit_name);
@@ -193,7 +198,13 @@ public class CustomerProfileFragment extends Fragment {
         setExpandableLayoutTitleOnClickListener(expWishList);
 
         // Setting
-        btnChat = view.findViewById(R.id.btn_setting);
+        btnChat = view.findViewById(R.id.btn_chat);
+        btnChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate( R.id.action_customerProfileFragment_to_sellerCustomerSupportFragment);
+            }
+        });
 
         // Update profile
         btnUpdate = view.findViewById(R.id.btn_update);
