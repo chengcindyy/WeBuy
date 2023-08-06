@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class SellerCustomerSupportFragment extends Fragment {
 
-    private TextInputLayout edtName, edtEmail, edtMessage;
+    private TextInputLayout edtSubject, edtMessage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,8 +37,7 @@ public class SellerCustomerSupportFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        edtName = view.findViewById(R.id.edit_name);
-        edtEmail = view.findViewById(R.id.edit_email);
+        edtSubject = view.findViewById(R.id.edit_subject);
         edtMessage = view.findViewById(R.id.edit_content);
         Button sendEmailButton = view.findViewById(R.id.sendEmailButton);
 
@@ -50,26 +50,30 @@ public class SellerCustomerSupportFragment extends Fragment {
     }
 
     private void sendEmail() {
-        String email = edtEmail.getEditText().getText().toString();
-        String name = edtName.getEditText().getText().toString();
+        String subject = edtSubject.getEditText().getText().toString();
         String content = edtMessage.getEditText().getText().toString();
 
         // Validation
-        if (email.isEmpty() || content.isEmpty() || name.isEmpty()) {
+        if (content.isEmpty() || subject.isEmpty()) {
             Toast.makeText(getActivity(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
-            return;
+
+        } else {
+            // Send email to admin
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setData(Uri.parse("mailto:"));
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"chengcindyy@gmail.com"});
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            intent.putExtra(Intent.EXTRA_TEXT, content);
+            intent.setType("message/rfc822");
+            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivity(intent);
+            }else{
+                Toast.makeText(getActivity(), "There is no application support this action", Toast.LENGTH_SHORT).show();
+            }
+
+            Toast.makeText(getActivity(), "Email sent successfully", Toast.LENGTH_SHORT).show();
         }
 
-        // Send email to admin
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:"));
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"example@example.com"});
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Email subject");
-        intent.putExtra(Intent.EXTRA_TEXT, "Email body");
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivity(intent);
-        }
 
-        Toast.makeText(getActivity(), "Email sent successfully", Toast.LENGTH_SHORT).show();
     }
 }
