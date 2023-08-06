@@ -48,6 +48,9 @@
                 android:textOff=""
                 android:textOn="" />
 
+
+
+
             <!-- Group name -->
             <TextView
                 android:id="@+id/tv_detail_group_name"
@@ -149,13 +152,13 @@
 
             </LinearLayout>
 
+
             <!--  Store image and name-->
             <LinearLayout
                 android:id="@+id/linearLayout8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-
                 android:layout_below="@+id/linearLayout7"
                 android:background="@color/white">
 
@@ -289,6 +292,19 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="Add to cart" />
+
+            <!-- share to social media-->
+            <ImageButton
+                android:id="@+id/btn_detail_share_to_social_media"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignBottom="@+id/linearLayout8"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="top|end"
+                android:layout_marginEnd="50dp"
+                android:layout_marginBottom="5dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/baseline_share_24" />
 
         </RelativeLayout>
 
