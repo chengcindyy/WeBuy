@@ -22,7 +22,6 @@ import com.csis4495_cmk.webuy.models.Product;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
@@ -105,7 +104,6 @@ public class SellerAllProductAdapter extends RecyclerView.Adapter<SellerAllProdu
     public int getItemCount() {
         return productList.size();
     }
-
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 

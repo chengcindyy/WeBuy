@@ -156,7 +156,7 @@ public class UserRegistrationFragment extends Fragment {
                     // Clean the entered passwords
                     editPassword.clearComposingText();
                     editConfirmPassword.clearComposingText();
-                } else if (user_role =="SELLER" && TextUtils.isEmpty(_STORE_NAME)) {
+                } else if (user_role.equals("SELLER") && TextUtils.isEmpty(_STORE_NAME)) {
                     Toast.makeText(getContext(),
                             "Please enter your store name.", Toast.LENGTH_SHORT).show();
                     editStoreName.setError("A store name is required, but you can change it at any time.");
@@ -284,10 +284,10 @@ public class UserRegistrationFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-
                                 // user data into the firebase realtime db
                                 User newUser = new User(email, user_role);
                                 CreateUserProfile(firebaseUser, newUser);
+
                             } else {
                                 // Handle failure
                                 Toast.makeText(getContext(), "Cannot register a new user, please try again latter.", Toast.LENGTH_SHORT).show();

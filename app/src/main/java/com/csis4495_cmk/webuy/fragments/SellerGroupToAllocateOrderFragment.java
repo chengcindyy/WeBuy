@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class SellerGroupPendingOrderFragment extends Fragment {
+public class SellerGroupToAllocateOrderFragment extends Fragment {
 
     private TextView tv_no;
     private RecyclerView rv;
@@ -399,7 +399,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                     if (dataSnapshot != null) {
                         Order o = dataSnapshot.getValue(Order.class);
                         String orderId = dataSnapshot.getKey();
-                        if (o.getOrderStatus() == 0 || o.getOrderStatus() == 1) {
+                        if ( o.getOrderStatus() == 1) {
                             Set<String> groupIds = o.getGroupsAndItemsMap().keySet();
                             for (String key : groupIds) {
                                 if (key.equals(groupId)) {

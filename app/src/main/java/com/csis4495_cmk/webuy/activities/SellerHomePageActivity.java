@@ -2,6 +2,7 @@ package com.csis4495_cmk.webuy.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -24,8 +25,11 @@ import com.csis4495_cmk.webuy.fragments.SellerGroupDetailFragment;
 import com.csis4495_cmk.webuy.models.Seller;
 import com.csis4495_cmk.webuy.tools.OnGroupOrderInventoryAllocatedListener;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,7 +44,7 @@ public class SellerHomePageActivity extends AppCompatActivity {
     private String imageUrl;
     PopupMenu popupMenu;
     FirebaseAuth auth = FirebaseAuth.getInstance();
-
+ 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +54,7 @@ public class SellerHomePageActivity extends AppCompatActivity {
         navController = navHostFragment.getNavController();
         navController.navigate(R.id.sellerHomeFragment);
 
+        checkIfEmailVerified(auth.getCurrentUser());
 
         // Top toolbar
         topToolbar = findViewById(R.id.topAppBar);
@@ -124,6 +129,52 @@ public class SellerHomePageActivity extends AppCompatActivity {
         Intent intent = new Intent(SellerHomePageActivity.this, MainActivity.class);
         startActivity(intent);
         SellerHomePageActivity.this.finish();
+    }
+
+    private void checkIfEmailVerified(FirebaseUser firebaseUser) {
+        firebaseUser.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    FirebaseUser updatedUser = FirebaseAuth.getInstance().getCurrentUser();
+                    if (updatedUser.isEmailVerified()) {
+                        // The email is verified, so you can bypass the dialog.
+                        // Continue your normal flow here.
+                    } else {
+                        // The email is still not verified, show the dialog.
+                        showAlertDialog();
+                    }
+                } else {
+                    Log.e("checkIfEmailVerified: ", "Failed to reload user.");
+                }
+            }
+        });
+    }
+
+    private void showAlertDialog() {
+        //Set up alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Your account is not verified!");
+        builder.setMessage("Please verify your email now. Or You may not login without email verification next time. If you have already verified your email, please login again.");
+        //Open email app if "continue" clicked
+        builder.setPositiveButton("Continue", (dialog, which) -> {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //open in a new window
+            startActivity(intent);
+        }).setNeutralButton("Log out", (dialog, which) -> {
+            auth.signOut();
+            LoginManager.getInstance().logOut();
+            Toast.makeText(this,"Logged out successfully, please login again", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            this.finish(); // if you want to finish the current activity
+        });
+
+        //Create AlertDialog
+        AlertDialog alertDialog = builder.create();
+        //Show AlertDialog
+        alertDialog.show();
     }
 
 }

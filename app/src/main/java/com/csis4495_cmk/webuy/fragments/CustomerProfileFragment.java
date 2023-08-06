@@ -14,7 +14,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -73,7 +75,7 @@ import java.util.Map;
 public class CustomerProfileFragment extends Fragment {
 
     private TextView labelUsername;
-    private Button logoutButton, btnTest, btnUpdate;
+    private Button logoutButton, btnUpdate;
     private ImageView imgUserProfile;
     private ImageButton btnChat, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
     private ExpandableLayout expProfile, expOrderStatus, expWishList, expMoreFunctions;
@@ -88,13 +90,13 @@ public class CustomerProfileFragment extends Fragment {
     List<Wishlist> wishlistDisplayList;
     CustomerWishlistViewModel wishListViewModel;
     String _USERNAME, _NAME, _EMAIL, _PHONE, _ADDRESS, _CITY, _PROVINCE, _POSTCODE, _PIC, _DOB;
-    Boolean isLayoutClicked = false;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser firebaseUser = auth.getCurrentUser();
     DatabaseReference reference;
     StorageReference storage = FirebaseStorage.getInstance().getReference();
     StorageReference imageRef;
+    private NavController navController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,6 +109,9 @@ public class CustomerProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Set navigation controller, and if you want to navigate to other fragment can call this to navigate
+        navController = NavHostFragment.findNavController(CustomerProfileFragment.this);
 
         // References
         editName = view.findViewById(R.id.edit_name);
@@ -125,7 +130,7 @@ public class CustomerProfileFragment extends Fragment {
 
         if (firebaseUser != null){
             // Notify user if they have not verified email
-            checkIfEmailVerified(firebaseUser);
+//            checkIfEmailVerified(firebaseUser);
             showCustomerProfileTitle(firebaseUser);
             showCustomerProfileMoreInfo(firebaseUser);
 
@@ -193,7 +198,13 @@ public class CustomerProfileFragment extends Fragment {
         setExpandableLayoutTitleOnClickListener(expWishList);
 
         // Setting
-        btnChat = view.findViewById(R.id.btn_setting);
+        btnChat = view.findViewById(R.id.btn_chat);
+        btnChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate( R.id.action_customerProfileFragment_to_sellerCustomerSupportFragment);
+            }
+        });
 
         // Update profile
         btnUpdate = view.findViewById(R.id.btn_update);
@@ -203,10 +214,6 @@ public class CustomerProfileFragment extends Fragment {
                 updateCustomerProfile(firebaseUser);
             }
         });
-
-//        // For Testing
-//        btnTest = view.findViewById(R.id.btn_test_page);
-//        btnTest.setOnClickListener(view12 -> Navigation.findNavController(view12).navigate(R.id.action_to_testPageFragment));// End Testing
 
         // Logout
         logoutButton = view.findViewById(R.id.btn_logout);
@@ -422,38 +429,6 @@ public class CustomerProfileFragment extends Fragment {
                         "Show profile was canceled", Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    private void checkIfEmailVerified(FirebaseUser firebaseUser) {
-        if (! firebaseUser.isEmailVerified()){
-            showAlertDialog();
-        }
-    }
-
-    private void showAlertDialog() {
-        //Set up alert builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-        builder.setTitle("Your account is not verified!");
-        builder.setMessage("Please verify your email now. Or You may not login without email verification next time. If you have already verified your email, please login again.");
-        //Open email app if "continue" clicked
-        builder.setPositiveButton("Continue", (dialog, which) -> {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //open in a new window
-            startActivity(intent);
-        }).setNeutralButton("Log out", (dialog, which) -> {
-            auth.signOut();
-            LoginManager.getInstance().logOut();
-            Toast.makeText(requireActivity(),"Logged out successfully, please login again", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(requireActivity(), MainActivity.class);
-            startActivity(intent);
-            requireActivity().finish(); // if you want to finish the current activity
-        });
-
-        //Create AlertDialog
-        AlertDialog alertDialog = builder.create();
-        //Show AlertDialog
-        alertDialog.show();
     }
 
     private void showUploadPicSelectionDialog() {

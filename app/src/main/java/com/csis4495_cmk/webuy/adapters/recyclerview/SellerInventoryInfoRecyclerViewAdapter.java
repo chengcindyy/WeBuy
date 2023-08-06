@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter<SellerInventoryInfoRecyclerViewAdapter.ViewHolder> {
@@ -32,6 +33,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
     private OnActionButtonClickListener buttonListener;
     private SellerInventoryStockManagementFragment.onStockButtonClickListener stockListener;
 
+    private List<String > groupIds = new ArrayList<>();
 
     public SellerInventoryInfoRecyclerViewAdapter(Context context, List<Inventory> inventoryList, Fragment fragment) {
         this.context = context;
@@ -57,6 +59,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        groupIds.clear();
         Inventory inventory = inventoryList.get(position);
 
         holder.txvStyleName.setText(inventory.getInventoryName());
@@ -80,32 +83,13 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
             inventoryFragment.show(fragmentManager, "Inventory Management Frag show");
             inventoryFragment.setOnStockButtonClickListener(stockListener);
         });
-        String productId = inventory.getProductId();
-
-        final String[] groupId = {null};
-        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Group");
-        groupRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot groupSnapshot : snapshot.getChildren()){
-                    Group group = groupSnapshot.getValue(Group.class);
-                    if (group.getProductId().equals(productId)){
-                        groupId[0] = group.getKey();
-                    }
-                }
-                //return false;
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(groupId[0]));
+        holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(inventory.getGroupId()));
         holder.btnRestore.setOnClickListener(view -> {
+            String inventoryId = inventory.getInventoryId();
             int restoreAmount = inventory.getInStock();
             Log.d("Test restore", "restoreAmount: "+ restoreAmount);
-            buttonListener.onRestoreClicked(restoreAmount);
+            buttonListener.onRestoreClicked(restoreAmount, inventoryId);
+            holder.txvInStock.setText("0");
         });
     }
 
@@ -138,7 +122,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
 
     public interface OnActionButtonClickListener {
         void onAllocateClicked(String groupId);
-        void onRestoreClicked(int restoreAmount);
+        void onRestoreClicked(int restoreAmount, String inventoryId);
     }
 }
 

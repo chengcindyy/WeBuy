@@ -55,10 +55,10 @@ import java.util.List;
 
 public class SellerProfileSetInfoFragment extends Fragment {
 
-    private Button logoutButton, btnTest, btnPaymentSetting, btnUpdateSellerProfile, btnUpdateStoreProfile, btnUploadStoreImg, btnDeliverySetting;
-    private Uri uploadedImgUri;
-    private ExpandableLayout expSellerProfile, expStoreInfo, expDeliveryInfo, expPaymentInfo, expMoreFunctions;
-    private TextInputLayout editStoreId, editName, editEmail, editPhone, editStoreName, editStoreEmail,
+    private Button logoutButton, btnPaymentSetting, btnUpdateSellerProfile, btnUpdateStoreProfile, btnUploadStoreImg, btnDeliverySetting;
+
+    private ExpandableLayout expSellerProfile, expStoreInfo, expMoreFunctions;
+    private TextInputLayout editName, editEmail, editPhone, editStoreName, editStoreEmail,
             editBusinessNumber, editAddress, editCity, editPostalCode, editStoreIntro;
     private AutoCompleteTextView editProvince, editCountry;
     private AlertDialog alertDialog;
@@ -122,7 +122,7 @@ public class SellerProfileSetInfoFragment extends Fragment {
 
         if (firebaseUser != null){
             // Notify user if they have not verified email
-            checkIfEmailVerified(firebaseUser);
+//            checkIfEmailVerified(firebaseUser);
             showSellerProfileInfo();
         } else {
             Toast.makeText(getContext(), "Loading user problem!", Toast.LENGTH_LONG).show();
@@ -328,53 +328,6 @@ public class SellerProfileSetInfoFragment extends Fragment {
         });
     }
 
-    private void checkIfEmailVerified(FirebaseUser firebaseUser) {
-        firebaseUser.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    FirebaseUser updatedUser = FirebaseAuth.getInstance().getCurrentUser();
-                    if (updatedUser.isEmailVerified()) {
-                        // The email is verified, so you can bypass the dialog.
-                        // Continue your normal flow here.
-                    } else {
-                        // The email is still not verified, show the dialog.
-                        showAlertDialog();
-                    }
-                } else {
-                    Log.e("checkIfEmailVerified: ", "Failed to reload user.");
-                }
-            }
-        });
-    }
-
-
-    private void showAlertDialog() {
-        //Set up alert builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-        builder.setTitle("Your account is not verified!");
-        builder.setMessage("Please verify your email now. Or You may not login without email verification next time. If you have already verified your email, please login again.");
-        //Open email app if "continue" clicked
-        builder.setPositiveButton("Continue", (dialog, which) -> {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //open in a new window
-            startActivity(intent);
-        }).setNeutralButton("Log out", (dialog, which) -> {
-            auth.signOut();
-            LoginManager.getInstance().logOut();
-            Toast.makeText(requireActivity(),"Logged out successfully, please login again", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(requireActivity(), MainActivity.class);
-            startActivity(intent);
-            requireActivity().finish(); // if you want to finish the current activity
-        });
-
-        //Create AlertDialog
-        AlertDialog alertDialog = builder.create();
-        //Show AlertDialog
-        alertDialog.show();
-    }
-
     private void showUploadPicSelectionDialog() {
         //Set up alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -454,7 +407,6 @@ public class SellerProfileSetInfoFragment extends Fragment {
                             }
                         }
                     });
-                    Log.d("Test Upload Profile Img: ", "Uri: "+uploadedImgUri);
                     Toast.makeText(getContext(), "Image upload successfully", Toast.LENGTH_SHORT).show();
 
                 }
