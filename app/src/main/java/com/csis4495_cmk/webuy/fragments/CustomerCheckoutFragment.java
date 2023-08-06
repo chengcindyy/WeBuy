@@ -282,7 +282,7 @@ public class CustomerCheckoutFragment extends Fragment {
                                 //inventory ordered ++
                                 addOrderedAmountToInventory(orderMap);
 
-                                //TODO: group amount --
+                                //group amount --
                                 deductGroupAmount(orderMap);
 
                                 //items remove from cart
@@ -314,13 +314,11 @@ public class CustomerCheckoutFragment extends Fragment {
                             //inventory ordered ++
                             addOrderedAmountToInventory(orderMap);
 
-                            //TODO: group amount --
+                            //group amount --
                             deductGroupAmount(orderMap);
 
                             //items remove from cart
                             removeItemsFromCart();
-
-
 
                             //TODO: redirect to successful page( 3 second to order list or home page)
                         }
