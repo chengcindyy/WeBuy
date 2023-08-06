@@ -149,11 +149,14 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                     int index = product_style_id.indexOf(sSplit);
                     if (index != -1) {
                         String sId = product_style_id.substring(index + sSplit.length());
-                        for (ProductStyle style : group.getGroupStyles()) {
-                            if (style.getStyleId().equals(sId)) {
-                                holder.style.setText(style.getStyleName());
-
+                        if(group.getGroupStyles() != null){
+                            for (ProductStyle style : group.getGroupStyles()) {
+                                if (style.getStyleId().equals(sId)) {
+                                    holder.style.setText(style.getStyleName());
+                                }
                             }
+                        }else{
+                            holder.style.setText(group.getGroupName());
                         }
                     }
                 }

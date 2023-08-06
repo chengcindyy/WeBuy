@@ -90,7 +90,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
                 for (DataSnapshot groupSnapshot : snapshot.getChildren()){
                     Group group = groupSnapshot.getValue(Group.class);
                     if (group.getProductId().equals(productId)){
-                        groupId[0] = group.getKey();
+                        groupId[0] = groupSnapshot.getKey();
                     }
                 }
             }
