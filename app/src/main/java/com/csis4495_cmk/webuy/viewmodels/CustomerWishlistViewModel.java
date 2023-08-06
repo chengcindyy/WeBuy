@@ -45,6 +45,7 @@ public class CustomerWishlistViewModel extends ViewModel {
                     currentWishlist.add(wishlistItem);
                 }
                 wishlistObject.setValue(currentWishlist);
+                //return false;
             }
 
             @Override
@@ -89,6 +90,7 @@ public class CustomerWishlistViewModel extends ViewModel {
                                 }
                             });
                 }
+               //return false;
             }
 
             @Override

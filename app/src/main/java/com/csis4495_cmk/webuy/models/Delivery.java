@@ -3,7 +3,7 @@ package com.csis4495_cmk.webuy.models;
 import java.util.Map;
 
 public class Delivery {
-    private String deliveredMethod; //pickup, locations(Vancouver, Burnaby...)
+    private String deliveredMethod; //Self pick up / Home delivery
     private String pickUpLocation;
     private String deliveryCity;
     private Map<String, Double> feeMap;
