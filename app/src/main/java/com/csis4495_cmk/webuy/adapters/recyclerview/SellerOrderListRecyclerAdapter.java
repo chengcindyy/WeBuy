@@ -93,6 +93,7 @@ public class SellerOrderListRecyclerAdapter extends RecyclerView.Adapter<SellerO
                     String customerEmail = customer.getEmail();
                     holder.email.setText(customerEmail);
                 }
+                //return false;
             }
 
             @Override

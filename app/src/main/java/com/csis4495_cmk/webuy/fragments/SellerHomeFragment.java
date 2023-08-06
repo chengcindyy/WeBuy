@@ -54,11 +54,8 @@ public class SellerHomeFragment extends Fragment {
         btnOrderList = view.findViewById(R.id.btn_seller_order_list);
         setOpenNewFragmentOnClickListener(btnOrderList, R.id.action_sellerHomeFragment_to_sellerOrderListFragment);
 
-        btnOrderList = view.findViewById(R.id.btn_seller_order_list);
-        // TODO: Add order list fragment
-
-        // TODO: Add Support page
         btnSupport = view.findViewById(R.id.btn_seller_support);
+        setOpenNewFragmentOnClickListener(btnSupport, R.id.action_sellerHomeFragment_to_sellerCustomerSupportFragment);
 
 //        btnLogout = view.findViewById(R.id.btn_seller_logout);
 //        btnLogout.setOnClickListener(view1 -> {

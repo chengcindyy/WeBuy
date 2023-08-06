@@ -338,6 +338,7 @@ public class SellerGroupDetailFragment extends Fragment implements OnGroupOrderI
                     gQty.setText("Quantity: " + Integer.toString(qty));
                     styleRecyclerView.setVisibility(View.GONE);
                 }
+                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -375,6 +376,7 @@ public class SellerGroupDetailFragment extends Fragment implements OnGroupOrderI
                         shareLiveData();
                     }
                 }
+                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

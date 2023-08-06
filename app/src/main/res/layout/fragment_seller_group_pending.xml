@@ -14,7 +14,7 @@
         android:id="@+id/tv_group_pending"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="There are no pending order"
+        android:text="There are no to allocate order"
         android:layout_margin="8dp"/>
 
     <androidx.recyclerview.widget.RecyclerView

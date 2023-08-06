@@ -49,7 +49,7 @@ public class SellerDeliveryInfoPriceRangeRecyclerAdapter extends RecyclerView.Ad
             int endPrice = Integer.parseInt(nextPrice) - 1;
             priceRangeEnd = String.valueOf(endPrice);
         } else {
-            priceRangeEnd = price;
+            priceRangeEnd = "";
         }
 
         Log.d("Test key values", "Key: " + keyString + ", Price: " + price + ", Value: " + fee);

@@ -177,6 +177,7 @@ public class SellerAllProductListFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
 
                 productList.remove(position);
+//                sellerAllProductAdapter.remove(position);
                 sellerAllProductAdapter.notifyItemRemoved(position);
                 // Delete - Product
                 productRef.child(productId).removeValue();
@@ -253,6 +254,7 @@ public class SellerAllProductListFragment extends Fragment {
                         });
                     }
                 }
+                //return false;
             }
 
             @Override
@@ -284,6 +286,7 @@ public class SellerAllProductListFragment extends Fragment {
 
                     }
                 }
+                //return false;
             }
 
             @Override

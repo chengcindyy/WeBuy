@@ -107,7 +107,7 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                     group = g;
                 }
 
-                Map.Entry<String, Map.Entry<String, Order.OrderItemInfo>> item = allItems.get(position);
+                Map.Entry<String, Map.Entry<String, Order.OrderItemInfo>> item = allItems.get(holder.getBindingAdapterPosition());
                 String orderId = item.getKey();
                 DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("Order");
                 DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("User");
@@ -127,11 +127,13 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                                         String email = customer.getEmail();
                                         holder.email.setText(email);
                                     }
+                                    //return false;
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) { /* None*/ }
                             });
                         }
+                        //return false;
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) { /* None*/ }
@@ -191,6 +193,7 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                         }
                     }
                 });
+                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) { /* None*/ }

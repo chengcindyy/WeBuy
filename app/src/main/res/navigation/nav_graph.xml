@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_to_testPageFragment"
             app:destination="@id/testFragment" />
+        <action
+            android:id="@+id/action_customerProfileFragment_to_sellerCustomerSupportFragment"
+            app:destination="@id/sellerCustomerSupportFragment" />
     </fragment>
 
     <fragment
@@ -127,6 +130,9 @@
         <action
             android:id="@+id/action_sellerHomeFragment_to_sellerOrderListFragment"
             app:destination="@id/sellerOrderListFragment" />
+        <action
+            android:id="@+id/action_sellerHomeFragment_to_sellerCustomerSupportFragment"
+            app:destination="@id/sellerCustomerSupportFragment" />
     </fragment>
     <fragment
         android:id="@+id/sellerAddProductFragment"
@@ -267,6 +273,10 @@
             app:destination="@id/sellerAddProductFragment" />
     </fragment>
     <fragment
+        android:id="@+id/sellerCustomerSupportFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerCustomerSupportFragment"
+        android:label="fragment_seller_customer_support"
+        tools:layout="@layout/fragment_seller_customer_support" />
         android:id="@+id/customerGroupDetailFragment"
         android:name="com.csis4495_cmk.webuy.fragments.CustomerGroupDetailFragment"
         android:label="fragment_customer_group_detail"

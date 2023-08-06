@@ -124,6 +124,8 @@ public class CustomerCartItemsViewModel extends ViewModel {
                                                         productName[0] = product.getProductName();
                                                         tax[0] = product.getTax();
                                                     }
+                                                    //return false;
+                                                    //return false;
                                                 }
                                                 @Override
                                                 public void onCancelled(@NonNull DatabaseError error) {
@@ -227,6 +229,8 @@ public class CustomerCartItemsViewModel extends ViewModel {
 
                                             Log.d("vm", "map size: "+ cartItemsInfoMap.size());
                                         }
+                                        //return false;
+                                        //return false;
                                     }
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {}
@@ -236,6 +240,8 @@ public class CustomerCartItemsViewModel extends ViewModel {
                     }
                 }
 
+                //return false;
+                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

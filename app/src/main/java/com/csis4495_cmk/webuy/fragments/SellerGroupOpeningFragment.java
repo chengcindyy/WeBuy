@@ -191,6 +191,7 @@ public class SellerGroupOpeningFragment extends Fragment {
                     groupListRecyclerAdapter.setGroupIds(groupIds);
                     groupListRecyclerAdapter.notifyDataSetChanged();
                 }
+                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

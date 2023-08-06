@@ -144,6 +144,7 @@ public class SellerOrderPendingFragment extends Fragment {
                         }
                     });
                 }
+                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

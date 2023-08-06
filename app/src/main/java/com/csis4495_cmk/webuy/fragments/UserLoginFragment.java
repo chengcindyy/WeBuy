@@ -145,7 +145,6 @@ public class UserLoginFragment extends Fragment {
                                 showRoleSelectionAlertDialog();
                             } else {
                                 // Returning user, go to home page
-                                Toast.makeText(getContext(), "Old user", Toast.LENGTH_SHORT).show();
                                 if (firebaseUser != null) {
                                     loginUser(firebaseUser);
                                 } else {
@@ -537,6 +536,7 @@ public class UserLoginFragment extends Fragment {
                             }
                         }
                     }
+                    //return false;
                 }
 
                 @Override
