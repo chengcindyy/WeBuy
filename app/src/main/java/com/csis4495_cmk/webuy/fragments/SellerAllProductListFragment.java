@@ -253,6 +253,7 @@ public class SellerAllProductListFragment extends Fragment {
                         });
                     }
                 }
+                //return false;
             }
 
             @Override
@@ -284,6 +285,7 @@ public class SellerAllProductListFragment extends Fragment {
 
                     }
                 }
+                //return false;
             }
 
             @Override

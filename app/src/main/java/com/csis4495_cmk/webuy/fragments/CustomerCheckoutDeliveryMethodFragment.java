@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFragment {
 
@@ -41,8 +43,8 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
     private AutoCompleteTextView txvProvince, txvCountry, txvLocation;
     private TextView txvShowFee;
     private CustomerCheckoutDataViewModel model;
-    private Boolean isDataVerified = false;
     private double checkoutTotal;
+
 
     public CustomerCheckoutDeliveryMethodFragment(double checkoutTotal) {
         this.checkoutTotal = checkoutTotal;
@@ -92,7 +94,8 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
             @Override
             public void onChanged(HashMap<String, Delivery> deliveryHashMap) {
                 Log.d("Test deliveryHashMap", "Size: " + deliveryHashMap.size());
-                List<String> locationsList = new ArrayList<>();
+                Map <String, Map<String, Double>> HD_CityFeeMap = new HashMap<>();
+                List<String> PK_locationsList = new ArrayList<>();
                 //final Double[] shippingFeeContainer = {0.0};
 
                 // Loop through the deliveryHashMap and check provided delivery services
@@ -100,19 +103,22 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                     Delivery delivery = deliveryHashMap.get(key);
                     String providedMethod = delivery.getDeliveredMethod();
                     String providedLocations = delivery.getPickUpLocation();
-                    Log.d("Test deliveryHashMap", "Methods: "+providedMethod);
 
                     // Display provided options:
                     if ("[Home delivery] ".equals(providedMethod)) {
                         // 1. Delivery: if seller has provided delivery show the text fields
                         radioButtonDelivery.setVisibility(View.VISIBLE);
+
+                        // Check HD shipping fee
+                        HD_CityFeeMap.put(delivery.getDeliveryCity(), delivery.getFeeMap());
+
                     } else if ("[Self pick up] ".equals(providedMethod)) {
                         // 2. Pickup: if seller has provided delivery show store location dropdown
                         radioButtonPickup.setVisibility(View.VISIBLE);
 
                         String shippingFee = "";
 
-                        // Check shipping fee
+                        // Check PK shipping fee
                         Map<String, Double> feeMap = delivery.getFeeMap();
                         for (String feeKey : feeMap.keySet()) {
                             Double keyPrice = Double.parseDouble(feeKey.split("_")[1]);
@@ -126,131 +132,152 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                                 }
                             }
                         }
-                        locationsList.add(providedLocations+ " (CA$ "+ shippingFee+")");
+                        PK_locationsList.add(providedLocations+ " (CA$ "+ shippingFee+")");
                     }
+                } //for
 
-                    // Display more options:
-                    radioGroupContainer.setOnCheckedChangeListener((radioGroup, checkedId) -> {
-                        switch (checkedId) {
-                            // when user selected delivery, do...
-                            case R.id.radio_btn_home_delivery:
-                                linearLayoutContactLayout.setVisibility(View.VISIBLE);
-                                linearLayoutPickUpInfoLayout.setVisibility(View.GONE);
+                // Display more options:
+                radioGroupContainer.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+                    switch (checkedId) {
+                        // when user selected delivery, do...
+                        case R.id.radio_btn_home_delivery:
+                            linearLayoutContactLayout.setVisibility(View.VISIBLE);
+                            linearLayoutPickUpInfoLayout.setVisibility(View.GONE);
 
-                                // Check shipping fee
-                                btnCheck.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Log.d("Test shipping fee", "btnCheck clicked");
-                                        // Get data from text fields
-                                        String city = txvCity.getEditText().getText().toString();
-                                        // Get city : It's better to use API to check the location
-                                        String deliveryLocation = delivery.getDeliveryCity();
-                                        Log.d("Test shipping fee", "city: " + city + " deliveryLocation: " + deliveryLocation);
+                            // Check shipping fee
+                            btnCheck.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.d("Test shipping fee", "btnCheck clicked");
+                                    // Get data from text fields
+                                    String city = txvCity.getEditText().getText().toString();
+                                    // Get city : It's better to use API to check the location
 
-                                        String shippingFeeStr = "";
+                                    if(!city.isEmpty()) {
 
-                                        if(!city.isEmpty()) {
-                                            if (city.trim().equalsIgnoreCase(deliveryLocation)){
+                                        for (String hd_city: HD_CityFeeMap.keySet()) {
+                                            String shippingFeeStr = "";
+                                            Log.d("test city", hd_city);
+                                            if (city.trim().equalsIgnoreCase(hd_city)){
+                                                Log.d("test city", hd_city+ " "+ city.trim());
                                                 // Matching shipping fees
-                                                Map<String, Double> feeMap = delivery.getFeeMap();
+                                                Map<String, Double> feeMap = HD_CityFeeMap.get(hd_city);
                                                 for (String feeKey : feeMap.keySet()) {
                                                     Double keyPrice = Double.parseDouble(feeKey.split("_")[1]);
                                                     Double valuePrice = feeMap.get(feeKey);
 
                                                     if (checkoutTotal >= keyPrice){
                                                         if (valuePrice == 0){
-                                                            shippingFeeStr = "Free delivery";
+                                                            shippingFeeStr = "CA$ Free delivery";
                                                         } else {
                                                             shippingFeeStr = "CA$ " + valuePrice;
                                                         }
                                                     }
-                                                    //shippingFeeContainer[0] = valuePrice;
                                                 }
                                                 // Set the fee to textView
-                                                txvShowFee.setText("Shipped to " + deliveryLocation + " (" + shippingFeeStr+")");
+                                                txvShowFee.setText("Shipped to " + hd_city + " (" + shippingFeeStr+")");
                                                 Log.d("Test shipping fee", "shippingFee: "+shippingFeeStr);
+
+                                                break;
                                             } else {
+                                                Log.d("test city", hd_city+ " "+ city.trim());
                                                 txvShowFee.setText("Cannot deliver to your city");
                                             }
+                                        }
+
+                                    } else {
+                                        txvShowFee.setText("");
+                                    }
+
+                                }
+                            });
+
+                            // Send data to viewModel
+                            btnConfirm.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    String method = "Home delivery";
+                                    String name = txvHDname.getEditText().getText().toString();
+                                    String phone = txvHDphone.getEditText().getText().toString();
+                                    String email = txvEmail.getEditText().getText().toString();
+                                    String address = txvAddress.getEditText().getText().toString();
+                                    String postalCode = txvPostalCode.getEditText().getText().toString();
+                                    String province = txvProvince.getText().toString();
+                                    String country = txvCountry.getText().toString();
+                                    String city = txvCity.getEditText().getText().toString();
+
+                                    btnCheck.performClick();
+
+                                    String strShippingFee = txvShowFee.getText().toString();
+                                    Double shippingFee = null;
+                                    if (!strShippingFee.isEmpty() && !strShippingFee.equals("Cannot deliver to your city")) {
+                                        if (strShippingFee.split("\\$ ")[1].split("\\)")[0].equals("Free delivery")) {
+                                            shippingFee = 0.0;
                                         } else {
-                                            txvShowFee.setText("");
-                                        }
-
-                                    }
-                                });
-
-                                // Send data to viewModel
-                                btnConfirm.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        String name = txvHDname.getEditText().getText().toString();
-                                        String phone = txvHDphone.getEditText().getText().toString();
-                                        String email = txvEmail.getEditText().getText().toString();
-                                        String address = txvAddress.getEditText().getText().toString();
-                                        String postalCode = txvPostalCode.getEditText().getText().toString();
-                                        String province = txvProvince.getText().toString();
-                                        String country = txvCountry.getText().toString();
-                                        String city = txvCity.getEditText().getText().toString();
-
-                                        btnCheck.performClick();
-
-                                        String strShippingFee = txvShowFee.getText().toString();
-                                        Double shippingFee = null;
-                                        if (!strShippingFee.isEmpty() && !strShippingFee.equals("Cannot deliver to your city")) {
                                             shippingFee = Double.parseDouble(strShippingFee.split("\\$ ")[1].split("\\)")[0]);
                                         }
+                                    }
 
+                                    if (verifyingHomeDeliveryEnteredContent(name,phone,email,address,postalCode,city,country,province,shippingFee)) {
                                         CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo =
-                                                new CustomerCheckoutDataViewModel.ShipmentInfo("Home delivery", name, phone, email, address, postalCode,
-                                                                                                 city,country, province, shippingFee);
+                                                new CustomerCheckoutDataViewModel.ShipmentInfo(method, name, phone, email, address, postalCode,
+                                                        city,country, province, shippingFee);
                                         model.shipmentInfoObject(shipmentInfo);
+
                                         dismiss();
+                                    } else {
+
                                     }
-                                });
-                                break;
 
-                            // when user selected pickup
-                            case R.id.radio_btn_self_pickup:
-                                linearLayoutPickUpInfoLayout.setVisibility(View.VISIBLE);
-                                linearLayoutContactLayout.setVisibility(View.GONE);
+                                }
+                            });
+                            break;
 
-                                String[] locationsArray = locationsList.toArray(new String[0]);
-                                Log.d("Test location", "locationsArray: " + locationsArray);
-                                setLocationsAutoCompleteAdapter(txvLocation, locationsArray);
+                        // when user selected pickup
+                        case R.id.radio_btn_self_pickup:
+                            linearLayoutPickUpInfoLayout.setVisibility(View.VISIBLE);
+                            linearLayoutContactLayout.setVisibility(View.GONE);
 
-                                btnConfirm.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
+                            String[] locationsArray = PK_locationsList.toArray(new String[0]);
+                            Log.d("Test location", "locationsArray: " + locationsArray);
+                            setLocationsAutoCompleteAdapter(txvLocation, locationsArray);
 
-                                        String method = "Store pickup"; //location + " " + "CA$ 8.0"
-                                        String location = txvLocation.getText().toString().split(" \\(CA\\$")[0];
-                                        String PKname = txvPKname.getEditText().getText().toString();
-                                        String PKphone = txvPKphone.getEditText().getText().toString();
-                                        String strShippingFee = txvLocation.getText().toString();
-                                        Double shippingFee = null;
-//                                        if (!strShippingFee.isEmpty() && strShippingFee != null) {
-//                                            shippingFee = Double.parseDouble(strShippingFee.split("\\$ ")[1].split("\\)")[0]);
-//                                        }
+                            btnConfirm.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
 
-                                        if (!strShippingFee.isEmpty() && !strShippingFee.equals("Items are not able to deliver to your city.")) {
+                                    String method = "Store pickup"; //location + " " + "CA$ 8.0"
+                                    String location = txvLocation.getText().toString().split(" \\(CA\\$")[0];
+                                    String PKname = txvPKname.getEditText().getText().toString();
+                                    String PKphone = txvPKphone.getEditText().getText().toString();
+                                    String strShippingFee = txvLocation.getText().toString();
+                                    Double shippingFee = null;
+
+                                    if (!strShippingFee.isEmpty()) {
+                                        if (strShippingFee.split("\\$ ")[1].split("\\)")[0].equals("Free")) {
+                                            shippingFee = 0.0;
+                                        } else {
                                             shippingFee = Double.parseDouble(strShippingFee.split("\\$ ")[1].split("\\)")[0]);
                                         }
+                                    }
 
-                                        Log.d("Test pickup info", "method: " + method + " location: " + location + " PKname: " + PKname + " PKphone: " + PKphone);
+                                    Log.d("Test pickup info", "method: " + method + " location: " + location + " PKname: " + PKname + " PKphone: " + PKphone);
 
-                                        // Set to Order
+                                    if (verifyingPickUpEnteredContent(PKname,PKphone,location)) {
                                         CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo =
                                                 new CustomerCheckoutDataViewModel.ShipmentInfo(method, PKname, PKphone, location, shippingFee);
                                         model.shipmentInfoObject(shipmentInfo);
-                                        dismiss();
-                                    }
-                                });
-                                break;
 
-                        }
-                    });
-                }
+                                        dismiss();
+                                    } else {
+
+                                    }
+                                }
+                            });
+                            break;
+
+                    }
+                });
             }
         });
 
@@ -271,6 +298,7 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                     //check shipment fee
                     btnCheck.performClick();
                     Log.d("Test shipping fee", btnCheck.callOnClick() +"");
+
                 } else if (shipmentInfo.getMethod().equals("Store pickup")) {
                     radioButtonPickup.setChecked(true);
 
@@ -287,10 +315,9 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                             txvLocation.setText(shipmentInfo.getAddress() + " (CA$ " + strShippingFee + ")");
                         }
                     }
-
-
                     txvPKname.getEditText().setText(shipmentInfo.getReceiver());
                     txvPKphone.getEditText().setText(shipmentInfo.getPhone());
+
                 } else {
                     // no preselection
                 }
@@ -314,16 +341,25 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
     }
 
 
-    private void VerifyingEnteredContent(String name, String phone, String email, String address, String postalCode, String city, String province, String country) {
+    private boolean verifyingHomeDeliveryEnteredContent(String name, String phone, String email, String address,
+                                                        String postalCode, String city, String province,
+                                                        String country, Double shipmentFee) {
+
         if (TextUtils.isEmpty(name)){
             txvHDname.setError("Name is required");
             txvHDname.requestFocus();
         } else if (TextUtils.isEmpty(phone)){
             txvHDphone.setError("Phone is required");
             txvHDphone.requestFocus();
+        } else if (phone != null && phone.length() != 10) {
+            txvHDphone.setError("Invalid phone number");
+            txvHDphone.requestFocus();
         } else if (TextUtils.isEmpty(email)){
             txvEmail.setError("Email is required");
             txvEmail.requestFocus();
+        } else if (email != null && !isValidEmail(email)) {
+            txvHDphone.setError("Invalid email");
+            txvHDphone.requestFocus();
         } else if (TextUtils.isEmpty(address)){
             txvAddress.setError("Address is required");
             txvAddress.requestFocus();
@@ -339,8 +375,39 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
         } else if (TextUtils.isEmpty(country)){
             txvCountry.setError("Country is required");
             txvCountry.requestFocus();
+        } else if (shipmentFee == null) {
+            txvShowFee.setError("");
+            txvShowFee.requestFocus();
         } else {
-            isDataVerified = true;
+            return true;
         }
+        return false;
+    }
+
+    private boolean isValidEmail(String email) {
+        String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    private boolean verifyingPickUpEnteredContent(String name, String phone, String pickupLocation) {
+
+        if (TextUtils.isEmpty(name)){
+            txvPKname.setError("Name is required");
+            txvPKname.requestFocus();
+        } else if (TextUtils.isEmpty(phone)){
+            txvPKphone.setError("Phone is required");
+            txvPKphone.requestFocus();
+        } else if (phone != null && phone.length() != 10) {
+            txvPKphone.setError("Invalid phone number");
+            txvPKphone.requestFocus();
+        } else if (TextUtils.isEmpty(pickupLocation)){
+            txvLocation.setError("Location is required");
+            txvLocation.requestFocus();
+        } else {
+            return true;
+        }
+        return false;
     }
 }

@@ -537,6 +537,7 @@ public class UserLoginFragment extends Fragment {
                             }
                         }
                     }
+                    //return false;
                 }
 
                 @Override

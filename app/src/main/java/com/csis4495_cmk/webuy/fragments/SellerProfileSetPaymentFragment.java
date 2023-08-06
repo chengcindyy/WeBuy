@@ -95,6 +95,7 @@ public class SellerProfileSetPaymentFragment extends Fragment {
                     edtAccount.getEditText().setText(_ACCOUNT);
                     edtAccountHolder.getEditText().setText(_HOLDER);
                 }
+                //return false;
             }
 
             @Override
@@ -144,6 +145,7 @@ public class SellerProfileSetPaymentFragment extends Fragment {
                             checkBox.setChecked(true);
                     }
                 }
+                //return false;
             }
 
             @Override

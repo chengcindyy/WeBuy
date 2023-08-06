@@ -368,6 +368,7 @@ public class CustomerProfileFragment extends Fragment {
                     Toast.makeText(requireActivity(), "something went wrong! " +
                             "Show profile was canceled", Toast.LENGTH_LONG).show();
                 }
+                //return false;
             }
 
             @Override
@@ -412,6 +413,7 @@ public class CustomerProfileFragment extends Fragment {
                     Toast.makeText(requireActivity(), "something went wrong! " +
                             "Show profile was canceled", Toast.LENGTH_LONG).show();
                 }
+                //return false;
             }
 
             @Override

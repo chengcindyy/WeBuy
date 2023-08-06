@@ -253,6 +253,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                                             }
                                         });
                                     }
+                                    //return allAllocated;
                                 }
 
                                 @Override
@@ -322,6 +323,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                 }
                 Log.d(TAG, "getNewInventoryData check out of stock : " + inventoryList);
                 getOrderData();
+                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -435,6 +437,7 @@ public class SellerGroupPendingOrderFragment extends Fragment {
                     Log.d(TAG, "check btnAllocate setVisibility orderIdandItemsMap.size: " + orderIdandItemsMap.size());
                     btnAllocate.setVisibility(View.GONE);
                 }
+                //return false;
             }
 
             @Override

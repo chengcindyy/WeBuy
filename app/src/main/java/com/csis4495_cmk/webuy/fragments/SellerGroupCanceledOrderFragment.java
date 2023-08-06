@@ -130,6 +130,7 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
                     tv_no.setText("Processed:");
                     Log.d(TAG, "check orderIdandItemsMap: " + orderIdandItemsMap.size() + orderIdandItemsMap);
                 }
+                //return false;
             }
 
             @Override

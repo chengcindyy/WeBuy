@@ -93,6 +93,7 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
                         groupId[0] = group.getKey();
                     }
                 }
+                //return false;
             }
 
             @Override

@@ -259,6 +259,7 @@ public class SellerProfileSetInfoFragment extends Fragment {
                     Toast.makeText(requireActivity(), "something went wrong! " +
                             "Show profile was canceled", Toast.LENGTH_LONG).show();
                 }
+                //return false;
             }
 
             @Override

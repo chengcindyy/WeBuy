@@ -122,6 +122,7 @@ public class SellerOrderPendingFragment extends Fragment {
                     rv.setAdapter(adapter);
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
                 }
+                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

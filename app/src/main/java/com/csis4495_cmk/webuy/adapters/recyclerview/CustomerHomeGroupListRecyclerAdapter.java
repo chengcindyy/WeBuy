@@ -180,6 +180,7 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
                     holder.tvSellerName.setText("Seller not found");
                     holder.imvSellerPic.setImageResource(R.drawable.ic_user_profile);
                 }
+                //return false;
             }
 
             @Override

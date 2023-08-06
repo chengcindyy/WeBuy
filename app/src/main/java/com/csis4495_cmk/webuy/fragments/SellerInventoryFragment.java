@@ -233,6 +233,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                 adapter.notifyDataSetChanged();
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 mRecyclerView.setAdapter(adapter);
+                //return false;
             }
 
             @Override
@@ -282,6 +283,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                     } else {
                         Log.d("Inventory", "Inventory already exists, no need to create it.");
                     }
+                    //return false;
                 }
 
                 @Override
@@ -373,6 +375,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                         }
                     }
                 });
+                //return false;
             }
 
             @Override
@@ -406,6 +409,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                         productRef.child(String.valueOf(styleIndex)).child("inStock").setValue(newInStock);
                     }
                 }
+                //return false;
             }
 
             @Override
@@ -480,6 +484,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                     addInStockToProductDb(productId, newInStock);
                 }
                 adapter.notifyDataSetChanged();
+                //return false;
             }
 
             @Override
@@ -520,6 +525,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                     addInStockToProductDb(productId, newInStock);
                 }
                 adapter.notifyDataSetChanged();
+                //return false;
             }
 
             @Override
@@ -550,6 +556,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                         Navigation.findNavController(getView()).navigate(R.id.action_sellerInventoryFragment_to_sellerGroupDetailFragment, bundle);
                     }
                 }
+                //return false;
             }
 
 
