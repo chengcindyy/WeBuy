@@ -93,6 +93,8 @@ public class CustomerCartItemsFragment extends Fragment
 
                 //set no item label if no items in the cart
                 if (sellerItemsMap.size() != 0) {
+                    //
+                    Log.d("place order", "sellerItemsMap: " + sellerItemsMap.size());
                     recyclerView.setVisibility(View.VISIBLE);
                     tvNoItems.setVisibility(View.GONE);
 
@@ -100,6 +102,7 @@ public class CustomerCartItemsFragment extends Fragment
                     recyclerView.setAdapter(customerCartItemsAdapter);
                     customerCartItemsAdapter.setOnCartSellerBannerListener(CustomerCartItemsFragment.this);
                 } else {
+                    Log.d("place order", "sellerItemsMap: " + 0);
                     recyclerView.setVisibility(View.GONE);
                     tvNoItems.setVisibility(View.VISIBLE);
                 }
@@ -156,6 +159,11 @@ public class CustomerCartItemsFragment extends Fragment
             @Override
             public void onChanged(Map<String, Boolean> stringBooleanMap) {
                 sellerAllItemsCheckedMap = stringBooleanMap;
+                Log.d("place order", "allCheckedMap: " + sellerAllItemsCheckedMap.size());
+                customerCartItemsAdapter = new CustomerCartItemsAdapter(getContext(), viewModel, getViewLifecycleOwner());
+                recyclerView.setAdapter(customerCartItemsAdapter);
+                customerCartItemsAdapter.setOnCartSellerBannerListener(CustomerCartItemsFragment.this);
+
                 boolean allGroupChecked = false;
                 for (String sellerId : sellerAllItemsCheckedMap.keySet()) {
                     boolean allChecked = sellerAllItemsCheckedMap.get(sellerId);

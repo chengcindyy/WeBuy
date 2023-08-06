@@ -68,6 +68,7 @@ public class SellerOrderListRecyclerAdapter extends RecyclerView.Adapter<SellerO
                     String email = customer.getEmail();
                     holder.email.setText(email);
                 }
+                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) { /* None*/ }

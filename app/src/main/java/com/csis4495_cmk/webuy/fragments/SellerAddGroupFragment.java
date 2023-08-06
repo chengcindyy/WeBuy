@@ -697,6 +697,7 @@ public class SellerAddGroupFragment extends Fragment {
                                     });
                                 }
                                 imagesAdapter.updateGroupImgPaths2(productId, imgPaths);
+                                //return false;
                             }
 
                             @Override
@@ -1019,6 +1020,7 @@ public class SellerAddGroupFragment extends Fragment {
                                         Log.d(TAG, "Restock: update inventory instock: " + ds.getKey() + " " + Integer.toString(newInStock));
                                     }
                                 }
+                                //return false;
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
@@ -1038,6 +1040,7 @@ public class SellerAddGroupFragment extends Fragment {
                                         break;
                                     }
                                 }
+                                //return false;
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
@@ -1054,6 +1057,7 @@ public class SellerAddGroupFragment extends Fragment {
                                         Log.d(TAG, "Restock: update inventory instock: " + ds.getKey() + " " + Integer.toString(newInStock));
                                     }
                                 }
+                                //return false;
                             }
 
                             @Override
@@ -1288,6 +1292,7 @@ public class SellerAddGroupFragment extends Fragment {
                 }
                 comparePriceRange();
                 stylesAdapter.updateStyleData2(productId, groupStyles);
+                //return false;
             }
 
             @Override

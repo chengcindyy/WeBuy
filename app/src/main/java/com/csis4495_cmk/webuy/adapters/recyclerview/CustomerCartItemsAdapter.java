@@ -90,6 +90,7 @@ public class CustomerCartItemsAdapter extends RecyclerView.Adapter<CustomerCartI
                 } else {
                     holder.imvSellerPic.setImageResource(R.drawable.app_logo);
                 }
+                //return false;
             }
 
             @Override

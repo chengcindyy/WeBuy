@@ -228,6 +228,7 @@ public class SellerGroupClosedFragment extends Fragment {
                     groupListRecyclerAdapter.setGroupIds(groupIds);
                     groupListRecyclerAdapter.notifyDataSetChanged();
                 }
+                //return false;
             }
 
             @Override
