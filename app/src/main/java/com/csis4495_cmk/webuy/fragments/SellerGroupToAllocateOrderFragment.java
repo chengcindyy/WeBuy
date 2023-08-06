@@ -427,7 +427,7 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                         Log.d(TAG, "setInventoryList: " + inventoryList);
                     }
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
-                    tv_no.setText("To Allocate: ");
+                    tv_no.setText("To Allocate:");
                     Log.d(TAG, "check orderIdandItemsMap: " + orderIdandItemsMap);
                     Log.d(TAG, "check inventoryList: " + inventoryList);
                 }

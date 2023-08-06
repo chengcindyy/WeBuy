@@ -32,8 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-
-public class SellerGroupCanceledOrderFragment extends Fragment {
+public class SellerGroupProcessingOrderFragment extends Fragment {
 
     private TextView tv_no;
     private RecyclerView rv;
@@ -60,15 +59,21 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
         orderIdandItemsMap = new HashMap<>();
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_seller_group_canceled_order, container, false);
-        tv_no = view.findViewById(R.id.tv_group_order_canceled);
-        rv = view.findViewById(R.id.rv_group_order_canceled);
+        View view = inflater.inflate(R.layout.fragment_seller_group_processed, container, false);
+
+        tv_no = view.findViewById(R.id.tv_group_order_processed);
+
+        rv = view.findViewById(R.id.rv_group_order_processed);
+
         getViewModelData();
+
         getOrderData();
+
         return view;
     }
 
@@ -96,7 +101,6 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
                     Log.d(TAG, "livemodel group: " + group);
                 }
             });
-
         }
     }
 
@@ -109,7 +113,7 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
                     if (dataSnapshot != null) {
                         Order o = dataSnapshot.getValue(Order.class);
                         String orderId = dataSnapshot.getKey();
-                        if (o.getOrderStatus() == -1) {
+                        if (o.getOrderStatus() == 3) {
                             Set<String> groupIds = o.getGroupsAndItemsMap().keySet();
                             for (String key : groupIds) {
                                 if (key.equals(groupId)) {
@@ -127,7 +131,7 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
                     adapter.setAllocatedOrder(true);
                     adapter.notifyDataSetChanged();
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
-                    tv_no.setText("Canceled:");
+                    tv_no.setText("Processing:");
                     Log.d(TAG, "check orderIdandItemsMap: " + orderIdandItemsMap.size() + orderIdandItemsMap);
                 }
             }

@@ -288,7 +288,6 @@ public class CustomerCheckoutDeliveryMethodFragment extends BottomSheetDialogFra
                         }
                     }
 
-
                     txvPKname.getEditText().setText(shipmentInfo.getReceiver());
                     txvPKphone.getEditText().setText(shipmentInfo.getPhone());
                 } else {

@@ -32,7 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class SellerGroupProcessedOrderFragment extends Fragment {
+
+public class SellerGroupReceivedOrderFragment extends Fragment {
 
     private TextView tv_no;
     private RecyclerView rv;
@@ -51,6 +52,10 @@ public class SellerGroupProcessedOrderFragment extends Fragment {
 
     private GroupDetailInventoryRecyclerAdapter adapter;
 
+    public SellerGroupReceivedOrderFragment() {
+    }
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,21 +64,15 @@ public class SellerGroupProcessedOrderFragment extends Fragment {
         orderIdandItemsMap = new HashMap<>();
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_seller_group_processed, container, false);
-
-        tv_no = view.findViewById(R.id.tv_group_order_processed);
-
-        rv = view.findViewById(R.id.rv_group_order_processed);
-
+        View view =  inflater.inflate(R.layout.fragment_seller_group_received_order, container, false);
+        tv_no = view.findViewById(R.id.tv_group_order_received);
+        rv = view.findViewById(R.id.rv_group_order_received);
         getViewModelData();
-
         getOrderData();
-
         return view;
     }
 
@@ -101,6 +100,7 @@ public class SellerGroupProcessedOrderFragment extends Fragment {
                     Log.d(TAG, "livemodel group: " + group);
                 }
             });
+
         }
     }
 
@@ -113,7 +113,7 @@ public class SellerGroupProcessedOrderFragment extends Fragment {
                     if (dataSnapshot != null) {
                         Order o = dataSnapshot.getValue(Order.class);
                         String orderId = dataSnapshot.getKey();
-                        if (o.getOrderStatus() == 3) {
+                        if (o.getOrderStatus() == 4) {
                             Set<String> groupIds = o.getGroupsAndItemsMap().keySet();
                             for (String key : groupIds) {
                                 if (key.equals(groupId)) {
@@ -131,7 +131,7 @@ public class SellerGroupProcessedOrderFragment extends Fragment {
                     adapter.setAllocatedOrder(true);
                     adapter.notifyDataSetChanged();
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
-                    tv_no.setText("Processed:");
+                    tv_no.setText("Canceled:");
                     Log.d(TAG, "check orderIdandItemsMap: " + orderIdandItemsMap.size() + orderIdandItemsMap);
                 }
             }

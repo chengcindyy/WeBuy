@@ -26,8 +26,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.nio.file.ClosedFileSystemException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
@@ -195,6 +199,15 @@ public class SellerOrderDetailFragment extends Fragment {
                     deliveryFee.setText("Delivery Fee: $CA" + String.format(Locale.getDefault(), "%.2f", shippingFee));
                     orderTotal.setText("Order total: $CA" + String.format(Locale.getDefault(), "%.2f", totalPrice));
                     Map<String, Map<String, Order.OrderItemInfo>> GroupsAndItemsMap = order.getGroupsAndItemsMap();
+
+                    List<Order.OrderItemInfo> flattenedList = new ArrayList<>();
+                    for (Map.Entry<String, Map<String, Order.OrderItemInfo>> groupEntry : GroupsAndItemsMap.entrySet()) {
+                        for (Map.Entry<String, Order.OrderItemInfo> productEntry : groupEntry.getValue().entrySet()) {
+                            flattenedList.add(productEntry.getValue());
+                        }
+                    }
+
+                    Log.d(TAG, "onDataChange: flattenedList" + flattenedList);
 
                 }
             }

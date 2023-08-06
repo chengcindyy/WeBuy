@@ -8,7 +8,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.csis4495_cmk.webuy.fragments.SellerGroupAllocatedOrderFragment;
 import com.csis4495_cmk.webuy.fragments.SellerGroupCanceledOrderFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupProcessedOrderFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupProcessingOrderFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupReceivedOrderFragment;
 import com.csis4495_cmk.webuy.fragments.SellerGroupToAllocateOrderFragment;
 
 public class SellerGroupDetailOrderListViewPagerAdapter extends FragmentStateAdapter {
@@ -33,11 +34,14 @@ public class SellerGroupDetailOrderListViewPagerAdapter extends FragmentStateAda
                 return new SellerGroupAllocatedOrderFragment();
 
             case 2:
-                return new SellerGroupProcessedOrderFragment();
+                return new SellerGroupProcessingOrderFragment();
 
             case 3:
-                return new SellerGroupCanceledOrderFragment();
+                return new SellerGroupReceivedOrderFragment();
 
+            case 4:
+                return new SellerGroupCanceledOrderFragment();
+                
             default:
                 return new SellerGroupToAllocateOrderFragment();
 
@@ -46,6 +50,6 @@ public class SellerGroupDetailOrderListViewPagerAdapter extends FragmentStateAda
 
     @Override
     public int getItemCount() {
-        return 4;
+        return 5;
     }
 }
