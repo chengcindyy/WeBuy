@@ -191,7 +191,6 @@ public class SellerOrderDetailFragment extends Fragment {
 
                     Map<String, String> productIdandGroupIdMap = new HashMap<>();
                     Map<String, Order.OrderItemInfo> orderItemInfoMap = new HashMap<>();
-//                    List<String> groupIds = new ArrayList<>(GroupsAndItemsMap.keySet());
                     for(Map.Entry<String, Map<String, Order.OrderItemInfo>> gIdEntry : GroupsAndItemsMap.entrySet()){
                         String gId = gIdEntry.getKey();
                         Map<String, Order.OrderItemInfo> productsMap = gIdEntry.getValue();

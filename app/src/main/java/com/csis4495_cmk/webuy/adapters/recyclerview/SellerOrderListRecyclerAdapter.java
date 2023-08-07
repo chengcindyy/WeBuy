@@ -100,6 +100,29 @@ public class SellerOrderListRecyclerAdapter extends RecyclerView.Adapter<SellerO
             public void onCancelled(@NonNull DatabaseError error) { /* None*/ }
         });
 
+        int orderStatus = order.getOrderStatus();
+        switch (orderStatus){
+            case -1:
+                holder.status.setText("Canceled");
+                break;
+            case 0 :
+                holder.status.setText("Pending");
+                break;
+            case 1 :
+                holder.status.setText("To Allocate");
+                break;
+            case 2 :
+                holder.status.setText("Allocated");
+                break;
+            case 3 :
+                holder.status.setText("Processing");
+                break;
+            case 4 :
+                holder.status.setText("Received");
+                break;
+        }
+
+
         holder.date.setText(simpleDateFormat.format(new Date(order.getOrderedTimestamp())));
         Double itemTotal = order.getCheckoutItemsTotal();
         Double orderTotal = order.getOrderTotalPrice();
@@ -134,7 +157,7 @@ public class SellerOrderListRecyclerAdapter extends RecyclerView.Adapter<SellerO
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView date, email, item_total, order_total;
+        TextView date, email, item_total, order_total, status;
         RecyclerView rv;
 
         public ViewHolder(@NonNull View itemView) {
@@ -144,6 +167,7 @@ public class SellerOrderListRecyclerAdapter extends RecyclerView.Adapter<SellerO
             rv = itemView.findViewById(R.id.rv_seller_order_card_group);
             item_total = itemView.findViewById(R.id.tv_seller_order_card_item_total);
             order_total = itemView.findViewById(R.id.tv_seller_order_card_order_total);
+            status = itemView.findViewById(R.id.tv_seller_order_card_status);
         }
     }
 

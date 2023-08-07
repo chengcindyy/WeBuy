@@ -94,19 +94,12 @@ public class SellerReceivedOrderListFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getOrderData();
-    }
-
-
     private void getOrderData() {
-        receivedOrders.clear();
-        orderIds.clear();
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                receivedOrders.clear();
+                orderIds.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Order order = dataSnapshot.getValue(Order.class);
                     String orderId = dataSnapshot.getKey();

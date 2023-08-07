@@ -189,9 +189,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     }
 
 
-
-
-
     private void search(String str) {
         Map<String, List<Inventory>> mInventoryMap = inventoryMap.entrySet()
                 .stream()
@@ -345,7 +342,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                 List<DownloadTaskWithId> tasks = new ArrayList<>();
                 if (snapshot.exists()){
                     for (DataSnapshot groupSnapshot : snapshot.getChildren()){
-
                         Group group = groupSnapshot.getValue(Group.class);
                         // Check sellerId to only display a seller's groups
                         sellerId = group.getSellerId();
@@ -386,7 +382,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                                 status = group.getStatus();
                                 createNewInventory(status, groupId);
                             }
-
 
                             // Check group status for filter
                             groupTypeMap.put(productId, group.getGroupType());
