@@ -6,23 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cancel_grey"
-    tools:context=".fragments.CustomerGroupDetailFragment">
+    tools:context=".fragments.CustomerGroupDetailFragment"
+    android:id="@+id/constraintLayout">
 
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:id="@+id/parentRelative"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <!-- Swipe images and saved button -->
             <androidx.viewpager2.widget.ViewPager2
@@ -47,9 +42,6 @@
                 android:checked="false"
                 android:textOff=""
                 android:textOn="" />
-
-
-
 
             <!-- Group name -->
             <TextView
@@ -152,15 +144,18 @@
 
             </LinearLayout>
 
-
             <!--  Store image and name-->
+
+            <!-- Group style-->
             <LinearLayout
                 android:id="@+id/linearLayout8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_below="@+id/linearLayout7"
-                android:background="@color/white">
+
+                android:layout_marginTop="0dp"
+                android:background="@color/white"
+                android:orientation="horizontal">
 
                 <!--    seller pic, store name, store rating    -->
 
@@ -189,7 +184,6 @@
 
             </LinearLayout>
 
-            <!-- Group style-->
             <TextView
                 android:id="@+id/tv_group_detail_group_style"
                 android:layout_width="wrap_content"
@@ -264,7 +258,7 @@
             <TextView
                 android:id="@+id/tv_detail_group_description"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
                 android:paddingHorizontal="10dp"
@@ -279,8 +273,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_below="@+id/tv_detail_group_description"
-                android:background="@color/white"
-                android:layout_alignParentBottom="true" />
+                android:background="@color/white" />
 
             <!--    fab- add to cart(then pop up, style, amount)    -->
             <Button

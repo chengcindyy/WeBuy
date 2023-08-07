@@ -118,37 +118,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         setTabLayout(tabLayout);
     }
 
-//    private void onOrderWasCreated() {
-//        // Go to Order table and find groupsAndItemsMap
-//        DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("Order");
-//        orderRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                for (DataSnapshot orderSnapshot : snapshot.getChildren()){
-//                    Order order = orderSnapshot.getValue(Order.class);
-//                    Map<String, Map<String, Order.OrderItemInfo >> groupsAndItemsMap = order.getGroupsAndItemsMap();
-//
-//                    for (String groupKey : groupsAndItemsMap.keySet()){
-//                        Log.d("Test key", groupKey);
-//                        Map<String, Order.OrderItemInfo> innerMap = groupsAndItemsMap.get(groupKey);
-//
-//                        for (String innerKey : innerMap.keySet()) {
-//                            Order.OrderItemInfo itemInfo = innerMap.get(innerKey);
-//
-//                            Log.d("Test inner key and value", "Key: " + innerKey + ", Value: " + itemInfo.toString());
-//                        }
-//                    }
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
-
     private void search(String str) {
         Map<String, List<Inventory>> mInventoryMap = inventoryMap.entrySet()
                 .stream()
@@ -176,7 +145,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
 
     private void setInventoryRecyclerViewList() {
         DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
-        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        inventoryRef.addValueEventListener (new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 inventoryMap.clear();
