@@ -285,6 +285,10 @@
         android:id="@+id/sellerOrderDetailFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerOrderDetailFragment"
         android:label="fragment_seller_order_detail"
-        tools:layout="@layout/fragment_seller_order_detail" />
+        tools:layout="@layout/fragment_seller_order_detail" >
+        <action
+            android:id="@+id/action_sellerOrderDetailFragment_to_sellerGroupList"
+            app:destination="@id/sellerGroupList" />
+    </fragment>
 
 </navigation>

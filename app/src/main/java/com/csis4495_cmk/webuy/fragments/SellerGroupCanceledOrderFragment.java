@@ -65,10 +65,15 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_seller_group_canceled_order, container, false);
+
         tv_no = view.findViewById(R.id.tv_group_order_canceled);
+
         rv = view.findViewById(R.id.rv_group_order_canceled);
+
         getViewModelData();
+
         getOrderData();
+
         return view;
     }
 
@@ -114,7 +119,16 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
                             for (String key : groupIds) {
                                 if (key.equals(groupId)) {
                                     Map<String, Order.OrderItemInfo> orderItemList = o.getGroupsAndItemsMap().get(key);
-                                    orderIdandItemsMap.put(orderId, orderItemList);
+                                    Map<String, Order.OrderItemInfo> allAllocatedItems = new HashMap<>();
+                                    for (Map.Entry<String, Order.OrderItemInfo> entry : orderItemList.entrySet()) {
+                                        if (entry.getValue().isAllocated() == true) {
+                                            allAllocatedItems.put(entry.getKey(), entry.getValue());
+                                        }
+                                    }
+                                    Log.d(TAG, "allAllocatedItems: " + allAllocatedItems);
+                                    if (!allAllocatedItems.isEmpty()) {
+                                        orderIdandItemsMap.put(orderId, allAllocatedItems);
+                                    }
                                 }
                             }
                         }

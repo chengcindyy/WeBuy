@@ -336,23 +336,6 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                 if (inventories != null) {
                     inventoryList.clear();
                     inventoryList = inventories;
-//                    for (Inventory i : inventories) {
-//                        if (i.getInStock() != 0) {
-//                            outOfStock = false;
-//                            break;
-//                        }else{
-//                            outOfStock = true;
-//                        }
-//                    }
-//                    if (outOfStock == true) {
-//                        Log.d(TAG, "check btnAllocate visibility: outOfStock " + outOfStock);
-//                        btnAllocate.setVisibility(View.VISIBLE);
-//                        btnAllocate.setText("Out of stock");
-//                        btnAllocate.setEnabled(false);
-//                    } else {
-//                        btnAllocate.setVisibility(View.VISIBLE);
-//                        btnAllocate.setEnabled(true);
-//                    }
                     Log.d(TAG, "livemodel inventory: " + inventoryList);
                 }
             });
@@ -389,7 +372,6 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
 
     public void getOrderData() {
         orderIdandItemsMap.clear();
-
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

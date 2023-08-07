@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.SellerPendingOrderListFragment">
+    tools:context=".fragments.SellerToAllocateOrderListFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,10 +12,10 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/tv_seller_order_list_no_pending"
+            android:id="@+id/tv_seller_order_list_no_to_allocate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="There are no pending order"
+            android:text="There are no to allocate orders"
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -24,7 +24,7 @@
             android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_seller_order_list_pending"
+            android:id="@+id/rv_seller_order_list_to_allocate"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"

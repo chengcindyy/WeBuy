@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,6 +54,7 @@ public class SellerOrderDetailFragment extends Fragment {
     private Button btnPrevious, btnNext;
     RecyclerView rv;
 
+    private NavController navController;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm ");
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference dBRef = firebaseDatabase.getReference();
@@ -81,6 +85,8 @@ public class SellerOrderDetailFragment extends Fragment {
             Log.d(TAG, "onCreateView: detail_orderId" + orderId);
         }
 
+        navController = NavHostFragment.findNavController(SellerOrderDetailFragment.this);
+
         email = view.findViewById(R.id.tv_seller_order_detail_email);
         receiver = view.findViewById(R.id.tv_seller_order_detail_receiver);
         status = view.findViewById(R.id.tv_seller_order_detail_status);
@@ -100,93 +106,6 @@ public class SellerOrderDetailFragment extends Fragment {
 
         getOrderData();
 
-        switch (orderStatus){
-            //Order status = canceled
-            case -1:
-                status.setText("Canceled");
-
-                btnPrevious.setEnabled(false);
-                btnPrevious.setVisibility(View.GONE);
-
-                btnNext.setEnabled(false);
-                btnNext.setVisibility(View.GONE);
-                break;
-
-            //Order status = pending
-            case 0:
-                status.setText("Pending");
-
-                btnPrevious.setEnabled(true);
-                btnPrevious.setVisibility(View.VISIBLE);
-                btnPrevious.setText("CANCEL ORDER");
-                btnPrevious.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openCancelDialog();
-                    }
-                });
-
-                btnNext.setEnabled(true);
-                btnPrevious.setVisibility(View.VISIBLE);
-                btnNext.setText("Accept Order");
-                btnNext.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        DatabaseReference ref = orderRef.child(orderId);
-                        ref.child("orderStatus").setValue(1);
-                        status.setText("To Allocate");
-                        getOrderData();
-                    }
-                });
-                break;
-
-            //Order status = To Allocate
-            case 1:
-                status.setText("To Allocate");
-                btnPrevious.setEnabled(true);
-                btnPrevious.setVisibility(View.VISIBLE);
-                btnNext.setText("Cancel Order");
-
-                btnNext.setEnabled(true);
-                btnPrevious.setVisibility(View.VISIBLE);
-                btnNext.setText("To Allocate item");
-                break;
-
-            //Order status = Allocated
-            case 2:
-                status.setText("Allocated");
-
-                btnPrevious.setEnabled(false);
-                btnPrevious.setVisibility(View.GONE);
-
-                btnNext.setEnabled(true);
-                btnPrevious.setVisibility(View.VISIBLE);
-                btnNext.setText("Process the order");
-                break;
-
-            //Order status = Processing
-            case 3:
-                status.setText("Processing");
-
-                btnPrevious.setEnabled(false);
-                btnPrevious.setVisibility(View.GONE);
-
-                btnNext.setEnabled(true);
-                btnNext.setText("Complete the order");
-                break;
-
-            //Order status = Received
-            case 4:
-                status.setText("Received");
-
-
-                btnPrevious.setEnabled(false);
-                btnPrevious.setVisibility(View.GONE);
-
-                btnNext.setEnabled(false);
-                btnPrevious.setVisibility(View.GONE);
-                break;
-        }
         return view;
     }
 
@@ -226,7 +145,7 @@ public class SellerOrderDetailFragment extends Fragment {
                     });
                     receiver.setText("Name: " + order.getReceiverName());
                     orderStatus = order.getOrderStatus();
-
+                    statusAction(orderStatus);
                     email.setText(customerEmail);
                     if(order.getPhone() !=null){
                         phone.setText("Phone: " + order.getPhone());
@@ -295,6 +214,116 @@ public class SellerOrderDetailFragment extends Fragment {
 
             }
         });
+    }
 
+    private void statusAction(int s){
+        switch (orderStatus){
+            //Order status = canceled
+            case -1:
+                status.setText("Canceled");
+
+                btnPrevious.setEnabled(false);
+                btnPrevious.setVisibility(View.GONE);
+
+                btnNext.setEnabled(false);
+                btnNext.setVisibility(View.GONE);
+                break;
+
+            //Order status = pending
+            case 0:
+                status.setText("Pending");
+
+                btnPrevious.setEnabled(true);
+                btnPrevious.setVisibility(View.VISIBLE);
+                btnPrevious.setText("CANCEL ORDER");
+                btnPrevious.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openCancelDialog();
+                    }
+                });
+
+                btnNext.setEnabled(true);
+                btnPrevious.setVisibility(View.VISIBLE);
+                btnNext.setText("Accept Order");
+                btnNext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DatabaseReference ref = orderRef.child(orderId);
+                        ref.child("orderStatus").setValue(1);
+                        status.setText("To Allocate");
+                        getOrderData();
+                    }
+                });
+                break;
+
+            //Order status = To Allocate
+            case 1:
+                status.setText("To Allocate");
+
+                btnPrevious.setEnabled(false);
+                btnPrevious.setVisibility(View.GONE);
+
+                btnNext.setEnabled(true);
+                btnNext.setVisibility(View.VISIBLE);
+                btnNext.setText("To Allocate item");
+                btnNext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Navigation.findNavController(getView()).navigate(R.id.action_sellerOrderDetailFragment_to_sellerGroupList);
+                    }
+                });
+                break;
+
+            //Order status = Allocated
+            case 2:
+                status.setText("Allocated");
+
+                btnPrevious.setEnabled(false);
+                btnPrevious.setVisibility(View.GONE);
+
+                btnNext.setEnabled(true);
+                btnNext.setVisibility(View.VISIBLE);
+                btnNext.setText("Process the order");
+                btnNext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DatabaseReference ref = orderRef.child(orderId);
+                        ref.child("orderStatus").setValue(3);
+//                        status.setText("Cancled");
+                    }
+                });
+                break;
+
+            //Order status = Processing
+            case 3:
+                status.setText("Processing");
+
+                btnPrevious.setEnabled(false);
+                btnPrevious.setVisibility(View.GONE);
+
+                btnNext.setEnabled(true);
+                btnNext.setText("Mark as received");
+                btnNext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DatabaseReference ref = orderRef.child(orderId);
+                        ref.child("orderStatus").setValue(4);
+//                        status.setText("Cancled");
+                    }
+                });
+                break;
+
+            //Order status = Received
+            case 4:
+                status.setText("Received");
+
+                btnPrevious.setEnabled(false);
+                btnPrevious.setVisibility(View.GONE);
+
+                btnNext.setEnabled(false);
+                btnNext.setVisibility(View.GONE);
+                break;
+        }
     }
 }

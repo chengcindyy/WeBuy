@@ -1,38 +1,39 @@
 package com.csis4495_cmk.webuy.fragments;
 
-import static android.content.ContentValues.TAG;
+        import static android.content.ContentValues.TAG;
 
-import android.os.Bundle;
+        import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+        import androidx.annotation.NonNull;
+        import androidx.fragment.app.Fragment;
+        import androidx.navigation.NavController;
+        import androidx.navigation.Navigation;
+        import androidx.navigation.fragment.NavHostFragment;
+        import androidx.recyclerview.widget.LinearLayoutManager;
+        import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+        import android.util.Log;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.TextView;
 
-import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.recyclerview.SellerOrderListRecyclerAdapter;
-import com.csis4495_cmk.webuy.models.Order;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+        import com.csis4495_cmk.webuy.R;
+        import com.csis4495_cmk.webuy.adapters.recyclerview.SellerOrderListRecyclerAdapter;
+        import com.csis4495_cmk.webuy.models.Order;
+        import com.google.firebase.auth.FirebaseAuth;
+        import com.google.firebase.auth.FirebaseUser;
+        import com.google.firebase.database.DataSnapshot;
+        import com.google.firebase.database.DatabaseError;
+        import com.google.firebase.database.DatabaseReference;
+        import com.google.firebase.database.FirebaseDatabase;
+        import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.List;
+        import java.util.ArrayList;
+        import java.util.List;
 
-public class SellerPendingOrderListFragment extends Fragment {
+
+public class SellerCanceledOrderListFragment extends Fragment {
 
     private RecyclerView rv;
 
@@ -52,7 +53,7 @@ public class SellerPendingOrderListFragment extends Fragment {
 
     private String sellerId;
 
-    private List<Order> pendingOrders = new ArrayList<>();
+    private List<Order> receivedOrders = new ArrayList<>();
 
     private List<String> orderIds = new ArrayList<>();
 
@@ -60,20 +61,17 @@ public class SellerPendingOrderListFragment extends Fragment {
 
     private SellerOrderListRecyclerAdapter adapter;
 
-    public SellerPendingOrderListFragment() {
+
+    public SellerCanceledOrderListFragment() {
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_seller_order_pending_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_seller_canceled_order_list, container, false);
 
         auth = FirebaseAuth.getInstance();
         firebaseUser = auth.getCurrentUser();
@@ -85,11 +83,11 @@ public class SellerPendingOrderListFragment extends Fragment {
         dBRef = firebaseDatabase.getReference();
         orderRef = dBRef.child("Order");
 
-        navController = NavHostFragment.findNavController(SellerPendingOrderListFragment.this);
+        navController = NavHostFragment.findNavController(SellerCanceledOrderListFragment.this);
 
-        rv = view.findViewById(R.id.rv_seller_order_list_pending);
+        rv = view.findViewById(R.id.rv_seller_order_list_canceled);
 
-        tv_no = view.findViewById(R.id.tv_seller_order_list_no_pending);
+        tv_no = view.findViewById(R.id.tv_seller_order_list_no_canceled);
 
         getOrderData();
 
@@ -103,7 +101,7 @@ public class SellerPendingOrderListFragment extends Fragment {
     }
 
     private void getOrderData() {
-        pendingOrders.clear();
+        receivedOrders.clear();
         orderIds.clear();
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -111,19 +109,19 @@ public class SellerPendingOrderListFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Order order = dataSnapshot.getValue(Order.class);
                     String orderId = dataSnapshot.getKey();
-                    if (order.getOrderStatus() == 0 && order.getSellerId().equals(sellerId)) {
-                        Log.d(TAG, "onDataChange: pendingOrders" + pendingOrders);
-                        pendingOrders.add(order);
+                    if (order.getOrderStatus() == -1 && order.getSellerId().equals(sellerId)) {
+                        receivedOrders.add(order);
+                        Log.d(TAG, "onDataChange: allocatedOrders" + receivedOrders);
                         orderIds.add(orderId);
                     }
                 }
-                if (pendingOrders.isEmpty()) {
+                if (receivedOrders.isEmpty()) {
                     tv_no.setVisibility(View.VISIBLE);
                     rv.setVisibility(View.GONE);
                 } else {
                     tv_no.setVisibility(View.GONE);
                     rv.setVisibility(View.VISIBLE);
-                    adapter = new SellerOrderListRecyclerAdapter(pendingOrders, orderIds);
+                    adapter = new SellerOrderListRecyclerAdapter(receivedOrders, orderIds);
                     rv.setAdapter(adapter);
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
                     adapter.setOnItemClickListener(new SellerOrderListRecyclerAdapter.OnItemClickListener() {
@@ -145,10 +143,12 @@ public class SellerPendingOrderListFragment extends Fragment {
                     });
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
+
     }
 }

@@ -131,7 +131,7 @@ public class SellerGroupReceivedOrderFragment extends Fragment {
                     adapter.setAllocatedOrder(true);
                     adapter.notifyDataSetChanged();
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
-                    tv_no.setText("Canceled:");
+                    tv_no.setText("Received:");
                     Log.d(TAG, "check orderIdandItemsMap: " + orderIdandItemsMap.size() + orderIdandItemsMap);
                 }
             }

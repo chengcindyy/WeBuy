@@ -113,7 +113,7 @@ public class SellerGroupAllocatedOrderFragment extends Fragment {
                     if (dataSnapshot != null) {
                         Order o = dataSnapshot.getValue(Order.class);
                         String orderId = dataSnapshot.getKey();
-                        if (o.getOrderStatus() != 3 && o.getOrderStatus() != 4 && o.getOrderStatus() != -1) {
+                        if (o.getOrderStatus() == 2 ) {
                             Set<String> groupIds = o.getGroupsAndItemsMap().keySet();
                             for (String key : groupIds) {
                                 if (key.equals(groupId)) {

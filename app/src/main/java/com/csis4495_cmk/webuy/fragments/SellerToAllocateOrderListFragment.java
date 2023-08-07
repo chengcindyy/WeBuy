@@ -32,7 +32,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SellerPendingOrderListFragment extends Fragment {
+
+public class SellerToAllocateOrderListFragment extends Fragment {
 
     private RecyclerView rv;
 
@@ -52,7 +53,7 @@ public class SellerPendingOrderListFragment extends Fragment {
 
     private String sellerId;
 
-    private List<Order> pendingOrders = new ArrayList<>();
+    private List<Order> toAllocateOrders = new ArrayList<>();
 
     private List<String> orderIds = new ArrayList<>();
 
@@ -60,8 +61,9 @@ public class SellerPendingOrderListFragment extends Fragment {
 
     private SellerOrderListRecyclerAdapter adapter;
 
-    public SellerPendingOrderListFragment() {
-        // Required empty public constructor
+
+    public SellerToAllocateOrderListFragment(){
+
     }
 
     @Override
@@ -73,7 +75,7 @@ public class SellerPendingOrderListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_seller_order_pending_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_seller_to_allocate_order, container, false);
 
         auth = FirebaseAuth.getInstance();
         firebaseUser = auth.getCurrentUser();
@@ -85,11 +87,11 @@ public class SellerPendingOrderListFragment extends Fragment {
         dBRef = firebaseDatabase.getReference();
         orderRef = dBRef.child("Order");
 
-        navController = NavHostFragment.findNavController(SellerPendingOrderListFragment.this);
+        navController = NavHostFragment.findNavController(SellerToAllocateOrderListFragment.this);
 
-        rv = view.findViewById(R.id.rv_seller_order_list_pending);
+        rv = view.findViewById(R.id.rv_seller_order_list_to_allocate);
 
-        tv_no = view.findViewById(R.id.tv_seller_order_list_no_pending);
+        tv_no = view.findViewById(R.id.tv_seller_order_list_no_to_allocate);
 
         getOrderData();
 
@@ -102,8 +104,9 @@ public class SellerPendingOrderListFragment extends Fragment {
         getOrderData();
     }
 
+
     private void getOrderData() {
-        pendingOrders.clear();
+        toAllocateOrders.clear();
         orderIds.clear();
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -111,19 +114,19 @@ public class SellerPendingOrderListFragment extends Fragment {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Order order = dataSnapshot.getValue(Order.class);
                     String orderId = dataSnapshot.getKey();
-                    if (order.getOrderStatus() == 0 && order.getSellerId().equals(sellerId)) {
-                        Log.d(TAG, "onDataChange: pendingOrders" + pendingOrders);
-                        pendingOrders.add(order);
+                    if (order.getOrderStatus() == 1 && order.getSellerId().equals(sellerId)) {
+                        toAllocateOrders.add(order);
+                        Log.d(TAG, "onDataChange: toAllocateOrders" + toAllocateOrders);
                         orderIds.add(orderId);
                     }
                 }
-                if (pendingOrders.isEmpty()) {
+                if (toAllocateOrders.isEmpty()) {
                     tv_no.setVisibility(View.VISIBLE);
                     rv.setVisibility(View.GONE);
                 } else {
                     tv_no.setVisibility(View.GONE);
                     rv.setVisibility(View.VISIBLE);
-                    adapter = new SellerOrderListRecyclerAdapter(pendingOrders, orderIds);
+                    adapter = new SellerOrderListRecyclerAdapter(toAllocateOrders, orderIds);
                     rv.setAdapter(adapter);
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
                     adapter.setOnItemClickListener(new SellerOrderListRecyclerAdapter.OnItemClickListener() {
@@ -150,5 +153,6 @@ public class SellerPendingOrderListFragment extends Fragment {
 
             }
         });
+
     }
 }
