@@ -43,7 +43,7 @@ public class SellerInventoryListRecyclerAdapter extends RecyclerView.Adapter<Sel
         this.displayItemsMap = inventoryMap;
         this.allCoverImgsList = allCoverImgsList;
         this.productIds = new ArrayList<>(displayItemsMap.keySet());
-        notifyDataSetChanged();
+
     }
 
     @NonNull

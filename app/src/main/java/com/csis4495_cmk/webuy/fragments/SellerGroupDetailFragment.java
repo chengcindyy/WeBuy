@@ -7,7 +7,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -42,7 +41,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -365,7 +363,7 @@ public class SellerGroupDetailFragment extends Fragment implements OnGroupOrderI
                         gInventory.setText("Inventory: " + Integer.toString(inventoryList.get(0).getInStock()));
                         gOrdered.setText("Ordered: " + Integer.toString(inventoryList.get(0).getOrdered()));
                         gAllocated.setText("Allocated: " + Integer.toString(inventoryList.get(0).getAllocated()));
-                        gToAllocate.setText("To Allocate: "+ Integer.toString(inventoryList.get(0).getToAllocated()));
+                        gToAllocate.setText("To Allocate: "+ Integer.toString(inventoryList.get(0).getToAllocate()));
                     }
                     else{
                         styleAdapter.setInventoryList(inventoryList);

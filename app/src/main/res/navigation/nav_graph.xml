@@ -45,7 +45,16 @@
         android:id="@+id/customerGroupDetailFragment"
         android:name="com.csis4495_cmk.webuy.fragments.CustomerGroupDetailFragment"
         android:label="fragment_customer_group_detail"
-        tools:layout="@layout/fragment_customer_group_detail" >
+        tools:layout="@layout/fragment_customer_group_detail">
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="webuy://product/view?groupId={groupId}&amp;group={group}" />
+        <argument
+            android:name="groupId"
+            app:argType="string" />
+        <argument
+            android:name="group"
+            app:argType="string" />
     </fragment>
 
     <fragment

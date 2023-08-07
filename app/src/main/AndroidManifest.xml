@@ -62,11 +62,22 @@
 
         <activity
             android:name=".activities.CustomerHomePageActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="webuy"
+                    android:host="product"
+                    android:pathPrefix="/view" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider579684034312882"
             android:exported="true" />
+
     </application>
 
 

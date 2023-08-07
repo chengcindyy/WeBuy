@@ -7,6 +7,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import android.os.Bundle;
 
 import com.csis4495_cmk.webuy.R;
+import com.facebook.FacebookSdk;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_user);
         NavController navController = navHostFragment.getNavController();
         navController.navigate(R.id.userLoginFragment);
-
     }
 
     public void saveData(int role) {

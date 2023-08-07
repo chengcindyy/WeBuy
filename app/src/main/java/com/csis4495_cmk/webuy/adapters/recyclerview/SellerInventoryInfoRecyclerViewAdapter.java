@@ -15,13 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.fragments.SellerInventoryStockManagementFragment;
-import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,17 +59,17 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
         holder.txvStyleName.setText(inventory.getInventoryName());
         holder.txvToSell.setText(String.valueOf(inventory.getToSell()));
         holder.txvOrdered.setText(String.valueOf(inventory.getOrdered()));
-        holder.txvInStock.setText(String.valueOf(inventory.getInStock()));
         holder.txvAllocated.setText(String.valueOf(inventory.getAllocated()));
-        holder.txvToAllocate.setText(String.valueOf(inventory.getToAllocated()));
+        holder.txvToAllocate.setText(String.valueOf(inventory.getToAllocate()));
         holder.txvToOrder.setText(String.valueOf(inventory.getToOrder()));
+        holder.txvInStock.setText(String.valueOf(inventory.getInStock()));
+        // Open button sheet to do stock-in and stock-out
         holder.btnStockMgmt.setOnClickListener(view -> {
             String inventoryId = inventory.getInventoryId();
             String styleName = inventory.getInventoryName();
             int inStock = inventory.getInStock(); // Current stock
             int ordered = inventory.getOrdered(); // Require order
             int toOrder = inventory.getToOrder(); // Still need
-            Log.d("test content", "inventoryId: "+inventoryId+"Style name: "+ styleName+ "inStock: "+ inStock+"ordered: "+ ordered+"toOrder: "+ toOrder);
 
             // Create Button menu
             SellerInventoryStockManagementFragment inventoryFragment = SellerInventoryStockManagementFragment.newInstance(inventoryId, styleName, inStock, ordered, toOrder);
@@ -83,7 +77,9 @@ public class SellerInventoryInfoRecyclerViewAdapter extends RecyclerView.Adapter
             inventoryFragment.show(fragmentManager, "Inventory Management Frag show");
             inventoryFragment.setOnStockButtonClickListener(stockListener);
         });
+        // To open group detail page in order to do allocate
         holder.btnAllocate.setOnClickListener(view -> buttonListener.onAllocateClicked(inventory.getGroupId()));
+        // Restore all inStock amount to product's inStock and then this number will become 0
         holder.btnRestore.setOnClickListener(view -> {
             String inventoryId = inventory.getInventoryId();
             int restoreAmount = inventory.getInStock();

@@ -23,6 +23,7 @@ import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.recyclerview.SellerInventoryListRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
+import com.csis4495_cmk.webuy.models.Order;
 import com.csis4495_cmk.webuy.models.Product;
 import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.csis4495_cmk.webuy.viewmodels.SharedInventoryViewModel;
@@ -32,6 +33,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -66,6 +68,9 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     FirebaseAuth auth = FirebaseAuth.getInstance();
     DatabaseReference reference;
     SharedInventoryViewModel inventoryViewModel;
+    final DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("Order");
+    final DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
+    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -116,38 +121,76 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         // TabLayout
         tabLayout = view.findViewById(R.id.tabLayout_filter);
         setTabLayout(tabLayout);
+
+        checkToAllocateStatusListener();
     }
 
-//    private void onOrderWasCreated() {
-//        // Go to Order table and find groupsAndItemsMap
-//        DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("Order");
-//        orderRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                for (DataSnapshot orderSnapshot : snapshot.getChildren()){
-//                    Order order = orderSnapshot.getValue(Order.class);
-//                    Map<String, Map<String, Order.OrderItemInfo >> groupsAndItemsMap = order.getGroupsAndItemsMap();
-//
-//                    for (String groupKey : groupsAndItemsMap.keySet()){
-//                        Log.d("Test key", groupKey);
-//                        Map<String, Order.OrderItemInfo> innerMap = groupsAndItemsMap.get(groupKey);
-//
-//                        for (String innerKey : innerMap.keySet()) {
-//                            Order.OrderItemInfo itemInfo = innerMap.get(innerKey);
-//
-//                            Log.d("Test inner key and value", "Key: " + innerKey + ", Value: " + itemInfo.toString());
-//                        }
-//                    }
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
+    private void checkToAllocateStatusListener() {
+        orderRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    if (dataSnapshot != null){
+                        Order order = dataSnapshot.getValue(Order.class);
+                        // Filter current seller's products
+                        String sellerId = order.getSellerId();
+                        if (sellerId.equals(firebaseUser.getUid())){
+                            String productStyleKey = "";
+                            boolean isAllocated = false;
+                            int orderAmount = 0;
+                            Map<String, Map<String, Order.OrderItemInfo>> groupsAndItemsMap = order.getGroupsAndItemsMap();
+                            for (Map.Entry<String, Map<String, Order.OrderItemInfo>> groupEntry : groupsAndItemsMap.entrySet()) {
+                                Map<String, Order.OrderItemInfo> innerMap = groupEntry.getValue();
+                                for (Map.Entry<String, Order.OrderItemInfo> entry : innerMap.entrySet()) {
+                                    String orderProductId = entry.getKey();
+                                    Order.OrderItemInfo orderItemInfo = entry.getValue();
+                                    isAllocated = orderItemInfo.isAllocated();
+                                    productStyleKey = orderProductId.split("p___")[1];
+                                    orderAmount = orderItemInfo.getOrderAmount();
+                                }
+                                updateToAllocateData(productStyleKey, isAllocated, orderAmount);
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void updateToAllocateData(String psId, boolean isAllocated, int orderAmount) {
+        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Fill the inventoryMap (this is for all products).
+                for (DataSnapshot inventorySnapshot : snapshot.getChildren()) {
+                    Inventory inventory = inventorySnapshot.getValue(Inventory.class);
+                    Log.d("Test allocate number", " productStyleKey: "+ inventory.getProductStyleKey());
+                    Log.d("Test allocate number", " Passed productStyleKey: "+ psId + "allocated: "+ isAllocated);
+                    if (inventory.getProductStyleKey().equals(psId) && isAllocated == false){
+                        int currentAllocateNum = inventory.getToAllocate();
+                        int newToAllocate = currentAllocateNum + orderAmount;
+                        inventoryRef.child(inventorySnapshot.getKey()).child("toAllocate").setValue(newToAllocate);
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
+
+
 
     private void search(String str) {
         Map<String, List<Inventory>> mInventoryMap = inventoryMap.entrySet()
@@ -175,8 +218,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     }
 
     private void setInventoryRecyclerViewList() {
-        DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
-        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        inventoryRef.addValueEventListener (new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 inventoryMap.clear();
@@ -249,7 +291,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
             String productStyleKey;
 
             if (styleId != null && !styleId.isEmpty()) {
-                productStyleKey = productId + "_" + styleId;
+                productStyleKey = productId + "___" + styleId;
             } else {
                 productStyleKey = productId;
             }

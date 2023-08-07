@@ -61,6 +61,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
     private Boolean isChecked;
     private List<Wishlist> wishlistList;
     private String category;
+
     public CustomerHomeGroupsFragment() {
 
     }
@@ -151,13 +152,15 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
             }
         });
         // Search
-        doSearch();
 
+        doSearch();
     }
 
     private void doSearch() {
-        searchedMap.clear();
+
         CustomerHomeFilterViewModel model = new ViewModelProvider(requireActivity()).get(CustomerHomeFilterViewModel.class);
+        searchedMap.clear();
+
         // Search by keywords
         model.getKeywords().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -352,6 +355,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
         });
 
     }
+
 
     private void checkGroupTimestamp(String groupId, Group group, int status) {
         //time - change group status

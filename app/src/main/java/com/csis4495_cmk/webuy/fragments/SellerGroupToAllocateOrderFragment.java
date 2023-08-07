@@ -146,29 +146,41 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                         String styleId;
                         String pSplit = "p___";
                         String sSplit = "s___";
-                        String order_style_key;
+                        String order_style_key = "";
 
                         // Iterate through the selected items
                         for (String pid_sid : selectedItemsMap.keySet()) {
                             item = orderItemInfoMap.get(pid_sid);
                             Integer orderAmount = item.getOrderAmount();
+                            Log.d(TAG, "pid_sid: "+pid_sid);
                             Log.d(TAG, "Allocate click: orderAmount: " + Integer.toString(orderAmount));
 
-                            if (!pid_sid.contains(sSplit)) {
-                                productId = pid_sid.split(pSplit)[1].split(sSplit)[0];
+                            String[] afterPSplit = pid_sid.split(pSplit);
+                            if (afterPSplit.length > 1) {
+                                String[] afterSSplit = afterPSplit[1].split(sSplit);
+
+                                productId = afterSSplit[0];
                                 order_style_key = productId;
-                                Log.d(TAG, "Allocate click: productId_styleId: " + order_style_key);
-                            } else {
-                                productId = pid_sid.split(pSplit)[1].split(sSplit)[0];
-                                styleId = pid_sid.split(pSplit)[1].split(sSplit)[1];
-                                order_style_key = productId + "_" + styleId;
-                                Log.d(TAG, "Allocate click: productId_styleId: " + order_style_key);
+                                if (afterSSplit.length > 1) {
+                                    styleId = afterSSplit[1];
+                                    order_style_key = productId + "___" + styleId;
+                                }
                             }
+//                            if (!pid_sid.contains(sSplit)) {
+//                                productId = pid_sid.split(pSplit)[1].split(sSplit)[0];
+//                                order_style_key = productId;
+//                                Log.d(TAG, "Allocate click: productId_styleId: " + order_style_key);
+//                            } else {
+//                                productId = pid_sid.split(pSplit)[1].split(sSplit)[0];
+//                                styleId = pid_sid.split(pSplit)[1].split(sSplit)[1];
+//                                order_style_key = productId + "___" + styleId;
+//                                Log.d(TAG, "Allocate click: productId_styleId: " + order_style_key);
+//                            }
                             for (Inventory i : tempInventoryList) {
                                 if (i.getProductStyleKey().contains(order_style_key)) {
                                     Log.d(TAG, "Allocate click: inventory name: " + i.getInventoryTitle());
                                     Integer oldInStock = i.getInStock();
-                                    Integer oldToAllocated = i.getToAllocated();
+                                    Integer oldToAllocated = i.getToAllocate();
                                     Integer oldAllocated = i.getAllocated();
                                     Log.d(TAG, "Allocate click: inventory in stock Before: " + Integer.toString(oldInStock));
                                     Log.d(TAG, "Allocate click: inventory to allocated Before: " + Integer.toString(oldToAllocated));
@@ -188,10 +200,10 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                                         Log.d(TAG, "Allocate click: inventory to allocated After: " + Integer.toString(newToAllocated));
                                         Log.d(TAG, "Allocate click: inventory allocated After: " + Integer.toString(newAllocated));
                                         i.setInStock(newInStock);
-                                        i.setToAllocated(newToAllocated);
+                                        i.setToAllocate(newToAllocated);
                                         i.setAllocated(newAllocated);
                                         Log.d(TAG, "Allocate click: inventory i..getInStock: " + Integer.toString(i.getInStock()));
-                                        Log.d(TAG, "Allocate click: inventory i.getToAllocated: " + Integer.toString(i.getToAllocated()));
+                                        Log.d(TAG, "Allocate click: inventory i.getToAllocated: " + Integer.toString(i.getToAllocate()));
                                         Log.d(TAG, "Allocate click: inventory i.getAllocated: " + Integer.toString(i.getAllocated()));
                                         toUpdateInventory.add(i);
                                         ArrayList<String> addedOrderItems = toUpdateOrder.getOrDefault(orderId, new ArrayList<>());
@@ -269,7 +281,7 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                             String psKey = i.getProductStyleKey();
                             Integer inSotck = i.getInStock();
                             Integer allocated = i.getAllocated();
-                            Integer toAllocated = i.getToAllocated();
+                            Integer toAllocated = i.getToAllocate();
                             if (psKey.equals(value)) {
                                 DatabaseReference toUpdateInventoryRef = FirebaseDatabase.getInstance().getReference("Inventory").child(inventoryId);
                                 Map<String, Object> toUpdates = new HashMap<>();
