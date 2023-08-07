@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.ProductStyle;
-import com.csis4495_cmk.webuy.viewmodels.SharedGroupInventoryListViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -127,7 +126,7 @@ public class SellerGroupDetailStyleListRecyclerAdapter extends RecyclerView.Adap
                         Integer inventory = i.getInStock();
                         Integer allocated = i.getAllocated();
                         Integer ordered = i.getOrdered();
-                        Integer toAllocate = i.getToAllocated();
+                        Integer toAllocate = i.getToAllocate();
                         if (inventory != null && inventory > 0) {
                             holder.inventory.setText("Inventory: " + Integer.toString(inventory));
                         } else {

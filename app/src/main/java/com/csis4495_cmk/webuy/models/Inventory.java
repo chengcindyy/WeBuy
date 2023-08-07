@@ -9,7 +9,7 @@ public class Inventory {
     private int toSell;
     private int inStock;
     private int allocated;
-    private int toAllocated;
+    private int toAllocate;
     private int ordered;
     private int toOrder;
     private String productStyleKey;
@@ -134,12 +134,12 @@ public class Inventory {
         this.allocated = allocated;
     }
 
-    public int getToAllocated() {
-        return toAllocated;
+    public int getToAllocate() {
+        return toAllocate;
     }
 
-    public void setToAllocated(int toAllocated) {
-        this.toAllocated = toAllocated;
+    public void setToAllocate(int toAllocate) {
+        this.toAllocate = toAllocate;
     }
 
     public String getImageUrl() {
