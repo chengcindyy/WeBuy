@@ -7,11 +7,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.csis4495_cmk.webuy.fragments.SellerGroupClosedFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupClosingSoonFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupNotYetOpenedFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupOpeningFragment;
-import com.csis4495_cmk.webuy.fragments.SellerOrderPendingFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupAllocatedOrderFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupCanceledOrderFragment;
+import com.csis4495_cmk.webuy.fragments.SellerPendingOrderListFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupProcessingOrderFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupReceivedOrderFragment;
+import com.csis4495_cmk.webuy.fragments.SellerGroupToAllocateOrderFragment;
 
 public class SellerOrderListViewPagerAdapter extends FragmentStateAdapter {
 
@@ -32,25 +33,25 @@ public class SellerOrderListViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new SellerOrderPendingFragment();
+                return new SellerPendingOrderListFragment();
 
             case 1:
-                return new SellerOrderPendingFragment();
+                return new SellerGroupToAllocateOrderFragment();
 
             case 2:
-                return new SellerOrderPendingFragment();
+                return new SellerGroupAllocatedOrderFragment();
 
             case 3:
-                return new SellerOrderPendingFragment();
+                return new SellerGroupProcessingOrderFragment();
 
             case 4:
-                return new SellerOrderPendingFragment();
+                return new SellerGroupReceivedOrderFragment();
 
             case 5:
-                return new SellerOrderPendingFragment();
+                return new SellerGroupCanceledOrderFragment();
 
             default:
-                return new SellerOrderPendingFragment();
+                return new SellerPendingOrderListFragment();
 
         }
     }

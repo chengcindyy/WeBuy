@@ -17,15 +17,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.recyclerview.SellerOrderListRecyclerAdapter;
-import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Order;
-import com.csis4495_cmk.webuy.models.Product;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,7 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SellerOrderPendingFragment extends Fragment {
+public class SellerPendingOrderListFragment extends Fragment {
 
     private RecyclerView rv;
 
@@ -65,7 +60,7 @@ public class SellerOrderPendingFragment extends Fragment {
 
     private SellerOrderListRecyclerAdapter adapter;
 
-    public SellerOrderPendingFragment() {
+    public SellerPendingOrderListFragment() {
         // Required empty public constructor
     }
 
@@ -91,7 +86,7 @@ public class SellerOrderPendingFragment extends Fragment {
         dBRef = firebaseDatabase.getReference();
         orderRef = dBRef.child("Order");
 
-        navController = NavHostFragment.findNavController(SellerOrderPendingFragment.this);
+        navController = NavHostFragment.findNavController(SellerPendingOrderListFragment.this);
 
         rv = view.findViewById(R.id.rv_seller_order_list_pending);
 
@@ -116,7 +111,6 @@ public class SellerOrderPendingFragment extends Fragment {
                         orderIds.add(orderId);
                     }
                 }
-
                 if (pendingOrders.isEmpty()) {
                     tv_no.setVisibility(View.VISIBLE);
                     rv.setVisibility(View.GONE);

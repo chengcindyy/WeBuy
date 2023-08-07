@@ -8,7 +8,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.csis4495_cmk.webuy.fragments.SellerGroupAllocatedOrderFragment;
 import com.csis4495_cmk.webuy.fragments.SellerGroupCanceledOrderFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupProcessedOrderFragment;
 import com.csis4495_cmk.webuy.fragments.SellerGroupToAllocateOrderFragment;
 import com.csis4495_cmk.webuy.fragments.SellerGroupProcessingOrderFragment;
 import com.csis4495_cmk.webuy.fragments.SellerGroupReceivedOrderFragment;
