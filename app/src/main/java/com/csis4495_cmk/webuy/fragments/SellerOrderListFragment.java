@@ -28,7 +28,6 @@ public class SellerOrderListFragment extends Fragment {
 
     private SellerOrderListViewPagerAdapter adapter;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

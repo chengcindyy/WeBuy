@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -77,7 +76,7 @@ public class CustomerProfileFragment extends Fragment {
     private TextView labelUsername;
     private Button logoutButton, btnUpdate;
     private ImageView imgUserProfile;
-    private ImageButton btnChat, btnViewPending, btnViewPayment, btnViewPackaging, btnViewShipped, btnViewDelivered;
+    private ImageButton btnChat, btnViewPending, btnViewConfirmed, btnViewProcessing, btnViewShipped, btnViewCanceled;
     private ExpandableLayout expProfile, expOrderStatus, expWishList, expMoreFunctions;
     private DatePickerDialog picker;
     private TextInputLayout editName, editEmail, editPhone, editAddress, editCity, editPostalCode;
@@ -167,15 +166,15 @@ public class CustomerProfileFragment extends Fragment {
 
         // Set order status
         btnViewPending = view.findViewById(R.id.btn_view_pending);
-        btnViewPayment = view.findViewById(R.id.btn_view_confirmed);
-        btnViewPackaging = view.findViewById(R.id.btn_view_processed);
+        btnViewConfirmed = view.findViewById(R.id.btn_view_confirmed);
+        btnViewProcessing = view.findViewById(R.id.btn_view_processed);
         btnViewShipped = view.findViewById(R.id.btn_view_shipped);
-        btnViewDelivered = view.findViewById(R.id.btn_view_canceled);
-        SetOrderStatusOnClickListener(btnViewPending);
-        SetOrderStatusOnClickListener(btnViewPayment);
-        SetOrderStatusOnClickListener(btnViewPackaging);
-        SetOrderStatusOnClickListener(btnViewShipped);
-        SetOrderStatusOnClickListener(btnViewDelivered);
+        btnViewCanceled = view.findViewById(R.id.btn_view_canceled);
+        SetOrderStatusOnClickListener(btnViewPending, 0);
+        SetOrderStatusOnClickListener(btnViewConfirmed, 1);
+        SetOrderStatusOnClickListener(btnViewProcessing, 3);
+        SetOrderStatusOnClickListener(btnViewShipped, 4);
+        SetOrderStatusOnClickListener(btnViewCanceled, -1);
 
         // Get data from viewModel
         wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
@@ -283,11 +282,11 @@ public class CustomerProfileFragment extends Fragment {
         });
     }
 
-    private void SetOrderStatusOnClickListener(final ImageButton imageButton) {
+    private void SetOrderStatusOnClickListener(final ImageButton imageButton, int status) {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openOrderStatusDialog("viewConfirmed");
+                openOrderStatusDialog("viewConfirmed", status);
             }
         });
     }
@@ -356,8 +355,8 @@ public class CustomerProfileFragment extends Fragment {
         });
     }
 
-    private void openOrderStatusDialog(String tab) {
-        CustomerOrderStatusDialog dialog = new CustomerOrderStatusDialog();
+    private void openOrderStatusDialog(String tab, int status) {
+        CustomerOrderStatusDialog dialog = new CustomerOrderStatusDialog(status);
         dialog.show(getParentFragmentManager(), tab);
     }
 
