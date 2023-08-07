@@ -424,6 +424,7 @@ public class CustomerGroupDetailFragment extends Fragment
                     tvSellerName.setText("Seller not found");
                     imvSellerPic.setImageResource(R.drawable.ic_user_profile);
                 }
+                //eturn false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

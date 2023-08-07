@@ -111,6 +111,7 @@ public class SellerHomePageActivity extends AppCompatActivity {
                                 }
                             });
                 }
+                //return false;
             }
 
             @Override

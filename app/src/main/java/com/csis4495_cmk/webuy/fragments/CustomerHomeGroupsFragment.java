@@ -143,6 +143,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
                 adapter.updateData(groupMap);
 
+                //return false;
             }
 
             @Override
@@ -213,11 +214,13 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                                 }
                                 UpdateRecyclerView(mGroupMap);
 
+                                //return false;
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) { }
                         });
+                        //return false;
                     }
 
                     @Override
@@ -256,6 +259,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                                 recyclerView.setAdapter(adapter);
                                 break;
                         }
+                        //return false;
                     }
 
                     @Override
@@ -310,6 +314,7 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                                 recyclerView.setAdapter(adapter);
                                 break;
                         }
+                        //return false;
                     }
 
                     @Override

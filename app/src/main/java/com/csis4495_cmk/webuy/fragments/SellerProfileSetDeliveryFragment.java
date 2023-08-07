@@ -249,6 +249,7 @@ public class SellerProfileSetDeliveryFragment extends Fragment implements Seller
                 } else {
                     Log.e("MethodId", "Snapshot to Delivery conversion failed.");
                 }
+                //return false;
             }
 
             @Override
@@ -306,6 +307,7 @@ public class SellerProfileSetDeliveryFragment extends Fragment implements Seller
                     }
                 }
                 adapter.notifyDataSetChanged();
+                //return false;
             }
 
             @Override

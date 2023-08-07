@@ -324,6 +324,7 @@ public class SellerAddProductFragment extends Fragment
 
                     }
                 }
+                //return false;
             }
 
             @Override
