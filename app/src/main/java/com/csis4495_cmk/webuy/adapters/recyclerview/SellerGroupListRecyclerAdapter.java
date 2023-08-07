@@ -266,7 +266,6 @@ public class SellerGroupListRecyclerAdapter extends RecyclerView.Adapter<SellerG
         TextView groupDescription;
         TextView groupStart;
         TextView groupEnd;
-
         TextView countDown;
 
         public ViewHolder(@NonNull View itemView) {

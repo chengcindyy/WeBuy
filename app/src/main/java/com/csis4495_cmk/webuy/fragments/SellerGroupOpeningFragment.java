@@ -71,6 +71,7 @@ public class SellerGroupOpeningFragment extends Fragment {
 
     private int position;
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

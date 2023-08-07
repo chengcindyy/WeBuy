@@ -52,7 +52,6 @@ public class SellerGroupListFragment extends Fragment {
         viewPager2 = view.findViewById(R.id.seller_group_list_view_pager);
         sellerGroupListViewPagerAdapter = new SellerGroupListViewPagerAdapter(getActivity());
         viewPager2.setAdapter(sellerGroupListViewPagerAdapter);
-
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

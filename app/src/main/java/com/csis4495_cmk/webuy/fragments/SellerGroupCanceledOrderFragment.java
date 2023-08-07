@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.GroupDetailInventoryRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.GroupDetailInventoryRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Order;
 import com.csis4495_cmk.webuy.viewmodels.SharedGroupInventoryListViewModel;
@@ -65,10 +65,15 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_seller_group_canceled_order, container, false);
+
         tv_no = view.findViewById(R.id.tv_group_order_canceled);
+
         rv = view.findViewById(R.id.rv_group_order_canceled);
+
         getViewModelData();
+
         getOrderData();
+
         return view;
     }
 
@@ -109,12 +114,21 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
                     if (dataSnapshot != null) {
                         Order o = dataSnapshot.getValue(Order.class);
                         String orderId = dataSnapshot.getKey();
-                        if (o.getOrderStatus() == 4) {
+                        if (o.getOrderStatus() == -1) {
                             Set<String> groupIds = o.getGroupsAndItemsMap().keySet();
                             for (String key : groupIds) {
                                 if (key.equals(groupId)) {
                                     Map<String, Order.OrderItemInfo> orderItemList = o.getGroupsAndItemsMap().get(key);
-                                    orderIdandItemsMap.put(orderId, orderItemList);
+                                    Map<String, Order.OrderItemInfo> allAllocatedItems = new HashMap<>();
+                                    for (Map.Entry<String, Order.OrderItemInfo> entry : orderItemList.entrySet()) {
+                                        if (entry.getValue().isAllocated() == true) {
+                                            allAllocatedItems.put(entry.getKey(), entry.getValue());
+                                        }
+                                    }
+                                    Log.d(TAG, "allAllocatedItems: " + allAllocatedItems);
+                                    if (!allAllocatedItems.isEmpty()) {
+                                        orderIdandItemsMap.put(orderId, allAllocatedItems);
+                                    }
                                 }
                             }
                         }
@@ -127,7 +141,7 @@ public class SellerGroupCanceledOrderFragment extends Fragment {
                     adapter.setAllocatedOrder(true);
                     adapter.notifyDataSetChanged();
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
-                    tv_no.setText("Processed:");
+                    tv_no.setText("Canceled:");
                     Log.d(TAG, "check orderIdandItemsMap: " + orderIdandItemsMap.size() + orderIdandItemsMap);
                 }
                 //return false;
