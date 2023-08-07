@@ -7,11 +7,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.csis4495_cmk.webuy.fragments.SellerGroupClosedFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupClosingSoonFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupNotYetOpenedFragment;
-import com.csis4495_cmk.webuy.fragments.SellerGroupOpeningFragment;
-import com.csis4495_cmk.webuy.fragments.SellerOrderPendingFragment;
+import com.csis4495_cmk.webuy.fragments.SellerAllocatedOrderListFragment;
+import com.csis4495_cmk.webuy.fragments.SellerCanceledOrderListFragment;
+import com.csis4495_cmk.webuy.fragments.SellerPendingOrderListFragment;
+import com.csis4495_cmk.webuy.fragments.SellerProcessingOrderListFragment;
+import com.csis4495_cmk.webuy.fragments.SellerReceivedOrderListFragment;
+import com.csis4495_cmk.webuy.fragments.SellerToAllocateOrderListFragment;
 
 public class SellerOrderListViewPagerAdapter extends FragmentStateAdapter {
 
@@ -32,31 +33,26 @@ public class SellerOrderListViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new SellerOrderPendingFragment();
-
+                return new SellerPendingOrderListFragment();
             case 1:
-                return new SellerOrderPendingFragment();
-
+                return new SellerToAllocateOrderListFragment();
             case 2:
-                return new SellerOrderPendingFragment();
-
+                return new SellerAllocatedOrderListFragment();
             case 3:
-                return new SellerOrderPendingFragment();
-
+                return new SellerProcessingOrderListFragment();
             case 4:
-                return new SellerOrderPendingFragment();
-
+                return new SellerReceivedOrderListFragment();
             case 5:
-                return new SellerOrderPendingFragment();
+                return new SellerCanceledOrderListFragment();
 
             default:
-                return new SellerOrderPendingFragment();
+                return new SellerToAllocateOrderListFragment();
 
         }
     }
 
     @Override
     public int getItemCount() {
-        return 1;
+        return 6;
     }
 }

@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csis4495_cmk.webuy.R;
-import com.csis4495_cmk.webuy.adapters.GroupDetailInventoryRecyclerAdapter;
+import com.csis4495_cmk.webuy.adapters.recyclerview.GroupDetailInventoryRecyclerAdapter;
 import com.csis4495_cmk.webuy.models.Group;
 import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.Order;
@@ -253,7 +253,6 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                                             }
                                         });
                                     }
-                                    //return allAllocated;
                                 }
 
                                 @Override
@@ -323,7 +322,6 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                 }
                 Log.d(TAG, "getNewInventoryData check out of stock : " + inventoryList);
                 getOrderData();
-                //return false;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -338,23 +336,6 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                 if (inventories != null) {
                     inventoryList.clear();
                     inventoryList = inventories;
-//                    for (Inventory i : inventories) {
-//                        if (i.getInStock() != 0) {
-//                            outOfStock = false;
-//                            break;
-//                        }else{
-//                            outOfStock = true;
-//                        }
-//                    }
-//                    if (outOfStock == true) {
-//                        Log.d(TAG, "check btnAllocate visibility: outOfStock " + outOfStock);
-//                        btnAllocate.setVisibility(View.VISIBLE);
-//                        btnAllocate.setText("Out of stock");
-//                        btnAllocate.setEnabled(false);
-//                    } else {
-//                        btnAllocate.setVisibility(View.VISIBLE);
-//                        btnAllocate.setEnabled(true);
-//                    }
                     Log.d(TAG, "livemodel inventory: " + inventoryList);
                 }
             });
@@ -391,7 +372,6 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
 
     public void getOrderData() {
         orderIdandItemsMap.clear();
-
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -399,7 +379,7 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                     if (dataSnapshot != null) {
                         Order o = dataSnapshot.getValue(Order.class);
                         String orderId = dataSnapshot.getKey();
-                        if ( o.getOrderStatus() == 1) {
+                        if (o.getOrderStatus() == 1) {
                             Set<String> groupIds = o.getGroupsAndItemsMap().keySet();
                             for (String key : groupIds) {
                                 if (key.equals(groupId)) {
@@ -429,7 +409,7 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                         Log.d(TAG, "setInventoryList: " + inventoryList);
                     }
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
-                    tv_no.setText("To Allocate: ");
+                    tv_no.setText("To Allocate:");
                     Log.d(TAG, "check orderIdandItemsMap: " + orderIdandItemsMap);
                     Log.d(TAG, "check inventoryList: " + inventoryList);
                 }
@@ -437,7 +417,6 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                     Log.d(TAG, "check btnAllocate setVisibility orderIdandItemsMap.size: " + orderIdandItemsMap.size());
                     btnAllocate.setVisibility(View.GONE);
                 }
-                //return false;
             }
 
             @Override

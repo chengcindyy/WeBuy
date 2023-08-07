@@ -32,7 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class SellerGroupAllocatedOrderFragment extends Fragment {
+
+public class SellerGroupReceivedOrderFragment extends Fragment {
 
     private TextView tv_no;
     private RecyclerView rv;
@@ -51,6 +52,10 @@ public class SellerGroupAllocatedOrderFragment extends Fragment {
 
     private GroupDetailInventoryRecyclerAdapter adapter;
 
+    public SellerGroupReceivedOrderFragment() {
+    }
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,16 +68,11 @@ public class SellerGroupAllocatedOrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_seller_group_allocated, container, false);
-
-        tv_no = view.findViewById(R.id.tv_group_order_allocated);
-
-        rv = view.findViewById(R.id.rv_group_order_allocated);
-
+        View view =  inflater.inflate(R.layout.fragment_seller_group_received_order, container, false);
+        tv_no = view.findViewById(R.id.tv_group_order_received);
+        rv = view.findViewById(R.id.rv_group_order_received);
         getViewModelData();
-
         getOrderData();
-
         return view;
     }
 
@@ -113,21 +113,12 @@ public class SellerGroupAllocatedOrderFragment extends Fragment {
                     if (dataSnapshot != null) {
                         Order o = dataSnapshot.getValue(Order.class);
                         String orderId = dataSnapshot.getKey();
-                        if (o.getOrderStatus() == 2 ) {
+                        if (o.getOrderStatus() == 4) {
                             Set<String> groupIds = o.getGroupsAndItemsMap().keySet();
                             for (String key : groupIds) {
                                 if (key.equals(groupId)) {
                                     Map<String, Order.OrderItemInfo> orderItemList = o.getGroupsAndItemsMap().get(key);
-                                    Map<String, Order.OrderItemInfo> allAllocatedItems = new HashMap<>();
-                                    for (Map.Entry<String, Order.OrderItemInfo> entry : orderItemList.entrySet()) {
-                                        if (entry.getValue().isAllocated() == true) {
-                                            allAllocatedItems.put(entry.getKey(), entry.getValue());
-                                        }
-                                    }
-                                    Log.d(TAG, "allAllocatedItems: " + allAllocatedItems);
-                                    if (!allAllocatedItems.isEmpty()) {
-                                        orderIdandItemsMap.put(orderId, allAllocatedItems);
-                                    }
+                                    orderIdandItemsMap.put(orderId, orderItemList);
                                 }
                             }
                         }
@@ -140,10 +131,9 @@ public class SellerGroupAllocatedOrderFragment extends Fragment {
                     adapter.setAllocatedOrder(true);
                     adapter.notifyDataSetChanged();
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
-                    tv_no.setText("Allocated:");
+                    tv_no.setText("Received:");
                     Log.d(TAG, "check orderIdandItemsMap: " + orderIdandItemsMap.size() + orderIdandItemsMap);
                 }
-                //return false;
             }
 
             @Override

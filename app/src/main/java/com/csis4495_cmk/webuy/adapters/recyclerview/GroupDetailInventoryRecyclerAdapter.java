@@ -1,4 +1,4 @@
-package com.csis4495_cmk.webuy.adapters;
+package com.csis4495_cmk.webuy.adapters.recyclerview;
 
 import static android.content.ContentValues.TAG;
 
@@ -143,7 +143,7 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                 String pSplit = "p___";
                 String sSplit = "s___";
                 if (!product_style_id.contains(sSplit)) {
-                    String productId = product_style_id.split(pSplit)[1].split(sSplit)[0];
+                    String productId = product_style_id.split(pSplit)[1];
                     if (productId.equals(group.getProductId())) {
                         holder.style.setText(group.getGroupName());
                     }
@@ -151,11 +151,14 @@ public class GroupDetailInventoryRecyclerAdapter extends RecyclerView.Adapter<Gr
                     int index = product_style_id.indexOf(sSplit);
                     if (index != -1) {
                         String sId = product_style_id.substring(index + sSplit.length());
-                        for (ProductStyle style : group.getGroupStyles()) {
-                            if (style.getStyleId().equals(sId)) {
-                                holder.style.setText(style.getStyleName());
-
+                        if(group.getGroupStyles() != null){
+                            for (ProductStyle style : group.getGroupStyles()) {
+                                if (style.getStyleId().equals(sId)) {
+                                    holder.style.setText(style.getStyleName());
+                                }
                             }
+                        }else{
+                            holder.style.setText(group.getGroupName());
                         }
                     }
                 }

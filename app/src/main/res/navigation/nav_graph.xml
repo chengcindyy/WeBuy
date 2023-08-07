@@ -255,7 +255,11 @@
         android:id="@+id/sellerOrderListFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerOrderListFragment"
         android:label="fragment_seller_order_list"
-        tools:layout="@layout/fragment_seller_order_list" />
+        tools:layout="@layout/fragment_seller_order_list" >
+        <action
+            android:id="@+id/action_sellerOrderListFragment_to_sellerOrderDetailFragment"
+            app:destination="@id/sellerOrderDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/sellerAllProductListFragment"
         android:name="com.csis4495_cmk.webuy.fragments.SellerAllProductListFragment"
@@ -273,5 +277,18 @@
         android:name="com.csis4495_cmk.webuy.fragments.SellerCustomerSupportFragment"
         android:label="fragment_seller_customer_support"
         tools:layout="@layout/fragment_seller_customer_support" />
+        android:id="@+id/customerGroupDetailFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerGroupDetailFragment"
+        android:label="fragment_customer_group_detail"
+        tools:layout="@layout/fragment_customer_group_detail" />
+    <fragment
+        android:id="@+id/sellerOrderDetailFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.SellerOrderDetailFragment"
+        android:label="fragment_seller_order_detail"
+        tools:layout="@layout/fragment_seller_order_detail" >
+        <action
+            android:id="@+id/action_sellerOrderDetailFragment_to_sellerGroupList"
+            app:destination="@id/sellerGroupList" />
+    </fragment>
 
 </navigation>
