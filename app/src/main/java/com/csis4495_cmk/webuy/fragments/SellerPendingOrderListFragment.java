@@ -96,18 +96,12 @@ public class SellerPendingOrderListFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getOrderData();
-    }
-
     private void getOrderData() {
-        pendingOrders.clear();
-        orderIds.clear();
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                pendingOrders.clear();
+                orderIds.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Order order = dataSnapshot.getValue(Order.class);
                     String orderId = dataSnapshot.getKey();
@@ -123,9 +117,11 @@ public class SellerPendingOrderListFragment extends Fragment {
                 } else {
                     tv_no.setVisibility(View.GONE);
                     rv.setVisibility(View.VISIBLE);
+
                     adapter = new SellerOrderListRecyclerAdapter(pendingOrders, orderIds);
                     rv.setAdapter(adapter);
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
+
                     adapter.setOnItemClickListener(new SellerOrderListRecyclerAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(int position) {

@@ -188,6 +188,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
         });
     }
 
+
     private void search(String str) {
         Map<String, List<Inventory>> mInventoryMap = inventoryMap.entrySet()
                 .stream()
