@@ -94,19 +94,13 @@ public class SellerProcessingOrderListFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getOrderData();
-    }
-
-
     private void getOrderData() {
-        processingOrders.clear();
-        orderIds.clear();
+
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                processingOrders.clear();
+                orderIds.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Order order = dataSnapshot.getValue(Order.class);
                     String orderId = dataSnapshot.getKey();

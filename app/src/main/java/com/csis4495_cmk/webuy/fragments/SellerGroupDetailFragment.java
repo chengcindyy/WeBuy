@@ -351,10 +351,12 @@ public class SellerGroupDetailFragment extends Fragment implements OnGroupOrderI
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Inventory i = dataSnapshot.getValue(Inventory.class);
-                    if(i.getProductId().equals(productId)){
-                        inventoryList.add(i);
-                        inventoryIdMap.put(dataSnapshot.getKey(), i.getProductStyleKey());
+                    if(dataSnapshot != null){
+                        Inventory i = dataSnapshot.getValue(Inventory.class);
+                        if(i.getProductId().equals(productId)){
+                            inventoryList.add(i);
+                            inventoryIdMap.put(dataSnapshot.getKey(), i.getProductStyleKey());
+                        }
                     }
                 }
                 if(inventoryList != null){

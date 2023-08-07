@@ -53,7 +53,7 @@ public class SellerCanceledOrderListFragment extends Fragment {
 
     private String sellerId;
 
-    private List<Order> receivedOrders = new ArrayList<>();
+    private List<Order> canceledOrders = new ArrayList<>();
 
     private List<String> orderIds = new ArrayList<>();
 
@@ -94,34 +94,28 @@ public class SellerCanceledOrderListFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getOrderData();
-    }
-
     private void getOrderData() {
-        receivedOrders.clear();
-        orderIds.clear();
         orderRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                canceledOrders.clear();
+                orderIds.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Order order = dataSnapshot.getValue(Order.class);
                     String orderId = dataSnapshot.getKey();
                     if (order.getOrderStatus() == -1 && order.getSellerId().equals(sellerId)) {
-                        receivedOrders.add(order);
-                        Log.d(TAG, "onDataChange: allocatedOrders" + receivedOrders);
+                        canceledOrders.add(order);
+                        Log.d(TAG, "onDataChange: allocatedOrders" + canceledOrders);
                         orderIds.add(orderId);
                     }
                 }
-                if (receivedOrders.isEmpty()) {
+                if (canceledOrders.isEmpty()) {
                     tv_no.setVisibility(View.VISIBLE);
                     rv.setVisibility(View.GONE);
                 } else {
                     tv_no.setVisibility(View.GONE);
                     rv.setVisibility(View.VISIBLE);
-                    adapter = new SellerOrderListRecyclerAdapter(receivedOrders, orderIds);
+                    adapter = new SellerOrderListRecyclerAdapter(canceledOrders, orderIds);
                     rv.setAdapter(adapter);
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
                     adapter.setOnItemClickListener(new SellerOrderListRecyclerAdapter.OnItemClickListener() {
@@ -133,10 +127,8 @@ public class SellerCanceledOrderListFragment extends Fragment {
                             Bundle bundle = new Bundle();
                             bundle.putString("detail_orderId", orderId);
                             bundle.putString("customer_email", customerEmail);
-
                             SellerOrderDetailFragment sellerGroupDetailFragment = new SellerOrderDetailFragment();
                             sellerGroupDetailFragment.setArguments(bundle);
-
                             Navigation.findNavController(getView()).navigate(R.id.action_sellerOrderListFragment_to_sellerOrderDetailFragment, bundle);
 
                         }
