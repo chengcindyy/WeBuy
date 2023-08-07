@@ -146,24 +146,36 @@ public class SellerGroupToAllocateOrderFragment extends Fragment {
                         String styleId;
                         String pSplit = "p___";
                         String sSplit = "s___";
-                        String order_style_key;
+                        String order_style_key = "";
 
                         // Iterate through the selected items
                         for (String pid_sid : selectedItemsMap.keySet()) {
                             item = orderItemInfoMap.get(pid_sid);
                             Integer orderAmount = item.getOrderAmount();
+                            Log.d(TAG, "pid_sid: "+pid_sid);
                             Log.d(TAG, "Allocate click: orderAmount: " + Integer.toString(orderAmount));
 
-                            if (!pid_sid.contains(sSplit)) {
-                                productId = pid_sid.split(pSplit)[1].split(sSplit)[0];
+                            String[] afterPSplit = pid_sid.split(pSplit);
+                            if (afterPSplit.length > 1) {
+                                String[] afterSSplit = afterPSplit[1].split(sSplit);
+
+                                productId = afterSSplit[0];
                                 order_style_key = productId;
-                                Log.d(TAG, "Allocate click: productId_styleId: " + order_style_key);
-                            } else {
-                                productId = pid_sid.split(pSplit)[1].split(sSplit)[0];
-                                styleId = pid_sid.split(pSplit)[1].split(sSplit)[1];
-                                order_style_key = productId + "_" + styleId;
-                                Log.d(TAG, "Allocate click: productId_styleId: " + order_style_key);
+                                if (afterSSplit.length > 1) {
+                                    styleId = afterSSplit[1];
+                                    order_style_key = productId + "___" + styleId;
+                                }
                             }
+//                            if (!pid_sid.contains(sSplit)) {
+//                                productId = pid_sid.split(pSplit)[1].split(sSplit)[0];
+//                                order_style_key = productId;
+//                                Log.d(TAG, "Allocate click: productId_styleId: " + order_style_key);
+//                            } else {
+//                                productId = pid_sid.split(pSplit)[1].split(sSplit)[0];
+//                                styleId = pid_sid.split(pSplit)[1].split(sSplit)[1];
+//                                order_style_key = productId + "___" + styleId;
+//                                Log.d(TAG, "Allocate click: productId_styleId: " + order_style_key);
+//                            }
                             for (Inventory i : tempInventoryList) {
                                 if (i.getProductStyleKey().contains(order_style_key)) {
                                     Log.d(TAG, "Allocate click: inventory name: " + i.getInventoryTitle());
