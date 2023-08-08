@@ -7,7 +7,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginVertical="10dp">
 
         <TextView
             android:id="@+id/tv_seller_order_list_item_group_name"
@@ -15,10 +16,17 @@
             android:layout_height="wrap_content"
             android:text="Group name" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:textStyle="bold"
+            android:text="Order details" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_seller_order_list_item_detail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
 
     </LinearLayout>

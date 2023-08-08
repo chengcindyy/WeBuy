@@ -15,7 +15,8 @@
             android:layout_width="100dp"
             android:layout_height="80dp"
             android:background="@color/cancel_grey"
-            android:src="@drawable/app_default_image" />
+            android:src="@drawable/app_default_image"
+            android:layout_marginRight="5dp"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -30,7 +31,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="Product Name" />
+                android:text="Product Name"
+                android:maxLines="1"/>
 
             <TextView
                 android:id="@+id/tv_seller_order_info_qty"
