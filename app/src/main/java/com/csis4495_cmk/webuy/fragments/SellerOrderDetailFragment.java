@@ -25,6 +25,8 @@ import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
 import com.csis4495_cmk.webuy.adapters.recyclerview.SellerOrderDetailGroupMapRecyclerAdapter;
+import com.csis4495_cmk.webuy.models.Group;
+import com.csis4495_cmk.webuy.models.Inventory;
 import com.csis4495_cmk.webuy.models.Order;
 import com.csis4495_cmk.webuy.models.User;
 import com.google.firebase.database.DataSnapshot;
@@ -59,6 +61,10 @@ public class SellerOrderDetailFragment extends Fragment {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference dBRef = firebaseDatabase.getReference();
     DatabaseReference orderRef = dBRef.child("Order");
+    DatabaseReference inventoryRef = dBRef.child("Inventory");
+    DatabaseReference groupRef = dBRef.child("Group");
+
+
 
     DatabaseReference userRef = dBRef.child("User");
 
@@ -115,9 +121,110 @@ public class SellerOrderDetailFragment extends Fragment {
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        DatabaseReference ref = orderRef.child(orderId);
-                        ref.child("orderStatus").setValue(-1);
-                        status.setText("Cancled");
+//                        DatabaseReference ref = orderRef.child(orderId);
+//                        ref.child("orderStatus").setValue(-1);
+//                        status.setText("Cancled");
+                        orderRef.child(orderId).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if(snapshot != null){
+                                    Order order = snapshot.getValue(Order.class);
+                                    Map<String, Map<String, Order.OrderItemInfo>> groupsAndItemMap = order.getGroupsAndItemsMap();
+                                    for(Map.Entry<String, Map<String, Order.OrderItemInfo>> groupEntry:groupsAndItemMap.entrySet()){
+                                        String groupId = groupEntry.getKey();
+                                        Map<String, Order.OrderItemInfo> innerMap = groupEntry.getValue();
+                                        for(Map.Entry<String, Order.OrderItemInfo> entry : innerMap.entrySet()){
+                                            String orderProductId = entry.getKey();
+                                            Log.d(TAG, "onDataChange: orderProductId" + orderProductId);
+                                            Order.OrderItemInfo orderItemInfo = entry.getValue();
+
+                                            String productKey ="";
+                                            String styleKey ="";
+                                            String keyForProduct = "";
+                                            String keyForInventory = "";
+
+                                            String[] splitParts = orderProductId.split("s___");
+                                            productKey = splitParts[0].split("p___")[1];
+                                            Log.d(TAG, "onDataChange: productKey" + productKey);
+
+                                            keyForProduct = "p___" + productKey;
+                                            Log.d(TAG, "onDataChange: keyForProduct" + keyForProduct);
+
+                                            keyForInventory = productKey;
+                                            Log.d(TAG, "onDataChange: keyForInventory" + keyForInventory);
+
+                                            if (splitParts.length > 1) {
+                                                styleKey = splitParts[1];
+                                                Log.d(TAG, "onDataChange: styleKey" + styleKey);
+
+                                                keyForProduct = "s___" + styleKey;
+                                                Log.d(TAG, "onDataChange: keyForProduct" + keyForProduct);
+
+                                                keyForInventory = keyForInventory + "___" + styleKey;
+                                                Log.d(TAG, "onDataChange: keyForInventory" + keyForInventory);
+                                            }
+                                            Integer orderAmount = orderItemInfo.getOrderAmount();
+                                            Log.d(TAG, "onDataChange: orderAmount" + orderAmount);
+
+                                            String finalKeyForProduct = keyForProduct;
+                                            groupRef.child(groupId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    if (snapshot != null){
+                                                        Group group = snapshot.getValue(Group.class);
+                                                        Map<String, Integer> groupQtyMap = group.getGroupQtyMap();
+                                                        for(String key : groupQtyMap.keySet()){
+                                                            if (finalKeyForProduct.equals(key)){
+                                                                Integer newToOder = groupQtyMap.get(key) + orderAmount;
+                                                                groupRef.child(groupId).child("groupQtyMap").child(key).setValue(newToOder);
+                                                                snapshot.getRef().child("groupQtyMap").child(key).setValue(newToOder);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                }
+                                            });
+
+                                            String finalKeyForInventory = keyForInventory;
+                                            inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    for(DataSnapshot ds: snapshot.getChildren() ){
+                                                        Inventory inventory = ds.getValue(Inventory.class);
+                                                        String inventoryId = ds.getKey();
+                                                        String inventoryStyleKey = inventory.getProductStyleKey();
+                                                        if( finalKeyForInventory.equals(inventoryStyleKey)){
+                                                            int oldOrdered = inventory.getOrdered();
+                                                            int oldToSell = inventory.getToSell();
+                                                            int newOrdered = oldOrdered - orderAmount ;
+                                                            int newToSell = oldToSell + orderAmount;
+                                                            ds.getRef().child("toSell").setValue(newToSell);
+                                                            ds.getRef().child("ordered").setValue(newOrdered);
+                                                        }
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                }
+                                            });
+
+                                        }
+
+                                    }
+                                    snapshot.getRef().child("orderStatus").setValue(-1);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
                     }
                 })
                 .setNegativeButton("Cancel", null)
