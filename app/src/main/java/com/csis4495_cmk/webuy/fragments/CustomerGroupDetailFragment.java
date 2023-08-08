@@ -153,6 +153,7 @@ public class CustomerGroupDetailFragment extends Fragment
 //
 //                    ShareDialog shareDialog = new ShareDialog(getActivity());
 //                    shareDialog.show(content, ShareDialog.Mode.AUTOMATIC);
+
                 }
             }
         });
