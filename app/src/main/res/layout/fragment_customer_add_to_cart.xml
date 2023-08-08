@@ -113,6 +113,7 @@
                 android:text="add to cart" />
 
             <Button
+                android:visibility="gone"
                 android:id="@+id/btn_direct_checkout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
