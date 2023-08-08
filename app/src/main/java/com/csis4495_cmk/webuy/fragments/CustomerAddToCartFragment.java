@@ -274,7 +274,7 @@ public class CustomerAddToCartFragment extends BottomSheetDialogFragment
             }
 
         });
-
+        btnDirectCheckout.setVisibility(View.GONE);
         //TODO: direct checkout
         btnDirectCheckout.setOnClickListener(v -> {
             orderAmount = Integer.parseInt(String.valueOf(etOrderAmount.getText()));

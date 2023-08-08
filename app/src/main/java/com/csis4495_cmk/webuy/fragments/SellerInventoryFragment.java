@@ -173,8 +173,10 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                     Log.d("Test allocate number", " Passed productStyleKey: "+ psId + "allocated: "+ isAllocated);
                     if (inventory.getProductStyleKey().equals(psId) && isAllocated == false){
                         int currentAllocateNum = inventory.getToAllocate();
-                        int newToAllocate = currentAllocateNum + orderAmount;
-                        inventoryRef.child(inventorySnapshot.getKey()).child("toAllocate").setValue(newToAllocate);
+                        if (currentAllocateNum == 0){
+                            int newToAllocate = currentAllocateNum + orderAmount;
+                            inventoryRef.child(inventorySnapshot.getKey()).child("toAllocate").setValue(newToAllocate);
+                        }
                     }
 
 
@@ -382,11 +384,12 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                                         }
                                     }
                                 }
-                            }
-                            inventoryTitle = group.getGroupName();
-                            status = group.getStatus();
+                                inventoryTitle = group.getGroupName();
+                                status = group.getStatus();
 
-                            createNewInventory(status, groupId);
+                                createNewInventory(status, groupId);
+                            }
+
 
                             // Check group status for filter
                             groupTypeMap.put(productId, group.getGroupType());
