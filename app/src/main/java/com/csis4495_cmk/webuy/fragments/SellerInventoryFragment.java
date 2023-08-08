@@ -283,6 +283,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     }
 
     private void createNewInventory(int status, String groupId) {
+        Log.d("Test create inventory", "status: "+status+" groupId: "+groupId);
         if(status == 1){
             // Set a key to check if this inventory exist
             String productStyleKey;
@@ -334,6 +335,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
     }
 
     private void findDataFromGroupInformation() {
+        Log.d("Test create inventory", "findDataFromGroupInformation() run: ");
         StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
         reference = FirebaseDatabase.getInstance().getReference("Group");
         reference.addValueEventListener(new ValueEventListener() {
@@ -342,24 +344,35 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                 List<DownloadTaskWithId> tasks = new ArrayList<>();
                 if (snapshot.exists()){
                     for (DataSnapshot groupSnapshot : snapshot.getChildren()){
+//                        String groupId, productId, styleId;
                         Group group = groupSnapshot.getValue(Group.class);
                         // Check sellerId to only display a seller's groups
                         sellerId = group.getSellerId();
                         Log.d("Test create inventory", sellerId);
                         if(sellerId != null && sellerId.equals(auth.getCurrentUser().getUid())) {
                             Map<String, Integer> groupQtyMap = group.getGroupQtyMap();
-                            Set<String> keys = groupQtyMap.keySet();
 
                             groupId = groupSnapshot.getKey();
-                            for (String qty : keys) {
-                                String[] parts = qty.split("___");
+                            for (String key : groupQtyMap.keySet()) {
+
+                                String[] parts = key.split("___");
                                 Log.d("TestKeySet", "type:" + parts[0] + " id:" + parts[1]);
 
                                 // Get StyleId or ProductId
-                                if (parts[0].equals("s")) {
+                                if (parts[0].equals("p")){
+                                    productId = parts[1];
+                                    styleId = null;
+
+                                    toSell = groupQtyMap.get(key);
+                                    Log.d("TestKeySet", "productId:" + productId + " toSell:" + toSell);
+
+                                    if (productId.equals(group.getProductId())) {
+                                        name = group.getGroupName();
+                                    }
+                                } else {
                                     styleId = parts[1];
-                                    productId = group.getProductId();  // Add this line to set productId
-                                    toSell = groupQtyMap.get(qty);
+                                    productId = group.getProductId();
+                                    toSell = groupQtyMap.get(key);
                                     Log.d("TestKeySet", "styleId:" + styleId + " toSell:" + toSell);
 
                                     for (ProductStyle style : group.getGroupStyles()) {
@@ -368,20 +381,12 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                                             break;
                                         }
                                     }
-                                } else {
-                                    styleId = null;
-                                    productId = parts[1];
-                                    toSell = groupQtyMap.get(qty);
-                                    Log.d("TestKeySet", "productId:" + productId + " toSell:" + toSell);
-
-                                    if (productId.equals(group.getProductId())) {
-                                        name = group.getGroupName();
-                                    }
                                 }
-                                inventoryTitle = group.getGroupName();
-                                status = group.getStatus();
-                                createNewInventory(status, groupId);
                             }
+                            inventoryTitle = group.getGroupName();
+                            status = group.getStatus();
+
+                            createNewInventory(status, groupId);
 
                             // Check group status for filter
                             groupTypeMap.put(productId, group.getGroupType());

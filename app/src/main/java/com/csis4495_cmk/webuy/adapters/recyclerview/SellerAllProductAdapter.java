@@ -1,6 +1,8 @@
 package com.csis4495_cmk.webuy.adapters.recyclerview;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,14 +64,32 @@ public class SellerAllProductAdapter extends RecyclerView.Adapter<SellerAllProdu
         holder.btn_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //use bundle to save selected productId
-                String productId = product.getProductId();
-                Bundle bundle  = new Bundle();
-                bundle.putString("new_group_productId", productId);
-                //pass bundle to fragment
-                navController.navigate(R.id.action_sellerAllProductListFragment2_to_sellerAddGroupFragment, bundle);
+                // Create an AlertDialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setMessage("Please set up your store information before posting a new group-buying offer.")
+                        .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User clicked confirm button
+                                // Use bundle to save selected productId
+                                String productId = product.getProductId();
+                                Bundle bundle  = new Bundle();
+                                bundle.putString("new_group_productId", productId);
+                                // Pass bundle to fragment
+                                navController.navigate(R.id.action_sellerAllProductListFragment2_to_sellerAddGroupFragment, bundle);
+                            }
+                        })
+                        .setNegativeButton("Go to profile", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+
+                // Create and show the AlertDialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
+
     }
 
     private void getDownloadUrl(String coverImageName, String key, ImageView productImage) {
