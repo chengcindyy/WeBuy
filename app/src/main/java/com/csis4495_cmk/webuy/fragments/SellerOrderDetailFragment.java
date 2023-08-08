@@ -216,6 +216,7 @@ public class SellerOrderDetailFragment extends Fragment {
 
                                     }
                                     snapshot.getRef().child("orderStatus").setValue(-1);
+                                    status.setText("Cancled");
                                 }
                             }
 
