@@ -39,6 +39,7 @@
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/ic_facebook"
                     android:id="@+id/fb"
+                    android:layout_gravity="center"
                     android:textAllCaps="true"
                     android:background="@drawable/button_solid"
                     android:gravity="left|center_vertical"

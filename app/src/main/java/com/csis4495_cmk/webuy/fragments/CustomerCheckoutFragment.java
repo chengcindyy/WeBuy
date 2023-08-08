@@ -118,11 +118,12 @@ public class CustomerCheckoutFragment extends Fragment {
                             shoppingItems.add(cartItem);
                         }
                     }
+                    Log.d("place order", "shoppingList size: "+ shoppingItems.size());
                 }
 
-                Map<String, String> groupItemIdMap = new HashMap<>();
+                Map<String, ArrayList<String>> groupItemIdsMap = new HashMap<>();
                 Map<String, Order.OrderItemInfo> itemIdInfoMap = new HashMap<>();
-                //groupId, p___ + productId + s___ + styleId, orderItemInfo(int orderAmount, boolean isAllocated)
+                //groupId, p___ + productId + (s___ + styleId), orderItemInfo(int orderAmount, boolean isAllocated)
 
                 cartItemsViewModel.getCartItemsInfoMapLiveData().observe(getViewLifecycleOwner(), cartItemCartItemInfoMap -> {
                     for (CartItem cartItem: shoppingItems) {
@@ -130,8 +131,12 @@ public class CustomerCheckoutFragment extends Fragment {
                         cartItemInfos.add(cartItemInfo);
                         String groupId = cartItem.getGroupId();
                         String styleId = cartItem.getStyleId();
+
                         String itemId = "p___" + cartItem.getProductId() + (styleId==null? "": "s___" +styleId);
-                        groupItemIdMap.put(groupId,itemId);
+                        Log.d("place order", "item id: "+ itemId);
+
+                        groupItemIdsMap.computeIfAbsent(groupId, k -> new ArrayList<>()).add(itemId);
+                        //groupItemIdMap.put(groupId,itemId); //not duplicated
                         itemIdInfoMap.put(itemId,new Order.OrderItemInfo(cartItem.getAmount(),false));
                         //calculate total
                         int amount = cartItem.getAmount();
@@ -152,17 +157,25 @@ public class CustomerCheckoutFragment extends Fragment {
                         }
                     }
 
-                    for (Map.Entry<String, String> entry : groupItemIdMap.entrySet()) {
+                    for (Map.Entry<String, ArrayList<String>> entry : groupItemIdsMap.entrySet()) {
+                        Log.d("shopping", "items under the group: " +groupItemIdsMap.entrySet());
                         String groupId = entry.getKey();
-                        String itemId = entry.getValue();
-                        Order.OrderItemInfo itemInfo = itemIdInfoMap.get(itemId);
-
-                        if (itemInfo != null) {
-                            groupsAndItemsMap.computeIfAbsent(groupId, k -> new HashMap<>()).put(itemId, itemInfo);
+                        ArrayList<String> groupItemIds = entry.getValue();
+                        for (String itemId: groupItemIds) {
+                            Order.OrderItemInfo itemInfo = itemIdInfoMap.get(itemId);
+                            if (itemInfo != null) {
+                                groupsAndItemsMap.computeIfAbsent(groupId, k -> new HashMap<>()).put(itemId, itemInfo);
+                            }
                         }
+
                     }
 
+                    Log.d("shopping", "groupAndItems size:" + groupsAndItemsMap.size());
+                    for (String groupId: groupsAndItemsMap.keySet()) {
+                        Log.d("shopping", "items size: "+ groupsAndItemsMap.get(groupId).size());
+                    }
                     Log.d("shopping", "Item size:"+shoppingItems.size()+ " Info size:"+ cartItemInfos.size());
+                    Log.d("shopping", "Item id set: "+ groupItemIdsMap.keySet());
                     //orderTotal = checkoutTotal + gstTotal + pstTotal + shipmentAmount;
 
                     checkoutTotal = Double.parseDouble(String.format("%.2f", checkoutTotal));
@@ -299,6 +312,7 @@ public class CustomerCheckoutFragment extends Fragment {
                         //check group status and amount
                         if (isGroupStatusAndAmountValid()) {
                             Log.d("place order", "all groups are valid.");
+                            Log.d("place order","check size bf order: " + groupsAndItemsMap.size());
                             //new order
                             Order order = new Order(customerId, sellerId, groupsAndItemsMap,
                                     orderTotal, checkoutTotal, gstTotal, pstTotal,
@@ -344,12 +358,19 @@ public class CustomerCheckoutFragment extends Fragment {
                     for (DataSnapshot singleGroup: snapshot.getChildren()) {
                         if (singleGroup.getKey().equals(groupId)) {
                             for(String productId_styleId: orderMap.get(groupId).keySet()) {
+                                Log.d("!!!",productId_styleId);
+                                String groupQtyMapId = "";
+                                if(productId_styleId.contains("s___")) {
+                                    groupQtyMapId = "s___" + productId_styleId.split("s___")[1];
+                                } else {
+                                    groupQtyMapId = productId_styleId;
+                                }
                                 int orderAmount = orderMap.get(groupId).get(productId_styleId).getOrderAmount();
-                                int groupAmount = singleGroup.child("groupQtyMap").child(productId_styleId).getValue(Integer.class);
+                                int groupAmount = singleGroup.child("groupQtyMap").child(groupQtyMapId).getValue(Integer.class);
 
                                 Log.d("place order","order amount: "+ orderAmount+ ";group amount: "+groupAmount);
                                 groupAmount -= orderAmount;
-                                singleGroup.child("groupQtyMap").child(productId_styleId).getRef().setValue(groupAmount);
+                                singleGroup.child("groupQtyMap").child(groupQtyMapId).getRef().setValue(groupAmount);
                                 Log.d("place order","value set, new group amount: "+groupAmount);
                             }
                         }
@@ -484,10 +505,19 @@ public class CustomerCheckoutFragment extends Fragment {
 
                     //amount
                     if (groupsAndItemsMap.get(groupId) != null) {
+                        Log.d("place order", "test again size: "+ groupsAndItemsMap.size());
                         for (String productId_styleId: groupsAndItemsMap.get(groupId).keySet()) {
                             //p___ + productId + (s___ + styleId)
+                            String groupQtyMapId;
+                            if(productId_styleId.contains("s___")) {
+                                groupQtyMapId = "s___" + productId_styleId.split("s___")[1];
+                            } else {
+                                groupQtyMapId = productId_styleId;
+                            }
+                            Log.d("place order", "test again item id: "+ productId_styleId);
                             int orderAmount = groupsAndItemsMap.get(groupId).get(productId_styleId).getOrderAmount();
-                            int itemGroupAmount = snapshot.child("groupQtyMap").child(productId_styleId).getValue(Integer.class);
+                            int itemGroupAmount = snapshot.child("groupQtyMap").child(groupQtyMapId).getValue(Integer.class);
+                            Log.d("place order", "group amount on db: " +itemGroupAmount);
                             if (orderAmount > itemGroupAmount) {
                                 Toast.makeText(getContext(), "Some items in your order do not have sufficient quantity for " +
                                                 "placing an order. Please review and reselect your items before proceeding to checkout.",
