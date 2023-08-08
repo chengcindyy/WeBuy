@@ -242,6 +242,9 @@
         <action
             android:id="@+id/action_customerCheckoutFragment_to_customerPaymentSelectorFragment"
             app:destination="@id/customerPaymentSelectorFragment" />
+        <action
+            android:id="@+id/action_customerCheckoutFragment_to_customerOrderReceivedFragment"
+            app:destination="@id/customerOrderReceivedFragment" />
     </fragment>
     <fragment
         android:id="@+id/customerPaymentSelectorFragment"
@@ -298,5 +301,20 @@
             android:id="@+id/action_sellerOrderDetailFragment_to_sellerGroupList"
             app:destination="@id/sellerGroupList" />
     </fragment>
+
+    <fragment
+        android:id="@+id/customerOrderReceivedFragment"
+        android:name="com.csis4495_cmk.webuy.fragments.CustomerOrderReceivedFragment"
+        android:label="CustomerOrderReceivedFragment"
+        tools:layout="@layout/fragment_customer_order_received">
+
+        <action
+            android:id="@+id/action_customerOrderReceivedFragment_to_customerHomeGroupsFragment"
+            app:destination="@id/customerHomeGroupsFragment" />
+
+    </fragment>
+
+
+
 
 </navigation>

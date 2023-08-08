@@ -47,6 +47,7 @@
 
     <Button
         android:id="@+id/btn_add_to_cart"
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_below="@+id/tv_cart_item_group_price"

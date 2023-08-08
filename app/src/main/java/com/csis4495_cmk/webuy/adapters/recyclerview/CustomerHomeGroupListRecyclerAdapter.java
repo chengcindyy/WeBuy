@@ -52,6 +52,7 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
     Context context;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     public StorageReference imgRef = FirebaseStorage.getInstance().getReference("ProductImage");
+
     private String groupId;
     private String productId;
     private String groupImage;
@@ -70,6 +71,7 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
 //    private Long startTimestamp;
 //    private Long endTimestamp;
     private Map<String,Group> groupsMap;
+    private Map<String,Map<String,Integer>> soldAmountMap;
     private List<Map.Entry<String, Group>> groupsEntryList;
     private onGroupListener mGroupListener;
     private CustomerWishlistViewModel wishListViewModel;
@@ -142,7 +144,21 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
         groupPrice = groupsEntryList.get(position).getValue().getGroupPrice();
         holder.tvGroupPrice.setText(groupPrice);
 
-        ////soldAmount;
+        //TODO: soldAmount
+        int soldAmount = 0;
+        if (soldAmountMap!= null) {
+            Log.d("sold", "sold map size: " + soldAmountMap.size());
+            if (soldAmountMap.get(groupId) != null) {
+                for(String psId: soldAmountMap.get(groupId).keySet()) {
+                    soldAmount += soldAmountMap.get(groupId).get(psId);
+                    Log.d("sold", "sold amount: " + soldAmount);
+                }
+            }
+
+            holder.tvSoldAmount.setText(soldAmount + " sold");
+        } else {
+            Log.d("sold", "sold map null");
+        }
 
         //seller name and pic
         sellerId = groupsEntryList.get(position).getValue().getSellerId();
@@ -180,7 +196,6 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
                     holder.tvSellerName.setText("Seller not found");
                     holder.imvSellerPic.setImageResource(R.drawable.ic_user_profile);
                 }
-                //return false;
             }
 
             @Override
@@ -328,6 +343,10 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
         notifyDataSetChanged();
     }
 
+    public void updateSoldAmountMap(Map<String,Map<String,Integer>> soldAmountMap) {
+        this.soldAmountMap = soldAmountMap;
+        notifyDataSetChanged();
+    }
 
     public void reverseData(Map<String, Group> newGroupMap) {
         List<String> groupIds = new ArrayList<>(newGroupMap.keySet());

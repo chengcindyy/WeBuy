@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:background="@color/cancel_grey"
         android:layout_gravity="bottom"
+        android:id="@+id/bottom_banner_checkout"
         android:orientation="horizontal">
         <CheckBox
             android:id="@+id/checkbox_select_all"
@@ -51,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/add_business_orange"
-            android:text="CA$ 100" />
+            android:text="CA$ 0" />
 
         <TextView
             android:id="@+id/tv_cart_items_checkout_amount"
