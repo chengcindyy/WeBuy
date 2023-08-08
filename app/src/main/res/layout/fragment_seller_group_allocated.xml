@@ -19,9 +19,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_group_order_allocated"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"/>
     </LinearLayout>
 
-
 </FrameLayout>
+

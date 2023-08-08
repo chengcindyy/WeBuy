@@ -1,14 +1,17 @@
 package com.csis4495_cmk.webuy.fragments;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +38,9 @@ import com.csis4495_cmk.webuy.models.ProductStyle;
 import com.csis4495_cmk.webuy.models.Seller;
 import com.csis4495_cmk.webuy.models.Wishlist;
 import com.csis4495_cmk.webuy.viewmodels.CustomerWishlistViewModel;
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -80,11 +86,14 @@ public class CustomerGroupDetailFragment extends Fragment
     ImageView imvSellerPic;
     Button fabAddToCart;
     ToggleButton btnSaveToList;
+    ImageButton btnShare;
 
     CustomerGroupStyleAdapter styleAdapter;
     int selectedStylePosition = -1;
     CustomerWishlistViewModel wishListViewModel;
     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+    public ShareContent shareContent;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -114,6 +123,41 @@ public class CustomerGroupDetailFragment extends Fragment
         imvSellerPic = view.findViewById(R.id.imv_detail_store_pic);
         fabAddToCart = view.findViewById(R.id.fab_add_to_cart);
         btnSaveToList = view.findViewById(R.id.btn_detail_save_to_list);
+        btnShare =view.findViewById(R.id.btn_detail_share_to_social_media);
+
+        // Share to social media
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String groupId = getArguments().getString("groupId");
+                String groupJson = getArguments().getString("group");
+                Group group = new Gson().fromJson(groupJson, Group.class);
+                if (getArguments() != null) {
+                    Log.d("Test groupId", groupId + "!");
+                    String groupTitle = group.getGroupName();
+                    String deepLink = "webuy://product/view?groupId=" + groupId + "&group=" + group;
+                    if (group.getGroupStyles() != null) {
+                        deepLink += "&styleId=" + group.getGroupStyles();
+                    }
+                    String shareMessage = "Hi, I want to share our " + groupTitle + " with you! " + deepLink;
+
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+                    startActivity(Intent.createChooser(shareIntent, "Share to: "));
+
+//                    ShareLinkContent content = new ShareLinkContent.Builder()
+//                            .setContentUrl(Uri.parse(deepLink))
+//                            .setQuote("See this amazing product: " + groupTitle)
+//                            .build();
+//
+//                    ShareDialog shareDialog = new ShareDialog(getActivity());
+//                    shareDialog.show(content, ShareDialog.Mode.AUTOMATIC);
+                }
+            }
+        });
+
+
         // Get data from viewModel
         wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
         wishListViewModel.getWishlistObject().observe(getViewLifecycleOwner(), new Observer<ArrayList<Wishlist>>() {

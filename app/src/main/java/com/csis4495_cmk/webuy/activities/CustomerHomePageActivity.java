@@ -3,7 +3,10 @@ package com.csis4495_cmk.webuy.activities;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -13,12 +16,15 @@ import androidx.navigation.fragment.NavHostFragment;
 
 
 import com.csis4495_cmk.webuy.R;
+import com.csis4495_cmk.webuy.fragments.CustomerGroupDetailFragment;
 import com.csis4495_cmk.webuy.fragments.CustomerHomeGroupsFragment;
+import com.csis4495_cmk.webuy.models.Group;
 import com.facebook.login.LoginManager;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
 
 public class CustomerHomePageActivity extends AppCompatActivity {
 
@@ -59,6 +65,7 @@ public class CustomerHomePageActivity extends AppCompatActivity {
         navController.navigate(R.id.customerHomeFragment);
 
         checkIfEmailVerified(auth.getCurrentUser());
+
     }
 
     private void checkIfEmailVerified(FirebaseUser firebaseUser) {
@@ -92,4 +99,28 @@ public class CustomerHomePageActivity extends AppCompatActivity {
         //Show AlertDialog
         alertDialog.show();
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_customer);
+        NavController navController = navHostFragment.getNavController();
+
+        if (intent.getAction() == Intent.ACTION_VIEW) {
+            Uri deepLinkUri = intent.getData();
+            if (deepLinkUri != null) {
+
+                String groupId = deepLinkUri.getQueryParameter("groupId");
+                String groupJson = deepLinkUri.getQueryParameter("group");
+
+                Bundle bundle = new Bundle();
+                bundle.putString("groupId", groupId);
+                bundle.putString("group", groupJson);
+
+                navController.navigate(R.id.customerGroupDetailFragment, bundle);
+            }
+        }
+    }
+
+
 }
