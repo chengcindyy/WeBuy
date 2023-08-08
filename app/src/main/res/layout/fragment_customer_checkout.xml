@@ -1,361 +1,370 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/cancel_grey"
     tools:context=".fragments.CustomerCheckoutFragment">
 
-    <TextView
-        android:id="@+id/label_order_detail"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Order details"
-        android:background="@color/white"
-        android:paddingVertical="5dp"
-        android:textSize="18sp"
-        android:gravity="center" />
-
-    <View
-        android:id="@+id/divider5"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_below="@+id/label_order_detail"/>
-
-    <TextView
-        android:id="@+id/txv_store_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:hint="Store name"
-        android:background="@color/white"
-        android:paddingHorizontal="10dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:textStyle="bold"
-        android:layout_below="@+id/divider5"/>
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView_shopping_info"
-        android:background="@color/white"
-        android:paddingTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txv_store_name"/>
-
-    <TextView
-        android:id="@+id/label_shipment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:textSize="18sp"
-        android:paddingStart="10dp"
-        android:paddingTop="5dp"
-        android:drawablePadding="5dp"
-        android:drawableLeft="@drawable/outline_local_shipping_24"
-        android:layout_below="@id/recyclerView_shopping_info"
-        android:text="Shipment"/>
-
-    <TextView
-        android:id="@+id/txv_shipment_method"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginStart="0dp"
-        android:paddingTop="5dp"
-        android:textSize="18sp"
-        android:background="@color/white"
-        android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
-        android:layout_below="@id/recyclerView_shopping_info"
-        android:layout_toRightOf="@id/label_shipment"
-        android:gravity="end"
-        android:hint="Select a shipment*" />
-
-    <TextView
-        android:id="@+id/txv_shipment_method_name_phone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingEnd="25dp"
-        android:background="@color/white"
-        android:textSize="18dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/txv_shipment_method"
-        android:hint="Receiver* and phone numbers*"
-        android:gravity="end" />
-
-    <TextView
-        android:id="@+id/txv_shipment_method_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18dp"
-        android:paddingBottom="5dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="true"
-        android:paddingEnd="25dp"
-        android:layout_below="@+id/txv_shipment_method_name_phone"
-        android:hint="Address*"
-        android:gravity="end"
-        android:focusable="true"
-        android:background="@android:color/white"/>
-
-    <View
-        android:id="@+id/divider3"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_below="@+id/txv_shipment_method_address"/>
-
-    <TextView
-        android:id="@+id/label_notes"
-        android:gravity="center_vertical"
-        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_alignBottom="@+id/edt_customer_notes"
-        android:layout_below="@id/divider3"
-        android:paddingStart="10dp"
-        android:drawablePadding="5dp"
-        android:drawableLeft="@drawable/baseline_edit_note_purple"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:paddingRight="50dp"
-        android:background="@color/white"
-        android:textSize="18sp"
-        android:text="Notes"/>
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <EditText
-        android:id="@+id/edt_customer_notes"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:layout_below="@+id/divider3"
-        android:paddingEnd="25dp"
-        android:layout_toRightOf="@+id/label_notes"
-        android:layout_alignParentRight="true"
-        android:hint="Buzzer / time etc"
-        android:maxLines="2"
-        android:ellipsize="end"
-        android:background="@color/white"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/label_payment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Payment"
-        android:drawablePadding="5dp"
-        android:layout_marginVertical="5dp"
-        android:paddingHorizontal="10dp"
-        android:textSize="18sp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:background="@color/white"
-        android:drawableLeft="@drawable/outline_monetization_on_24"
-        android:layout_below="@+id/label_notes"/>
+            <TextView
+                android:id="@+id/label_order_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center"
+                android:hint="Order details"
+                android:paddingVertical="5dp"
+                android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/txv_payment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_toRightOf="@+id/label_payment"
-        android:layout_alignParentRight="true"
-        android:hint="Select a payment type*"
-        android:gravity="end"
-        android:layout_marginVertical="5dp"
-        android:background="@color/white"
-        android:clickable="true"
-        android:focusable="true"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
-        android:layout_below="@+id/edt_customer_notes"/>
+            <View
+                android:id="@+id/divider5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/label_order_detail"
+                android:background="?android:attr/listDivider" />
 
-    <TextView
-        android:id="@+id/label_payment_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Payment details"
-        android:drawablePadding="5dp"
-        android:paddingHorizontal="10dp"
-        android:textSize="18sp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:background="@color/white"
-        android:drawableLeft="@drawable/outline_event_available_24"
-        android:layout_below="@+id/label_payment"/>
+            <TextView
+                android:id="@+id/txv_store_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider5"
+                android:background="@color/white"
+                android:hint="Store name"
+                android:paddingHorizontal="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/label_total_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Total amount:"
-        android:layout_below="@id/label_payment_detail"
-        android:textSize="18sp"
-        android:paddingHorizontal="15dp"
-        android:background="@color/white"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"/>
 
-    <TextView
-        android:id="@+id/txv_checkout_total_amount"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/label_payment_detail"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/label_total_amount"
-        android:paddingHorizontal="15dp"
-        android:hint="CA$"
-        android:gravity="end"
-        android:textSize="18sp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:background="@color/white"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_shopping_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txv_store_name"
+                android:background="@color/white"
+                android:paddingTop="5dp" />
 
-    <TextView
-        android:id="@+id/label_shipment_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Shipment amount:"
-        android:layout_below="@id/label_total_amount"
-        android:textSize="18sp"
-        android:paddingHorizontal="15dp"
-        android:background="@color/white"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"/>
+            <TextView
+                android:id="@+id/label_shipment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recyclerView_shopping_info"
+                android:background="@color/white"
+                android:drawableLeft="@drawable/outline_local_shipping_24"
+                android:drawablePadding="5dp"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:text="Shipment"
+                android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/txv_checkout_shipment_amount"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/txv_checkout_total_amount"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/label_shipment_amount"
-        android:paddingHorizontal="15dp"
-        android:hint="CA$"
-        android:gravity="end"
-        android:textSize="18sp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:background="@color/white"/>
+            <TextView
+                android:id="@+id/txv_shipment_method"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recyclerView_shopping_info"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="0dp"
+                android:layout_toRightOf="@id/label_shipment"
+                android:background="@color/white"
+                android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
+                android:gravity="end"
+                android:hint="Select a shipment*"
+                android:paddingTop="5dp"
+                android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/label_gst_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GST / HST:"
-        android:layout_below="@id/label_shipment_amount"
-        android:textSize="18sp"
-        android:paddingHorizontal="15dp"
-        android:background="@color/white"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"/>
+            <TextView
+                android:id="@+id/txv_shipment_method_name_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txv_shipment_method"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:background="@color/white"
+                android:gravity="end"
+                android:hint="Receiver* and phone numbers*"
+                android:paddingEnd="25dp"
+                android:textSize="18dp" />
 
-    <TextView
-        android:id="@+id/txv_checkout_gst_amount"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/txv_checkout_shipment_amount"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/label_gst_amount"
-        android:paddingHorizontal="15dp"
-        android:hint="CA$"
-        android:gravity="end"
-        android:textSize="18sp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:background="@color/white"/>
+            <TextView
+                android:id="@+id/txv_shipment_method_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txv_shipment_method_name_phone"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/white"
+                android:focusable="true"
+                android:gravity="end"
+                android:hint="Address*"
+                android:paddingEnd="25dp"
+                android:paddingBottom="5dp"
+                android:textSize="18dp" />
 
-    <TextView
-        android:id="@+id/label_pst_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PST / QST:"
-        android:layout_below="@id/label_gst_amount"
-        android:textSize="18sp"
-        android:paddingHorizontal="15dp"
-        android:background="@color/white"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"/>
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/txv_shipment_method_address"
+                android:background="?android:attr/listDivider" />
 
-    <TextView
-        android:id="@+id/txv_checkout_pst_amount"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/txv_checkout_gst_amount"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/label_pst_amount"
-        android:paddingHorizontal="15dp"
-        android:hint="CA$"
-        android:gravity="end"
-        android:textSize="18sp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:background="@color/white"/>
+            <TextView
+                android:id="@+id/label_notes"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_below="@id/divider3"
+                android:layout_alignBottom="@+id/edt_customer_notes"
+                android:background="@color/white"
+                android:drawableLeft="@drawable/baseline_edit_note_purple"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingRight="50dp"
+                android:paddingBottom="5dp"
+                android:text="Notes"
+                android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/label_order_total_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Order total price:"
-        android:textStyle="bold"
-        android:layout_below="@id/label_pst_amount"
-        android:textSize="18sp"
-        android:paddingHorizontal="15dp"
-        android:background="@color/white"
-        android:paddingTop="3dp"
-        android:paddingBottom="10dp"
-        android:layout_alignBottom="@+id/view_bottom_sticker1"/>
+            <EditText
+                android:id="@+id/edt_customer_notes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider3"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@+id/label_notes"
+                android:background="@color/white"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:hint="Buzzer / time etc"
+                android:maxLines="2"
+                android:paddingTop="5dp"
+                android:paddingEnd="25dp"
+                android:paddingBottom="5dp" />
+
+            <TextView
+                android:id="@+id/label_payment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/label_notes"
+                android:layout_marginVertical="5dp"
+                android:background="@color/white"
+                android:drawableLeft="@drawable/outline_monetization_on_24"
+                android:drawablePadding="5dp"
+                android:paddingHorizontal="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Payment"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txv_payment"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edt_customer_notes"
+                android:layout_alignParentRight="true"
+                android:layout_marginVertical="5dp"
+                android:layout_toRightOf="@+id/label_payment"
+                android:background="@color/white"
+                android:clickable="true"
+                android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
+                android:focusable="true"
+                android:gravity="end"
+                android:hint="Select a payment type*"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/label_payment_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/label_payment"
+                android:background="@color/white"
+                android:drawableLeft="@drawable/outline_event_available_24"
+                android:drawablePadding="5dp"
+                android:paddingHorizontal="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="Payment details"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/label_total_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/label_payment_detail"
+                android:background="@color/white"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="Total amount:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txv_checkout_total_amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/label_payment_detail"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/label_total_amount"
+                android:background="@color/white"
+                android:gravity="end"
+                android:hint="CA$"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/label_shipment_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/label_total_amount"
+                android:background="@color/white"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="Shipment amount:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txv_checkout_shipment_amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txv_checkout_total_amount"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/label_shipment_amount"
+                android:background="@color/white"
+                android:gravity="end"
+                android:hint="CA$"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/label_gst_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/label_shipment_amount"
+                android:background="@color/white"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="GST / HST:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txv_checkout_gst_amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txv_checkout_shipment_amount"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/label_gst_amount"
+                android:background="@color/white"
+                android:gravity="end"
+                android:hint="CA$"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/label_pst_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/label_gst_amount"
+                android:background="@color/white"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="PST / QST:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txv_checkout_pst_amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txv_checkout_gst_amount"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/label_pst_amount"
+                android:background="@color/white"
+                android:gravity="end"
+                android:hint="CA$"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/label_order_total_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/label_pst_amount"
+                android:layout_alignParentBottom="true"
+                android:background="@color/white"
+                android:paddingHorizontal="15dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="10dp"
+                android:text="Order total price:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txv_checkout_order_total_amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txv_checkout_pst_amount"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/label_order_total_amount"
+                android:background="@color/white"
+                android:gravity="end"
+                android:hint="CA$"
+                android:paddingHorizontal="18dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="10dp"
+                android:textColor="#D3A588"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
     <View
-        android:id="@+id/view_bottom_sticker1"
+        android:id="@+id/view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp" />
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/white">
 
-    <View
-        android:id="@+id/view_bottom_sticker2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp" />
-
-    <TextView
-        android:id="@+id/txv_checkout_order_total_amount"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/txv_checkout_pst_amount"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/label_order_total_amount"
-        android:paddingHorizontal="18dp"
-        android:textStyle="bold"
-        android:hint="CA$"
-        android:textColor="#D3A588"
-        android:gravity="end"
-        android:textSize="18sp"
-        android:paddingTop="3dp"
-        android:paddingBottom="10dp"
-        android:layout_alignBottom="@+id/view_bottom_sticker2"
-        android:background="@color/white"/>
+    </View>
 
     <Button
         android:id="@+id/btn_place_order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/view_bottom_sticker2"
-        android:layout_alignBottom="@+id/view_bottom_sticker2"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Place Order" />
+        android:layout_marginRight="8dp"
+        android:text="Place Order"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/nestedScrollView" />
 
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
-</RelativeLayout>

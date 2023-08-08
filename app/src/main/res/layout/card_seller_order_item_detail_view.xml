@@ -12,7 +12,8 @@
             android:id="@+id/tv_seller_order_list_item_style_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Style name" />
+            android:text="Style name"
+            android:maxLines="1"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,7 +33,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="item allocated"
-                android:gravity="right|end"/>
+                android:gravity="right|end"
+                android:textStyle="italic"/>
 
         </LinearLayout>
 

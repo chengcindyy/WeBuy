@@ -178,8 +178,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                             inventoryRef.child(inventorySnapshot.getKey()).child("toAllocate").setValue(newToAllocate);
                         }
                     }
-
-
                 }
             }
 
@@ -271,7 +269,6 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
 
                 // Set data to parent recyclerView
                 adapter.setDisplayItemsList(inventoryMap, allCoverImgsList);
-                adapter.notifyDataSetChanged();
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 mRecyclerView.setAdapter(adapter);
                 //return false;
@@ -484,6 +481,7 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                         adapter.setDisplayItemsList(inventoryMap, allCoverImgsList);
                         break;
                 }
+                adapter.notifyDataSetChanged();
             }
 
             @Override

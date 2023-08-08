@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SellerOrderDetailFragment">
+    tools:context=".fragments.SellerOrderDetailFragment"
+    android:padding="10dp"
+    android:background="@color/white">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -121,31 +123,53 @@
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:text="Order Total" />
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"/>
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_seller_order_detail_groups"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"/>
+
+        <View
+            android:id="@+id/divider7"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
 
             <Button
                 android:id="@+id/btn_seller_order_detail_previous"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Previous Step" />
+                android:text="Previous Step"
+                android:background="@drawable/button_outline"
+                />
 
             <Button
                 android:id="@+id/btn_seller_order_detail_next"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Next Step" />
+                android:text="Next Step"
+                android:background="@drawable/button_solid"
+                android:layout_marginLeft="5dp"/>
         </LinearLayout>
 
     </LinearLayout>
