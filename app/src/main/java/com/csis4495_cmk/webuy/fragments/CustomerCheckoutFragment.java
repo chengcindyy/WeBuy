@@ -9,9 +9,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -219,14 +223,29 @@ public class CustomerCheckoutFragment extends Fragment {
         customerNote = view.findViewById(R.id.edt_customer_notes);
         // Btn Order
         btnOrder = view.findViewById(R.id.btn_place_order);
+
         btnOrder.setOnClickListener(v -> {
-            placeOrder(); //check validity first
+            if(isOrderPlaced()) {
+                //redirect to successful page
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.action_customerCheckoutFragment_to_customerOrderReceivedFragment);
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        navController.popBackStack(); // Close the current fragment
+//                    }
+//                }, 7000);
+
+            }
+
+
         });
 
     }
 
-    private void placeOrder() {
+    private boolean isOrderPlaced() {
         Log.d("place order", "place order clicked");
+        boolean validated = false;
         CustomerCheckoutDataViewModel.ShipmentInfo shipmentInfo = model.getShipmentInfoObject().getValue();
         String selectedPayment = model.getSelectedPayment().getValue();
 
@@ -301,7 +320,7 @@ public class CustomerCheckoutFragment extends Fragment {
                                 //items remove from cart
                                 removeItemsFromCart();
 
-                                //TODO: redirect to successful page( 3 second to order list or home page)
+                                validated = true;
                             }
 
                         }
@@ -334,7 +353,8 @@ public class CustomerCheckoutFragment extends Fragment {
                             //items remove from cart
                             removeItemsFromCart();
 
-                            //TODO: redirect to successful page( 3 second to order list or home page)
+                            validated = true;
+
                         }
 
                     }
@@ -344,6 +364,8 @@ public class CustomerCheckoutFragment extends Fragment {
             }
 
         }
+
+        return validated;
 
     }
 
