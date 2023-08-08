@@ -58,8 +58,10 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
@@ -93,6 +95,8 @@ public class CustomerGroupDetailFragment extends Fragment
     CustomerWishlistViewModel wishListViewModel;
     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+    Map<String,Integer> psIdSoldAmountMap = new HashMap<>();
+
     public ShareContent shareContent;
 
     @Override
@@ -125,7 +129,7 @@ public class CustomerGroupDetailFragment extends Fragment
         btnSaveToList = view.findViewById(R.id.btn_detail_save_to_list);
         btnShare =view.findViewById(R.id.btn_detail_share_to_social_media);
 
-        // Share to social media
+         //Share to social media
         btnShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -268,10 +272,50 @@ public class CustomerGroupDetailFragment extends Fragment
         });
 
         //TODO:sold amount (ordered)
-        int soldAmount = 0;
-        tvSoldAmount.setText(soldAmount + " sold");
+        DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
+        //p___ productId + s___ styleId  ordered
+        inventoryRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                psIdSoldAmountMap.clear();
+                if (snapshot.exists()) {
+                    for (DataSnapshot invSnapshot: snapshot.getChildren()) {
+                        if ( groupId.equals(invSnapshot.child("groupId").getValue(String.class)) ) {
+                            String psId;
+                            if (invSnapshot.child("styleId").exists()) {
+                                psId = "s___" + invSnapshot.child("styleId").getValue(String.class);
+                            } else {
+                                psId = "p___" + invSnapshot.child("productId").getValue(String.class);
+                            }
+                            int soldAmount = invSnapshot.child("ordered").getValue(Integer.class);
 
-        //TODO:amount left (toSell - ordered)
+                            psIdSoldAmountMap.put(psId,soldAmount);
+                        }
+                    }
+                } else {
+                    Log.d("sold", "sold map null");
+                }
+                if (psIdSoldAmountMap!= null) {
+                    Log.d("sold", "sold map size: " + psIdSoldAmountMap.size());
+                    if (group.getGroupStyles() == null) {
+                        int soldAmount = psIdSoldAmountMap.get("p___"+group.getProductId());
+                        tvSoldAmount.setText(soldAmount + " sold");
+                        Log.d("sold", "sold amount: " + soldAmount);
+                    } else {
+                        //not selected
+                        tvSoldAmount.setText("");
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+        //TODO:amount left
         int inventoryAmount;
         if (group.getGroupStyles() == null) {
             inventoryAmount = group.getGroupQtyMap().get("p___" + group.getProductId());
@@ -466,14 +510,18 @@ public class CustomerGroupDetailFragment extends Fragment
         tvGroupPrice.setText("CA$ "+ style.getStylePrice());
         selectedStyle = style;
         selectedStylePosition = stylePosition;
+        String styleId = selectedStyle.getStyleId();
         //set img
         viewPagerGroupImg.setCurrentItem(groupImgUrls.size()+stylePosition,true);
         //set inventory amount
-        int inventoryAmount = group.getGroupQtyMap().get("s___"+style.getStyleId());
+        int inventoryAmount = group.getGroupQtyMap().get("s___" + styleId);
         if (inventoryAmount == -1) {
             tvInventoryAmount.setText("unlimited amount");
         } else {
             tvInventoryAmount.setText(inventoryAmount + " left");
         }
+        //TODO: sold Amount
+        int soldAmount = psIdSoldAmountMap.get("s___" + styleId);
+        tvSoldAmount.setText(soldAmount + " sold");
     }
 }

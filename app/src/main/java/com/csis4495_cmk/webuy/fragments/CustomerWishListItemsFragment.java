@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.csis4495_cmk.webuy.R;
@@ -35,6 +36,8 @@ public class CustomerWishListItemsFragment extends Fragment {
     CustomerWishlistViewModel wishListViewModel;
     TextView tvNoItems;
 
+    LinearLayout bottomBannerCheckout;
+
     public CustomerWishListItemsFragment() {
         // Required empty public constructor
     }
@@ -54,6 +57,8 @@ public class CustomerWishListItemsFragment extends Fragment {
         // Get data from viewModel
         wishListViewModel = new ViewModelProvider(requireActivity()).get(CustomerWishlistViewModel.class);
 
+        bottomBannerCheckout = view.findViewById(R.id.bottom_banner_checkout);
+        bottomBannerCheckout.setVisibility(View.GONE);
         tvNoItems = view.findViewById(R.id.tv_no_items);
         wishlistDisplayList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.rv_items);

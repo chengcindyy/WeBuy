@@ -128,8 +128,6 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
                     checkGroupTimestamp(groupId, group, groupStatus);
 
-                    //soldAmount
-
                 }
 
                 Log.d("custTest", "size: "+groupMap.size());
@@ -143,7 +141,6 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
 
                 adapter.updateData(groupMap);
 
-                //return false;
             }
 
             @Override
@@ -151,6 +148,42 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                 Log.d("custTest", error.getMessage());
             }
         });
+
+        //TODO: soldAmount
+        DatabaseReference inventoryRef = FirebaseDatabase.getInstance().getReference("Inventory");
+        Map<String, Map<String,Integer>> soldAmountMap = new HashMap<>();
+        //groupId   p___ productId + s___ styleId  ordered
+        inventoryRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                soldAmountMap.clear();
+                if (snapshot.exists()) {
+                    for (DataSnapshot invSnapshot: snapshot.getChildren()) {
+                        String groupId = invSnapshot.child("groupId").getValue(String.class);
+
+                        String psId;
+                        if (invSnapshot.child("styleId").exists()) {
+                            psId = "s___" + invSnapshot.child("styleId").getValue(String.class);
+                        } else {
+                            psId = "p___" + invSnapshot.child("productId").getValue(String.class);
+                        }
+
+                        int soldAmount = invSnapshot.child("ordered").getValue(Integer.class);
+
+                        soldAmountMap.computeIfAbsent(groupId, k -> new HashMap<>()).put(psId,soldAmount);
+
+                    }
+                    adapter.updateSoldAmountMap(soldAmountMap);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         // Search
 
         doSearch();
@@ -213,14 +246,11 @@ public class CustomerHomeGroupsFragment extends Fragment implements CustomerHome
                                     }
                                 }
                                 UpdateRecyclerView(mGroupMap);
-
-                                //return false;
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) { }
                         });
-                        //return false;
                     }
 
                     @Override
