@@ -280,6 +280,9 @@
         <action
             android:id="@+id/action_sellerAllProductListFragment2_to_sellerAddProductFragment"
             app:destination="@id/sellerAddProductFragment" />
+        <action
+            android:id="@+id/action_sellerAllProductListFragment_to_sellerProfileFragment"
+            app:destination="@id/sellerProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/sellerCustomerSupportFragment"

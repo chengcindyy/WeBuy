@@ -78,9 +78,9 @@ public class SellerAllProductAdapter extends RecyclerView.Adapter<SellerAllProdu
                                 navController.navigate(R.id.action_sellerAllProductListFragment2_to_sellerAddGroupFragment, bundle);
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton("Setting", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
+                                navController.navigate(R.id.action_sellerAllProductListFragment_to_sellerProfileFragment);
                             }
                         });
 

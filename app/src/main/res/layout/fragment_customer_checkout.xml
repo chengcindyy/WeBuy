@@ -5,19 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/cancel_grey"
+    android:background="@color/white"
     tools:context=".fragments.CustomerCheckoutFragment">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/view"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -28,15 +28,19 @@
                 android:background="@color/white"
                 android:gravity="center"
                 android:hint="Order details"
+                android:layout_marginTop="10dp"
                 android:paddingVertical="5dp"
-                android:textSize="18sp" />
+                android:paddingTop="10dp"
+                android:textSize="18sp"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <View
                 android:id="@+id/divider5"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@+id/label_order_detail"
-                android:background="?android:attr/listDivider" />
+                android:background="?android:attr/listDivider"
+                app:layout_constraintTop_toBottomOf="@+id/label_order_detail" />
+
 
             <TextView
                 android:id="@+id/txv_store_name"
@@ -49,7 +53,8 @@
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@+id/label_order_detail" />
 
 
             <androidx.recyclerview.widget.RecyclerView
@@ -58,7 +63,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/txv_store_name"
                 android:background="@color/white"
-                android:paddingTop="5dp" />
+                android:paddingTop="5dp"
+                app:layout_constraintTop_toBottomOf="@+id/txv_store_name" />
 
             <TextView
                 android:id="@+id/label_shipment"
@@ -71,7 +77,9 @@
                 android:paddingStart="10dp"
                 android:paddingTop="5dp"
                 android:text="Shipment"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recyclerView_shopping_info" />
 
             <TextView
                 android:id="@+id/txv_shipment_method"
@@ -79,18 +87,21 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/recyclerView_shopping_info"
                 android:layout_alignParentRight="true"
-                android:layout_marginStart="0dp"
                 android:layout_toRightOf="@id/label_shipment"
                 android:background="@color/white"
                 android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
                 android:gravity="end"
                 android:hint="Select a shipment*"
                 android:paddingTop="5dp"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/label_shipment"
+                app:layout_constraintTop_toBottomOf="@+id/recyclerView_shopping_info" />
+
 
             <TextView
                 android:id="@+id/txv_shipment_method_name_phone"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/txv_shipment_method"
                 android:layout_alignParentLeft="true"
@@ -99,11 +110,13 @@
                 android:gravity="end"
                 android:hint="Receiver* and phone numbers*"
                 android:paddingEnd="25dp"
-                android:textSize="18dp" />
+                android:textSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txv_shipment_method" />
 
             <TextView
                 android:id="@+id/txv_shipment_method_address"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/txv_shipment_method_name_phone"
                 android:layout_alignParentLeft="true"
@@ -114,21 +127,23 @@
                 android:hint="Address*"
                 android:paddingEnd="25dp"
                 android:paddingBottom="5dp"
-                android:textSize="18dp" />
+                android:textSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txv_shipment_method_name_phone" />
 
             <View
                 android:id="@+id/divider3"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_below="@+id/txv_shipment_method_address"
-                android:background="?android:attr/listDivider" />
+                android:background="?android:attr/listDivider"
+                app:layout_constraintBottom_toBottomOf="@+id/txv_shipment_method_address" />
 
             <TextView
                 android:id="@+id/label_notes"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_below="@id/divider3"
-                android:layout_alignBottom="@+id/edt_customer_notes"
                 android:background="@color/white"
                 android:drawableLeft="@drawable/baseline_edit_note_purple"
                 android:drawablePadding="5dp"
@@ -138,7 +153,9 @@
                 android:paddingRight="50dp"
                 android:paddingBottom="5dp"
                 android:text="Notes"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txv_shipment_method_address" />
 
             <EditText
                 android:id="@+id/edt_customer_notes"
@@ -154,14 +171,16 @@
                 android:maxLines="2"
                 android:paddingTop="5dp"
                 android:paddingEnd="25dp"
-                android:paddingBottom="5dp" />
+                android:paddingBottom="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/label_notes"
+                app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
             <TextView
                 android:id="@+id/label_payment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/label_notes"
-                android:layout_marginVertical="5dp"
                 android:background="@color/white"
                 android:drawableLeft="@drawable/outline_monetization_on_24"
                 android:drawablePadding="5dp"
@@ -169,7 +188,9 @@
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:text="Payment"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/label_notes" />
 
             <TextView
                 android:id="@+id/txv_payment"
@@ -177,7 +198,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/edt_customer_notes"
                 android:layout_alignParentRight="true"
-                android:layout_marginVertical="5dp"
                 android:layout_toRightOf="@+id/label_payment"
                 android:background="@color/white"
                 android:clickable="true"
@@ -187,7 +207,10 @@
                 android:hint="Select a payment type*"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/label_payment"
+                app:layout_constraintTop_toBottomOf="@+id/edt_customer_notes" />
 
             <TextView
                 android:id="@+id/label_payment_detail"
@@ -201,7 +224,19 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="Payment details"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@+id/txv_payment" />
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/txv_shipment_method_address"
+                android:background="?android:attr/listDivider"
+                android:layout_marginVertical="5dp"
+                app:layout_constraintTop_toBottomOf="@+id/label_payment_detail"
+                app:layout_constraintBottom_toBottomOf="@+id/label_payment_detail" />
+
 
             <TextView
                 android:id="@+id/label_total_amount"
@@ -212,8 +247,11 @@
                 android:paddingHorizontal="15dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
+                android:layout_marginBottom="5dp"
                 android:text="Total amount:"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider4" />
 
             <TextView
                 android:id="@+id/txv_checkout_total_amount"
@@ -226,9 +264,13 @@
                 android:gravity="end"
                 android:hint="CA$"
                 android:paddingHorizontal="15dp"
+                android:layout_marginBottom="5dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/label_total_amount"
+                app:layout_constraintTop_toBottomOf="@+id/divider4" />
 
             <TextView
                 android:id="@+id/label_shipment_amount"
@@ -240,7 +282,9 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="Shipment amount:"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/label_total_amount" />
 
             <TextView
                 android:id="@+id/txv_checkout_shipment_amount"
@@ -255,7 +299,10 @@
                 android:paddingHorizontal="15dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/label_shipment_amount"
+                app:layout_constraintTop_toBottomOf="@+id/txv_checkout_total_amount" />
 
             <TextView
                 android:id="@+id/label_gst_amount"
@@ -267,7 +314,9 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="GST / HST:"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/label_shipment_amount" />
 
             <TextView
                 android:id="@+id/txv_checkout_gst_amount"
@@ -282,7 +331,10 @@
                 android:paddingHorizontal="15dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/label_gst_amount"
+                app:layout_constraintTop_toBottomOf="@+id/txv_checkout_shipment_amount" />
 
             <TextView
                 android:id="@+id/label_pst_amount"
@@ -294,7 +346,9 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="PST / QST:"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/label_gst_amount" />
 
             <TextView
                 android:id="@+id/txv_checkout_pst_amount"
@@ -309,7 +363,10 @@
                 android:paddingHorizontal="15dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/label_pst_amount"
+                app:layout_constraintTop_toBottomOf="@+id/txv_checkout_gst_amount" />
 
             <TextView
                 android:id="@+id/label_order_total_amount"
@@ -323,15 +380,19 @@
                 android:paddingBottom="10dp"
                 android:text="Order total price:"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/label_pst_amount" />
+
 
             <TextView
                 android:id="@+id/txv_checkout_order_total_amount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/txv_checkout_pst_amount"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
                 android:layout_toRightOf="@id/label_order_total_amount"
                 android:background="@color/white"
                 android:gravity="end"
@@ -341,9 +402,12 @@
                 android:paddingBottom="10dp"
                 android:textColor="#D3A588"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/label_order_total_amount"
+                app:layout_constraintTop_toBottomOf="@+id/txv_checkout_pst_amount" />
 
-        </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 
@@ -363,8 +427,6 @@
         android:layout_marginRight="8dp"
         android:text="Place Order"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/view"
-        app:layout_constraintTop_toBottomOf="@+id/nestedScrollView" />
+        app:layout_constraintEnd_toEndOf="@+id/view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
