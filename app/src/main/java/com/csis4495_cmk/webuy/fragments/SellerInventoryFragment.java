@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SellerInventoryFragment extends Fragment implements SellerInventoryListRecyclerAdapter.OnButtonClickListener,
@@ -136,8 +135,10 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                         String sellerId = order.getSellerId();
                         if (sellerId.equals(firebaseUser.getUid())){
                             String productStyleKey = "";
+                            int toAllocateTotal = 0;
                             boolean isAllocated = false;
                             int orderAmount = 0;
+                            int orderStatus = 0;
                             Map<String, Map<String, Order.OrderItemInfo>> groupsAndItemsMap = order.getGroupsAndItemsMap();
                             for (Map.Entry<String, Map<String, Order.OrderItemInfo>> groupEntry : groupsAndItemsMap.entrySet()) {
                                 Map<String, Order.OrderItemInfo> innerMap = groupEntry.getValue();
@@ -147,9 +148,31 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
                                     isAllocated = orderItemInfo.isAllocated();
                                     productStyleKey = orderProductId.split("p___")[1];
                                     orderAmount = orderItemInfo.getOrderAmount();
+                                    orderStatus = order.getOrderStatus();
+                                    if (isAllocated == false && orderStatus == 1){
+                                        toAllocateTotal +=orderAmount;
+                                    }
                                 }
-                                updateToAllocateData(productStyleKey, isAllocated, orderAmount);
                             }
+                            int finalToAllocateTotal = toAllocateTotal;
+                            String finalProductStyleKey = productStyleKey;
+                            inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot inventorySnapshot : snapshot.getChildren()) {
+                                        Inventory inventory = inventorySnapshot.getValue(Inventory.class);
+                                        if (inventory.getProductStyleKey().equals(finalProductStyleKey)){
+                                            inventoryRef.child(inventorySnapshot.getKey()).child("toAllocate").setValue(finalToAllocateTotal);
+                                        }
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                         }
                     }
                 }
@@ -160,32 +183,12 @@ public class SellerInventoryFragment extends Fragment implements SellerInventory
 
             }
         });
+
+
     }
 
-    private void updateToAllocateData(String psId, boolean isAllocated, int orderAmount) {
-        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // Fill the inventoryMap (this is for all products).
-                for (DataSnapshot inventorySnapshot : snapshot.getChildren()) {
-                    Inventory inventory = inventorySnapshot.getValue(Inventory.class);
-                    Log.d("Test allocate number", " productStyleKey: "+ inventory.getProductStyleKey());
-                    Log.d("Test allocate number", " Passed productStyleKey: "+ psId + "allocated: "+ isAllocated);
-                    if (inventory.getProductStyleKey().equals(psId) && isAllocated == false){
-                        int currentAllocateNum = inventory.getToAllocate();
-                        if (currentAllocateNum == 0){
-                            int newToAllocate = currentAllocateNum + orderAmount;
-                            inventoryRef.child(inventorySnapshot.getKey()).child("toAllocate").setValue(newToAllocate);
-                        }
-                    }
-                }
-            }
+    private void updateToAllocateData(String psId, boolean isAllocated, int orderAmount, int orderStatus) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
 
