@@ -265,8 +265,8 @@ public class SellerProfileSetDeliveryFragment extends Fragment implements Seller
     private void showConfirmToRemoveDialog(String methodId, int position) {
         //Set up alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Remove this product");
-        builder.setMessage("Are you sure you want to remove this product?");
+        builder.setTitle("Remove this delivery method?");
+        builder.setMessage("Are you sure you want to remove this delivery method?");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
