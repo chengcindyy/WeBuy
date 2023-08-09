@@ -520,19 +520,13 @@ public class CustomerGroupDetailFragment extends Fragment
         } else {
             tvInventoryAmount.setText(inventoryAmount + " left");
         }
-
-        //sold Amount
-        if (psIdSoldAmountMap!= null) {
-            Log.d("sold", "sold map size: " + psIdSoldAmountMap.size());
-            int soldAmount = psIdSoldAmountMap.get("s___" + styleId);
-            tvSoldAmount.setText(soldAmount + " sold");
-        } else {
-            //not selected
-            tvSoldAmount.setText("");
+        //TODO: sold Amount
+        Log.d("ssss",styleId);
+        Log.d("ssss!",psIdSoldAmountMap.keySet().size() + "");
+        for (String psId: psIdSoldAmountMap.keySet()) {
+            Log.d("ssss!",psId);
         }
-
-
-
-
+        int soldAmount = psIdSoldAmountMap.get("s___" + styleId);
+        tvSoldAmount.setText(soldAmount + " sold");
     }
 }

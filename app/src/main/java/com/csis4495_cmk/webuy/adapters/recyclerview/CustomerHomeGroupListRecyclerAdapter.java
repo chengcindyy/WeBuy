@@ -169,14 +169,14 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     Seller seller = snapshot.getValue(Seller.class);
-                    sellerName = seller.getStoreInfo().getStoreName();
-                    holder.tvSellerName.setText(sellerName);
+                    if (seller.getStoreInfo() != null) {
+                        sellerName = seller.getStoreInfo().getStoreName();
+                        holder.tvSellerName.setText(sellerName);
 
-                    sellerPic = seller.getStoreInfo().getStorePic();
+                        sellerPic = seller.getStoreInfo().getStorePic();
 
-                    if (sellerPic != null) {
-                        Log.d("Upload img: imageUrl ", sellerPic);
-                        if (context != null) {
+                        if (sellerPic != null) {
+                            Log.d("Upload img: imageUrl ", sellerPic);
                             Glide.with(context)
                                     .load(sellerPic)
                                     .circleCrop()
