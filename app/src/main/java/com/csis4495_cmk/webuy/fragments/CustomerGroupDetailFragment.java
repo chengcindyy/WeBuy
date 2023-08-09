@@ -520,8 +520,19 @@ public class CustomerGroupDetailFragment extends Fragment
         } else {
             tvInventoryAmount.setText(inventoryAmount + " left");
         }
-        //TODO: sold Amount
-        int soldAmount = psIdSoldAmountMap.get("s___" + styleId);
-        tvSoldAmount.setText(soldAmount + " sold");
+
+        //sold Amount
+        if (psIdSoldAmountMap!= null) {
+            Log.d("sold", "sold map size: " + psIdSoldAmountMap.size());
+            int soldAmount = psIdSoldAmountMap.get("s___" + styleId);
+            tvSoldAmount.setText(soldAmount + " sold");
+        } else {
+            //not selected
+            tvSoldAmount.setText("");
+        }
+
+
+
+
     }
 }

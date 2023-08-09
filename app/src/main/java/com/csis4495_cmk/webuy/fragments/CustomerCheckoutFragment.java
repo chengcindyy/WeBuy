@@ -414,7 +414,7 @@ public class CustomerCheckoutFragment extends Fragment {
     private void addOrderedAmountToInventory(Map<String, Map<String, Order.OrderItemInfo>> orderMap) {
         Log.d("place order", "inventory method");
         Log.d("place order", "order_groups: " + orderMap.keySet().size());
-        inventoryRef.addValueEventListener(new ValueEventListener() {
+        inventoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -431,6 +431,7 @@ public class CustomerCheckoutFragment extends Fragment {
 
                         if (invGroupId != null && invGroupId.equals(groupId)) {
                             if (orderMap.get(groupId) != null) { //np way is null
+                                Log.d("place order!", ""+orderMap.get(groupId).keySet().size());
                                 for (String productId_styleId : orderMap.get(groupId).keySet()) {
                                     int orderAmount = orderMap.get(groupId).get(productId_styleId).getOrderAmount();
                                     Log.d("place order", "order amount: " + orderAmount);
@@ -461,6 +462,7 @@ public class CustomerCheckoutFragment extends Fragment {
                                         }
                                     }
                                 }
+
                             }
 
                         }

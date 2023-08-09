@@ -176,20 +176,22 @@ public class CustomerHomeGroupListRecyclerAdapter extends RecyclerView.Adapter<C
 
                     if (sellerPic != null) {
                         Log.d("Upload img: imageUrl ", sellerPic);
-                        Glide.with(context)
-                                .load(sellerPic)
-                                .circleCrop()
-                                .into(new CustomTarget<Drawable>() {
-                                    @Override
-                                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                                        holder.imvSellerPic.setImageDrawable(resource);
-                                    }
+                        if (context != null) {
+                            Glide.with(context)
+                                    .load(sellerPic)
+                                    .circleCrop()
+                                    .into(new CustomTarget<Drawable>() {
+                                        @Override
+                                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                            holder.imvSellerPic.setImageDrawable(resource);
+                                        }
 
-                                    @Override
-                                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                                        holder.imvSellerPic.setImageResource(R.drawable.ic_user_profile);
-                                    }
-                                });
+                                        @Override
+                                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                                            holder.imvSellerPic.setImageResource(R.drawable.ic_user_profile);
+                                        }
+                                    });
+                        }
                     }
                 } else {
                     // If the sellerId is not found, handle it accordingly

@@ -44,7 +44,7 @@ public class CustomerOrderReceivedFragment extends Fragment {
             public void onFinish() {
                 // Redirect to other pages using Navigation component
                 NavController navController = NavHostFragment.findNavController(CustomerOrderReceivedFragment.this);
-                navController.navigate(R.id.action_customerOrderReceivedFragment_to_customerHomeGroupsFragment);
+                navController.navigate(R.id.action_customerOrderReceivedFragment_to_customerHomeFragment);
                 // Close the current fragment
                 //will cause loop
 //                new Handler().postDelayed(new Runnable() {

@@ -309,8 +309,8 @@
         tools:layout="@layout/fragment_customer_order_received">
 
         <action
-            android:id="@+id/action_customerOrderReceivedFragment_to_customerHomeGroupsFragment"
-            app:destination="@id/customerHomeGroupsFragment" />
+            android:id="@+id/action_customerOrderReceivedFragment_to_customerHomeFragment"
+            app:destination="@id/customerHomeFragment" />
 
     </fragment>
 
