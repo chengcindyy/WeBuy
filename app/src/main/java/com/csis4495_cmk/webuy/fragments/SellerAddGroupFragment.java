@@ -201,6 +201,7 @@ public class SellerAddGroupFragment extends Fragment {
                 productId = bundle.getString("new_group_productId");
                 Log.d("Test bundle productId", "productId: " + productId);
                 publishTitle.setText("Publish a new product group");
+                isRestockChecked = true;
             } else if (bundle.containsKey("edit_group_productId")) {
                 isNewGroup = false;
                 productId = bundle.getString("edit_group_productId");
@@ -983,7 +984,7 @@ public class SellerAddGroupFragment extends Fragment {
             }
         }
 
-        if (isRestockChecked == false) {
+        if (isRestockChecked == false && isNewGroup == true) {
             isComplete = false;
             Toast.makeText(getActivity(), "Please restock inventory first", Toast.LENGTH_SHORT).show();
         }
