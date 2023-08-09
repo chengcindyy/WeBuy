@@ -521,6 +521,11 @@ public class CustomerGroupDetailFragment extends Fragment
             tvInventoryAmount.setText(inventoryAmount + " left");
         }
         //TODO: sold Amount
+        Log.d("ssss",styleId);
+        Log.d("ssss!",psIdSoldAmountMap.keySet().size() + "");
+        for (String psId: psIdSoldAmountMap.keySet()) {
+            Log.d("ssss!",psId);
+        }
         int soldAmount = psIdSoldAmountMap.get("s___" + styleId);
         tvSoldAmount.setText(soldAmount + " sold");
     }

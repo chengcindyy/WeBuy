@@ -90,28 +90,31 @@ public class SellerHomePageActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Seller seller = snapshot.getValue(Seller.class);
-                String storePic = seller.getStoreInfo().getStorePic();
+                if (seller.getStoreInfo() != null) {
+                    String storePic = seller.getStoreInfo().getStorePic();
 
-                if (storePic != null) {
-                    imageUrl = storePic;
-                    Log.d("Upload img: imageUrl ", imageUrl);
-                    MenuItem profileItem = topToolbar.getMenu().findItem(R.id.ic_user_profile);
-                    Glide.with(SellerHomePageActivity.this)
-                            .load(imageUrl)
-                            .circleCrop()
-                            .into(new CustomTarget<Drawable>() {
-                                @Override
-                                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                                    profileItem.setIcon(resource);
-                                }
 
-                                @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {
-                                    profileItem.setIcon(R.drawable.ic_user_profile);
-                                }
-                            });
+                    if (storePic != null) {
+                        imageUrl = storePic;
+                        Log.d("Upload img: imageUrl ", imageUrl);
+                        MenuItem profileItem = topToolbar.getMenu().findItem(R.id.ic_user_profile);
+                        Glide.with(SellerHomePageActivity.this)
+                                .load(imageUrl)
+                                .circleCrop()
+                                .into(new CustomTarget<Drawable>() {
+                                    @Override
+                                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                        profileItem.setIcon(resource);
+                                    }
+
+                                    @Override
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                                        profileItem.setIcon(R.drawable.ic_user_profile);
+                                    }
+                                });
+                    }
+                    //return false;
                 }
-                //return false;
             }
 
             @Override
