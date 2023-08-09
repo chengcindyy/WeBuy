@@ -159,7 +159,7 @@ public class CustomerCartItemsFragment extends Fragment
             @Override
             public void onChanged(Map<String, Boolean> stringBooleanMap) {
                 sellerAllItemsCheckedMap = stringBooleanMap;
-                Log.d("place order", "allCheckedMap: " + sellerAllItemsCheckedMap.size());
+                Log.d("TestSelectAll", "allCheckedMap: " + sellerAllItemsCheckedMap.size());
                 customerCartItemsAdapter = new CustomerCartItemsAdapter(getContext(), viewModel, getViewLifecycleOwner());
                 recyclerView.setAdapter(customerCartItemsAdapter);
                 customerCartItemsAdapter.setOnCartSellerBannerListener(CustomerCartItemsFragment.this);
