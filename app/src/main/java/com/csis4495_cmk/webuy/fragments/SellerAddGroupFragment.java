@@ -983,7 +983,7 @@ public class SellerAddGroupFragment extends Fragment {
             }
         }
 
-        if (isRestockChecked == false) {
+        if (isRestockChecked == false && isNewGroup == true) {
             isComplete = false;
             Toast.makeText(getActivity(), "Please restock inventory first", Toast.LENGTH_SHORT).show();
         }
