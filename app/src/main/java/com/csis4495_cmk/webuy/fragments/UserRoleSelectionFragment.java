@@ -44,28 +44,36 @@ public class UserRoleSelectionFragment extends Fragment {
         // Set navigation controller, and if you want to navigate to other fragment can call this to navigate
         navController = NavHostFragment.findNavController(UserRoleSelectionFragment.this);
 
-        selectCustomer = view.findViewById(R.id.card_customer);
+        final CardView selectCustomer = view.findViewById(R.id.card_customer);
+        final CardView selectSeller = view.findViewById(R.id.card_seller);
+
         selectCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    selectCustomer.setBackgroundColor(getResources().getColor(R.color.cute_orange, getActivity().getTheme()));
+                    selectCustomer.setCardBackgroundColor(getResources().getColor(R.color.cute_orange, getActivity().getTheme()));
+                    selectSeller.setCardBackgroundColor(getResources().getColor(R.color.default_color, getActivity().getTheme()));
                 } else {
-                    selectCustomer.setBackgroundColor(getResources().getColor(R.color.cute_orange));
+                    selectCustomer.setCardBackgroundColor(getResources().getColor(R.color.cute_orange));
+                    selectSeller.setCardBackgroundColor(getResources().getColor(R.color.default_color));
                 }
                 selectedRole = CUSTOMER;
             }
         });
 
-
-        selectSeller = view.findViewById(R.id.card_seller);
         selectSeller.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    selectSeller.setCardBackgroundColor(getResources().getColor(R.color.cute_orange, getActivity().getTheme()));
+                    selectCustomer.setCardBackgroundColor(getResources().getColor(R.color.default_color, getActivity().getTheme()));
+                } else {
+                    selectSeller.setCardBackgroundColor(getResources().getColor(R.color.cute_orange));
+                    selectCustomer.setCardBackgroundColor(getResources().getColor(R.color.default_color));
+                }
                 selectedRole = SELLER;
             }
         });
-
 
 
         btnNext = view.findViewById(R.id.btn_register_to_next);
