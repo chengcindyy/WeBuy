@@ -109,7 +109,7 @@ public class SellerProfileSetInfoFragment extends Fragment {
         btnPaymentSetting = view.findViewById(R.id.btn_payment_settings);
         btnPaymentSetting.setOnClickListener(view15 -> Navigation.findNavController(view15).navigate(R.id.action_sellerProfileFragment_to_sellerPaymentSettingFragment));
         // Expendable layout
-        setupExpandableLayout(expSellerProfile, R.drawable.baseline_person_24, "Store owner information");
+        setupExpandableLayout(expSellerProfile, R.drawable.baseline_person_grey_24, "Store owner information");
         expStoreInfo = view.findViewById(R.id.expandableLayout_store_profile);
         setupExpandableLayout(expStoreInfo, R.drawable.baseline_storefront_24, "Store information");
         expMoreFunctions = view.findViewById(R.id.expandableLayout_more_function);

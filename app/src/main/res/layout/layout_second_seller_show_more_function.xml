@@ -33,19 +33,6 @@
         android:textColor="@color/black" />
 
     <Button
-        android:id="@+id/btn_store_management"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="4dp"
-        android:background="@android:color/transparent"
-        android:drawableLeft="@drawable/baseline_store_mall_directory_24"
-        android:gravity="start|center_vertical"
-        android:paddingStart="19dp"
-        android:text="Store management"
-        android:textAllCaps="false"
-        android:textColor="@color/black" />
-
-    <Button
         android:id="@+id/btn_logout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
