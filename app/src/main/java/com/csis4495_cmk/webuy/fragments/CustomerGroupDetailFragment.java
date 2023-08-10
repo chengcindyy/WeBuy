@@ -526,7 +526,12 @@ public class CustomerGroupDetailFragment extends Fragment
         for (String psId: psIdSoldAmountMap.keySet()) {
             Log.d("ssss!",psId);
         }
-        int soldAmount = psIdSoldAmountMap.get("s___" + styleId);
-        tvSoldAmount.setText(soldAmount + " sold");
+        if (psIdSoldAmountMap.get("s___" + styleId) != null) {
+            int soldAmount = psIdSoldAmountMap.get("s___" + styleId);
+
+        } else {
+            tvSoldAmount.setText("0 sold");
+        }
+
     }
 }
